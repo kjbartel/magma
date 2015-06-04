@@ -1,0 +1,40 @@
+#//////////////////////////////////////////////////////////////////////////////
+#   -- MAGMA (version 1.1) --
+#      Univ. of Tennessee, Knoxville
+#      Univ. of California, Berkeley
+#      Univ. of	Colorado, Denver
+#      November 2011
+#
+#      Contributed by: Massimiliano Fatica (NVIDIA)
+#//////////////////////////////////////////////////////////////////////////////
+
+#
+# GPU_TARGET specifies for which GPU you want to compile MAGMA
+#      0: Tesla family
+#      1: Fermi Family
+#
+	GPU_TARGET = 0
+
+	CC        = gcc
+	NVCC      = nvcc
+	FORT      = g95
+
+	ARCH      = ar
+	ARCHFLAGS = cr
+	RANLIB    = ranlib
+
+	# may need to add -m32 or -m64 to OPTS, FOPTS, NVOPTS to compile 32-bit or 64-bit.
+	OPTS      = -O3 -DADD_
+	FOPTS     = -O3 -DADD_ -x f95-cpp-input
+	NVOPTS    = -DADD_ --compiler-options -fno-strict-aliasing -DUNIX -O3 
+    LDOPTS    = -fPIC
+
+	LIB       = -framework Accelerate -lcublas -lcudart -lm -lstdc++.6
+
+	CUDADIR   = /usr/local/cuda
+
+	LIBDIR    = -L/usr/local/cuda/lib 
+	INC       = -I../include -I$(CUDADIR)/include
+
+#	LIBMAGMA     = $(MAGMA_DIR)/lib/magma.a
+#	LIBMAGMABLAS = $(MAGMA_DIR)/lib/magmablas.a

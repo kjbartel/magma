@@ -1,0 +1,94 @@
+
+             MAGMA Release Notes
+	
+-----------------------------------------------------
+
+MAGMA is intended for a single CUDA enabled NVIDIA GPU.  It supports
+Tesla and Fermi GPUs. For more details see the MAGMA 1.0 presentation.
+
+Included are routines for the following algorithms:
+
+    * LU, QR, and Cholesky factorizations in both real and complex
+      arithmetic (single and double);
+    * Hessenberg, bidiagonal, and tridiagonal reductions in both real
+      and complex arithmetic (single and double);
+    * Linear solvers based on LU, QR, and Cholesky in both real and
+      complex arithmetic (single and double);
+    * Eigen and singular value problem solvers in both real and
+      complex arithmetic (single and double);
+    * Generalized Hermitian-definite eigenproblem solver in both
+      real and complex arithmetic (single and double);
+    * Mixed-precision iterative refinement solvers based on LU, QR,
+      and Cholesky in both real and complex arithmetic;
+    * MAGMA BLAS in real arithmetic (single and double), including
+      gemm, gemv, symv, and trsm.
+
+ 1.1.0 - 11-11-11
+    * Fix a bug in [zcsd]geqrf_gpu.cpp and [zcsd]geqrf3_gpu.cpp for n>m
+    * Fix a bug in [zcsd]laset - to call the kernel only when m!=0 && n!=0
+    * Fix a bug in [zcsd]gehrd for ilo > 1 or ihi < n.
+    * Added missing Fortran interfaces
+    * Add general matrix inverse, [zcds]getri GPU interface.
+    * Add [zcds]potri in CPU and GPU interfaces 
+       [Hatem Ltaief et al.]
+    * Add [zcds]trtri in CPU and GPU interfaces 
+       [Hatem Ltaief et al.]
+    * Add [zcds]lauum in CPU and GPU interfaces 
+       [Hatem Ltaief et al.]
+    * Add zgemm for Fermi obtained using autotuning
+    * Add non-GPU-resident versions of [zcds]geqrf, [zcds]potrf, and [zcds]getrf
+    * Add multi-GPU LU, QR, and Cholesky factorizations
+    * Add tile algorithms for multicore and multi-GPUs using the StarPU
+      runtime system (in directory 'multi-gpu-dynamic')
+    * Add [zcds]gesv and [zcds]posv in CPU interface. GPU interface was already in 1.0
+    * Add LAPACK linear equation testing code (in 'testing/lin')
+    * Add experimental directory ('exp') with algorithms for:
+      (1) Multi-core QR, LU, Cholskey
+      (2) Single GPU, all available CPU cores QR
+    * Add eigenvalue solver driver routines for the standard and generalized 
+      symmetric/Hermitian eigenvalue problems [Raffaele Solca et al.].
+
+ 1.0.0 - August 25th, 2011
+    * Fix make.inc.mkl (Thanks to ar1309)
+    * Add gpu interfaces to [zcsd]hetrd, [zcsd]heevd
+    * Add all cases for [zcds]unmtr_gpu 
+       [Raffaele Solca et al.]
+    * Add generalized Hermitian-definite eigenproblem solver ([zcds]hegvd)
+       [Raffaele Solca et al.]
+
+ 1.0.0RC5 - April 6th, 2011
+    * Add fortran interface for lapack functions
+    * Add new QR version on GPU ([zcsd]geqrf3_gpu) and corresponding
+      LS solver ([zcds]geqrs3_gpu)
+    * Add [cz]unmtr, [sd]ormtr functions
+    * Add two functions in fortran to compute the offset on device pointers
+          magmaf_[sdcz]off1d( NewPtr, OldPtr, inc, i)
+          magmaf_[sdcz]off2d( NewPtr, OldPtr, lda, i, j)
+        indices are given in Fortran (1 to N)
+    * WARNING: add FOPTS variable to the make.inc to use preprocessing
+      in compilation of Fortran files
+    * WARNING: fix bug with fortran compilers which don;t change the name
+      now fortran prefix is magmaf instead of magma
+    * Small documentation fixes
+    * Fix timing under windows, thanks to Evan Lazar
+    * Fix problem when __func__ is not present, thanks to Evan Lazar
+    * Fix bug with m==n==0 in LU, thanks to Evan Lazar
+    * Fix bug on [cz]unmqr, [sd]ormqr functions
+    * Fix bug in [zcsd]gebrd; fixes bug in SVD for n>m
+    * Fix bug in [zcsd]geqrs_gpu for multiple RHS
+    * Added functionality - zcgesv_gpu and dsgesv_gpu can now solve also 
+      A' X = B using mixed-precision iterative refinement
+    * Fix error code in testings.h to compile with cuda 4.0
+
+ 1.0.0RC4 - March 8th, 2011
+
+    * Add control directory to group all non computational functions
+    * Integration of the eigenvalues solvers
+    * Clean some f2c code in eigenvalues solvers
+    * Arithmetic consistency: cuDoubleComplex and cuFloatComplex are 
+      the  only types used for complex now.
+    * Consistency of the interface of some functions.
+    * Clean most of the return values in lapack functions
+    * Fix multiple definition of min, max,
+    * Fix headers problem under windows, thanks to Willem Burger
+

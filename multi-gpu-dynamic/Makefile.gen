@@ -1,0 +1,65 @@
+###
+#
+# @file Makefile
+#
+#  MAGMA Makefile
+#  MAGMA is a software package provided by Univ. of Tennessee,
+#  Univ. of California Berkeley and Univ. of Colorado Denver,
+#  and INRIA Bordeaux Sud-Ouest
+#
+#  @version 2.3.1
+#  @author Mathieu Faverge
+#  @date 2011-06-01
+#
+###
+
+PYTHON ?= python
+CODEGEN = $(MAGMA_DIR)/tools/codegen.py
+
+cleanall: cleangen cleanmkgen
+
+cleanmkgen:
+	find . -name .Makefile.gen -exec rm -f {} \;
+
+generation:
+	(cd $(MAGMA_DIR)/include   && $(MAKE) generate )
+	(cd $(MAGMA_DIR)/compute   && $(MAKE) generate )
+	(cd $(MAGMA_DIR)/common    && $(MAKE) generate )
+	(cd $(MAGMA_DIR)/morse     && $(MAKE) generate )
+#	(cd $(MAGMA_DIR)/testing   && $(MAKE) generate )
+#	(cd $(MAGMA_DIR)/examples  && $(MAKE) generate )
+	(cd $(MAGMA_DIR)/timing    && $(MAKE) generate )
+
+headers: 
+	(cd include && $(MAKE) )
+
+libcodelets: headers 
+libmagma_mgpu : headers
+
+# These 6 rules are used by the MakePlasmaRelease.pl script to set correctly 
+# [SDC]SRC and [SDC]HDR variable in the release
+printCSRC: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZSRC)" -p "c"
+
+printDSRC: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZSRC)" -p "d ds"
+
+printSSRC: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZSRC)" -p "s"
+
+printCHDR: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZHDR)" -p "c"
+
+printDHDR: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZHDR)" -p "d ds"
+
+printSHDR: 
+	@$(PYTHON) $(CODEGEN) --out -f "$(ZHDR)" -p "s"
+
+.Makefile.gen: $(CODEGEN) Makefile
+	$(PYTHON) $(CODEGEN) --make -f "$(ZSRC) $(ZHDR)" > $@
+
+.DEFAULT_GOAL :=
+-include .Makefile.gen
+.DEFAULT_GOAL :=
+

@@ -1,0 +1,17 @@
+CHDR = \
+
+
+DHDR = \
+
+
+SHDR = \
+
+
+CSRC = \
+testing_cgemm.cpp testing_chemv.cpp testing_cgemv.cpp testing_csymv.cpp testing_cpotrf.cpp testing_cpotrf_mgpu.cpp testing_cpotri.cpp testing_cposv.cpp testing_cgetrf.cpp testing_cgesv.cpp testing_cgeqrf.cpp testing_cgeqlf.cpp testing_cgelqf.cpp testing_cpotrf_gpu.cpp testing_cpotri_gpu.cpp testing_cposv_gpu.cpp testing_cgetrf_gpu.cpp testing_cgetrf_mgpu.cpp testing_cgetri_gpu.cpp testing_cgesv_gpu.cpp testing_cgeqrf_gpu.cpp testing_cgeqrf_mgpu.cpp testing_cgelqf_gpu.cpp testing_cgeqrs_gpu.cpp testing_cgeqrs3_gpu.cpp testing_cungqr_gpu.cpp testing_cgebrd.cpp testing_cgehrd.cpp testing_chetrd.cpp testing_cgeev.cpp testing_cgesvd.cpp testing_cheevd.cpp testing_chegvd.cpp testing_chetrd_gpu.cpp testing_cheevd_gpu.cpp testing_cgetrf_gpu_f.f90 testing_cgetrf_f.f90
+
+DSRC = \
+testing_dgemm.cpp testing_dsymv.cpp testing_dgemv.cpp testing_dpotrf.cpp testing_dpotrf_mgpu.cpp testing_dpotri.cpp testing_dposv.cpp testing_dgetrf.cpp testing_dgesv.cpp testing_dgeqrf.cpp testing_dgeqlf.cpp testing_dgelqf.cpp testing_dpotrf_gpu.cpp testing_dpotri_gpu.cpp testing_dposv_gpu.cpp testing_dgetrf_gpu.cpp testing_dgetrf_mgpu.cpp testing_dgetri_gpu.cpp testing_dgesv_gpu.cpp testing_dgeqrf_gpu.cpp testing_dgeqrf_mgpu.cpp testing_dgelqf_gpu.cpp testing_dgeqrs_gpu.cpp testing_dgeqrs3_gpu.cpp testing_dorgqr_gpu.cpp testing_dgebrd.cpp testing_dgehrd.cpp testing_dsytrd.cpp testing_dgesvd.cpp testing_dsytrd_gpu.cpp testing_dsposv_gpu.cpp testing_dsgesv_gpu.cpp testing_dsgeqrsv_gpu.cpp testing_dgetrf_gpu_f.f90 testing_dgetrf_f.f90
+
+SSRC = \
+testing_sgemm.cpp testing_ssymv.cpp testing_sgemv.cpp testing_spotrf.cpp testing_spotrf_mgpu.cpp testing_spotri.cpp testing_sposv.cpp testing_sgetrf.cpp testing_sgesv.cpp testing_sgeqrf.cpp testing_sgeqlf.cpp testing_sgelqf.cpp testing_spotrf_gpu.cpp testing_spotri_gpu.cpp testing_sposv_gpu.cpp testing_sgetrf_gpu.cpp testing_sgetrf_mgpu.cpp testing_sgetri_gpu.cpp testing_sgesv_gpu.cpp testing_sgeqrf_gpu.cpp testing_sgeqrf_mgpu.cpp testing_sgelqf_gpu.cpp testing_sgeqrs_gpu.cpp testing_sgeqrs3_gpu.cpp testing_sorgqr_gpu.cpp testing_sgebrd.cpp testing_sgehrd.cpp testing_ssytrd.cpp testing_sgeev.cpp testing_sgesvd.cpp testing_ssyevd.cpp testing_ssytrd_gpu.cpp testing_sgetrf_gpu_f.f90 testing_sgetrf_f.f90

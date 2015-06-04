@@ -1,0 +1,68 @@
+###
+#
+# @file Makefile
+#
+#  MAGMA Makefile
+#  MAGMA is a software package provided by Univ. of Tennessee,
+#  Univ. of California Berkeley and Univ. of Colorado Denver,
+#  and INRIA Bordeaux Sud-Ouest
+#
+#  @version 2.3.1
+#  @author Mathieu Faverge
+#  @date 2011-06-01
+#
+###
+
+include $(MAGMA_DIR)/make.inc
+-include $(MAGMA_DIR)/make.inc.${MACHINE}
+
+prefix ?= ./install
+
+#///// D /// O ////// N /// O /// T ////// T /// O /// U /// C /// H /////
+
+# Include directory
+INC         = -I$(MAGMA_DIR)/include -I$(MAGMA_DIR)/morse/include $(INCSTARPU) $(INCPLASMA)
+
+# Location of the libraries.
+LIBDIR      = -L$(MAGMA_DIR)/lib
+
+# Location and name of the MAGMA library.
+LIBMORSE_QUARK   = $(MAGMA_DIR)/lib/libmorse_quark.a
+LIBMORSE_STARPU  = $(MAGMA_DIR)/lib/libmorse_starpu.a
+LIBMAGMAMGPU     = $(MAGMA_DIR)/lib/libmagma_mgpu.a
+LIBQUARK         = $(MAGMA_DIR)/lib/libquark.a
+
+# Multi-cores kernels with StarPU
+ifeq (${MORSE_USE_MULTICORE}, 1)
+    CFLAGS += -DMORSE_USE_MULTICORE
+endif
+
+# Cuda
+ifeq (${MORSE_USE_CUDA}, 1)
+    CFLAGS += -DMORSE_USE_CUDA
+    INC    += $(INCMAGMA) -I$(CUDADIR)/include
+    LIBCUDA = $(LIBMAGMA) -L$(CUDADIR)/lib64 -lcublas -lcudart 
+else
+    LIBCUDA = 
+endif
+
+ifeq (${MORSE_USE_STARPU}, 1)
+	LIBMORSE= $(LIBMORSE_STARPU)
+	LIBSCHED= $(LIBSTARPU)
+else      
+	LIBMORSE= $(LIBMORSE_QUARK)
+	LIBSCHED= -lquark
+endif
+
+# Double plasma in plasma libs
+LIBPLASMA := $(LIBPLASMA) -lplasma
+
+#  All internal libraries
+LIB    = $(LIBDIR) -lmagma_mgpu ${LIBTRACE} $(LIBMORSE) 
+#  All external libraries
+LIBEXT = $(LIB) $(LIBMAGMA) $(LIBSCHED) $(LIBPLASMA) $(LIBCUDA)
+
+LIB := $(LIB) $(LIBEXT)
+#//////////////////////////////////////////////////////////////////////////
+
+-include $(MAGMA_DIR)/Makefile.gen

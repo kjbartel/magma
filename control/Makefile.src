@@ -1,0 +1,17 @@
+CHDR = \
+
+
+DHDR = \
+
+
+SHDR = \
+
+
+CSRC = \
+magma_cf77.cpp magma_cfortran.f90
+
+DSRC = \
+magma_df77.cpp magma_dfortran.f90
+
+SSRC = \
+magma_sf77.cpp magma_sfortran.f90
