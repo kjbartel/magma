@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.5.0-beta3) --
+    -- MAGMA (version 1.5.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date July 2014
+       @date September 2014
 
        @precisions normal z -> c d s
 */
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
             magma_time = magma_sync_wtime( 0 ) - magma_time;
             magma_perf = gflops / magma_time;
             
-            magma_zgetvector( Ym, dY, incx, Ymagma, incx );
+            magma_zgetvector( Ym, dY, incy, Ymagma, incy );
             
             /* =====================================================================
                Performs operation using CPU BLAS

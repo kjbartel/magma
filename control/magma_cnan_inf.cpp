@@ -1,22 +1,28 @@
 /*
-    -- MAGMA (version 1.5.0-beta3) --
+    -- MAGMA (version 1.5.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date July 2014
+       @date September 2014
 
        @author Mark Gates
-       @generated from magma_znan_inf.cpp normal z -> c, Fri Jul 18 17:34:20 2014
+       @generated from magma_znan_inf.cpp normal z -> c, Wed Sep 17 15:08:33 2014
 
 */
+#include <limits>
+
 #include "common_magma.h"
 
 #define COMPLEX
 
 
-const magmaFloatComplex MAGMA_C_NAN = MAGMA_C_MAKE( 0./0., 0./0. );
-const magmaFloatComplex MAGMA_C_INF = MAGMA_C_MAKE( 1./0., 1./0. );
+const magmaFloatComplex MAGMA_C_NAN
+    = MAGMA_C_MAKE( std::numeric_limits<float>::quiet_NaN(),
+                    std::numeric_limits<float>::quiet_NaN() );
 
+const magmaFloatComplex MAGMA_C_INF
+    = MAGMA_C_MAKE( std::numeric_limits<float>::infinity(),
+                    std::numeric_limits<float>::infinity() );
 
 /** @return true if either real(x) or imag(x) is NAN. */
 inline bool magma_c_isnan( magmaFloatComplex x )
@@ -180,7 +186,7 @@ magma_int_t magma_cnan_inf(
     n       INTEGER
             The number of columns of the matrix A.  N >= 0.
 
-    @param[in,out]
+    @param[in]
     dA      COMPLEX array, dimension (LDDA,N), on the GPU device.
             The M-by-N matrix to be printed.
 

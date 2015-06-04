@@ -65,7 +65,8 @@ if ( CUDA_FOUND )
 		if ( NOT MIN_ARCH )
 			set( MIN_ARCH 100 )
 		endif()
-		set( NV_SM "${NV_SM} -gencode arch=compute_10,code=compute_10 -gencode arch=compute_13,code=sm_13" )
+		# -gencode arch=compute_10,code=compute_10
+		set( NV_SM "${NV_SM} -gencode arch=compute_13,code=sm_13" )
 		set( NV_COMP        "-gencode arch=compute_13,code=compute_13" )
 		message( "   compile for CUDA arch 1.x (Tesla)" )
 	endif()
@@ -203,14 +204,16 @@ if ( WIN32 )
 		${CUDA_CUBLAS_LIBRARIES}
 	)
 	
+	# no Fortran files at the moment (how to test ALLSRC_f is not empty?),
+	# but keep this around for future.
 	# ...so make a separate library out of Fortran files. Ugh.
-	add_library( magmaf ${ALLSRC_f} )
-	target_link_libraries( magmaf
-		${LAPACK_LIBRARIES}
-		${CUDA_CUDART_LIBRARY}
-		${CUDA_CUBLAS_LIBRARIES}
-	)
-	set( LIBS test lapacktest magma magmaf )
+	#add_library( magmaf ${ALLSRC_f} )
+	#target_link_libraries( magmaf
+	#	${LAPACK_LIBRARIES}
+	#	${CUDA_CUDART_LIBRARY}
+	#	${CUDA_CUBLAS_LIBRARIES}
+	#)
+	set( LIBS test lapacktest magma )  #magmaf )
 else()
 	# Unix doesn't seem to have a problem with mixing C, CUDA, and Fortran files
 	cuda_add_library( magma ${ALLSRC} )
@@ -226,11 +229,11 @@ endif()
 # ----------------------------------------
 # compile testing library
 set( TEST_SRC
-	testing/testing_zutil.cpp
-	testing/testing_cutil.cpp
-	testing/testing_dutil.cpp
-	testing/testing_sutil.cpp
-	testing/testing_util.cpp
+	testing/magma_zutil.cpp
+	testing/magma_cutil.cpp
+	testing/magma_dutil.cpp
+	testing/magma_sutil.cpp
+	testing/magma_util.cpp
 )
 add_library( test ${TEST_SRC} )
 
@@ -245,6 +248,7 @@ add_library( lapacktest ${testing_lin_ALLSRC} )
 # compile each tester
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY testing )
 include( ${CMAKE_SOURCE_DIR}/testing/CMake )
+list( REMOVE_ITEM testing_ALLSRC ${TEST_SRC} )
 foreach( TEST ${testing_ALLSRC} )
 	string( REGEX REPLACE "\\.(cpp|f90|F90)" "" EXE ${TEST} )
 	string( REGEX REPLACE "testing/" "" EXE ${EXE} )

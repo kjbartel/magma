@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.5.0-beta3) --
+    -- MAGMA (version 1.5.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date July 2014
+       @date September 2014
 
-       @generated from zgelqf_gpu.cpp normal z -> d, Fri Jul 18 17:34:16 2014
+       @generated from zgelqf_gpu.cpp normal z -> d, Wed Sep 17 15:08:32 2014
 
 */
 #include "common_magma.h"
@@ -46,7 +46,7 @@
 
     @param[out]
     work    (workspace) DOUBLE_PRECISION array, dimension (MAX(1,LWORK))
-            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+            On exit, if INFO = 0, WORK[0] returns the optimal LWORK.
     \n
             Higher performance is achieved if WORK is in pinned memory, e.g.
             allocated using magma_malloc_pinned.
