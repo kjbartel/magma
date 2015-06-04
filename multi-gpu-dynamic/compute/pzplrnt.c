@@ -25,7 +25,6 @@ void magma_pzplrnt( magma_desc_t *dA, unsigned long long int seed,
 {
     magma_context_t *magma;
     MorseOption_t options;
-    PLASMA_desc A = dA->desc;
 
     int m, n;
     int tempmm, tempnn;
@@ -36,16 +35,16 @@ void magma_pzplrnt( magma_desc_t *dA, unsigned long long int seed,
 
     morse_options_init( &options, magma, sequence, request );
 
-    for (m = 0; m < A.mt; m++) {
-        tempmm = m == A.mt-1 ? A.m-m*A.mb : A.mb;
+    for (m = 0; m < dA->mt; m++) {
+        tempmm = m == dA->mt-1 ? dA->m-m*dA->mb : dA->mb;
 
-        for (n = 0; n < A.nt; n++) {
-            tempnn = n == A.nt-1 ? A.n-n*A.nb : A.nb;
+        for (n = 0; n < dA->nt; n++) {
+            tempnn = n == dA->nt-1 ? dA->n-n*dA->nb : dA->nb;
 
             MORSE_zplrnt( 
                 &options,
                 tempmm, tempnn, A(m, n),
-                A.m, m*A.mb, n*A.nb, seed );
+                dA->m, m*dA->mb, n*dA->nb, seed );
         }
     }
     morse_options_finalize( &options, magma );

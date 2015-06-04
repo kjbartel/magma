@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal d -> s
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <cblas.h>
@@ -85,7 +84,7 @@ int main( int argc, char** argv)
                 jobr = (char *)"V";
         }
         if ( N > 0 )
-            printf("  testing_dgeev -L[N|V] -R[N|V] -N %d\n\n", N);
+            printf("  testing_dgeev -L[N|V] -R[N|V] -N %d\n\n", (int) N);
         else
         {
             printf("\nUsage: \n");
@@ -122,7 +121,6 @@ int main( int argc, char** argv)
     TESTING_HOSTALLOC( VR , double, n2);
     TESTING_HOSTALLOC( h_work, double, lwork);
 
-    printf("\n\n");
     printf("  N     CPU Time(s)    GPU Time(s)     ||R||_F / ||A||_F\n");
     printf("==========================================================\n");
     for(i=0; i<8; i++){
@@ -149,7 +147,7 @@ int main( int argc, char** argv)
 
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of magma_dgeev had an illegal value.\n", -info);
+            printf("Argument %d of magma_dgeev had an illegal value.\n", (int) -info);
 
         gpu_time = GetTimerValue(start,end) / 1e3;
 
@@ -163,7 +161,7 @@ int main( int argc, char** argv)
                         h_work, &lwork, &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of dgeev had an illegal value.\n", -info);
+            printf("Argument %d of dgeev had an illegal value.\n", (int) -info);
 
         cpu_time = GetTimerValue(start,end) / 1e3;
 
@@ -317,7 +315,7 @@ int main( int argc, char** argv)
               result[0] = ulpinv;
              
               info = abs(info);
-              printf("Info = %d fo case N, N\n", info);
+              printf("Info = %d fo case N, N\n", (int) info);
             }
 
             // Do test 5 
@@ -339,7 +337,7 @@ int main( int argc, char** argv)
               result[0] = ulpinv;
               
               info = abs(info);
-              printf("Info = %d fo case N, V\n", info);
+              printf("Info = %d fo case N, V\n", (int) info);
             }
 
             // Do test 5 again
@@ -368,7 +366,7 @@ int main( int argc, char** argv)
               result[0] = ulpinv;
 
               info = abs(info);
-              printf("Info = %d fo case V, N\n", info);
+              printf("Info = %d fo case V, N\n", (int) info);
             }
 
             // Do test 5 again
@@ -401,14 +399,14 @@ int main( int argc, char** argv)
             result[7] = lapackf77_dlange("f", &N, &ione, w2, &N, h_work) / matnorm;
 
             printf("%5d     %6.2f         %6.2f         %e\n",
-                   N, cpu_time, gpu_time, result[7]);
+                   (int) N, cpu_time, gpu_time, result[7]);
 
             TESTING_HOSTFREE( LRE );
           } 
         else 
           {
             printf("%5d     %6.2f         %6.2f\n",
-                   N, cpu_time, gpu_time);
+                   (int) N, cpu_time, gpu_time);
           }
 
         if (argc != 1)

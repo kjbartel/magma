@@ -1,8 +1,8 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
@@ -26,11 +26,11 @@ magma_dlaex0(magma_int_t n, double* d, double* e, double* q, magma_int_t ldq,
              magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -192,9 +192,9 @@ magma_dlaex0(magma_int_t n, double* d, double* e, double* q, magma_int_t ldq,
         lapackf77_dsteqr(char_I , &matsiz, &d[submat], &e[submat],
                          Q(submat, submat), &ldq, work, info);  // change to edc?
         if(*info != 0){
-            printf("info: %d\n, submat: %d\n", *info, submat);
+            printf("info: %d\n, submat: %d\n", (int) *info, (int) submat);
             *info = (submat+1)*(n+1) + submat + matsiz;
-            printf("info: %d\n", *info);
+            printf("info: %d\n", (int) *info);
             return MAGMA_SUCCESS;
         }
         k = 1;

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -68,7 +67,7 @@ int main( int argc, char** argv)
             N = M;
         }
         if (N>0 && M>0)
-            printf("  testing_zgebrd -M %d -N %d\n\n", M, N);
+            printf("  testing_zgebrd -M %d -N %d\n\n", (int) M, (int) N);
         else
             {
                 printf("\nUsage: \n");
@@ -118,7 +117,6 @@ int main( int argc, char** argv)
 #endif
     }
 
-    printf("\n\n");
     printf("  M    N    CPU GFlop/s    GPU GFlop/s   |A-QHQ'|/N|A|  |I-QQ'|/N \n");
     printf("==================================================================\n");
     for(i=0; i<10; i++){
@@ -153,7 +151,7 @@ int main( int argc, char** argv)
         }
         end = get_current_time();
         if ( info < 0 )
-            printf("Argument %d of lapackf77_zgebrd|magma_zgebrd had an illegal value\n", -info);
+            printf("Argument %d of lapackf77_zgebrd|magma_zgebrd had an illegal value\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start,end);
 
@@ -166,10 +164,10 @@ int main( int argc, char** argv)
             // generate Q & P'
             lapackf77_zungbr("Q", &M, &minmn, &N, h_Q,  &lda, tauq, chkwork, &lchkwork, &info);
             if ( info < 0 )
-              printf("Argument %d of lapackf77_zungbr had an illegal value\n", -info);
+              printf("Argument %d of lapackf77_zungbr had an illegal value\n", (int) -info);
             lapackf77_zungbr("P", &minmn, &N, &M, h_PT, &lda, taup, chkwork, &lchkwork, &info);
             if ( info < 0 )
-              printf("Argument %d of lapackf77_zungbr (2) had an illegal value\n", -info);
+              printf("Argument %d of lapackf77_zungbr (2) had an illegal value\n", (int) -info);
             
             // Test 1:  Check the decomposition A := Q * B * PT
             //      2:  Check the orthogonality of Q
@@ -201,7 +199,7 @@ int main( int argc, char** argv)
         end = get_current_time();
 
         if (info < 0)
-            printf("Argument %d of lapackf77_zgebrd had an illegal value.\n", -info);
+            printf("Argument %d of lapackf77_zgebrd had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start,end);
 
@@ -210,11 +208,11 @@ int main( int argc, char** argv)
            =================================================================== */
         if ( checkres ) {
             printf("%5d %5d   %6.2f        %6.2f       %4.2e %4.2e %4.2e\n",
-                   M, N, cpu_perf, gpu_perf,
+                   (int) M, (int) N, cpu_perf, gpu_perf,
                    result[0]*eps, result[1]*eps, result[2]*eps );
         } else {
             printf("%5d %5d   %6.2f        %6.2f\n",
-                   M, N, cpu_perf, gpu_perf );
+                   (int) M, (int) N, cpu_perf, gpu_perf );
         }
 
         if (argc != 1)

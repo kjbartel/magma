@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:01 2012
+       @generated s Thu Jun 28 12:31:18 2012
 
 */
 #include "common_magma.h"
@@ -98,14 +98,15 @@ extern "C" void slaswp3( slaswp_params_t2 &params )
 
 
 extern "C" void 
-magmablas_spermute_long2( float *dAT, int lda, int *ipiv, int nb, int ind )
+magmablas_spermute_long2( magma_int_t n, float *dAT, magma_int_t lda,
+                          magma_int_t *ipiv, magma_int_t nb, magma_int_t ind )
 {
         int k;
 
         for( k = 0; k < nb-BLOCK_SIZE; k += BLOCK_SIZE )
         {
                 //slaswp_params_t params = { dAT, lda, lda, ind + k };
-                slaswp_params_t2 params = { dAT, lda, lda, ind + k, BLOCK_SIZE };
+                slaswp_params_t2 params = { dAT, n, lda, ind + k, BLOCK_SIZE };
                 for( int j = 0; j < BLOCK_SIZE; j++ )
                 {
                         params.ipiv[j] = ipiv[ind + k + j] - k - 1;
@@ -117,7 +118,7 @@ magmablas_spermute_long2( float *dAT, int lda, int *ipiv, int nb, int ind )
 
         int num_pivots = nb - k;
 
-        slaswp_params_t2 params = { dAT, lda, lda, ind + k, num_pivots};
+        slaswp_params_t2 params = { dAT, n, lda, ind + k, num_pivots};
         for( int j = 0; j < num_pivots; j++ )
         {
             params.ipiv[j] = ipiv[ind + k + j] - k - 1;
@@ -127,8 +128,8 @@ magmablas_spermute_long2( float *dAT, int lda, int *ipiv, int nb, int ind )
 }
 
 extern "C" void 
-magmablas_slaswp( int n, float *dAT, int lda, 
-                  int i1, int i2, int *ipiv, int inci )
+magmablas_slaswp( magma_int_t n, float *dAT, magma_int_t lda, 
+                  magma_int_t i1, magma_int_t i2, magma_int_t *ipiv, magma_int_t inci )
 {
   int k;
   
@@ -146,8 +147,8 @@ magmablas_slaswp( int n, float *dAT, int lda,
 }
 
 extern "C" void 
-magmablas_slaswpx( int n, float *dAT, int ldx, int ldy, 
-                   int i1, int i2, int *ipiv, int inci )
+magmablas_slaswpx( magma_int_t n, float *dAT, magma_int_t ldx, magma_int_t ldy, 
+                   magma_int_t i1, magma_int_t i2, magma_int_t *ipiv, magma_int_t inci )
 {
   int k;
   

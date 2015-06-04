@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
  * @precisions normal z -> c d s
  *
@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <unistd.h>
@@ -45,7 +44,7 @@ int main( int argc, char** argv)
     magma_int_t NRHS     = 100;
     magma_int_t ISEED[4] = {0,0,0,1};
     const int MAXTESTS   = 10;
-    magma_int_t size[MAXTESTS] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
+    magma_int_t size[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
 
     // process command line arguments
     printf( "\nUsage:\n" );
@@ -63,7 +62,7 @@ int main( int argc, char** argv)
                 else {
                     size[ntest] = atoi( optarg );
                     if ( size[ntest] <= 0 ) {
-                        printf( "error: -N value %d <= 0\n", size[ntest] );
+                        printf( "error: -N value %d <= 0\n", (int) size[ntest] );
                         exit(1);
                     }
                     ntest++;
@@ -99,7 +98,6 @@ int main( int argc, char** argv)
     TESTING_DEVALLOC( d_A, cuDoubleComplex, ldda*N    );
     TESTING_DEVALLOC( d_B, cuDoubleComplex, lddb*NRHS );
 
-    printf("\n");
     printf("    N   NRHS   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
     printf("===========================================================\n");
     
@@ -138,7 +136,7 @@ int main( int argc, char** argv)
         magma_zposv_gpu( uplo[0], N, NRHS, d_A, ldda, d_B, lddb, &info );
         gpu_time = magma_wtime() - gpu_time;
         if (info != 0)
-            printf("magma_zpotrf_gpu returned error %d.\n", info);
+            printf("magma_zpotrf_gpu returned error %d.\n", (int) info);
 
         gpu_perf = gflops / gpu_time;
 
@@ -158,7 +156,7 @@ int main( int argc, char** argv)
         Rnorm = lapackf77_zlange("I", &N, &NRHS, h_B, &ldb, work);
 
         printf( "%5d  %5d   %7.2f (%7.2f)   %8.2e\n",
-                N, NRHS, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+                (int) N, (int) NRHS, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
     }
 
     /* Memory clean up */

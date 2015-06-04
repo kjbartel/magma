@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Azzam Haidar
        @author Stan Tomov
 
-       @generated d Tue May 15 18:17:41 2012
+       @generated d Thu Jun 28 12:30:59 2012
 
 */
 #include "common_magma.h"
@@ -30,11 +30,11 @@ magma_dsybbd(char uplo, magma_int_t n, magma_int_t nb,
               double *dT,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -165,12 +165,12 @@ magma_dsybbd(char uplo, magma_int_t n, magma_int_t nb,
     magma_int_t pm, pn, indi, indj, pk;
     magma_int_t pm_old=0, pn_old=0, indi_old=0, indj_old=0;
 
-    static int i;
-    static int lwkopt;
-    static long int lquery;
+    int i;
+    int lwkopt;
+    int lquery;
 
     *info = 0;
-    long int upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
     lquery = lwork == -1;
     if (! upper && ! lapackf77_lsame(uplo_, "L")) {
         *info = -1;
@@ -209,7 +209,7 @@ magma_dsybbd(char uplo, magma_int_t n, magma_int_t nb,
     double *dwork = da+n*ldda;
     double *dW    = dwork + nb*ldda;
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 

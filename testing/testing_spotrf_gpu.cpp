@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- * @generated s Tue May 15 18:18:19 2012
+ * @generated s Thu Jun 28 12:31:42 2012
  *
  **/
 // includes, system
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -72,7 +71,6 @@ int main( int argc, char** argv)
     TESTING_HOSTALLOC( h_R, float, n2);
     TESTING_DEVALLOC(  d_A, float, ldda*size[9] );
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s    ||R_magma - R_lapack||_F / ||R_lapack||_F\n");
     printf("========================================================\n");
     for(i=0; i<10; i++){
@@ -126,7 +124,7 @@ int main( int argc, char** argv)
         magma_spotrf_gpu(uplo[0], N, d_A, ldda, &info);
         end = get_current_time();
         if (info != 0)
-            printf("Argument %d of magma_spotrf had an illegal value.\n", -info);
+            printf("Argument %d of magma_spotrf had an illegal value.\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start, end);
         
@@ -137,7 +135,7 @@ int main( int argc, char** argv)
         lapackf77_spotrf(uplo, &N, h_A, &lda, &info);
         end = get_current_time();
         if (info != 0)  
-            printf("Argument %d of spotrf had an illegal value.\n", -info);
+            printf("Argument %d of spotrf had an illegal value.\n", (int) -info);
         
         cpu_perf = flops / GetTimerValue(start, end);
       
@@ -148,7 +146,7 @@ int main( int argc, char** argv)
         matnorm = lapackf77_slange("f", &N, &N, h_A, &lda, work);
         blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d    %6.2f         %6.2f        %e\n", 
-               size[i], cpu_perf, gpu_perf,
+               (int) size[i], cpu_perf, gpu_perf,
                lapackf77_slange("f", &N, &N, h_R, &lda, work) / matnorm);
         
         if (argc != 1)

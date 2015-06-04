@@ -1,8 +1,8 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
@@ -190,7 +190,7 @@ magma_dlaex3(magma_int_t k, magma_int_t n, magma_int_t n1, double* d,
 
     magma_int_t i,iq2,j,n12,n2,n23,tmp,lq2;
     double temp;
-//    static cudaStream_t stream;
+//    cudaStream_t stream;
     magma_int_t alleig, valeig, indeig;
 
     alleig = lapackf77_lsame(range_, "A");

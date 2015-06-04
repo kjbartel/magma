@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:26 2012
+       @generated c Thu Jun 28 12:31:51 2012
 */
 
 // includes, system
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <cblas.h>
@@ -40,20 +39,20 @@ int main( int argc, char** argv)
     cuFloatComplex *hA, *hB, *hR, *dA, *dB;
     float           gpu_time, gpu_perf;
 
-    int ione     = 1;
-    int ISEED[4] = {0, 0, 0, 1};
+    magma_int_t ione     = 1;
+    magma_int_t ISEED[4] = {0, 0, 0, 1};
     
     // groups of tests are:
     // whole matrix, sub-matrix, around k*64 rows, around k*64 cols,
     // zero rows, one row, zero cols, one col
-    int TESTS_I1[] = {     0,  100,     63,   64,   64,   64,   65,     10,   10,   10,   10,   10,      4,   4,   4,      4,   4,   4,     64,  64,  64,     64,  64,  64 };
-    int TESTS_I2[] = {  1000,  500,    511,  511,  512,  513,  513,    900,  900,  900,  900,  900,      4,   4,   4,      5,   5,   5,    127, 128, 129,    255, 256, 257 };
-    int TESTS_J1[] = {     0,   50,     10,   10,   10,   10,   10,     63,   64,   64,   64,   65,     64,  64,  64,     64,  64,  64,      4,   4,   4,      4,   4,   4 };
-    int TESTS_J2[] = {  1000,  400,    900,  900,  900,  900,  900,    511,  511,  512,  513,  513,    127, 128, 129,    255, 256, 257,      4,   4,   4,      5,   5,   5 };
-    int ntest = sizeof(TESTS_J2) / sizeof(int);
+    magma_int_t TESTS_I1[] = {     0,  100,     63,   64,   64,   64,   65,     10,   10,   10,   10,   10,      4,   4,   4,      4,   4,   4,     64,  64,  64,     64,  64,  64 };
+    magma_int_t TESTS_I2[] = {  1000,  500,    511,  511,  512,  513,  513,    900,  900,  900,  900,  900,      4,   4,   4,      5,   5,   5,    127, 128, 129,    255, 256, 257 };
+    magma_int_t TESTS_J1[] = {     0,   50,     10,   10,   10,   10,   10,     63,   64,   64,   64,   65,     64,  64,  64,     64,  64,  64,      4,   4,   4,      4,   4,   4 };
+    magma_int_t TESTS_J2[] = {  1000,  400,    900,  900,  900,  900,  900,    511,  511,  512,  513,  513,    127, 128, 129,    255, 256, 257,      4,   4,   4,      5,   5,   5 };
+    int ntest = sizeof(TESTS_J2) / sizeof(magma_int_t);
     
-    int n   = 1000;
-    int lda = n;
+    magma_int_t n   = 1000;
+    magma_int_t lda = n;
     
     TESTING_MALLOC   ( hA, cuFloatComplex, lda*n );
     TESTING_MALLOC   ( hB, cuFloatComplex, lda*n );
@@ -129,12 +128,12 @@ int main( int argc, char** argv)
     
     // --------------------------------------------------
     // speed tests
-    int SIZE[] = {
+    magma_int_t SIZE[] = {
         1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840,
         4096, 4352, 4608, 4864, 5120, 5376, 5632, 5888, 6144, 6400, 6656, 6912,
         7168, 7424, 7680, 7936, 8192, 8448, 8704, 8960, 9216, 9472, 9728, 9984
     };
-    int nsize = sizeof(SIZE) / sizeof(int);
+    magma_int_t nsize = sizeof(SIZE) / sizeof(magma_int_t);
     
     printf("\n  N      GPU MB/s (sec)\n");
     printf("========================================\n");
@@ -147,7 +146,7 @@ int main( int argc, char** argv)
         TESTING_DEVALLOC ( dB, cuFloatComplex, lda*n );
         
         // initialize matrices
-        int n2 = lda*n;
+        magma_int_t n2 = lda*n;
         lapackf77_clarnv( &ione, ISEED, &n2, hA );
         lapackf77_claset( "F", &n, &n, &c_zero, &c_zero, hB, &lda );
         magma_csetmatrix( n, n, hA, lda, dA, lda );
@@ -172,7 +171,7 @@ int main( int argc, char** argv)
         
         gpu_time = GetTimerValue( start, end ) * 1e-3;
         gpu_perf = n*n*sizeof(cuFloatComplex) / 1024. / 1024. / gpu_time;
-        printf( "%5d    %6.2f (%8.6f)\n", n, gpu_perf, gpu_time );
+        printf( "%5d    %6.2f (%8.6f)\n", (int) n, gpu_perf, gpu_time );
         
         TESTING_FREE   ( hA );
         TESTING_FREE   ( hB );

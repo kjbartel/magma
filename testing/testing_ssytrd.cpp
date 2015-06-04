@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
 
-       @generated s Tue May 15 18:18:24 2012
+       @generated s Thu Jun 28 12:31:48 2012
 
 */
 
@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -29,9 +28,9 @@
 // Flops formula
 #define PRECISION_s
 #if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_HETRD(n) + 2. * FADDS_HETRD(n))
+#define FLOPS(n) ( 6. * FMULS_SYTRD(n) + 2. * FADDS_SYTRD(n))
 #else
-#define FLOPS(n) (      FMULS_HETRD(n) +      FADDS_HETRD(n))
+#define FLOPS(n) (      FMULS_SYTRD(n) +      FADDS_SYTRD(n))
 #endif
 
 /* ////////////////////////////////////////////////////////////////////////////
@@ -71,7 +70,7 @@ int main( int argc, char** argv)
                 uplo = (char *)MagmaLowerStr;
         }
         if ( N > 0 )
-            printf("  testing_ssytrd -L|U -N %d\n\n", N);
+            printf("  testing_ssytrd -L|U -N %d\n\n", (int) N);
         else
         {
             printf("\nUsage: \n");
@@ -115,7 +114,6 @@ int main( int argc, char** argv)
 #endif
     }
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s   |A-QHQ'|/N|A|  |I-QQ'|/N \n");
     printf("=============================================================\n");
     for(i=0; i<10; i++){
@@ -149,7 +147,7 @@ int main( int argc, char** argv)
                      tau, h_work, lwork, &info);
         end = get_current_time();
         if ( info < 0 )
-            printf("Argument %d of magma_ssytrd had an illegal value\n", -info);
+            printf("Argument %d of magma_ssytrd had an illegal value\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start,end);
 
@@ -196,7 +194,7 @@ int main( int argc, char** argv)
         end = get_current_time();
 
         if (info < 0)
-            printf("Argument %d of lapackf77_ssytrd had an illegal value.\n", -info);
+            printf("Argument %d of lapackf77_ssytrd had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start,end);
 
@@ -205,11 +203,11 @@ int main( int argc, char** argv)
            =================================================================== */
         if ( checkres ) {
             printf("%5d   %6.2f        %6.2f       %e %e\n",
-                   N, cpu_perf, gpu_perf,
+                   (int) N, cpu_perf, gpu_perf,
                    result[0]*eps, result[1]*eps );
         } else {
             printf("%5d   %6.2f        %6.2f\n",
-                   N, cpu_perf, gpu_perf );
+                   (int) N, cpu_perf, gpu_perf );
         }
 
         if ( once )

@@ -1,26 +1,15 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:09 2012
+       @generated d Thu Jun 28 12:30:05 2012
 
 */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <stddef.h>
-#include <stdlib.h>
-#if defined(__GNUC__)
-#include <stdint.h>
-#endif /* __GNUC__ */
-#include <cuda.h>
-#include <cuda_runtime_api.h>
-#include <cublas.h>
-#include "magma.h"
+#include "common_magma.h"
 
 /* 
  * typedef comming from fortran.h file provided in $CUDADIR/src directory
@@ -64,13 +53,14 @@ typedef size_t devptr_t;
 #define MAGMAF_DGEHRD2 MAGMA_FORTRAN_NAME(dgehrd2, DGEHRD2)
 #define MAGMAF_DGEHRD  MAGMA_FORTRAN_NAME(dgehrd,  DGEHRD )
 #define MAGMAF_DGELQF  MAGMA_FORTRAN_NAME(dgelqf,  DGELQF )
-#define MAGMAF_ZGEQLF  MAGMA_FORTRAN_NAME(dgeqlf,  ZGEQLF )
+#define MAGMAF_DGEQLF  MAGMA_FORTRAN_NAME(dgeqlf,  DGEQLF )
 #define MAGMAF_DGEQRF  MAGMA_FORTRAN_NAME(dgeqrf,  DGEQRF )
 #define MAGMAF_DGESV   MAGMA_FORTRAN_NAME(dgesv,   DGESV  )
 #define MAGMAF_DGETRF  MAGMA_FORTRAN_NAME(dgetrf,  DGETRF )
+#define MAGMAF_DSYGST  MAGMA_FORTRAN_NAME(dsygst,  DSYGST )
 #define MAGMAF_DLATRD  MAGMA_FORTRAN_NAME(dlatrd,  DLATRD )
-#define MAGMAF_ZLAHR2  MAGMA_FORTRAN_NAME(dlahr2,  ZLAHR2 )
-#define MAGMAF_ZLAHRU  MAGMA_FORTRAN_NAME(dlahru,  ZLAHRU )
+#define MAGMAF_DLAHR2  MAGMA_FORTRAN_NAME(dlahr2,  DLAHR2 )
+#define MAGMAF_DLAHRU  MAGMA_FORTRAN_NAME(dlahru,  DLAHRU )
 #define MAGMAF_DPOSV   MAGMA_FORTRAN_NAME(dposv,   DPOSV  )
 #define MAGMAF_DPOTRF  MAGMA_FORTRAN_NAME(dpotrf,  DPOTRF )
 #define MAGMAF_DSYTRD  MAGMA_FORTRAN_NAME(dsytrd,  DSYTRD )
@@ -92,18 +82,19 @@ typedef size_t devptr_t;
 #define MAGMAF_DGEQRF3_GPU MAGMA_GPU_FORTRAN_NAME(dgeqrf3, DGEQRF3)
 #define MAGMAF_DGEQRS_GPU  MAGMA_GPU_FORTRAN_NAME(dgeqrs,  DGEQRS ) 
 #define MAGMAF_DGEQRS3_GPU MAGMA_GPU_FORTRAN_NAME(dgeqrs3, DGEQRS3) 
-#define MAGMAF_ZGESSM_GPU  MAGMA_GPU_FORTRAN_NAME(dgessm,  ZGESSM ) 
+#define MAGMAF_DGESSM_GPU  MAGMA_GPU_FORTRAN_NAME(dgessm,  DGESSM ) 
 #define MAGMAF_DGESV_GPU   MAGMA_GPU_FORTRAN_NAME(dgesv,   DGESV  )  
-#define MAGMAF_ZGETRL_GPU  MAGMA_GPU_FORTRAN_NAME(dgetrl,  ZGETRL ) 
+#define MAGMAF_DGETRL_GPU  MAGMA_GPU_FORTRAN_NAME(dgetrl,  DGETRL ) 
 #define MAGMAF_DGETRF_GPU  MAGMA_GPU_FORTRAN_NAME(dgetrf,  DGETRF ) 
 #define MAGMAF_DGETRS_GPU  MAGMA_GPU_FORTRAN_NAME(dgetrs,  DGETRS ) 
+#define MAGMAF_DSYGST_GPU  MAGMA_GPU_FORTRAN_NAME(dsygst,  DSYGST )
 #define MAGMAF_DLABRD_GPU  MAGMA_GPU_FORTRAN_NAME(dlabrd,  DLABRD ) 
 #define MAGMAF_DLARFB_GPU  MAGMA_GPU_FORTRAN_NAME(dlarfb,  DLARFB ) 
 #define MAGMAF_DPOSV_GPU   MAGMA_GPU_FORTRAN_NAME(dposv,   DPOSV  )  
 #define MAGMAF_DPOTRF_GPU  MAGMA_GPU_FORTRAN_NAME(dpotrf,  DPOTRF ) 
 #define MAGMAF_DPOTRS_GPU  MAGMA_GPU_FORTRAN_NAME(dpotrs,  DPOTRS ) 
-#define MAGMAF_ZSSSSM_GPU  MAGMA_GPU_FORTRAN_NAME(dssssm,  ZSSSSM ) 
-#define MAGMAF_ZTSTRF_GPU  MAGMA_GPU_FORTRAN_NAME(dtstrf,  ZTSTRF ) 
+#define MAGMAF_DSSSSM_GPU  MAGMA_GPU_FORTRAN_NAME(dssssm,  DSSSSM ) 
+#define MAGMAF_DTSTRF_GPU  MAGMA_GPU_FORTRAN_NAME(dtstrf,  DTSTRF ) 
 #define MAGMAF_DORGQR_GPU  MAGMA_GPU_FORTRAN_NAME(dorgqr,  DORGQR ) 
 #define MAGMAF_DORMQR_GPU  MAGMA_GPU_FORTRAN_NAME(dormqr,  DORMQR ) 
 
@@ -158,7 +149,7 @@ void MAGMAF_DGELQF( magma_int_t *m, magma_int_t *n,
                   work, *lwork, info);
 }
 
-void MAGMAF_ZGEQLF( magma_int_t *m, magma_int_t *n, 
+void MAGMAF_DGEQLF( magma_int_t *m, magma_int_t *n, 
                     double *A,    magma_int_t *lda,   double *tau, 
                     double *work, magma_int_t *lwork, magma_int_t *info)
 {
@@ -195,6 +186,13 @@ void MAGMAF_DGETRF( magma_int_t *m, magma_int_t *n, double *A,
                   info);
 }
 
+void MAGMAF_DSYGST( magma_int_t *itype, char *uplo, magma_int_t *n,
+                    double *A, magma_int_t *lda,
+                    double *B, magma_int_t *ldb, magma_int_t *info )
+{
+    magma_dsygst( *itype, *uplo, *n, A, *lda, B, *ldb, info );
+}
+
 // void MAGMAF_DLATRD( char *uplo, magma_int_t *n, magma_int_t *nb, double *a, 
 //                     magma_int_t *lda, double *e, double *tau, 
 //                     double *w, magma_int_t *ldw,
@@ -209,7 +207,7 @@ void MAGMAF_DGETRF( magma_int_t *m, magma_int_t *n, double *A,
 // }
 
   /* This has nothing to do here, it should be a GPU function */
-// void MAGMAF_ZLAHR2( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 
+// void MAGMAF_DLAHR2( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 
 //                     double *da, double *dv, double *a, 
 //                     magma_int_t *lda, double *tau, double *t, 
 //                     magma_int_t *ldt, double *y, magma_int_t *ldy)
@@ -220,7 +218,7 @@ void MAGMAF_DGETRF( magma_int_t *m, magma_int_t *n, double *A,
 //                   *ldt, y, *ldy);
 // }
 
-// void MAGMAF_ZLAHRU( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 
+// void MAGMAF_DLAHRU( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 
 //                     double *a, magma_int_t *lda, 
 //                     double *da, double *y, 
 //                     double *v, double *t, 
@@ -508,7 +506,7 @@ void MAGMAF_DGEQRS3_GPU(magma_int_t *m, magma_int_t *n, magma_int_t *nrhs,
                       hwork, *lhwork,  info);
 }
 
-void MAGMAF_ZGESSM_GPU( char *storev, magma_int_t *m, magma_int_t *n, magma_int_t *k, magma_int_t *ib, 
+void MAGMAF_DGESSM_GPU( char *storev, magma_int_t *m, magma_int_t *n, magma_int_t *k, magma_int_t *ib, 
                         magma_int_t *ipiv, 
                         devptr_t *dL1, magma_int_t *lddl1, 
                         devptr_t *dL,  magma_int_t *lddl, 
@@ -545,6 +543,15 @@ void MAGMAF_DGETRS_GPU( char *trans, magma_int_t *n, magma_int_t *nrhs,
     magma_dgetrs_gpu( trans[0], *n, *nrhs,  
                       DEVPTR(dA), *ldda, ipiv,  
                       DEVPTR(dB), *lddb, info);
+}
+
+void MAGMAF_DSYGST_GPU( magma_int_t *itype, char *uplo, magma_int_t *n,
+                        devptr_t *dA, magma_int_t *ldda,
+                        devptr_t *dB, magma_int_t *lddb, magma_int_t *info )
+{
+    magma_dsygst_gpu( *itype, *uplo, *n,
+                      DEVPTR(dA), *ldda,
+                      DEVPTR(dB), *lddb, info );
 }
 
 void MAGMAF_DLABRD_GPU( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 
@@ -594,7 +601,7 @@ void MAGMAF_DPOTRS_GPU( char *uplo,  magma_int_t *n, magma_int_t *nrhs,
                       DEVPTR(dB), *lddb, info);
 }
 
-void MAGMAF_ZSSSSM_GPU( char *storev, magma_int_t *m1, magma_int_t *n1, 
+void MAGMAF_DSSSSM_GPU( char *storev, magma_int_t *m1, magma_int_t *n1, 
                         magma_int_t *m2, magma_int_t *n2, magma_int_t *k, magma_int_t *ib, 
                         devptr_t *dA1, magma_int_t *ldda1, 
                         devptr_t *dA2, magma_int_t *ldda2, 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:03 2012
+       @generated c Thu Jun 28 12:31:17 2012
 
 */
 #include "common_magma.h"
@@ -728,8 +728,8 @@ extern "C" void clanhe_max (char uplo, int m, cuFloatComplex *A , int lda , floa
 }
  
 extern "C" float 
-magmablas_clanhe(char norm, char uplo, int n, 
-                 cuFloatComplex *A, int lda, float *WORK )
+magmablas_clanhe(char norm, char uplo, magma_int_t n, 
+                 cuFloatComplex *A, magma_int_t lda, float *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {

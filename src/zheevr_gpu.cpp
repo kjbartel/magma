@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
        @author Raffaele Solca
 
@@ -25,17 +25,17 @@ extern "C" {
                          isuppz, tryrac, work, lwork, iwork, liwork, info);
     }
 
-    void Mylapackf77_zstein(int *n, double *d, double *e, int *m, double *w, int *iblock,
-                            int *isplit, cuDoubleComplex *z, int *ldz, double *work, 
-                            int *iwork, int *ifail, int *info)
+    void Mylapackf77_zstein(magma_int_t *n, double *d, double *e, magma_int_t *m, double *w, magma_int_t *iblock,
+                            magma_int_t *isplit, cuDoubleComplex *z, magma_int_t *ldz, double *work, 
+                            magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
     {
         lapackf77_zstein(n, d, e, m, w, iblock, isplit, z, ldz, work, iwork, ifail, info);
     }
   
-    void Mylapackf77_dstebz(const char *range, const char *order, int *n, double *vl, 
-                            double *vu, int *il, int *iu, double *abstol,
-                            double *d, double *e, int *m, int *nsplit, double *w, 
-                            int *iblock, int *isplit, double *work, int *iwork, int *info)
+    void Mylapackf77_dstebz(const char *range, const char *order, magma_int_t *n, double *vl, 
+                            double *vu, magma_int_t *il, magma_int_t *iu, double *abstol,
+                            double *d, double *e, magma_int_t *m, magma_int_t *nsplit, double *w, 
+                            magma_int_t *iblock, magma_int_t *isplit, double *work, magma_int_t *iwork, magma_int_t *info)
     {
         lapackf77_dstebz(range, order, n, vl, vu, il, iu, abstol, d, e, m,
                          nsplit, w, iblock, isplit, work, iwork,info);
@@ -62,11 +62,11 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
                  double *rwork, magma_int_t lrwork, magma_int_t *iwork, 
                  magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
    
     Purpose   
     =======
@@ -279,30 +279,30 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
   char jobz_[2] = {jobz, 0};
   char range_[2] = {range, 0};
   
-  static magma_int_t ione = 1;
-  static float szero = 0.;
-  static float sone = 1.;
+  magma_int_t ione = 1;
+  float szero = 0.;
+  float sone = 1.;
   
-  static magma_int_t indrd, indre;
-  static magma_int_t imax;
-  static magma_int_t lopt, itmp1, indree, indrdd;
-  static magma_int_t lower, wantz, tryrac;
-  static magma_int_t i, j, jj, i__1;
-  static magma_int_t alleig, valeig, indeig;
-  static magma_int_t iscale, indibl, indifl;
-  static magma_int_t indiwo, indisp, indtau;
-  static magma_int_t indrwk, indwk;
-  static magma_int_t llwork, llrwork, nsplit;
-  static magma_int_t lquery, ieeeok;
-  static magma_int_t iinfo;
-  static magma_int_t lwmin, lrwmin, liwmin;
-  static double safmin;
-  static double bignum;
-  static double smlnum;
-  static double eps, tmp1;
-  static double anrm;
-  static double sigma, d__1;
-  static double rmin, rmax;
+  magma_int_t indrd, indre;
+  magma_int_t imax;
+  magma_int_t lopt, itmp1, indree, indrdd;
+  magma_int_t lower, wantz, tryrac;
+  magma_int_t i, j, jj, i__1;
+  magma_int_t alleig, valeig, indeig;
+  magma_int_t iscale, indibl, indifl;
+  magma_int_t indiwo, indisp, indtau;
+  magma_int_t indrwk, indwk;
+  magma_int_t llwork, llrwork, nsplit;
+  magma_int_t lquery, ieeeok;
+  magma_int_t iinfo;
+  magma_int_t lwmin, lrwmin, liwmin;
+  double safmin;
+  double bignum;
+  double smlnum;
+  double eps, tmp1;
+  double anrm;
+  double sigma, d__1;
+  double rmin, rmax;
   double *dwork;
 
   lower = lapackf77_lsame(uplo_, MagmaLowerStr);
@@ -535,7 +535,7 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
       imax = *info - 1;
     }
     d__1 = 1. / sigma;
-    dscal_(&imax, &d__1, &w[1], &ione);
+    blasf77_dscal(&imax, &d__1, &w[1], &ione);
   }
   
   /*     If eigenvalues are not in order, then sort them, along with   

@@ -1,11 +1,11 @@
 !
-!   -- MAGMA (version 1.2.0) --
+!   -- MAGMA (version 1.2.1) --
 !      Univ. of Tennessee, Knoxville
 !      Univ. of California, Berkeley
 !      Univ. of Colorado, Denver
-!      May 2012
+!      June 2012
 !
-!   @generated c Tue May 15 18:17:09 2012
+!   @generated c Thu Jun 28 12:30:06 2012
 !
 
 #define PRECISION_c
@@ -125,6 +125,17 @@ module magma_cfortran
        integer       :: ipiv(*)
        integer       :: info
      end subroutine magmaf_cgetrf
+
+     subroutine magmaf_chegst( itype, uplo, n, A, lda, B, ldb, info)
+       integer       :: itype
+       character     :: uplo
+       integer       :: n
+       complex    :: A(*)
+       integer       :: lda
+       complex    :: B(*)
+       integer       :: ldb
+       integer       :: info
+     end subroutine magmaf_chegst
 
      subroutine magmaf_cposv(  uplo, n, nrhs, dA, ldda, dB, lddb, info)
        character     :: uplo
@@ -448,6 +459,17 @@ module magma_cfortran
        integer       :: lddb
        integer       :: info
      end subroutine magmaf_cgetrs_gpu
+
+     subroutine magmaf_chegst_gpu( itype, uplo, n, dA, ldda, dB, lddb, info)
+       integer       :: itype
+       character     :: uplo
+       integer       :: n
+       magma_devptr_t:: dA(*)
+       integer       :: ldda
+       magma_devptr_t:: dB(*)
+       integer       :: lddb
+       integer       :: info
+     end subroutine magmaf_chegst_gpu
 
      subroutine magmaf_clabrd_gpu( m, n, nb, a, lda, da, ldda, d, e, tauq, taup, x, ldx, dx, lddx, y, ldy, dy, lddy)
        integer       :: m

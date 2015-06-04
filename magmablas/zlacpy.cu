@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -39,9 +39,9 @@ zlacpy_kernel( int m, int n,
 
 
 extern "C" void 
-magmablas_zlacpy( char uplo, int m, int n,
-                  cuDoubleComplex *A, int lda,
-                  cuDoubleComplex *B, int ldb )
+magmablas_zlacpy( char uplo, magma_int_t m, magma_int_t n,
+                  cuDoubleComplex *A, magma_int_t lda,
+                  cuDoubleComplex *B, magma_int_t ldb )
 {
 /*
     Note

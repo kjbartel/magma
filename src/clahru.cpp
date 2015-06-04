@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:39 2012
+       @generated c Thu Jun 28 12:31:05 2012
 
 */
 #include "common_magma.h"
@@ -29,11 +29,11 @@ magma_clahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
-    ZLAHRU is an auxiliary MAGMA routine that is used in CGEHRD to update
+    CLAHRU is an auxiliary MAGMA routine that is used in CGEHRD to update
     the trailing sub-matrices after the reductions of the corresponding
     panels.
     See further details below.

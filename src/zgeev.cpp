@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> c
 
@@ -29,11 +29,11 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
             cuDoubleComplex *work, magma_int_t lwork,
             double *rwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -136,11 +136,11 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
     magma_int_t scalea;
     double cscale;
     magma_int_t select[1];
-    static double bignum;
+    double bignum;
     magma_int_t minwrk;
     magma_int_t wantvl;
-    static double smlnum;
-    static magma_int_t irwork;
+    double smlnum;
+    magma_int_t irwork;
     magma_int_t lquery, wantvr;
     magma_int_t nb = 0;
     cuDoubleComplex *dT = NULL;

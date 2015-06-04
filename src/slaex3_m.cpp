@@ -1,14 +1,12 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
-    @generated s Tue May 15 18:17:50 2012
+    @generated s Thu Jun 28 12:30:57 2012
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
 #include <cblas.h>
 
@@ -79,7 +77,7 @@ magma_slaex3_m(magma_int_t nrgpu,
                float* q, magma_int_t ldq, float rho,
                float* dlamda, float* q2, magma_int_t* indx,
                magma_int_t* ctot, float* w, float* s, magma_int_t* indxq,
-               float** dwork, cudaStream_t stream[N_MAX_GPU][2],
+               float** dwork, cudaStream_t stream[MagmaMaxGPUs][2],
                char range, float vl, float vu, magma_int_t il, magma_int_t iu,
                magma_int_t* info )
 {
@@ -87,9 +85,9 @@ magma_slaex3_m(magma_int_t nrgpu,
      Purpose
      =======
 
-     DLAEX3 finds the roots of the secular equation, as defined by the
+     SLAEX3 finds the roots of the secular equation, as defined by the
      values in D, W, and RHO, between 1 and K.  It makes the
-     appropriate calls to DLAED4 and then updates the eigenvectors by
+     appropriate calls to SLAED4 and then updates the eigenvectors by
      multiplying the matrix of eigenvectors of the pair of eigensystems
      being combined by the matrix of eigenvectors of the K-by-K system
      which is solved here.
@@ -111,7 +109,7 @@ magma_slaex3_m(magma_int_t nrgpu,
 
      K       (input) INTEGER
      The number of terms in the rational function to be solved by
-     DLAED4.  K >= 0.
+     SLAED4.  K >= 0.
 
      N       (input) INTEGER
      The number of rows and columns in the Q matrix.
@@ -150,8 +148,8 @@ magma_slaex3_m(magma_int_t nrgpu,
 
      INDX    (input) INTEGER array, dimension (N)
      The permutation used to arrange the columns of the deflated
-     Q matrix into three groups (see DLAED2).
-     The rows of the eigenvectors found by DLAED4 must be likewise
+     Q matrix into three groups (see SLAED2).
+     The rows of the eigenvectors found by SLAED4 must be likewise
      permuted before the matrix multiply can take place.
 
      CTOT    (input) INTEGER array, dimension (4)
@@ -183,7 +181,7 @@ magma_slaex3_m(magma_int_t nrgpu,
      NB * ((N-N1) + (N-N1) / floor(nrgpu/2))
 
      STREAM (device stream) cudaStream_t array,
-     dimension (N_MAX_GPU,2)
+     dimension (MagmaMaxGPUs,2)
 
      INFO    (output) INTEGER
      = 0:  successful exit.
@@ -215,7 +213,7 @@ magma_slaex3_m(magma_int_t nrgpu,
 
     magma_int_t iil, iiu, rk;
     magma_int_t n1_loc, n2_loc, ib, nb, ib2, igpu;
-    magma_int_t ni_loc[N_MAX_GPU];
+    magma_int_t ni_loc[MagmaMaxGPUs];
 
     magma_int_t i,ind,iq2,j,n12,n2,n23,tmp,lq2;
     float temp;
@@ -274,10 +272,10 @@ magma_slaex3_m(magma_int_t nrgpu,
      (we know of none). We use a subroutine call to compute
      2*DLAMBDA(I) to prevent optimizing compilers from eliminating
      this code.*/
-    float *dwS[2][N_MAX_GPU], *dwQ[2][N_MAX_GPU], *dwQ2[N_MAX_GPU];
+    float *dwS[2][MagmaMaxGPUs], *dwQ[2][MagmaMaxGPUs], *dwQ2[MagmaMaxGPUs];
 //#define CHECK_CPU
 #ifdef CHECK_CPU
-    float *hwS[2][N_MAX_GPU], *hwQ[2][N_MAX_GPU], *hwQ2[N_MAX_GPU];
+    float *hwS[2][MagmaMaxGPUs], *hwQ[2][MagmaMaxGPUs], *hwQ2[MagmaMaxGPUs];
 #endif
     n2 = n - n1;
 
@@ -295,18 +293,18 @@ magma_slaex3_m(magma_int_t nrgpu,
     if (n1 >= magma_get_slaex3_m_k()){
         for (igpu = 0; igpu < nrgpu; ++igpu){
 #ifdef CHECK_CPU
-            magma_malloc_host( &(hwS[0][igpu]), n2*nb, sizeof(float) );
-            magma_malloc_host( &(hwS[1][igpu]), n2*nb, sizeof(float) );
-            magma_malloc_host( &(hwQ2[igpu]), n2*n2_loc, sizeof(float) );
-            magma_malloc_host( &(hwQ[0][igpu]), n2_loc*nb, sizeof(float) );
-            magma_malloc_host( &(hwQ[1][igpu]), n2_loc*nb, sizeof(float) );
+            magma_smalloc_pinned( &(hwS[0][igpu]), n2*nb );
+            magma_smalloc_pinned( &(hwS[1][igpu]), n2*nb );
+            magma_smalloc_pinned( &(hwQ2[igpu]), n2*n2_loc );
+            magma_smalloc_pinned( &(hwQ[0][igpu]), n2_loc*nb );
+            magma_smalloc_pinned( &(hwQ[1][igpu]), n2_loc*nb );
 #endif
 /*            magma_setdevice(igpu);
-            magma_malloc( &(dwS[0][igpu]), n2*nb, sizeof(float) );
-            magma_malloc( &(dwS[1][igpu]), n2*nb, sizeof(float) );
-            magma_malloc( &(dwQ2[igpu]), n2*n2_loc, sizeof(float) );
-            magma_malloc( &(dwQ[0][igpu]), n2_loc*nb, sizeof(float) );
-            magma_malloc( &(dwQ[1][igpu]), n2_loc*nb, sizeof(float) );
+            magma_smalloc( &(dwS[0][igpu]), n2*nb );
+            magma_smalloc( &(dwS[1][igpu]), n2*nb );
+            magma_smalloc( &(dwQ2[igpu]), n2*n2_loc );
+            magma_smalloc( &(dwQ[0][igpu]), n2_loc*nb );
+            magma_smalloc( &(dwQ[1][igpu]), n2_loc*nb );
 */        }
         for (igpu = 0; igpu < nrgpu-1; igpu += 2){
             ni_loc[igpu] = min(n1_loc, n1 - igpu/2 * n1_loc);
@@ -579,11 +577,11 @@ magma_slaex3_m(magma_int_t nrgpu,
             }
             for (igpu = 0; igpu < nrgpu; ++igpu){
 #ifdef CHECK_CPU
-                magma_free_host( hwS[1][igpu] );
-                magma_free_host( hwS[0][igpu] );
-                magma_free_host( hwQ2[igpu] );
-                magma_free_host( hwQ[1][igpu] );
-                magma_free_host( hwQ[0][igpu] );
+                magma_free_pinned( hwS[1][igpu] );
+                magma_free_pinned( hwS[0][igpu] );
+                magma_free_pinned( hwQ2[igpu] );
+                magma_free_pinned( hwQ[1][igpu] );
+                magma_free_pinned( hwQ[0][igpu] );
 #endif
                 magma_setdevice(igpu);
                 magmablasSetKernelStream(NULL);

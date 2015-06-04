@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:46 2012
+       @generated c Thu Jun 28 12:30:54 2012
        
  */
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
              float *w, cuFloatComplex *z, magma_int_t ldz, cuFloatComplex *work, magma_int_t lwork,
              float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
    
     Purpose   
     =======   
@@ -92,10 +92,10 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
             by reducing A to tridiagonal form.   
 
             Eigenvalues will be computed most accurately when ABSTOL is   
-            set to twice the underflow threshold 2*DLAMCH('S'), not zero.   
+            set to twice the underflow threshold 2*SLAMCH('S'), not zero.   
             If this routine returns with INFO>0, indicating that some   
             eigenvectors did not converge, try setting ABSTOL to   
-            2*DLAMCH('S').   
+            2*SLAMCH('S').   
 
             See "Computing Small Singular Values of Bidiagonal Matrices   
             with Guaranteed High Relative Accuracy," by Demmel and   
@@ -163,29 +163,29 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
   char jobz_[2] = {jobz, 0};
   char range_[2] = {range, 0};
 
-  static magma_int_t izero = 0;
-  static magma_int_t ione = 1;
+  magma_int_t izero = 0;
+  magma_int_t ione = 1;
   
-  static char order[1];
-  static magma_int_t indd, inde;
-  static magma_int_t imax;
-  static magma_int_t lopt, itmp1, indee;
-  static magma_int_t lower, wantz;
-  static magma_int_t i, j, jj, i__1;
-  static magma_int_t alleig, valeig, indeig;
-  static magma_int_t iscale, indibl;
-  static magma_int_t indiwk, indisp, indtau;
-  static magma_int_t indrwk, indwrk;
-  static magma_int_t llwork, nsplit;
-  static magma_int_t lquery;
-  static magma_int_t iinfo;
-  static float safmin;
-  static float bignum;
-  static float smlnum;
-  static float eps, tmp1;
-  static float anrm;
-  static float sigma, d__1;
-  static float rmin, rmax;
+  char order[1];
+  magma_int_t indd, inde;
+  magma_int_t imax;
+  magma_int_t lopt, itmp1, indee;
+  magma_int_t lower, wantz;
+  magma_int_t i, j, jj, i__1;
+  magma_int_t alleig, valeig, indeig;
+  magma_int_t iscale, indibl;
+  magma_int_t indiwk, indisp, indtau;
+  magma_int_t indrwk, indwrk;
+  magma_int_t llwork, nsplit;
+  magma_int_t lquery;
+  magma_int_t iinfo;
+  float safmin;
+  float bignum;
+  float smlnum;
+  float eps, tmp1;
+  float anrm;
+  float sigma, d__1;
+  float rmin, rmax;
 
   
   /* Function Body */
@@ -317,8 +317,8 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
 
   
   /*     If all eigenvalues are desired and ABSTOL is less than or equal to   
-   zero, then call DSTERF or ZUNGTR and ZSTEQR.  If this fails for   
-   some eigenvalue, then try DSTEBZ. */
+   zero, then call SSTERF or CUNGTR and CSTEQR.  If this fails for   
+   some eigenvalue, then try SSTEBZ. */
   
   if ((alleig || indeig && il == 1 && iu == n) && abstol <= 0.) {
     blasf77_scopy(&n, &rwork[indd], &ione, &w[1], &ione);
@@ -344,7 +344,7 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
     }
   }
 
-  /*     Otherwise, call DSTEBZ and, if eigenvectors are desired, ZSTEIN. */
+  /*     Otherwise, call SSTEBZ and, if eigenvectors are desired, CSTEIN. */
   if (*m == 0) {
     *info = 0;
     if (wantz) {
@@ -363,7 +363,7 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
                        z, &ldz, &rwork[indrwk], &iwork[indiwk], &ifail[1], info);
       
       /*        Apply unitary matrix used in reduction to tridiagonal   
-       form to eigenvectors returned by ZSTEIN. */
+       form to eigenvectors returned by CSTEIN. */
       magma_cunmtr(MagmaLeft, uplo, MagmaNoTrans, n, *m, a, lda, &work[indtau],
                    z, ldz, &work[indwrk], llwork, &iinfo);
     }
@@ -376,7 +376,7 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
       imax = *info - 1;
     }
     d__1 = 1. / sigma;
-    sscal_(&imax, &d__1, &w[1], &ione);
+    blasf77_sscal(&imax, &d__1, &w[1], &ione);
   }
   
   /*     If eigenvalues are not in order, then sort them, along with   

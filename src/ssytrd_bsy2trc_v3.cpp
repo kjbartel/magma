@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Azzam Haidar
        @author Stan Tomov
 
-       @generated s Tue May 15 18:17:54 2012
+       @generated s Thu Jun 28 12:30:59 2012
 
 */
 #include "common_magma.h"
@@ -37,18 +37,18 @@ extern "C" void    mydlarft_(const char *direct, const char *storev, magma_int_t
 #endif
 
 #if defined(PRECISION_z) || defined(PRECISION_d)
-extern "C" void cmp_vals(int n, float *wr1, float *wr2, float *nrmI, float *nrm1, float *nrm2);
-extern "C" void scheck_eig_(char *JOBZ, int  *MATYPE, int  *N, int  *NB,
-                       float* A, int  *LDA, float *AD, float *AE, float *D1, float *EIG,
-                    float *Z, int  *LDZ, float *WORK, float *RWORK, float *RESU);
+extern "C" void cmp_vals(magma_int_t n, float *wr1, float *wr2, float *nrmI, float *nrm1, float *nrm2);
+extern "C" void scheck_eig_(char *JOBZ, magma_int_t  *MATYPE, magma_int_t  *N, magma_int_t  *NB,
+                       float* A, magma_int_t  *LDA, float *AD, float *AE, float *D1, float *EIG,
+                    float *Z, magma_int_t  *LDZ, float *WORK, float *RWORK, float *RESU);
 #endif
 
 
 extern "C"  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
-extern "C"  void tile_bulge_applyQ_cpu(int WANTZ, char SIDE, int N, int NB, int Vblksiz, float *E, int LDE, float *V, float *TAU, float *T, int *INFO);
+extern "C"  void tile_bulge_applyQ_cpu(magma_int_t WANTZ, char SIDE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, float *E, magma_int_t LDE, float *V, float *TAU, float *T, magma_int_t *INFO);
 
-static void barrier(magma_int_t my_core_id, magma_int_t cores_num);
-static void  *parallel_section(void *thread_id);
+static void barrier(int my_core_id, int cores_num);
+static void *parallel_section(void *thread_id);
 static void *applyQ_parallel_section(void *thread_id);
 static void tile_bulge_parallel(int my_core_id);
 static void tile_bulge_computeT_parallel(int my_core_id);
@@ -70,12 +70,12 @@ extern "C" void TRD_type3cHLsym_withQ(int N, int NB, float *A, int LDA, float *V
 #define magma_sgemm                                 magmablas_dgemm
 */
 
-extern "C" void magma_strdtype1cbHLsym_withQ(int N, int NB, float *A, int LDA, float *V, float *TAU, int st, int ed, int sweep, int Vblksiz);
-extern "C" void magma_strdtype2cbHLsym_withQ(int N, int NB, float *A, int LDA, float *V, float *TAU, int st, int ed, int sweep, int Vblksiz);
-extern "C" void magma_strdtype3cbHLsym_withQ(int N, int NB, float *A, int LDA, float *V, float *TAU, int st, int ed, int sweep, int Vblksiz);
-extern "C" void magma_sbulge_applyQ(int WANTZ, char SIDE, int NE, int N, int NB, int Vblksiz, float *E, int LDE, float *V, float *TAU, float *T, int *INFO, float *dV, float *dT, float *dE, int copytype );
-extern "C" void  magma_sstedc_withZ(char JOBZ, int N, float *D, float * E, float *Z, int LDZ);
-extern "C" void  magma_sstedx_withZ(int N, int NE, float *D, float * E, float *Z, int LDZ);
+extern "C" void magma_strdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_strdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_strdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_sbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, float *E, magma_int_t LDE, float *V, float *TAU, float *T, magma_int_t *INFO, float *dV, float *dT, float *dE, magma_int_t copytype );
+extern "C" void magma_sstedc_withZ(char JOBZ, magma_int_t N, float *D, float * E, float *Z, magma_int_t LDZ);
+extern "C" void magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, float * E, float *Z, magma_int_t LDZ);
 
 
 extern "C" magma_int_t
@@ -89,9 +89,9 @@ magma_sorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 ////////////////////////////////////////////////////////////////////////////////////////////////////          
 // define globals ONLY in the z file, and declare them extern in [sdc] files.
 #if defined(PRECISION_z)
-    volatile magma_int_t barrier_in[MAX_THREADS_BLG];
-    volatile magma_int_t barrier_out[MAX_THREADS_BLG];
-    volatile magma_int_t *ss_prog;
+    volatile int barrier_in[MAX_THREADS_BLG];
+    volatile int barrier_out[MAX_THREADS_BLG];
+    volatile int *ss_prog;
     // rest are declared extern in [sdcz]bulge_inc.h header; define them here.
     struct gbstrct_blg core_in_all;
     int           event_numblg        [MAX_THREADS_BLG]                 __attribute__ ((aligned (128)));
@@ -100,15 +100,15 @@ magma_sorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     real_Double_t event_logblg        [MAX_THREADS_BLG][MAX_EVENTSBLG]  __attribute__ ((aligned (128)));
     int           log_eventsblg;
 #else
-    extern volatile magma_int_t barrier_in[MAX_THREADS_BLG];
-    extern volatile magma_int_t barrier_out[MAX_THREADS_BLG];
-    extern volatile magma_int_t *ss_prog;
+    extern volatile int barrier_in[MAX_THREADS_BLG];
+    extern volatile int barrier_out[MAX_THREADS_BLG];
+    extern volatile int *ss_prog;
 #endif
 
-static void barrier(magma_int_t my_core_id, magma_int_t cores_num);
-static void barrier(magma_int_t my_core_id, magma_int_t cores_num)
+static void barrier(int my_core_id, int cores_num);
+static void barrier(int my_core_id, int cores_num)
 {
-    magma_int_t core;
+    int core;
     
     if (my_core_id == 0)    {
         for (core = 1; core < cores_num; core++)
@@ -129,7 +129,7 @@ static void barrier(magma_int_t my_core_id, magma_int_t cores_num)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////          
 /* START CODE */
-extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, int NE, int N, int NB, float *A1, int LDA1, float *D2, float *E2, float *dT1, int LDT1)
+extern "C" magma_int_t magma_ssytrd_bsy2trc( magma_int_t THREADS, magma_int_t WANTZ, char uplo, magma_int_t NE, magma_int_t N, magma_int_t NB, float *A1, magma_int_t LDA1, float *D2, float *E2, float *dT1, magma_int_t LDT1)
 {
     char uplo_[2] = {uplo, 0};
     real_Double_t timelpk=0.0,tconvert=0.0,timeaplQ1=0.0,timeaplQ2=0.0,timeblg=0.0, timeaplQ=0.0, timeeigen=0.0, timegemm=0.0;
@@ -139,20 +139,20 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
     float c_one  = MAGMA_S_ONE;
 
     
-    int mklth, thread, INFO;
-    int Vblksiz=-1, blkcnt=-1, LDV=-1, LDT =-1, INgrsiz=1, LDE=-1, BAND=6;
+    magma_int_t mklth, thread, INFO;
+    magma_int_t Vblksiz=-1, blkcnt=-1, LDV=-1, LDT =-1, INgrsiz=1, LDE=-1, BAND=6;
     Vblksiz = min(NB,48); //NB; //min(NB,64);
     LDT     = Vblksiz;
     findVTsiz(N, NB, Vblksiz, &blkcnt, &LDV);
 
-    int i,j;
-    int NBTILES, LDA2;
+    magma_int_t i,j;
+    magma_int_t NBTILES, LDA2;
     i = N/NB;
     NBTILES = i*NB==N ? i:i+1;
 
-    int overlapQ1   = 1;
-    int usemulticpu = 1;
-    int N_CPU=0,N_GPU=N;
+    magma_int_t overlapQ1   = 1;
+    magma_int_t usemulticpu = 1;
+    magma_int_t N_CPU=0,N_GPU=N;
 
     //if(N<4000)
      //       usemulticpu =0;
@@ -168,11 +168,11 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
     /* A1 is equal to A2 */
     LDA2 = NB+1+(NB-1);
     if(LDA2>N){
-            printf("error matrix too small N=%d NB=%d\n",N,NB);
+            printf("error matrix too small N=%d NB=%d\n", (int) N, (int) NB);
             return -14;
     }
     if((N<=0)||(NB<=0)){
-            printf("error N or NB <0 N=%d NB=%d\n",N,NB);
+            printf("error N or NB <0 N=%d NB=%d\n", (int) N, (int) NB);
             return -14;
     }
 
@@ -270,7 +270,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
     char JOBZ;
     float *D1;
     float *AINIT;
-    int MM,NN,LDAINIT;
+    magma_int_t MM,NN,LDAINIT;
     if(CHECK)
     {
         MM=NB+1;
@@ -392,7 +392,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
      * not necessary real. we have to make off-diagonal
      * elements real and copy them to E.
      * When using HouseHolder elimination,
-     * the ZLARFG give us a real as output so, all the
+     * the SLARFG give us a real as output so, all the
      * diagonal/off-diagonal element except the last one are already
      * real and thus we need only to take the abs of the last
      * one.
@@ -508,7 +508,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
         mkl_set_num_threads( 1 );
 #endif
         timelpk = get_time_azz()-timelpk;
-        printf("  Finish WANTZ %d  eigensolver 'N'    timing= %f  threads %d \n" ,WANTZ, timelpk, i);
+        printf("  Finish WANTZ %d  eigensolver 'N'    timing= %f  threads %d \n", (int) WANTZ, timelpk, (int) i);
         /*
         for(i=0;i<10;i++)
                 printf(" voici D[%d] %e\n",i,D2[i]);*/
@@ -693,7 +693,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
                    magma_sgetmatrix( N_CPU, LDA1,
                                      da+(N_GPU), LDA1,
                                      A1+(N_GPU), LDA1 );
-                   printf("---> calling GPU + CPU(if N_CPU>0) to apply V2 to Z with NE %d     N_GPU %d   N_CPU %d\n",NE, N_GPU, N_CPU); 
+                   printf("---> calling GPU + CPU(if N_CPU>0) to apply V2 to Z with NE %d     N_GPU %d   N_CPU %d\n", (int) NE, (int) N_GPU, (int) N_CPU); 
                    core_in_all.SIDE      = 'R';
                    core_in_all.E         = A1;
                    core_in_all.E_CPU     = A1+(N_GPU);
@@ -805,7 +805,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
                            N_GPU = NE;
                            N_CPU = 0;
                    }
-                   printf("---> calling GPU + CPU(if N_CPU>0) to apply V2 to Z with NE %d     N_GPU %d   N_CPU %d\n",NE, N_GPU, N_CPU); 
+                   printf("---> calling GPU + CPU(if N_CPU>0) to apply V2 to Z with NE %d     N_GPU %d   N_CPU %d\n", (int) NE, (int) N_GPU, (int) N_CPU); 
                    core_in_all.SIDE      = 'L';
                    core_in_all.E         = Z;
                    core_in_all.E_CPU     = Z+(N_GPU*LDZ);
@@ -878,7 +878,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
 
            if(WANTZ==5){
                if(NE!=N){
-                   printf("WANTZ=5 is not supported with NE=%d it compute all the eigenvectors meaning that NE=N\n", NE);
+                   printf("WANTZ=5 is not supported with NE=%d it compute all the eigenvectors meaning that NE=N\n", (int) NE);
                    exit(-2);
                }
                timeaplQ2 = get_time_azz();
@@ -947,14 +947,14 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
 
        timeeigen = get_time_azz()-timeeigen;
        printf("============================================================================\n");
-       printf("  Finish WANTZ %d  computing Q2       timing= %f \n" ,WANTZ, timeaplQ2);
+       printf("  Finish WANTZ %d  computing Q2       timing= %f \n", (int) WANTZ, timeaplQ2);
        if(WANTZ!=5){
-           printf("  Finish WANTZ %d  making gemm        timing= %f \n" ,WANTZ, timegemm);
-           printf("  Finish WANTZ %d  eigensolver 'I'    timing= %f  threads %d   N %d    NE %d\n" ,WANTZ, timelpk, mklth, N, NE);
+           printf("  Finish WANTZ %d  making gemm        timing= %f \n", (int) WANTZ, timegemm);
+           printf("  Finish WANTZ %d  eigensolver 'I'    timing= %f  threads %d   N %d    NE %d\n", (int) WANTZ, timelpk, (int) mklth, (int) N, (int) NE);
        }else{
-           printf("  Finish WANTZ %d  eigensolver 'V'    timing= %f  threads %d   N %d    NE %d \n" ,WANTZ, timelpk, mklth, N, NE);
+           printf("  Finish WANTZ %d  eigensolver 'V'    timing= %f  threads %d   N %d    NE %d \n", (int) WANTZ, timelpk, (int) mklth, (int) N, (int) NE);
        }
-       printf("  Finish WANTZ %d  full Eigenvectros  timing= %f  \n",WANTZ, timeeigen);
+       printf("  Finish WANTZ %d  full Eigenvectros  timing= %f  \n",(int) WANTZ, timeeigen);
        printf("============================================================================\n");
     }
 
@@ -1022,7 +1022,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
         lapackf77_ssbtrd("N", "L", &N, &NB, ALPK, &LDAINIT, D1, E1, WORK, &N, WORK, &INFO); 
         timelpk = get_time_azz() - timelpk;
         printf("\n");                
-        printf("  Time DSBTRD-MKL-LAPACK                      :   %f    N : %10d    NB : %10d \n\n\n",timelpk, N, NB );
+        printf("  Time SSBTRD-MKL-LAPACK                      :   %f    N : %10d    NB : %10d \n\n\n",timelpk, N, NB );
         /* call eigensolver */
         lapackf77_ssterf(&N, D1, E1, &INFO);             
        /* ***********************************************/ 
@@ -1055,7 +1055,7 @@ extern "C" magma_int_t magma_ssytrd_bsy2trc( int THREADS, int WANTZ, char uplo, 
         printf(" ================================================================================================================================== \n");
         printf("   ==> INFO voici  threads=%d    N=%d    NB=%d   BAND=%d WANTZ=%d\n",thread,N, NB, BAND, WANTZ);
         printf(" ================================================================================================================================== \n");
-        printf("            DSBTRD                : %15s \n", "STATblgv9withQ    ");
+        printf("            SSBTRD                : %15s \n", "STATblgv9withQ    ");
         printf(" ================================================================================================================================== \n");
         if(WANTZ==1)
            printf(" | A - U S U' | / ( |A| n ulp )   : %15.3E   \n",        RESU[0]); 
@@ -1104,7 +1104,7 @@ static void *parallel_section(void *thread_id)
     int NB               = core_in_all.NB;
     int WANTZ = core_in_all.WANTZ;
     static volatile int sys_corenbr = 1;
-    int INFO, i, my_newcore_id, lastcoreid;
+    magma_int_t INFO, i, my_newcore_id, lastcoreid;
     float *NOTUSED;
     real_Double_t timeB=0.0, timeT=0.0, timeall=0.0, timeaplQ1=0.0;
 
@@ -1329,7 +1329,7 @@ static void *applyQ_parallel_section(void *thread_id)
     int Vblksiz          = core_in_all.Vblksiz;
     int WANTZ            = core_in_all.WANTZ;
     static volatile int sys_corenbr = 1;
-    int INFO, i, my_newcore_id, lastcoreid;
+    magma_int_t INFO, i, my_newcore_id, lastcoreid;
 
     real_Double_t timeQcpu=0.0, timeQgpu=0.0;
     float *NOTUSED;
@@ -1753,27 +1753,27 @@ static void tile_bulge_parallel(int my_core_id)
 #define T(m)   &(T[(m)])
 static void tile_bulge_computeT_parallel(int my_core_id)
 {
-    int INFO;
+    magma_int_t INFO;
     /* CHANGE HERE to SWITCH FROM local_cores_num to cores_num
      * or do it at the startup by putting core_in_all.es_num=cores_num*/
-    int cores_num = core_in_all.locores_num;
+    magma_int_t cores_num = core_in_all.locores_num;
     float *T     = core_in_all.T;
     float *V     = core_in_all.V;
     float *TAU   = core_in_all.TAU;
-    int  N         = core_in_all.N;
-    int  NB        = core_in_all.NB;
-    int  Vblksiz   = core_in_all.Vblksiz;
+    magma_int_t  N         = core_in_all.N;
+    magma_int_t  NB        = core_in_all.NB;
+    magma_int_t  Vblksiz   = core_in_all.Vblksiz;
 
     //%===========================
     //%   local variables
     //%===========================
-    int LDT, LDV,blklen,firstcolj;
-    int bg, nbGblk,rownbm, k, m, n;
-    int st,ed,fst,vlen,vnb,colj;
-    int blkid,vpos,taupos,tpos;
-    int cur_blksiz,avai_blksiz, ncolinvolvd;
-    int nbgr, colst, coled, version;
-    int blkpercore,blkcnt, myid;
+    magma_int_t LDT, LDV,blklen,firstcolj;
+    magma_int_t bg, nbGblk,rownbm, k, m, n;
+    magma_int_t st,ed,fst,vlen,vnb,colj;
+    magma_int_t blkid,vpos,taupos,tpos;
+    magma_int_t cur_blksiz,avai_blksiz, ncolinvolvd;
+    magma_int_t nbgr, colst, coled, version;
+    magma_int_t blkpercore,blkcnt, myid;
 
 
     if(N<=0)
@@ -1787,7 +1787,10 @@ static void tile_bulge_computeT_parallel(int my_core_id)
     blklen  = LDV*Vblksiz;
     nbGblk  = plasma_ceildiv((N-1),Vblksiz);
 
-    if(my_core_id==0) printf("  COMPUTE T parallel threads %d with  N %d   NB %d   Vblksiz %d \n",cores_num,N,NB,Vblksiz);
+    if(my_core_id==0) {
+        printf("  COMPUTE T parallel threads %d with  N %d   NB %d   Vblksiz %d \n",
+               (int) cores_num, (int) N, (int) NB, (int) Vblksiz);
+    }
     
         for (bg = nbGblk; bg>0; bg--)
         {
@@ -1834,37 +1837,37 @@ static void tile_bulge_computeT_parallel(int my_core_id)
 #define T(m)     &(T[(m)])
 static void tile_bulge_applyQ_parallel(int my_core_id)
 {
-    int INFO;
+    magma_int_t INFO;
     /* CHANGE HERE to SWITCH FROM local_cores_num to cores_num
      * or do it at the startup by putting core_in_all.es_num=cores_num*/
-    int cores_num = core_in_all.locores_num;
+    magma_int_t cores_num = core_in_all.locores_num;
     float *E      = core_in_all.E_CPU;
 
     float *T      = core_in_all.T;
     float *V      = core_in_all.V;
     float *TAU    = core_in_all.TAU;
-    int  N_CPU     = core_in_all.N_CPU;
-    int  NE        = core_in_all.NE;
-    int  N         = core_in_all.N;
-    int  NB        = core_in_all.NB;
-    int  Vblksiz   = core_in_all.Vblksiz;
-    int  LDE       = core_in_all.LDE;
+    magma_int_t  N_CPU     = core_in_all.N_CPU;
+    magma_int_t  NE        = core_in_all.NE;
+    magma_int_t  N         = core_in_all.N;
+    magma_int_t  NB        = core_in_all.NB;
+    magma_int_t  Vblksiz   = core_in_all.Vblksiz;
+    magma_int_t  LDE       = core_in_all.LDE;
     char SIDE      = core_in_all.SIDE;
-    int  WANTZ     = core_in_all.WANTZ;
+    magma_int_t  WANTZ     = core_in_all.WANTZ;
 
     //%===========================
     //%   local variables
     //%===========================
-    int LDT,LDV,blklen,firstcolj;
-    int bg, nbGblk,rownbm, k, m, n;
-    int st,ed,fst,vlen,vnb,colj,len;
-    int blkid, vpos,taupos,tpos;
+    magma_int_t LDT,LDV,blklen,firstcolj;
+    magma_int_t bg, nbGblk,rownbm, k, m, n;
+    magma_int_t st,ed,fst,vlen,vnb,colj,len;
+    magma_int_t blkid, vpos,taupos,tpos;
     float *WORK;
-    int LWORK;
-    int  cur_blksiz,avai_blksiz, ncolinvolvd;
-    int  nbgr, colst, coled, versionL,versionR;
-    int chunkid,nbchunk,colpercore,corest,corelen;
-    int coreid,mycoresnb,maxrequiredcores;
+    magma_int_t LWORK;
+    magma_int_t  cur_blksiz,avai_blksiz, ncolinvolvd;
+    magma_int_t  nbgr, colst, coled, versionL,versionR;
+    magma_int_t chunkid,nbchunk,colpercore,corest,corelen;
+    magma_int_t coreid,mycoresnb,maxrequiredcores;
 
 
     if(N<=0)
@@ -1941,7 +1944,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
     if(mycoresnb > maxrequiredcores)
     {
         if(my_core_id==0)printf("==================================================================================\n");
-        if(my_core_id==0)printf("  WARNING only %3d threads are required to run this test optimizing cache reuse\n",maxrequiredcores);
+        if(my_core_id==0)printf("  WARNING only %3d threads are required to run this test optimizing cache reuse\n", (int) maxrequiredcores);
         if(my_core_id==0)printf("==================================================================================\n");
         mycoresnb = maxrequiredcores;
     }
@@ -1970,8 +1973,11 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
     }
 
     //printf("  ENTERING FUNCTION APPLY Q_v115: same as 113(L) or 114(L) or 93(R)"\n);
-    if(my_core_id==0)printf("  APPLY Q_v1   parallel with threads %d   nbchunk %d  colpercore %d  N %d  N_CPU %d   NB %d   Vblksiz %d SIDE %c versionL %d versionR %d WANTZ %d \n",cores_num,nbchunk,colpercore,N,N_CPU,NB,Vblksiz,SIDE,versionL,versionR, WANTZ);
-
+    if(my_core_id==0) {
+        printf("  APPLY Q_v1   parallel with threads %d   nbchunk %d  colpercore %d  N %d  N_CPU %d   NB %d   Vblksiz %d SIDE %c versionL %d versionR %d WANTZ %d \n",
+               (int) cores_num, (int) nbchunk, (int) colpercore, (int) N, (int) N_CPU, (int) NB, (int) Vblksiz, (int) SIDE, (int) versionL, (int) versionR,  (int) WANTZ);
+    }
+    
     for (chunkid = 0; chunkid<nbchunk; chunkid++)
     {
         coreid  = chunkid%mycoresnb;
@@ -2010,7 +2016,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
                        if(LOGQ) core_event_startblg(my_core_id);
                        if((vlen>0)&&(vnb>0)){
                            //lapackf77_sorgqr( "L", "N", &vlen, &corelen, &vnb, V(vpos), &LDV, TAU(taupos), E(fst,corest), &LDE,  WORK, &LWORK, &INFO );
-                           //DORMQR_BLG( "L", "N", &vlen, &corelen, &vnb, &NB, V(vpos), &LDV, TAU(taupos), E(fst,corest), &LDE,  WORK, &LWORK, &INFO );
+                           //SORMQR_BLG( "L", "N", &vlen, &corelen, &vnb, &NB, V(vpos), &LDV, TAU(taupos), E(fst,corest), &LDE,  WORK, &LWORK, &INFO );
                            if(WANTZ==1){ 
                                st  = max(colst,corest);           
                                len = corelen - (st-corest);    
@@ -2020,7 +2026,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
                            }
                        }
                        if(INFO!=0) 
-                               printf("ERROR DORMQR INFO %d \n",INFO);
+                               printf("ERROR SORMQR INFO %d \n", (int) INFO);
                        if(LOGQ) {
                            core_event_endblg(my_core_id);
                            core_log_eventblg(0xff0000, my_core_id);
@@ -2113,32 +2119,32 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
 #define T(m)     &(T[(m)])
 void tile_bulge_applyQ_parallel2(int my_core_id)
 {
-    int INFO;
-    int cores_num  = core_in_all.cores_num;
+    magma_int_t INFO;
+    magma_int_t cores_num  = core_in_all.cores_num;
     float *T      = core_in_all.T;
     float *E      = core_in_all.E;
     float *V      = core_in_all.V;
     float *TAU    = core_in_all.TAU;
-    int  N         = core_in_all.N;
-    int  NB        = core_in_all.NB;
-    int  Vblksiz   = core_in_all.Vblksiz;
-    int  LDE       = core_in_all.LDE;
+    magma_int_t  N         = core_in_all.N;
+    magma_int_t  NB        = core_in_all.NB;
+    magma_int_t  Vblksiz   = core_in_all.Vblksiz;
+    magma_int_t  LDE       = core_in_all.LDE;
     char SIDE      = core_in_all.SIDE;
-    int  WANTZ     = core_in_all.WANTZ;
+    magma_int_t  WANTZ     = core_in_all.WANTZ;
 
     //%===========================
     //%   local variables
     //%===========================
-    int LDT,LDV,blklen,firstcolj;
-    int bg, nbGblk,rownbm, k, m, n;
-    int st,ed,fst,vlen,vnb,colj,len;
-    int blkid, vpos,taupos,tpos;
+    magma_int_t LDT,LDV,blklen,firstcolj;
+    magma_int_t bg, nbGblk,rownbm, k, m, n;
+    magma_int_t st,ed,fst,vlen,vnb,colj,len;
+    magma_int_t blkid, vpos,taupos,tpos;
     float *WORK;
-    int LWORK;
-    int  cur_blksiz,avai_blksiz, ncolinvolvd;
-    int  nbgr, colst, coled, versionL;
-    int chunkid,nbchunk,colpercore,corest,corelen;
-    int coreid,mycoresnb,maxrequiredcores;
+    magma_int_t LWORK;
+    magma_int_t  cur_blksiz,avai_blksiz, ncolinvolvd;
+    magma_int_t  nbgr, colst, coled, versionL;
+    magma_int_t chunkid,nbchunk,colpercore,corest,corelen;
+    magma_int_t coreid,mycoresnb,maxrequiredcores;
 
     INFO=0;    
     versionL = 113;
@@ -2208,7 +2214,7 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
     if(mycoresnb > maxrequiredcores)
     {
         if(my_core_id==0)printf("==================================================================================\n");
-        if(my_core_id==0)printf("  WARNING only %3d threads are required to run this test optimizing cache reuse\n",maxrequiredcores);
+        if(my_core_id==0)printf("  WARNING only %3d threads are required to run this test optimizing cache reuse\n", (int) maxrequiredcores);
         if(my_core_id==0)printf("==================================================================================\n");
         mycoresnb = maxrequiredcores;
     }
@@ -2231,8 +2237,11 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
     }
 
     //printf("  ENTERING FUNCTION APPLY Q_v115: same as 113(L) or 114(L) or 93(R)"\n);
-    if(my_core_id==0)printf("  APPLY Q_v2   parallel with threads %d   nbchunk %d  colpercore %d  N %d   NB %d   Vblksiz %d SIDE %c versionL %d \n",cores_num,nbchunk,colpercore,N,NB,Vblksiz,SIDE,versionL);
-
+    if(my_core_id==0) {
+        printf("  APPLY Q_v2   parallel with threads %d   nbchunk %d  colpercore %d  N %d   NB %d   Vblksiz %d SIDE %c versionL %d \n",
+               (int) cores_num, (int) nbchunk, (int) colpercore, (int) N, (int) NB, (int) Vblksiz, (int) SIDE, (int) versionL);
+    }
+    
     //printf("mycore id %d voici nbchunk %d  chunkid %d  coreid %d, corest %d, corelen %d\n",my_core_id,nbchunk, chunkid, coreid, corest, corelen);
     if(SIDE=='L'){
         if(versionL==113){            

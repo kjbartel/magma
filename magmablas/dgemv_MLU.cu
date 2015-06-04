@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal d
+
 */
 #include "common_magma.h"
 
@@ -67,11 +70,11 @@ magma_dgemv_MLU(int n, int m, int n1, double* A, int lda, double *x, double *y)
 extern "C" void
 magmablas_dgemv_MLU(int n, int m, double *A, int lda, double *x, double *z)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

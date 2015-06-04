@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:03 2012
+       @generated s Thu Jun 28 12:31:16 2012
 
 */
 #include "common_magma.h"
@@ -171,7 +171,7 @@ magmablas_slange_64_64_16_4(const float *A, float *C,
 }
 
 extern "C" float  
-magmablas_slange(char norm, int M, int N , float *A, int LDA , float *WORK)
+magmablas_slange(char norm, magma_int_t M, magma_int_t N , float *A, magma_int_t LDA , float *WORK)
 {
 /*
   !!!!!!!!!!!!!!                

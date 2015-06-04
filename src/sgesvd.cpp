@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:48 2012
+       @generated s Thu Jun 28 12:31:05 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              float *work, magma_int_t lwork_,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -122,7 +122,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
             
     LWORK   (input) INTEGER   
             The dimension of the array WORK.   
-            LWORK >=  (M+N)*nb+N.   
+            LWORK >=  (M+N)*nb + 3*N.   
 
             If LWORK = -1, then a workspace query is assumed; the routine   
             only calculates the optimal size of the WORK array, returns   
@@ -132,7 +132,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     INFO    (output) INTEGER   
             = 0:  successful exit.   
             < 0:  if INFO = -i, the i-th argument had an illegal value.   
-            > 0:  if DBDSQR did not converge, INFO specifies how many   
+            > 0:  if SBDSQR did not converge, INFO specifies how many   
                   superdiagonals of an intermediate bidiagonal form B   
                   did not converge to zero. See the description of RWORK   
                   above for details.   
@@ -149,11 +149,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     magma_int_t *ldvt  = &ldvt_;
     magma_int_t *lwork = &lwork_;
     
-    static magma_int_t c__0 = 0;
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
-    static float c_b421 = 0.;
-    static float c_b443 = 1.;
+    magma_int_t c__0 = 0;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
+    float c_b421 = 0.;
+    float c_b443 = 1.;
 
     magma_int_t nb;
     
@@ -180,16 +180,16 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     mnthr  = (magma_int_t)( (float)(min( m_, n_ )) * 1.6 );
     bdspac = 5*n_;
     minmn = min(*m,*n);
-    wntua = lsame_(jobu_, "A");
-    wntus = lsame_(jobu_, "S");
+    wntua = lapackf77_lsame(jobu_, "A");
+    wntus = lapackf77_lsame(jobu_, "S");
     wntuas = wntua || wntus;
-    wntuo = lsame_(jobu_, "O");
-    wntun = lsame_(jobu_, "N");
-    wntva = lsame_(jobvt_, "A");
-    wntvs = lsame_(jobvt_, "S");
+    wntuo = lapackf77_lsame(jobu_, "O");
+    wntun = lapackf77_lsame(jobu_, "N");
+    wntva = lapackf77_lsame(jobvt_, "A");
+    wntvs = lapackf77_lsame(jobvt_, "S");
     wntvas = wntva || wntvs;
-    wntvo = lsame_(jobvt_, "O");
-    wntvn = lsame_(jobvt_, "N");
+    wntvo = lapackf77_lsame(jobvt_, "O");
+    wntvn = lapackf77_lsame(jobvt_, "N");
     lquery = *lwork == -1;
   
     /* Test the input arguments */
@@ -212,16 +212,14 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     /*     Compute workspace   */
     lapackf77_sgesvd(jobu_, jobvt_, m, n, a, lda, s, u, ldu,
                      vt, ldvt, work, &c_n1, info );
-
     maxwrk = (magma_int_t)work[0];
-
     if (*info == 0) {
-
         /* Return optimal workspace in WORK(1) */
-        nb = magma_get_sgebrd_nb(*n);
-        minwrk = ((*m)+(*n))*nb+(*n);
-        work[0] = (float)minwrk;
-
+        nb = magma_get_sgesvd_nb(*n);
+        minwrk = ((*m)+(*n))*nb + 3*(*n);
+        // multiply by 1+eps to ensure length gets rounded up,
+        // if it cannot be exactly represented in floating point.
+        work[0] = minwrk * (1. + slamch_("Epsilon"));
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
         }
@@ -3405,7 +3403,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
  
     }
  
-    /* If DBDSQR failed to converge, copy unconverged superdiagonals */
+    /* If SBDSQR failed to converge, copy unconverged superdiagonals */
     /* to WORK( 2:MINMN ) */
  
     if (*info != 0) {

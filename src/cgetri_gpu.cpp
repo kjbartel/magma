@@ -1,28 +1,28 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:31 2012
+       @generated c Thu Jun 28 12:30:37 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
-#define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_cgemm magmablas_cgemm
-  #define magma_ctrsm magmablas_ctrsm
-#endif
-
-#if (GPUSHMEM >= 200)
-#if (defined(PRECISION_s))
-    #undef  magma_sgemm
-    #define magma_sgemm magmablas_sgemm_fermi80
-#endif
-#endif
+// #define PRECISION_c
+// #if (defined(PRECISION_s) || defined(PRECISION_d))
+//   #define magma_cgemm magmablas_cgemm
+//   #define magma_ctrsm magmablas_ctrsm
+// #endif
+// 
+// #if (GPUSHMEM >= 200)
+// #if (defined(PRECISION_s))
+//     #undef  magma_sgemm
+//     #define magma_sgemm magmablas_sgemm_fermi80
+// #endif
+// #endif
 // === End defining what BLAS to use ======================================
 
 extern "C" magma_int_t
@@ -30,11 +30,11 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
                   magma_int_t *ipiv, cuFloatComplex *dwork, magma_int_t lwork,
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

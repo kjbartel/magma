@@ -1,0 +1,173 @@
+@c -*-texinfo-*-
+
+@c This file is part of the MORSE Handbook.
+@c Copyright (C) 2012 Inria
+@c Copyright (C) 2012 The University of Tennessee
+@c Copyright (C) 2012 King Abdullah University of Science and Technology
+@c See the file ../morse.texi for copying conditions.
+
+@menu
+* Downloading MORSE::
+* Configuration of MORSE::
+* Building and Installing MORSE::
+@end menu
+
+MORSE can be built and installed by the standard means of CMake (@indicateurl{http://www.cmake.org/}).
+General information about CMake, as well as installation binaries and CMake source code are available from @indicateurl{http://www.cmake.org/cmake/resources/software.html}.
+The following chapter is intended to briefly remind how these tools can be used to install MORSE.
+
+@node Downloading MORSE
+@section Downloading MORSE
+
+@menu
+* Getting Sources::
+* Required dependencies::
+* Optional dependencies::
+@end menu
+
+@node Getting Sources
+@subsection Getting Sources
+
+The latest official release tarballs of MORSE sources are available for download from @indicateurl{http://icl.cs.utk.edu/projectsdev/morse/software/index.html}.
+
+The latest development snapshot is available from @indicateurl{http://hydra.bordeaux.inria.fr/job/hiepacs/morse-cmake/tarball/latest/download-by-type/file/source-dist}.
+
+@example
+% wget http://hydra.bordeaux.inria.fr/job/hiepacs/morse-cmake/tarball/latest/download-by-type/file/source-dist -O morse.tar.gz 
+@end example
+
+@node Required dependencies
+@subsection Required dependencies
+
+@menu
+* a BLAS and LAPACK implementation::
+* PLASMA::
+* StarPU::
+* hwloc::
+@end menu
+
+@node a BLAS and LAPACK implementation
+@subsubsection a BLAS and LAPACK implementation
+
+TODO
+
+@node PLASMA
+@subsubsection PLASMA
+
+TODO
+
+@node StarPU
+@subsubsection StarPU
+
+TODO
+
+@node hwloc
+@subsubsection hwloc
+
+The topology discovery library, @code{hwloc}, is not mandatory to use StarPU but strongly recommended. It allows to increase performance, and to perform some topology aware scheduling.
+@code{hwloc} is available in major distributions and for most OSes and can be downloaded from @indicateurl{http://www.open-mpi.org/software/hwloc}.
+
+@node Optional dependencies
+@subsection Optional dependencies
+
+@menu
+* OpenMPI::
+* Nvidia CUDA Toolkit::
+* MAGMA::
+* fxt::
+@end menu
+
+@node OpenMPI
+@subsubsection OpenMPI
+
+TODO
+
+@node Nvidia CUDA Toolkit
+@subsubsection Nvidia CUDA Toolkit
+
+TODO
+
+@node MAGMA
+@subsubsection MAGMA
+
+TODO
+
+@node fxt
+@subsubsection fxt
+
+TODO
+
+@node Configuration of MORSE
+@section Configuration of MORSE
+
+@menu
+* Setting up a build directory::
+* Configuring the project with best efforts::
+@end menu
+
+@node Setting up a build directory
+@subsection Setting up a build directory
+
+The MORSE build process requires CMake version 2.8.0 or higher and a working compiler. On Unix-like operating systems, it also requires Make.
+The MORSE project can not be configured for an in-source build. You will get an error message and instruction on how to resolve the problem by deleting the generated CMakeCache.txt file (and other generated files) and then direction on how to create a different build directory as shown above.
+
+@example
+% mkdir BUILD_DIR
+% cd BUILD_DIR
+@end example
+
+@quotation
+You can create a build directory from any location you would like. It can be a sub-directory of the MORSE base source directory or anywhere else.
+@end quotation
+
+@node Configuring the project with best efforts
+@subsection Configuring the project with best efforts
+
+The MORSE build process 
+
+@example
+% cmake <path to SOURCE_DIR>
+@end example
+
+Details about options that are useful to give to @code{cmake <path to SOURCE_DIR>} are given in @ref{Compilation configuration}.
+
+@node Building and Installing MORSE
+@section Building and Installing MORSE
+
+@menu
+* Building::
+* Tests::
+* Installing::
+@end menu
+
+@node Building
+@subsection Building
+
+In order to build MORSE and all the missing dependencies:
+
+@example
+% make
+@end example
+
+@node Tests
+@subsection Tests
+
+In order to make sure that MORSE is working properly on the system, it is also possible to run a test suite.
+
+@example
+% make check
+@end example
+or
+@example
+% ctest
+@end example
+
+@node Installing
+@subsection Installing
+
+In order to install MORSE at the location that was specified during configuration:
+
+@example
+% make install
+@end example
+

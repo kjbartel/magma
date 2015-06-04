@@ -12,27 +12,12 @@
  */
 
 #include "common_magma.h"
-//#include "magma_zbulgeinc.h"
+#include "magma_zbulgeinc.h"
 #include <cblas.h>
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 
 // === End defining what BLAS to use ======================================
- 
-
- 
-#ifdef __cplusplus
-extern "C" {
-#endif
-void  magmablas_zlaset_identity(magma_int_t m, magma_int_t n,
-                          cuDoubleComplex *A, magma_int_t lda);
- void findVTpos(int N, int NB, int Vblksiz, int sweep, int st, int *Vpos, int *TAUpos, int *Tpos, int *myblkid);
- void findVTsiz(int N, int NB, int Vblksiz, int *blkcnt, int *LDV);
-  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
-
-#ifdef __cplusplus
-}
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,13 +98,14 @@ extern "C" void magma_zbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE
     
 
 
-    printf("  APPLY Q_v115 GPU with  N %d   NB %d   Vblksiz %d SIDE %c versionL %d versionR %d WANTZ %d \n",N,NB,Vblksiz,SIDE,versionL,versionR,WANTZ);
+    printf("  APPLY Q_v115 GPU with  N %d   NB %d   Vblksiz %d SIDE %c versionL %d versionR %d WANTZ %d \n",
+           (int) N, (int) NB, (int) Vblksiz, (int) SIDE, (int) versionL, (int) versionR, (int) WANTZ);
 
 
     magma_int_t N2=N/2;
     magma_int_t N1=N-N2;   
 #if defined(USESTREAM)
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 #endif

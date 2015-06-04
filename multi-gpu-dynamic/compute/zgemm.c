@@ -320,9 +320,6 @@ int MAGMA_zgemm_Tile_Async(PLASMA_enum transA, PLASMA_enum transB,
                              magma_sequence_t *sequence, magma_request_t *request)
 {
     magma_context_t *magma;
-    PLASMA_desc descA = A->desc;
-    PLASMA_desc descB = B->desc;
-    PLASMA_desc descC = C->desc;
     int M, N, K;
     int Am, An, Ai, Aj, Amb, Anb;
     int Bm, Bn, Bi, Bj, Bmb, Bnb;
@@ -370,52 +367,52 @@ int MAGMA_zgemm_Tile_Async(PLASMA_enum transA, PLASMA_enum transB,
     }
 
     if ( transA == PlasmaNoTrans ) {
-        Am  = descA.m;
-        An  = descA.n;
-        Amb = descA.mb;
-        Anb = descA.nb;
-        Ai  = descA.i;
-        Aj  = descA.j;
+        Am  = A->m;
+        An  = A->n;
+        Amb = A->mb;
+        Anb = A->nb;
+        Ai  = A->i;
+        Aj  = A->j;
     } else {
-        Am  = descA.n;
-        An  = descA.m;
-        Amb = descA.nb;
-        Anb = descA.mb;
-        Ai  = descA.j;
-        Aj  = descA.i;
+        Am  = A->n;
+        An  = A->m;
+        Amb = A->nb;
+        Anb = A->mb;
+        Ai  = A->j;
+        Aj  = A->i;
     }
 
     if ( transB == PlasmaNoTrans ) {
-        Bm  = descB.m;
-        Bn  = descB.n;
-        Bmb = descB.mb;
-        Bnb = descB.nb;
-        Bi  = descB.i;
-        Bj  = descB.j;
+        Bm  = B->m;
+        Bn  = B->n;
+        Bmb = B->mb;
+        Bnb = B->nb;
+        Bi  = B->i;
+        Bj  = B->j;
     } else {
-        Bm  = descB.n;
-        Bn  = descB.m;
-        Bmb = descB.nb;
-        Bnb = descB.mb;
-        Bi  = descB.j;
-        Bj  = descB.i;
+        Bm  = B->n;
+        Bn  = B->m;
+        Bmb = B->nb;
+        Bnb = B->mb;
+        Bi  = B->j;
+        Bj  = B->i;
     }
 
-    if ( (Amb != descC.mb) || (Anb != Bmb) || (Bnb != descC.nb) ) {
+    if ( (Amb != C->mb) || (Anb != Bmb) || (Bnb != C->nb) ) {
         magma_error("MAGMA_zgemm_Tile_Async", "tile sizes have to match");
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }
-    if ( (Am != descC.m) || (An != Bm) || (Bn != descC.n) ) {
+    if ( (Am != C->m) || (An != Bm) || (Bn != C->n) ) {
         magma_error("MAGMA_zgemm_Tile_Async", "sizes of matrices have to match");
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }
-    if ( (Ai != descC.i) || (Aj != Bi) || (Bj != descC.j) ) {
+    if ( (Ai != C->i) || (Aj != Bi) || (Bj != C->j) ) {
         magma_error("MAGMA_zgemm_Tile_Async", "start indexes have to match");
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }
 
-    M = descC.m;
-    N = descC.n;
+    M = C->m;
+    N = C->n;
     K = An;
 
     /* Quick return */

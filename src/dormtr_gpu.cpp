@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated d Tue May 15 18:17:43 2012
+       @generated d Thu Jun 28 12:30:53 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_dormtr_gpu(char side, char uplo, char trans,
                  double *wa,    magma_int_t ldwa,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -127,9 +127,9 @@ magma_dormtr_gpu(char side, char uplo, char trans,
     char uplo_[2]  = {uplo, 0};
     char trans_[2] = {trans, 0};
     magma_int_t  i__2;
-    static magma_int_t i1, i2, mi, ni, nq, nw;
-    long int left, upper;
-    static magma_int_t iinfo;
+    magma_int_t i1, i2, mi, ni, nq, nw;
+    int left, upper;
+    magma_int_t iinfo;
 
     *info = 0;
     left   = lapackf77_lsame(side_, "L");

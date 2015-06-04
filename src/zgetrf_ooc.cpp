@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -29,11 +29,11 @@ extern "C" magma_int_t
 magma_zgetrf_ooc(magma_int_t m, magma_int_t n, cuDoubleComplex *a, magma_int_t lda, 
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -64,7 +64,7 @@ magma_zgetrf_ooc(magma_int_t m, magma_int_t n, cuDoubleComplex *a, magma_int_t l
             A = P*L*U; the unit diagonal elements of L are not stored.
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -94,12 +94,6 @@ magma_zgetrf_ooc(magma_int_t m, magma_int_t n, cuDoubleComplex *a, magma_int_t l
     magma_int_t                iinfo, nb, maxm, maxn, maxdim;
     magma_int_t                N, M, NB, NBk, MB, I;
     magma_int_t                i, ii, jj, offset, ib, rows, cols, s, nb0, m0;
-#if CUDA_VERSION > 3010
-    size_t totalMem;
-#else
-    unsigned int totalMem;
-#endif
-    CUdevice dev;
 
     *info = 0;
 
@@ -123,13 +117,13 @@ magma_zgetrf_ooc(magma_int_t m, magma_int_t n, cuDoubleComplex *a, magma_int_t l
     nb = magma_get_zgetrf_nb(m);
 
     /* figure out NB */
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(cuDoubleComplex);
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(cuDoubleComplex);
         
-    /* printf( " max. matrix dimension (%d)\n",(int)sqrt((double)totalMem) ); */
+    /* printf( " max. matrix dimension (%d)\n",(int)sqrt((double)freeMem) ); */
     MB = m;                                      /* number of rows in the big panel    */
-    NB = (magma_int_t)(0.8*totalMem/(2*m))-2*nb; /* number of columns in the big panel */
+    NB = (magma_int_t)(0.8*freeMem/(2*m))-2*nb; /* number of columns in the big panel */
     if( NB >= n ) {
 #ifdef CHECK_ZGETRF_OOC
       printf( "      * still fit in GPU memory.\n" );
@@ -376,30 +370,25 @@ magma_zgetrf_piv(magma_int_t m, magma_int_t n, cuDoubleComplex *a, magma_int_t l
     if (m == 0 || n == 0)
         return *info;
 
-        /* initialize nb */
+    /* initialize nb */
     nb = magma_get_zgetrf_nb(m);
 
-        /* figure out NB */
-#if CUDA_VERSION > 3010
-    size_t totalMem;
-#else
-    unsigned int totalMem;
-#endif
-    CUdevice dev;
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(cuDoubleComplex);
-        MB = m;                                             /* number of rows in the big panel    */
-    NB = (magma_int_t)min((0.8*totalMem/(2*m))-2*nb,n); /* number of columns in the big panel */
-        NB = (NB / nb) * nb;   /* making sure it's devisable by nb   */
+    /* figure out NB */
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(cuDoubleComplex);
+    
+    MB = m;                                             /* number of rows in the big panel    */
+    NB = (magma_int_t)min((0.8*freeMem/(2*m))-2*nb,n); /* number of columns in the big panel */
+    NB = (NB / nb) * nb;   /* making sure it's devisable by nb   */
     minmn = min(m,n);
 
-        for( I=0; I<minmn-NB; I+=NB ) {
-                k1 = 1+I+NB;
-                k2 = minmn;
-                incx = 1;
-                lapackf77_zlaswp(&NB, &a[I*lda], &lda, &k1, &k2, ipiv, &incx);
-        }
+    for( I=0; I<minmn-NB; I+=NB ) {
+        k1 = 1+I+NB;
+        k2 = minmn;
+        incx = 1;
+        lapackf77_zlaswp(&NB, &a[I*lda], &lda, &k1, &k2, ipiv, &incx);
+    }
 
     return *info;
 } /* magma_zgetrf_piv */

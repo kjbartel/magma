@@ -1,18 +1,20 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:41 2012
+       @generated s Thu Jun 28 12:30:55 2012
 
 */
 #include "common_magma.h"
-#include <cblas.h> 
+
+#include <cblas.h>
+#include <assert.h>
 
 #define PRECISION_s
 
@@ -30,11 +32,11 @@ magma_slatrd(char uplo, magma_int_t n, magma_int_t nb,
              float *da, magma_int_t ldda, 
              float *dw, magma_int_t lddw)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -157,30 +159,29 @@ magma_slatrd(char uplo, magma_int_t n, magma_int_t nb,
   
     char uplo_[2]  = {uplo, 0};
 
-    static magma_int_t i;
+    magma_int_t i;
   
     float c_neg_one = MAGMA_S_NEG_ONE;
     float c_one     = MAGMA_S_ONE;
     float c_zero    = MAGMA_S_ZERO;
 
-    #if defined(PRECISION_z) || defined(PRECISION_c)
-       float value = MAGMA_S_ZERO;
-    #endif
+    float value = MAGMA_S_ZERO;
     
-    static magma_int_t ione = 1;
+    magma_int_t ione = 1;
 
-    static magma_int_t i_n, i_1, iw;
+    magma_int_t i_n, i_1, iw;
   
-    static float alpha;
-
-    float *f = (float *)malloc(n*sizeof(float ));
+    float alpha;
+    float *f;
 
     if (n <= 0) {
       return 0;
     }
 
-    static cudaStream_t stream;
+    cudaStream_t stream;
     magma_queue_create( &stream );
+    magma_smalloc_cpu( &f, n );
+    assert( f != NULL );  // TODO return error, or allocate outside slatrd
 
     if (lapackf77_lsame(uplo_, "U")) {
 
@@ -252,14 +253,12 @@ magma_slatrd(char uplo, magma_int_t n, magma_int_t nb,
 
           blasf77_sscal(&i, &tau[i - 1], W(0, iw), &ione);
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
-          cblas_sdot_sub(i, W(0, iw), ione, A(0, i), ione, &value);
-
-//          blasf77_sdot(&value, &i, W(0, iw), &ione, A(0, i), &ione);
-          alpha = tau[i - 1] * -.5f * value;
-#else
-          alpha = tau[i - 1] * -.5f * blasf77_sdot(&i, W(0, iw), &ione, A(0, i), &ione);
-#endif
+          #if defined(PRECISION_z) || defined(PRECISION_c)
+          cblas_sdot_sub( i, W(0,iw), ione, A(0,i), ione, &value );
+          #else
+          value = cblas_sdot( i, W(0,iw), ione, A(0,i), ione );
+          #endif
+          alpha = tau[i - 1] * -0.5f * value;
           blasf77_saxpy(&i, &alpha, A(0, i), &ione,
                         W(0, iw), &ione);
         }
@@ -329,20 +328,11 @@ magma_slatrd(char uplo, magma_int_t n, magma_int_t nb,
               blasf77_sscal(&i_n, &tau[i], W(i+1,i), &ione);
               
               #if defined(PRECISION_z) || defined(PRECISION_c)
-                     /* Comment:
-                        To do - move to cblas in cases like this. The commented
-                        out version works with MKL but is not a standard interface
-                        for other BLAS zdoc implementations                        
-                     */
-                     
-                        cblas_sdot_sub(i_n, W(i +1, i), ione,
-                                        A(i +1, i), ione, &value);
-                    
-                  //blasf77_sdot(&value, &i_n, W(i+1,i), &ione, A(i+1, i), &ione);
-                  alpha = tau[i]* -.5f * value;
+              cblas_sdot_sub( i_n, W(i+1,i), ione, A(i+1,i), ione, &value );
               #else
-                  alpha = tau[i]* -.5f* blasf77_sdot(&i_n, W(i+1,i), &ione, A(i+1, i), &ione);
+              value = cblas_sdot( i_n, W(i+1,i), ione, A(i+1,i), ione );
               #endif
+              alpha = tau[i] * -0.5f * value;
               blasf77_saxpy(&i_n, &alpha, A(i+1, i), &ione, W(i+1,i), &ione);
             }
         }

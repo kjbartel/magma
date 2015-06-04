@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -728,8 +728,8 @@ extern "C" void zlanhe_max (char uplo, int m, cuDoubleComplex *A , int lda , dou
 }
  
 extern "C" double 
-magmablas_zlanhe(char norm, char uplo, int n, 
-                 cuDoubleComplex *A, int lda, double *WORK )
+magmablas_zlanhe(char norm, char uplo, magma_int_t n, 
+                 cuDoubleComplex *A, magma_int_t lda, double *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {

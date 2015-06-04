@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
        @author Stan Tomov
 
@@ -21,11 +21,11 @@ magma_zunmqr(const char side, const char trans,
              cuDoubleComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -123,11 +123,11 @@ magma_zunmqr(const char side, const char trans,
     dc -= (1 + m);
 
     magma_int_t a_offset, c_offset, i__4, lddwork;
-    static magma_int_t i__;
-    static cuDoubleComplex t[2*4160]        /* was [65][64] */;
-    static magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
-    long int left, notran, lquery;
-    static magma_int_t iinfo, lwkopt;
+    magma_int_t i__;
+    cuDoubleComplex t[2*4160]        /* was [65][64] */;
+    magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
+    int left, notran, lquery;
+    magma_int_t iinfo, lwkopt;
 
     a_offset = 1 + lda;
     a -= a_offset;

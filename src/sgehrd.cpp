@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:38 2012
+       @generated s Thu Jun 28 12:31:03 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_sgehrd(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
              float *dT,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -41,7 +41,7 @@ magma_sgehrd(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     IHI     (input) INTEGER   
             It is assumed that A is already upper triangular in rows   
             and columns 1:ILO-1 and IHI+1:N. ILO and IHI are normally   
-            set by a previous call to DGEBAL; otherwise they should be   
+            set by a previous call to SGEBAL; otherwise they should be   
             set to 1 and N respectively. See Further Details.   
             1 <= ILO <= IHI <= N, if N > 0; ILO=1 and IHI=0, if N=0.   
 
@@ -179,7 +179,7 @@ magma_sgehrd(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     magma_int_t i__;
 
     float *t, *d_t;
-    t = (float*) malloc(nb*nb*sizeof(float));
+    magma_smalloc_cpu( &t, nb*nb );
     if ( t == NULL ) {
         magma_free( da );
         *info = MAGMA_ERR_HOST_ALLOC;

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:31 2012
+       @generated c Thu Jun 28 12:30:50 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
              cuFloatComplex *work, magma_int_t lwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -46,7 +46,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -59,7 +59,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= N*NB,
@@ -96,16 +96,16 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
     cuFloatComplex *da, *dwork;
     cuFloatComplex c_one = MAGMA_C_ONE;
 
-    int i, k, lddwork, old_i, old_ib;
-    int ib, ldda;
+    magma_int_t i, k, lddwork, old_i, old_ib;
+    magma_int_t ib, ldda;
 
     /* Function Body */
     *info = 0;
-    int nb = magma_get_cgeqrf_nb(min(m, n));
+    magma_int_t nb = magma_get_cgeqrf_nb(min(m, n));
 
-    int lwkopt = n * nb;
+    magma_int_t lwkopt = n * nb;
     work[0] = MAGMA_C_MAKE( (float)lwkopt, 0 );
-    long int lquery = (lwork == -1);
+    int lquery = (lwork == -1);
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
@@ -131,9 +131,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
     lddwork = ((n+31)/32)*32;
     ldda    = ((m+31)/32)*32;
 
-    magma_int_t num_gpus = 1;
-    char * num_gpus_char = getenv("MAGMA_NUM_GPUS");
-    if (num_gpus_char != NULL ) num_gpus = atoi(num_gpus_char);
+    magma_int_t num_gpus = magma_num_gpus();
     if( num_gpus > 1 ) {
         /* call multiple-GPU interface  */
         return magma_cgeqrf4(num_gpus, m, n, a, lda, tau, work, lwork, info);
@@ -144,7 +142,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
         return magma_cgeqrf_ooc(m, n, a, lda, tau, work, lwork, info);
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -176,7 +174,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             }
 
             magma_queue_sync( stream[1] );
-            int rows = m-i;
+            magma_int_t rows = m-i;
             lapackf77_cgeqrf(&rows, &ib, a_ref(i,i), &lda, tau+i, work, &lwork, info);
             /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
@@ -214,7 +212,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
         ib = n-i;
         if (i!=0)
             magma_cgetmatrix( m, ib, da_ref(0,i), ldda, a_ref(0,i), lda );
-        int rows = m-i;
+        magma_int_t rows = m-i;
         lapackf77_cgeqrf(&rows, &ib, a_ref(i,i), &lda, tau+i, work, &lwork, info);
     }
 

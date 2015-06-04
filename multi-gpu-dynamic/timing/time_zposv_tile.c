@@ -7,80 +7,52 @@
 #define _PREC  double
 #define _LAMCH LAPACKE_dlamch_work
 
-#define _NAME  "PLASMA_zposv_Tile"
+#define _NAME  "MAGMA_zposv_Tile"
 /* See Lawn 41 page 120 */
-#define _FMULS (n * (1.0 / 6.0 * n + nrhs + 0.5) * n)
-#define _FADDS (n * (1.0 / 6.0 * n + nrhs )      * n)
+#define _FMULS (FMULS_POTRF( N ) + FMULS_POTRS( N, NRHS ))
+#define _FADDS (FADDS_POTRF( N ) + FADDS_POTRS( N, NRHS ))
 
 #include "./timing.c"
 
 static int
-RunTest(int *iparam, double *dparam, real_Double_t *t_)
+RunTest(int *iparam, double *dparam, morse_time_t *t_)
 {
-    PLASMA_Complex64_t *A, *AT, *b, *bT, *x;
-    real_Double_t       t;
-    magma_desc_t        *descA, *descB;
-    int nb, nb2, nt;
-    int n     = iparam[TIMING_N];
-    int nrhs  = iparam[TIMING_NRHS];
-    int check = iparam[TIMING_CHECK];
-    int lda = n;
-    int ldb = n;
+    PASTE_CODE_IPARAM_LOCALS( iparam );
+    MAGMA_enum uplo = PlasmaUpper;
 
-    nb  = iparam[TIMING_NB];
-    nb2 = nb * nb;
-    nt  = n / nb + ((n % nb == 0) ? 0 : 1);
-    
+    LDA = max(LDA, N);
+
     /* Allocate Data */
-    AT = (PLASMA_Complex64_t *)malloc(nt*nt*nb2*sizeof(PLASMA_Complex64_t));
-    bT = (PLASMA_Complex64_t *)malloc(nt*nb2   *sizeof(PLASMA_Complex64_t));
-
-    /* Check if unable to allocate memory */
-    if ( (!AT) || (!bT) ) {
-        printf("Out of Memory \n ");
-        exit(0);
-    }
+    PASTE_CODE_ALLOCATE_MATRIX_TILE( descA, 1, PLASMA_Complex64_t, PlasmaComplexDouble, LDA, N, N );
+    PASTE_CODE_ALLOCATE_MATRIX_TILE( descB, 1, PLASMA_Complex64_t, PlasmaComplexDouble, LDB, N, NRHS );
 
     /* Initialize AT and bT for Symmetric Positif Matrix */
-    MAGMA_Desc_Create(&descA, AT, PlasmaComplexDouble, nb, nb, nb*nb, n, n,    0, 0, n, n);
-    MAGMA_Desc_Create(&descB, bT, PlasmaComplexDouble, nb, nb, nb*nb, n, nrhs, 0, 0, n, nrhs);
-    MAGMA_zplghe_Tile((double)n, descA, 51 );
-    LAPACKE_zlarnv_work(1, ISEED, nt*nb2, bT);
+    MAGMA_zplghe_Tile((double)N, descA, 51 );
+    MAGMA_zplrnt_Tile( descB, 7732 );
 
     /* Save AT and bT in lapack layout for check */
-    if ( check ) {
-        A = (PLASMA_Complex64_t *)malloc(lda*n    *sizeof(PLASMA_Complex64_t));
-        b = (PLASMA_Complex64_t *)malloc(ldb*nrhs *sizeof(PLASMA_Complex64_t));
-        MAGMA_zTile_to_Lapack(descA, (void*)A, n);
-        MAGMA_zTile_to_Lapack(descB, (void*)b, n);
-    }
+    PASTE_TILE_TO_LAPACK( descA, A, check, PLASMA_Complex64_t, LDA, N );
+    PASTE_TILE_TO_LAPACK( descB, B, check, PLASMA_Complex64_t, LDB, NRHS );
 
-    /* PLASMA ZPOSV */
-    /* if (iparam[TIMING_BOUND]) */
-    /*     starpu_bound_start(iparam[TIMING_BOUNDDEPS],iparam[TIMING_BOUNDDEPSPRIO]); */
-    t = -cWtime();
-    MAGMA_zposv_Tile(PlasmaUpper, descA, descB);
-    t += cWtime();
-    /* if (iparam[TIMING_BOUND]) */
-    /*     starpu_bound_stop(); */
-    *t_ = t;
+    /* MAGMA ZPOSV */
+    START_TIMING();
+    MAGMA_zposv_Tile(uplo, descA, descB);
+    STOP_TIMING();
 
     /* Check the solution */
     if (check)
       {
-        x = (PLASMA_Complex64_t *)malloc(ldb*nrhs *sizeof(PLASMA_Complex64_t));
-        MAGMA_zTile_to_Lapack(descB, (void*)x, n);
+        PASTE_TILE_TO_LAPACK( descB, X, check, PLASMA_Complex64_t, LDB, NRHS );
 
-        dparam[TIMING_RES] = zcheck_solution(n, n, nrhs, A, lda, b, x, ldb,
-                                             &(dparam[TIMING_ANORM]), &(dparam[TIMING_BNORM]), 
-                                             &(dparam[TIMING_XNORM]));
-        free(A); free(b); free(x);
+        dparam[IPARAM_RES] = zcheck_solution(N, N, NRHS, A, LDA, B, X, LDB,
+                                              &(dparam[IPARAM_ANORM]), 
+                                              &(dparam[IPARAM_BNORM]), 
+                                              &(dparam[IPARAM_XNORM]));
+        free(A); free(B); free(X);
       }
 
-    MAGMA_Desc_Destroy(&descA);
-    MAGMA_Desc_Destroy(&descB);
-
-    free(AT); free(bT);
+    PASTE_CODE_FREE_MATRIX( descA );
+    PASTE_CODE_FREE_MATRIX( descB );
 
     return 0;
 }

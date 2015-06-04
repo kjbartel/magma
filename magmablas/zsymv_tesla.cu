@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @precisions normal z 
+       @precisions normal z -> z
 
        WARNING: this version has really poor performance 
        and cublas is prefered to this implementation. 
@@ -200,8 +200,8 @@ magmablas_zsymv_130( char uplo, magma_int_t n,
                      cuDoubleComplex beta,  
                      cuDoubleComplex *Y, magma_int_t incy)
 {
-    char      uplo_[2] = {uplo, 0};
-    long int  upper    = lapackf77_lsame(uplo_, "U");
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
 
     /*
      * Test the input parameters.

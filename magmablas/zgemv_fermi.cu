@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal z -> z
+
 */
 #include "common_magma.h"
 
@@ -88,11 +91,11 @@ zgemvn_kernel2_fermi(int n, int m, int n1, cuDoubleComplex alpha,  cuDoubleCompl
 extern "C" void
 magmablas_zgemvn_fermi(int n, int m, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, cuDoubleComplex *x, cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -212,11 +215,11 @@ extern "C" void
 magmablas_zgemvt_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, 
                  cuDoubleComplex *x, cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -332,11 +335,11 @@ extern "C" void
 magmablas_zgemvc_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, 
                  cuDoubleComplex *x, cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -375,7 +378,7 @@ magmablas_zgemvc_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, 
 
 
 extern "C" void
-magmablas_zgemv_fermi(char flag, int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, cuDoubleComplex *x, int incx, cuDoubleComplex beta, cuDoubleComplex *y, int incy) 
+magmablas_zgemv_fermi(char flag, magma_int_t m, magma_int_t n, cuDoubleComplex alpha, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *x, magma_int_t incx, cuDoubleComplex beta, cuDoubleComplex *y, magma_int_t incy) 
 {
 
     if(beta.x==0.0 && beta.y==0.0 && incx ==1 && incy==1)

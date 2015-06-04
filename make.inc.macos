@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #
 #      Contributed by: Massimiliano Fatica (NVIDIA)
 #//////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,7 @@ RANLIB    = ranlib
 # add -m32 to compile 32-bit.
 # add -DNDEBUG to disable asserts and certain error checks.
 OPTS      = -m32 -O3 -DADD_
+F77OPTS   = -m32 -O3 -DADD_
 FOPTS     = -m32 -O3 -DADD_ -x f95-cpp-input
 NVOPTS    = -m32 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX -O3 
 LDOPTS    = -m32 -fPIC

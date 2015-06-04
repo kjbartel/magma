@@ -1,89 +1,87 @@
-#ifndef _TESTINGS_H_
-#define _TESTINGS_H_
+#ifndef TESTINGS_H
+#define TESTINGS_H
 
 #ifndef min
 #define min(a,b)  (((a)<(b))?(a):(b))
 #endif
+
 #ifndef max
 #define max(a,b)  (((a)<(b))?(b):(a))
 #endif
 
+
 #define TESTING_CUDA_INIT()                                                \
-  CUdevice  dev;                                                        \
-  CUcontext context;                                                        \
-  if( CUDA_SUCCESS != cuInit( 0 ) ) {                                        \
-    fprintf(stderr, "CUDA: Not initialized\n" ); exit(-1);                \
-  }                                                                        \
-  if( CUDA_SUCCESS != cuDeviceGet( &dev, 0 ) ) {                        \
-    fprintf(stderr, "CUDA: Cannot get the device\n"); exit(-1);                \
-  }                                                                        \
-  if( CUDA_SUCCESS != cuCtxCreate( &context, 0, dev ) ) {                \
-    fprintf(stderr, "CUDA: Cannot create the context\n"); exit(-1);        \
-  }                                                                        \
-  if( CUBLAS_STATUS_SUCCESS != cublasInit( ) ) {                        \
-    fprintf(stderr, "CUBLAS: Not initialized\n"); exit(-1);                \
-  }                                                                        \
-  printout_devices( );
+    if( CUBLAS_STATUS_SUCCESS != cublasInit() ) {                          \
+        fprintf(stderr, "CUBLAS: Not initialized\n");                      \
+        exit(-1);                                                          \
+    }                                                                      \
+    printout_devices();
 
 
-#define TESTING_CUDA_FINALIZE()                        \
-  cuCtxDetach( context );                        \
-  cublasShutdown();
-     
-#define TESTING_CUDA_INIT_MGPU()                                                \
-if( CUDA_SUCCESS != cuInit( 0 ) ) {                                        \
-fprintf(stderr, "CUDA: Not initialized\n" ); exit(-1);                \
-}                                                                        \
-{                                                                        \
-int ndevices;                                                            \
-cuDeviceGetCount( &ndevices );                                           \
-for(int idevice = 0; idevice < ndevices; ++idevice ){                  \
-cudaSetDevice(idevice);                                                \
-if( CUBLAS_STATUS_SUCCESS != cublasInit( ) ) {                        \
-fprintf(stderr, "CUBLAS: Not initialized\n"); exit(-1);                \
-}                                                                        \
-}                                                                        \
-}                                                                        \
-cudaSetDevice(0);                                                       \
-printout_devices( );
+#define TESTING_CUDA_FINALIZE()                                            \
+    cublasShutdown();
 
 
-#define TESTING_CUDA_FINALIZE_MGPU()                        \
-{                                                                        \
-int ndevices;                                                            \
-cuDeviceGetCount( &ndevices );                                           \
-for(int idevice = 0; idevice < ndevices; ++idevice ){                  \
-cudaSetDevice(idevice);                                                \
-  cublasShutdown();                                      \
-}}
-
-#define TESTING_MALLOC(__ptr, __type, __size)                           \
-  __ptr = (__type*)malloc((__size) * sizeof(__type));                   \
-  if (__ptr == 0) {                                                        \
-    fprintf (stderr, "!!!! Malloc failed for: %s\n", #__ptr );                \
-    exit(-1);                                                                \
-  }
-
-#define TESTING_HOSTALLOC(__ptr, __type, __size)                                \
-  if( cudaSuccess != cudaMallocHost( (void**)&__ptr, (__size)*sizeof(__type) ) ) { \
-    fprintf (stderr, "!!!! cudaMallocHost failed for: %s\n", #__ptr );        \
-    exit(-1);                                                                \
-  }
-
-#define TESTING_DEVALLOC(__ptr, __type, __size)                                \
-  if( cudaSuccess != cudaMalloc( (void**)&__ptr, (__size)*sizeof(__type) ) ){ \
-    fprintf (stderr, "!!!! cublasAlloc failed for: %s\n", #__ptr );        \
-    exit(-1);                                                                \
-  }
+#define TESTING_CUDA_INIT_MGPU()                                           \
+{                                                                          \
+    int ndevices;                                                          \
+    cudaGetDeviceCount( &ndevices );                                       \
+    for( int idevice = 0; idevice < ndevices; ++idevice ) {                \
+        cudaSetDevice(idevice);                                            \
+        if( CUBLAS_STATUS_SUCCESS != cublasInit() ) {                      \
+            fprintf(stderr, "CUBLAS: Not initialized\n");                  \
+            exit(-1);                                                      \
+        }                                                                  \
+    }                                                                      \
+    cudaSetDevice(0);                                                      \
+    printout_devices();                                                    \
+}
 
 
-#define TESTING_FREE(__ptr)                        \
-  free(__ptr);
+#define TESTING_CUDA_FINALIZE_MGPU()                                       \
+{                                                                          \
+    int ndevices;                                                          \
+    cudaGetDeviceCount( &ndevices );                                       \
+    for( int idevice = 0; idevice < ndevices; ++idevice ) {                \
+        cudaSetDevice(idevice);                                            \
+        cublasShutdown();                                                  \
+    }                                                                      \
+}
 
-#define TESTING_HOSTFREE(__ptr)                        \
-  cudaFreeHost( __ptr );
 
-#define TESTING_DEVFREE(__ptr)                        \
-  cudaFree( __ptr );
+#define TESTING_MALLOC( ptr, type, size )                                  \
+    if ( MAGMA_SUCCESS !=                                                  \
+            magma_malloc_cpu( (void**) &ptr, (size)*sizeof(type) )) {      \
+        fprintf( stderr, "!!!! malloc failed for: %s\n", #ptr );           \
+        exit(-1);                                                          \
+    }
 
-#endif /* _TESTINGS_H_ */
+
+#define TESTING_HOSTALLOC( ptr, type, size )                                  \
+    if ( MAGMA_SUCCESS !=                                                     \
+            magma_malloc_pinned( (void**) &ptr, (size)*sizeof(type) )) {      \
+        fprintf( stderr, "!!!! magma_malloc_pinned failed for: %s\n", #ptr ); \
+        exit(-1);                                                             \
+    }
+
+
+#define TESTING_DEVALLOC( ptr, type, size )                                \
+    if ( MAGMA_SUCCESS !=                                                  \
+            magma_malloc( (void**) &ptr, (size)*sizeof(type) )) {          \
+        fprintf( stderr, "!!!! magma_malloc failed for: %s\n", #ptr );     \
+        exit(-1);                                                          \
+    }
+
+
+#define TESTING_FREE(ptr)                                                  \
+    free(ptr);
+
+
+#define TESTING_HOSTFREE(ptr)                                              \
+    magma_free_pinned( ptr );
+
+
+#define TESTING_DEVFREE(ptr)                                               \
+    magma_free( ptr );
+
+#endif /* TESTINGS_H */

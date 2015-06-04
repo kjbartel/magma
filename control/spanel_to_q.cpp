@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Mark Gates
-       @generated s Tue May 15 18:17:08 2012
+       @generated s Thu Jun 28 12:30:05 2012
 */
 #include "common_magma.h"
 
@@ -14,7 +14,7 @@
 // Put 0s in the upper triangular part of a panel and 1s on the diagonal.
 // Stores previous values in work array, to be restored later with sq_to_panel.
 extern "C"
-void spanel_to_q(char uplo, int ib, float *A, int lda, float *work)
+void spanel_to_q(char uplo, magma_int_t ib, float *A, magma_int_t lda, float *work)
 {
     int i, j, k = 0;
     float *col;
@@ -54,7 +54,7 @@ void spanel_to_q(char uplo, int ib, float *A, int lda, float *work)
 // -------------------------
 // Restores a panel, after call to spanel_to_q.
 extern "C"
-void sq_to_panel(char uplo, int ib, float *A, int lda, float *work)
+void sq_to_panel(char uplo, magma_int_t ib, float *A, magma_int_t lda, float *work)
 {
     int i, j, k = 0;
     float *col;

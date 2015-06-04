@@ -4,8 +4,6 @@
 // has MagmaMaxGPUs, strlcpy, max
 #include "common_magma.h"
 
-#include <cuda.h>
-
 // ----------------------------------------
 const int MAX_CORES       = 1;                 // CPU cores
 const int MAX_GPU_STREAMS = MagmaMaxGPUs * 4;  // #devices * #streams per device

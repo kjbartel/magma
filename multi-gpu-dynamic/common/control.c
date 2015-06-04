@@ -135,3 +135,31 @@ int MAGMA_Finalize(void)
     return MAGMA_SUCCESS;
 }
 
+/***************************************************************************//**
+ *
+ * @ingroup Auxiliary
+ *
+ *  MAGMA_my_mpi_rank - Return the MPI rank of the calling process.
+ *
+ *******************************************************************************
+ *
+ *******************************************************************************
+ *
+ * @return
+ *          \retval MPI rank
+ *
+ ******************************************************************************/
+int MAGMA_my_mpi_rank(void)
+{
+#if defined(MORSE_USE_MPI)
+    magma_context_t *magma = magma_context_self();
+    if (magma == NULL) {
+        magma_error("MAGMA_Finalize()", "MAGMA not initialized");
+        return MAGMA_ERR_NOT_INITIALIZED;
+    }
+    
+    return MAGMA_MPI_RANK;
+#else
+    return 0;
+#endif
+}

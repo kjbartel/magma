@@ -1,32 +1,25 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:26 2012
+       @generated s Thu Jun 28 12:30:31 2012
 
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_s
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_strsm magmablas_strsm
-#endif
-// === End defining what BLAS to use =======================================
 
 extern "C" magma_int_t
 magma_sposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs, 
                  float *dA, magma_int_t ldda, 
                  float *dB, magma_int_t lddb, magma_int_t *info )
 {
-/*  -- magma (version 1.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
     Purpose
     =======

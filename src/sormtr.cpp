@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:42 2012
+       @generated s Thu Jun 28 12:30:56 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_sormtr(char side, char uplo, char trans,
              float *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -116,10 +116,10 @@ magma_sormtr(char side, char uplo, char trans,
     char uplo_[2]  = {uplo, 0};
     char trans_[2] = {trans, 0};
     magma_int_t  i__2;
-    static magma_int_t i1, i2, nb, mi, ni, nq, nw;
-    long int left, upper, lquery;
-    static magma_int_t iinfo;
-    static magma_int_t lwkopt;
+    magma_int_t i1, i2, nb, mi, ni, nq, nw;
+    int left, upper, lquery;
+    magma_int_t iinfo;
+    magma_int_t lwkopt;
 
     *info = 0;
     left   = lapackf77_lsame(side_, "L");

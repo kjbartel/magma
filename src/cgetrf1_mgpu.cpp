@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        November 2010
 
-       @generated c Tue May 15 18:17:28 2012
+       @generated c Thu Jun 28 12:30:41 2012
 
 */
 #include <math.h>
@@ -23,10 +23,6 @@
 #endif
 // === End defining what BLAS to use =======================================
 
-/* to appy pivoting from the previous big-panel: need some index-adjusting */
-extern "C" void
-magmablas_cpermute_long3( cuFloatComplex *dAT, int lda, int *ipiv, int nb, int ind );
-
 
 extern "C" magma_int_t
 magma_cgetrf1_mgpu(magma_int_t num_gpus, 
@@ -35,7 +31,7 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
          cuFloatComplex **d_lAP, cuFloatComplex *work, magma_int_t lddwork, 
          cudaStream_t **streaml0, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -43,7 +39,6 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
 
     Purpose
     =======
-
     CGETRF computes an LU factorization of a general M-by-N matrix A
     using partial pivoting with row interchanges.
 
@@ -57,7 +52,6 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
 
     Arguments
     =========
-
     NUM_GPUS 
             (input) INTEGER
             The number of GPUS to be used for the factorization.
@@ -100,7 +94,7 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
     magma_int_t i, d, rows, cols, s, ldpan[4];
     magma_int_t id, i_local, i_local2, nb0, nb1;
     cuFloatComplex *d_panel[4], *panel_local[4];
-    static cudaStream_t streaml[4][2];
+    cudaStream_t streaml[4][2];
 
     /* Check arguments */
     *info = 0;
@@ -124,7 +118,7 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
     mindim = min(m, n);
     //nb     = magma_get_cgetrf_nb(m);
     if( num_gpus > ceil((float)n/nb) ) {
-      printf( " * too many GPUs for the matrix size, using %d GPUs\n",num_gpus );
+      printf( " * too many GPUs for the matrix size, using %d GPUs\n", (int) num_gpus );
       *info = -1;
       return *info;
     }
@@ -208,9 +202,9 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
                   magma_setdevice(d);
                   /* apply the pivoting */
                   if( d == 0 ) 
-                    magmablas_cpermute_long2( inAT(d,0,0), lddat, ipiv, nb, i*nb );
+                      magmablas_cpermute_long2( lddat, inAT(d,0,0), lddat, ipiv, nb, i*nb );
                   else
-                    magmablas_cpermute_long3( inAT(d,0,0), lddat, ipiv, nb, i*nb );
+                      magmablas_cpermute_long3( inAT(d,0,0), lddat, ipiv, nb, i*nb );
 
                   /* storage for panel */
                   if( d == id ) {
@@ -305,9 +299,9 @@ magma_cgetrf1_mgpu(magma_int_t num_gpus,
               magma_setdevice(d);
               if( nb0 > 0 ) {
                 if( d == 0 ) 
-                  magmablas_cpermute_long2( inAT(d,0,0), lddat, ipiv, nb0, s*nb );
+                    magmablas_cpermute_long2( lddat, inAT(d,0,0), lddat, ipiv, nb0, s*nb );
                 else
-                  magmablas_cpermute_long3( inAT(d,0,0), lddat, ipiv, nb0, s*nb );
+                    magmablas_cpermute_long3( inAT(d,0,0), lddat, ipiv, nb0, s*nb );
 
                 i_local2 = i_local;
                 if( d < id ) i_local2++;

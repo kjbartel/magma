@@ -1,14 +1,13 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
     @precisions normal d -> s
 */
-#define N_MAX_GPU 8
 #include "common_magma.h"
 
 #define Q(ix, iy) (q + (ix) + ldq * (iy))
@@ -17,7 +16,7 @@ extern "C" {
     magma_int_t magma_dlaex1_m(magma_int_t nrgpu, magma_int_t n, double* d, double* q, magma_int_t ldq,
                                magma_int_t* indxq, double rho, magma_int_t cutpnt,
                                double* work, magma_int_t* iwork, double** dwork,
-                               cudaStream_t stream[N_MAX_GPU][2],
+                               cudaStream_t stream[MagmaMaxGPUs][2],
                                char range, double vl, double vu,
                                magma_int_t il, magma_int_t iu, magma_int_t* info);
 
@@ -36,11 +35,11 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -129,8 +128,8 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
     magma_int_t curlvl, curprb, i, indxq;
     magma_int_t igpu, j, k, matsiz, msd2, smlsiz;
     magma_int_t submat, subpbs, tlvls;
-    double* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][2];
+    double* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][2];
     int gpu_b;
     magma_getdevice(&gpu_b);
 
@@ -228,9 +227,9 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
         lapackf77_dsteqr(char_I , &matsiz, &d[submat], &e[submat],
                          Q(submat, submat), &ldq, work, info);  // change to edc?
         if(*info != 0){
-            printf("info: %d\n, submat: %d\n", *info, submat);
+            printf("info: %d\n, submat: %d\n", (int) *info, (int) submat);
             *info = (submat+1)*(n+1) + submat + matsiz;
-            printf("info: %d\n", *info);
+            printf("info: %d\n", (int) *info);
             return MAGMA_SUCCESS;
         }
         k = 1;

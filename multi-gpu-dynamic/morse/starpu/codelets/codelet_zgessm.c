@@ -26,16 +26,14 @@ static void cl_zgessm_cpu_func(void *descr[], void *cl_arg)
     int k;
     int ib;
     int *IPIV;
-    PLASMA_Complex64_t *tinyL;
     int ldtl;
     PLASMA_Complex64_t *L;
     int ldl;
     PLASMA_Complex64_t *A;
     int lda;
 
-    starpu_unpack_cl_args(cl_arg, &m, &n, &k, &ib, &IPIV, &ldtl, &ldl, &lda);
+    starpu_codelet_unpack_args(cl_arg, &m, &n, &k, &ib, &IPIV, &ldtl, &ldl, &lda);
 
-    tinyL = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
     L  = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[1]);
     A  = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[2]);
 
@@ -72,7 +70,7 @@ static void cl_zgessm_cuda_func(void *descr[], void *cl_arg)
     int lda;
     int info;
 
-    starpu_unpack_cl_args(cl_arg, &m, &n, &k, &ib, &IPIV, &ldtl, &ldl, &lda);
+    starpu_codelet_unpack_args(cl_arg, &m, &n, &k, &ib, &IPIV, &ldtl, &ldl, &lda);
 
     dtinyL = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[0]);
     dL     = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[1]);
@@ -108,7 +106,7 @@ void MORSE_zgessm( MorseOption_t *options,
                           magma_desc_t *D, int Dm, int Dn,
                           magma_desc_t *A, int Am, int An)
 {
-    starpu_codelet *zgessm_codelet;
+    struct starpu_codelet *zgessm_codelet;
     void (*callback)(void*) = options->profiling ? cl_zgessm_callback : NULL;
     int ldl = BLKLDD( L, Lm );
     int ldd = BLKLDD( D, Dm );
@@ -120,19 +118,19 @@ void MORSE_zgessm( MorseOption_t *options,
     zgessm_codelet = &cl_zgessm;
 #endif
 
-    starpu_Insert_Task(zgessm_codelet,
-                       VALUE,  &m,      sizeof(int),
-                       VALUE,  &n,      sizeof(int),
-                       VALUE,  &k,      sizeof(int),
-                       VALUE,  &ib,     sizeof(int),
-                       VALUE,  &IPIV,   sizeof(int*),
-                       INPUT,  BLKADDR( L, PLASMA_Complex64_t, Lm, Ln ),
-                       VALUE,  &ldl,    sizeof(int),
-                       INPUT,  BLKADDR( D, PLASMA_Complex64_t, Dm, Dn ),
-                       VALUE,  &ldd,    sizeof(int),
-                       INOUT,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-                       VALUE,  &lda,    sizeof(int),
-                       PRIORITY,     options->priority,
-                       CALLBACK,     callback, NULL,
+    starpu_insert_task(zgessm_codelet,
+                       STARPU_VALUE,  &m,      sizeof(int),
+                       STARPU_VALUE,  &n,      sizeof(int),
+                       STARPU_VALUE,  &k,      sizeof(int),
+                       STARPU_VALUE,  &ib,     sizeof(int),
+                       STARPU_VALUE,  &IPIV,   sizeof(int*),
+                       STARPU_R,  BLKADDR( L, PLASMA_Complex64_t, Lm, Ln ),
+                       STARPU_VALUE,  &ldl,    sizeof(int),
+                       STARPU_R,  BLKADDR( D, PLASMA_Complex64_t, Dm, Dn ),
+                       STARPU_VALUE,  &ldd,    sizeof(int),
+                       STARPU_RW,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+                       STARPU_VALUE,  &lda,    sizeof(int),
+                       STARPU_PRIORITY,     options->priority,
+                       STARPU_CALLBACK,     callback, NULL,
                        0);
 }

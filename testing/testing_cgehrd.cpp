@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:24 2012
+       @generated c Thu Jun 28 12:31:48 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -47,20 +46,22 @@ int main( int argc, char** argv)
     float           result[2] = {0., 0.};
 
     /* Matrix size */
-    int N=0, n2, lda, nb, lwork, ltwork, once = 0;
-    int size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
+    magma_int_t N=0, n2, lda, nb, lwork, ltwork, once = 0;
+    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
 
-    int i, info, checkres;
-    int ione     = 1;
-    int ISEED[4] = {0,0,0,1};
+    magma_int_t i, info, checkres;
+    magma_int_t ione     = 1;
+    magma_int_t ISEED[4] = {0,0,0,1};
     
     if (argc != 1){
         for(i = 1; i<argc; i++){
-            if (strcmp("-N", argv[i])==0)
+            if (strcmp("-N", argv[i])==0) {
                 N = atoi(argv[++i]);
+                once = true;
+            }
         }
         if ( N > 0 )
-            printf("  testing_cgehrd -N %d\n\n", N);
+            printf("  testing_cgehrd -N %d\n\n", (int) N);
         else
         {
             printf("\nUsage: \n");
@@ -103,7 +104,6 @@ int main( int argc, char** argv)
 #endif
     }
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s   |A-QHQ'|/N|A|  |I-QQ'|/N \n");
     printf("=============================================================\n");
     for(i=0; i<10; i++){
@@ -125,7 +125,7 @@ int main( int argc, char** argv)
         magma_cgehrd ( N, ione, N, h_R, lda, tau, h_work, lwork, dT, &info);
         end = get_current_time();
         if ( info < 0 )
-            printf("Argument %d of magma_cgehrd had an illegal value\n", -info);
+            printf("Argument %d of magma_cgehrd had an illegal value\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start,end);
 
@@ -162,7 +162,7 @@ int main( int argc, char** argv)
         lapackf77_cgehrd(&N, &ione, &N, h_R, &lda, tau, h_work, &lwork, &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of lapack_cgehrd had an illegal value.\n", -info);
+            printf("Argument %d of lapack_cgehrd had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start,end);
 
@@ -171,11 +171,11 @@ int main( int argc, char** argv)
            =================================================================== */
         if ( checkres ) {
             printf("%5d    %6.2f         %6.2f      %e %e\n",
-                   N, cpu_perf, gpu_perf,
+                   (int) N, cpu_perf, gpu_perf,
                    result[0]*eps, result[1]*eps );
         } else {
             printf("%5d    %6.2f         %6.2f\n",
-                   N, cpu_perf, gpu_perf );
+                   (int) N, cpu_perf, gpu_perf );
         }
 
         if ( once )

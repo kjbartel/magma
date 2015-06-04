@@ -1,18 +1,17 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- *  @generated d Tue May 15 18:18:15 2012
+ *  @generated d Thu Jun 28 12:31:37 2012
  *
  **/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -139,8 +138,8 @@ int main(int argc, char **argv)
         lda = ((M+31)/32)*32;
         flops = FLOPS( (double)M, (double)N ) / 1000000;
 
-        printf(      "%5d %5d ", M, N );
-        fprintf( fp, "%5d %5d ", M, N );
+        printf(      "%5d %5d ", (int) M, (int) N );
+        fprintf( fp, "%5d %5d ", (int) M, (int) N );
 
         /* =====================================================================
            Performs operation using CUDA-BLAS

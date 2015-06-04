@@ -1,18 +1,16 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:49 2012
+       @generated s Thu Jun 28 12:31:02 2012
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
-#include "cblas.h"
+#include <cblas.h>
 
 extern "C"
 magma_int_t magma_get_ssygst_m_nb() { return 256;}
@@ -30,11 +28,11 @@ magma_ssygst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                float *b, magma_int_t ldb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.0) --
+  -- MAGMA (version 1.2.1) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     May 2012
+     June 2012
 
 
    Purpose
@@ -102,15 +100,15 @@ magma_ssygst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
     float    c_neg_one  = MAGMA_S_NEG_ONE;
     float    c_half     = MAGMA_S_HALF;
     float    c_neg_half = MAGMA_S_NEG_HALF;
-    float* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][3];
+    float* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][3];
     magma_int_t igpu = 0;
 
     int gpu_b;
     magma_getdevice(&gpu_b);
 
     float             d_one = 1.0;
-    long int           upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
 
     magma_int_t nb = magma_get_ssygst_m_nb();
 
@@ -199,7 +197,7 @@ magma_ssygst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                 igpu = k%nrgpu;
                 magma_setdevice(igpu);
 
-                magma_queue_sync( stream[igpu][1] ); // Needed, otherwise conflicts reading B(k,k) between hegs2 and cudaMemcpy2D
+                magma_queue_sync( stream[igpu][1] ); // Needed, otherwise conflicts reading B(k,k) between sygs2 and cudaMemcpy2D
                 magma_queue_sync( stream[igpu][2] );
 
                 if(k+1<nbl){
@@ -211,8 +209,8 @@ magma_ssygst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                                 dA(igpu, k/nrgpu, k+1), ldda);
                 }
 
-                lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
-printf("hegs2%d\n", k);
+                lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+printf("sygs2%d\n", (int) k);
                 if (k+1<nbl) {
                     magma_ssetmatrix_async( kb, kb,
                                             A(k, k),              lda,
@@ -299,7 +297,7 @@ printf("hegs2%d\n", k);
 
             if (n > nb){
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
 
                 jb = min(nb, n-nb);
                 for (igpu = 0; igpu < nrgpu; ++igpu){
@@ -391,7 +389,7 @@ printf("hegs2%d\n", k);
                 igpu = k%nrgpu;
                 magma_setdevice(igpu);
 
-                magma_queue_sync( stream[igpu][1] ); // Needed, otherwise conflicts reading B(k,k) between hegs2 and cudaMemcpy2D
+                magma_queue_sync( stream[igpu][1] ); // Needed, otherwise conflicts reading B(k,k) between sygs2 and cudaMemcpy2D
                 magma_queue_sync( stream[igpu][2] );
 
                 if(k+1<nbl){
@@ -403,7 +401,7 @@ printf("hegs2%d\n", k);
                                 dA(igpu, k+1, k/nrgpu), ldda);
                 }
 
-                lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+                lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
 
                 if (k+1<nbl) {
                     magma_ssetmatrix_async( kb, kb,
@@ -491,7 +489,7 @@ printf("hegs2%d\n", k);
 
             if (n > nb){
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
 
                 jb = min(nb, n-nb);
                 for (igpu = 0; igpu < nrgpu; ++igpu){
@@ -601,7 +599,7 @@ printf("hegs2%d\n", k);
 
                 magma_queue_sync( stream[0] );
 
-                lapackf77_shegs2( &itype, uplo_, &kb, A(k, k), &lda, B(k, k), &ldb, info);
+                lapackf77_ssygs2( &itype, uplo_, &kb, A(k, k), &lda, B(k, k), &ldb, info);
 
                 magma_ssetmatrix_async( kb, kb,
                                         A(k, k),  lda,
@@ -620,7 +618,7 @@ printf("hegs2%d\n", k);
 
 /*                        if (n > nb){
 
-            magma_int_t nloc[N_MAX_GPU];
+            magma_int_t nloc[MagmaMaxGPUs];
             for(igpu = 0; igpu < nrgpu; ++igpu)
                 nloc[igpu] = 0;
 
@@ -782,7 +780,7 @@ printf("hegs2%d\n", k);
 
                 magma_queue_sync( stream[0] );
 
-                lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+                lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
 
                 magma_ssetmatrix_async( kb, kb,
                                         A(k, k),  lda,

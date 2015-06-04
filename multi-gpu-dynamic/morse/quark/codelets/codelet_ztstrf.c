@@ -40,8 +40,9 @@ static void ztstrf_cpu_func(Quark * quark)
                          ldwork, sequence, request, check_info, iinfo);
 
     CORE_ztstrf(m, n, ib, nb, U, ldu, A, lda, L, ldl, IPIV, WORK, ldwork, &info);
+
     if (info != PLASMA_SUCCESS && check_info)
-       magma_sequence_flush(quark, sequence, request, iinfo + info);
+       morse_sequence_flush(quark, sequence, request, iinfo + info);
 }
 
 /*
@@ -60,7 +61,7 @@ void MORSE_ztstrf( MorseOption_t *options,
     int ldl = BLKLDD( L, Lm );
 
     DAG_CORE_TSTRF;
-    QUARK_Insert_Task(options->quark, CORE_ztstrf_quark, options->task_flags,
+    QUARK_Insert_Task(options->quark, ztstrf_cpu_func, options->task_flags,
         sizeof(int),                        &m,             VALUE,
         sizeof(int),                        &n,             VALUE,
         sizeof(int),                        &ib,            VALUE,

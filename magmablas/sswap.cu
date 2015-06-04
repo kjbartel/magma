@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:02 2012
+       @generated s Thu Jun 28 12:31:19 2012
 
 */
 #include "common_magma.h"
@@ -42,8 +42,8 @@ __global__ void magmagpu_sswap( magmagpu_sswap_params_t params )
 }
 
 extern "C" void 
-magmablas_sswap( int n, float *dA1T, int lda1, 
-                 float *dA2T, int lda2)
+magmablas_sswap( magma_int_t n, float *dA1T, magma_int_t lda1, 
+                 float *dA2T, magma_int_t lda2)
 {
     int  blocksize = 64;
     dim3 blocks( (n+blocksize-1) / blocksize, 1, 1);

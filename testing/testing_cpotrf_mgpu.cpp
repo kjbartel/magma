@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- * @generated c Tue May 15 18:18:16 2012
+ * @generated c Thu Jun 28 12:31:38 2012
  *
  **/
 /* includes, system */
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -75,15 +74,15 @@ int main( int argc, char** argv)
                 }
           }
           if (strcmp(uplo,MagmaLowerStr)==0)
-          printf("\n  testing_cpotrf_gpu -N %d -NGPU %d -UPLO L\n\n", N, num_gpus0 );
+          printf("\n  testing_cpotrf_gpu -N %d -NGPU %d -UPLO L\n\n", (int) N, (int) num_gpus0 );
           else
-          printf("\n  testing_cpotrf_gpu -N %d -NGPU %d -UPLO U\n\n", N, num_gpus0 );
+          printf("\n  testing_cpotrf_gpu -N %d -NGPU %d -UPLO U\n\n", (int) N, (int) num_gpus0 );
     } else {
           printf("\nDefault: \n");
-          printf("  testing_cpotrf_gpu -N %d:%d -NGPU %d -UPLO L\n\n", size[0],size[n_sizes-1], num_gpus0 );
+          printf("  testing_cpotrf_gpu -N %d:%d -NGPU %d -UPLO L\n\n", (int) size[0], (int) size[n_sizes-1], (int) num_gpus0 );
     }
         if( N <= 0 || num_gpus0 <= 0 )  {
-                printf( " invalid input N=%d NGPU=%d\n",N,num_gpus0 );
+                printf( " invalid input N=%d NGPU=%d\n", (int) N, (int) num_gpus0 );
                 exit(1);
         }
 
@@ -107,7 +106,6 @@ int main( int argc, char** argv)
           TESTING_DEVALLOC( d_lA[i], cuFloatComplex, ldda*ldn_local );
         }
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s    ||R||_F / ||A||_F\n");
     printf("========================================================\n");
     for(i=0; i<n_sizes; i++){
@@ -138,7 +136,7 @@ int main( int argc, char** argv)
       if( num_gpus0 > N/nb ) {
             num_gpus = N/nb;
             if( N%nb != 0 ) num_gpus ++;
-            printf( " * too many GPUs for the matrix size, using %d GPUs\n",num_gpus );
+            printf( " * too many GPUs for the matrix size, using %d GPUs\n", (int) num_gpus );
           } else {
             num_gpus = num_gpus0;
           }
@@ -177,10 +175,10 @@ int main( int argc, char** argv)
           magma_cpotrf_mgpu(num_gpus, uplo[0], N, d_lA, ldda, &info);
           end = get_current_time();
           if (info < 0) {
-        printf("Argument %d of magma_cpotrf_mgpu had an illegal value.\n", -info);
+                printf("Argument %d of magma_cpotrf_mgpu had an illegal value.\n", (int) -info);
                 break;
           } else if (info != 0) {
-                printf("magma_cpotrf_mgpu returned info=%d\n",info );
+                printf("magma_cpotrf_mgpu returned info=%d\n", (int) info );
                 break;
           }
       gpu_perf = flops / GetTimerValue(start, end);
@@ -221,10 +219,10 @@ int main( int argc, char** argv)
           lapackf77_cpotrf(uplo, &N, h_A, &lda, &info);
           end = get_current_time();
           if (info < 0) {
-            printf("Argument %d of cpotrf had an illegal value.\n", -info);
+                printf("Argument %d of cpotrf had an illegal value.\n", (int) -info);
                 break;
           } else if (info != 0) {
-                printf("lapackf77_cpotrf returned info=%d\n",info );
+                printf("lapackf77_cpotrf returned info=%d\n", (int) info );
                 break;
           }
           cpu_perf = flops / GetTimerValue(start, end);
@@ -235,7 +233,7 @@ int main( int argc, char** argv)
           matnorm = lapackf77_clange("f", &N, &N, h_A, &lda, work);
           blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
           printf("%5d    %6.2f         %6.2f        %e\n", 
-                 size[i], cpu_perf, gpu_perf,
+                 (int) size[i], cpu_perf, gpu_perf,
                  lapackf77_clange("f", &N, &N, h_R, &lda, work) / matnorm);
         
           if (flag != 0) break;

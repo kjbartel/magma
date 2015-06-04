@@ -1,12 +1,12 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
-    @generated s Tue May 15 18:17:48 2012
+    @generated s Thu Jun 28 12:30:54 2012
 */
 #include "common_magma.h"
 
@@ -26,11 +26,11 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
              magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -46,7 +46,7 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
     Purpose
     =======
 
-    DLAEX0 computes all eigenvalues and the choosen eigenvectors of a
+    SLAEX0 computes all eigenvalues and the choosen eigenvectors of a
     symmetric tridiagonal matrix using the divide and conquer method.
 
     Arguments
@@ -192,9 +192,9 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
         lapackf77_ssteqr(char_I , &matsiz, &d[submat], &e[submat],
                          Q(submat, submat), &ldq, work, info);  // change to edc?
         if(*info != 0){
-            printf("info: %d\n, submat: %d\n", *info, submat);
+            printf("info: %d\n, submat: %d\n", (int) *info, (int) submat);
             *info = (submat+1)*(n+1) + submat + matsiz;
-            printf("info: %d\n", *info);
+            printf("info: %d\n", (int) *info);
             return MAGMA_SUCCESS;
         }
         k = 1;
@@ -232,7 +232,7 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
 
             // Merge lower order eigensystems (of size MSD2 and MATSIZ - MSD2)
             // into an eigensystem of size MATSIZ.
-            // DLAEX1 is used only for the full eigensystem of a tridiagonal
+            // SLAEX1 is used only for the full eigensystem of a tridiagonal
             // matrix.
 
             if (matsiz == n)

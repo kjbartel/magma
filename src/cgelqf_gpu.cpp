@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:33 2012
+       @generated c Thu Jun 28 12:30:42 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
                   cuFloatComplex *dA,    magma_int_t lda,   cuFloatComplex *tau, 
                   cuFloatComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -54,7 +54,7 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,M).
@@ -93,7 +93,7 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
     cuFloatComplex c_one = MAGMA_C_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo;
-    long int lquery;
+    int lquery;
 
     *info = 0;
     nb = magma_get_cgelqf_nb(m);

@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated ds Tue May 15 18:18:07 2012
+       @generated ds Thu Jun 28 12:31:16 2012
 
 */
 #include "common_magma.h"
 
-static __global__ void 
+__global__ void 
 slag2d_generic(int M, int N, 
-               float *SA, int LDSA , 
-               double *A , int LDA ) 
+               float *SA, int LDSA, 
+               double *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -42,10 +42,10 @@ slag2d_generic(int M, int N,
     A[0] = Ap[0];
 }
 
-static __global__ void 
+__global__ void 
 slag2d_special(int M, int N, 
                float *SA, int LDSA, 
-               double *A , int LDA ) 
+               double *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -65,10 +65,10 @@ slag2d_special(int M, int N,
     A[0] = Ap[0];
 }
 
-static void 
+void 
 magmablas_slag2d_64_64_16_4_v2( int M, int N, 
-                                float *SA, int LDSA , 
-                                double *A , int LDA )
+                                float *SA, int LDSA, 
+                                double *A, int LDA )
 {
     if( M == 0 || N==0 ) {
         printf("One of the dimension is ZERO\n");
@@ -85,13 +85,13 @@ magmablas_slag2d_64_64_16_4_v2( int M, int N,
 }
 
 extern "C" void 
-magmablas_slag2d(int M, int N, float *SA, int LDSA, double *A, int LDA, int *INFO)
+magmablas_slag2d(magma_int_t M, magma_int_t N, float *SA, magma_int_t LDSA, double *A, magma_int_t LDA, magma_int_t *INFO)
 {
 /*
   Purpose
   =======
 
-  CLAG2Z converts a SINGLE PRECISION matrix, SA, to a DOUBLE
+  SLAG2D converts a SINGLE PRECISION matrix, SA, to a DOUBLE
   PRECISION matrix, A.
 
   Note that while it is possible to overflow while converting

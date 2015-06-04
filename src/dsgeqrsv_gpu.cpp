@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated ds Tue May 15 18:17:50 2012
+       @generated ds Thu Jun 28 12:30:42 2012
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
                    double *dX,  magma_int_t lddx, 
                    magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -129,7 +129,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
 
     H_WORK  (workspace/output) REAL array, dimension (MAX(1,LWORK))   
             Higher performance is achieved if H_WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     D_WORK  (workspace/output)  REAL array on the GPU, dimension 2*N*NB,
             where NB can be obtained through magma_get_sgeqrf_nb(M).
@@ -150,7 +150,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
             This memory is unattached if the iterative refinement worked, 
             otherwise it is used as workspace to factor the matrix in
             double precision. Higher performance is achieved if H_WORK_D is 
-            in pinned memory, e.g. allocated using magma_malloc_host. 
+            in pinned memory, e.g. allocated using magma_malloc_pinned. 
 
     D_WORK_D (workspace/output) DOUBLE REAL array on the GPU, dimension 2*N*NB,
             where NB can be obtained through magma_get_dgeqrf_nb(M).
@@ -206,7 +206,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     /* dworks(dSA + dSX + dST) */
     size = ldda*N + N*NRHS + ( 2*minmn + ((N+31)/32)*32 )*nb;
     if (MAGMA_SUCCESS != magma_smalloc( &dworks, size )) {
-        fprintf(stderr, "Allocation of dworks failed (%d)\n", size);
+        fprintf(stderr, "Allocation of dworks failed (%d)\n", (int) size);
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
     }
@@ -228,16 +228,15 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     lhwork = nb*max((M-N+nb+2*(NRHS)), 1);
     lhwork = max(lhwork, N*nb); /* We hope that magma nb is bigger than lapack nb to have enough memory in workspace */
     size = minmn + lhwork;
-    hworks = (float*) malloc( size * sizeof(float) );
-    if( hworks == NULL ) {
+    magma_smalloc_cpu( &hworks, size );
+    if ( hworks == NULL ) {
         magma_free( dworks );
         magma_free( dworkd );
         fprintf(stderr, "Allocation of hworks failed\n");
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
-    stau = hworks;
-    hworks += minmn;
+    stau = hworks + lhwork;
 
     eps  = lapackf77_dlamch("Epsilon");
     Anrm = magmablas_dlange('I', M, N, dA, ldda, (double*)dworkd );
@@ -299,7 +298,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     /* Free workspaces */
     magma_free( dworks );
     magma_free( dworkd );
-    free(stau);
+    free( hworks );
     return *info;
 
   L10:
@@ -356,7 +355,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         /* Free workspaces */
         magma_free( dworks );
         magma_free( dworkd );
-        free(stau);
+        free( hworks );
         return *info;
       L20:
         iiter++;
@@ -389,17 +388,20 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     dT  = tau + minmn;
 
     /* hworks(stau + workspace for cgeqrs) = min(M,N) + lhworks */
-    if ( (2*lhwork) > (minmn+lhwork) ) {
-        free(stau);
-        hworks = (float*) malloc( lhwork * sizeof(double) );
-        if( hworks == NULL ) {
+    /* re-use hworks memory for hworkd if possible, else re-allocate. */
+    if ( (2*lhwork) <= (minmn+lhwork) ) {
+        hworkd = (double*) hworks;
+    }
+    else {
+        free( hworks );
+        magma_dmalloc_cpu( &hworkd, lhwork );
+        if ( hworkd == NULL ) {
             magma_free( dworkd );
             fprintf(stderr, "Allocation of hworkd2 failed\n");
             *info = MAGMA_ERR_HOST_ALLOC;
             return *info;
         }
     }
-    hworkd = (double*) hworks;
 
     /* Single-precision iterative refinement failed to converge to a
        satisfactory solution, so we resort to double precision.           */
@@ -410,7 +412,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     }
     
     magma_free( dworkd );
-    free(hworkd);
+    free( hworkd );
     return *info;
 }
 

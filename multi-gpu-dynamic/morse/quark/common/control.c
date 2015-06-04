@@ -23,8 +23,9 @@ void morse_barrier( magma_context_t *magma )
     QUARK_Barrier(magma->schedopt.quark);
 }
 
-void morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int nthreads_per_worker)
+int morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int nthreads_per_worker)
 {
+    hres = 0;
     if ( ncudas > 0 )
         magma_warning( "morse_init_scheduler(quark)", "GPUs are not supported for now");
 
@@ -33,7 +34,7 @@ void morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int
 
     magma->schedopt.quark = QUARK_New(nworkers); 
 
-    return;
+    return hres;
 }
 
 /***************************************************************************//**

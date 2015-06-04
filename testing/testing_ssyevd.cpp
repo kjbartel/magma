@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-    @generated s Tue May 15 18:18:25 2012
+    @generated s Thu Jun 28 12:31:49 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -59,11 +58,11 @@ int main( int argc, char** argv)
                 N = atoi(argv[++i]);
         }
         if (N>0)
-            printf("  testing_ssyevd -N %d\n\n", N);
+            printf("  testing_ssyevd -N %d\n\n", (int) N);
         else
             {
                 printf("\nUsage: \n");
-                printf("  testing_ssyevd -N %d\n\n", N);
+                printf("  testing_ssyevd -N %d\n\n", (int) N);
                 exit(1);
             }
     }
@@ -90,7 +89,6 @@ int main( int argc, char** argv)
     TESTING_HOSTALLOC(h_work, float,  lwork);
     TESTING_MALLOC(    iwork,     magma_int_t, liwork);
     
-    printf("\n\n");
     printf("  N     CPU Time(s)    GPU Time(s) \n");
     printf("===================================\n");
     for(i=0; i<8; i++){
@@ -169,7 +167,7 @@ int main( int argc, char** argv)
                          &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of ssyevd had an illegal value.\n", -info);
+            printf("Argument %d of ssyevd had an illegal value.\n", (int) -info);
 
         cpu_time = GetTimerValue(start,end)/1000.;
 
@@ -177,7 +175,7 @@ int main( int argc, char** argv)
            Print execution time
            =================================================================== */
         printf("%5d     %6.2f         %6.2f\n",
-               N, cpu_time, gpu_time);
+               (int) N, cpu_time, gpu_time);
         if ( checkres ){
           printf("Testing the factorization A = U S U' for correctness:\n");
           printf("(1)    | A - U S U' | / (|A| N) = %e\n", result[0]*eps);

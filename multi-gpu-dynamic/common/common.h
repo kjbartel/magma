@@ -30,13 +30,16 @@
 #include <unistd.h>
 #endif
 
+#if defined(MORSE_USE_MPI)
+#include <mpi.h>
+#endif
+
 #if defined(MORSE_USE_CUDA)
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include "magma.h"
-#include "magma_lapack.h"
 #endif
 
 #include <plasma.h>
@@ -75,20 +78,23 @@
 /***************************************************************************//**
  *  Global shortcuts
  **/
-/*#define MAGMA_RANK (Scheduler dependent) */
 #define MAGMA_NB          magma->nb
 #define MAGMA_IB          magma->ib
 #define MAGMA_RHBLK       magma->rhblock
 #define MAGMA_TRANSLATION magma->translation
 #define MAGMA_PARALLEL    magma->parallel_enabled
 #define MAGMA_PROFILING   magma->profiling_enabled
+#if defined(MORSE_USE_MPI)
+#define MAGMA_MPI_RANK    magma->my_mpi_rank
+#define MAGMA_MPI_SIZE    magma->mpi_comm_size
+#endif
 
 /***************************************************************************//**
  *  Scheduler properties
  **/
 #define PRIORITY        16
-#define CALLBACK         17
-#define REDUX                18
+#define CALLBACK        17
+#define REDUX           18
 
 extern char *plasma_lapack_constants[];
 

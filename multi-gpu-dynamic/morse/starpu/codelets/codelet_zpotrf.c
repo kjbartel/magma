@@ -25,12 +25,15 @@ static void cl_zpotrf_cpu_func(void *descr[], void *cl_arg)
     int N;
     PLASMA_Complex64_t *A;
     int LDA;
-    int INFO = 0;
+    int info = 0;
+    int iinfo;
 
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &N, &LDA);
-    INFO = LAPACKE_zpotrf_work(LAPACK_COL_MAJOR, lapack_const(uplo), N, A, LDA);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &N, &LDA, &iinfo);
+    CORE_zpotrf( uplo, N, A, LDA, &info );
+
+    /* TODO: get the INFO and cancel if != 0 */
 }
 
 /*
@@ -43,12 +46,12 @@ static void cl_zpotrf_mc_func(void *descr[], void *cl_arg)
     int N;
     PLASMA_Complex64_t *A;
     int LDA;
-    int INFO = 0;
+    int iinfo;
 
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &N, &LDA);
-    INFO = PLASMA_zpotrf_Lapack(uplo, N, A, LDA);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &N, &LDA, &iinfo);
+    PLASMA_zpotrf_Lapack(uplo, N, A, LDA);
 }
 #else
 #define cl_zpotrf_mc_func cl_zpotrf_cpu_func
@@ -66,10 +69,11 @@ static void cl_zpotrf_cuda_func(void *descr[], void *cl_arg)
     int LDA;
     int INFO = 0;
     int  ret;
+    int iinfo;
 
     A = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[0]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &N, &LDA);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &N, &LDA, &iinfo);
 
     ret = magma_zpotrf_gpu(
         plasma_lapack_constants[uplo][0],
@@ -94,7 +98,7 @@ void MORSE_zpotrf( MorseOption_t *option,
                    PLASMA_enum uplo, int n, 
                    magma_desc_t *A, int Am, int An, int iinfo)
 {
-    starpu_codelet *zpotrf_codelet;
+    struct starpu_codelet *zpotrf_codelet;
     void (*callback)(void*) = option->profiling ? cl_zpotrf_callback : NULL;
     int lda = BLKLDD( A, Am );
 
@@ -104,13 +108,14 @@ void MORSE_zpotrf( MorseOption_t *option,
     zpotrf_codelet = &cl_zpotrf;
 #endif
 
-    starpu_Insert_Task(zpotrf_codelet,
-                       VALUE,        &uplo,  sizeof(PLASMA_enum),
-                       VALUE,        &n,     sizeof(int),
-                       INOUT,        BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-                       VALUE,        &lda,   sizeof(int),
-                       PRIORITY,     option->priority,
-                       CALLBACK,     callback, NULL,
+    starpu_insert_task(zpotrf_codelet,
+                       STARPU_VALUE,    &uplo,  sizeof(PLASMA_enum),
+                       STARPU_VALUE,    &n,     sizeof(int),
+                       STARPU_RW,       BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+                       STARPU_VALUE,    &lda,   sizeof(int),
+                       STARPU_VALUE,    &iinfo, sizeof(int),
+                       STARPU_PRIORITY, option->priority,
+                       STARPU_CALLBACK, callback, NULL,
                        0);
 
     /* TODO: take cancellation into account */

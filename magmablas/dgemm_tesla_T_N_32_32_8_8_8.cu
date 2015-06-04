@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal d
+
 */
 #include "common_magma.h"
 #include "commonblas_d.h"
@@ -27,17 +30,17 @@ static __device__ void daxpy(double a,double *b, double *c) {
         c[15] += a * b[15];
 }
 
-extern "C" __global__ void 
+__global__ void 
 dgemm_kernel_T_N_32_32_8_8_8(double *C, const double *A, const double *B,
                              int m, int n, int k, 
                              int lda, int ldb, int ldc,
                              double alpha, double beta) 
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose:
     ========
@@ -414,8 +417,8 @@ extern "C" void
 magmablas_dgemm_kernel_T_N_32_32_8_8_8(double *C, 
                                        const double *A,
                                        const double *B,
-                                       int m, int n, int k,
-                                       int lda, int ldb, int ldc, 
+                                       magma_int_t m, magma_int_t n, magma_int_t k,
+                                       magma_int_t lda, magma_int_t ldb, magma_int_t ldc, 
                                        double alpha, double beta)
 {        
         dim3 threads( 8, 8 );

@@ -1,0 +1,35 @@
+#!/bin/bash
+rm -rf CMakeCache.txt CMakeFiles
+
+# source /home/mfaverge/trace/opt/trace_env.sh
+source /home/mfaverge/mklvars.sh intel64
+
+export LD_LIBRARY_PATH=/home/mfaverge/opt/x86_64/lib:$LD_LIBRARY_PATH
+export PATH=/home/mfaverge/opt/x86_64/bin:$PATH
+export PKG_CONFIG_PATH=/home/mfaverge/opt/x86_64/lib/pkgconfig/:${PKG_CONFIG_PATH}
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mfaverge/opt-splagma/lib
+export PATH=$PATH:/home/mfaverge/opt-splagma/bin
+export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/home/mfaverge/opt-splagma/lib/pkgconfig/
+
+# CUDA
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/scratch/cuda/lib64
+export PATH=$PATH:/mnt/scratch/cuda/bin
+
+
+USER_OPTIONS=" -DMAGMA_MORSE=ON"
+USER_OPTIONS+=" -DMORSE_USE_CUDA=ON"
+USER_OPTIONS+=" -DMORSE_USE_MPI=ON"
+USER_OPTIONS+=" -DMAGMA_1GPU=ON"
+USER_OPTIONS+=" -DMAGMA_USE_FERMI=OFF"
+USER_OPTIONS+=" -DSTARPU_DIR=/home/mfaverge/opt-splagma"
+USER_OPTIONS+=" -DPLASMA_DIR=/home/mfaverge/opt-splagma"
+
+
+LOCATION=`dirname $0`
+
+echo
+echo cmake -G "Unix Makefiles" ${USER_OPTIONS} ${LOCATION}
+echo
+
+cmake -G "Unix Makefiles" ${USER_OPTIONS} ${LOCATION}

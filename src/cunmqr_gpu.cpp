@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
 
-       @generated c Tue May 15 18:17:37 2012
+       @generated c Thu Jun 28 12:30:47 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_cunmqr_gpu(char side, char trans,
                  cuFloatComplex *dT,    magma_int_t nb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -127,8 +127,8 @@ magma_cunmqr_gpu(char side, char trans,
     magma_int_t i, lddwork;
 
     magma_int_t i1, i2, i3, ib, ic, jc, mi, ni, nq, nw, ret;
-    long int left, notran, lquery;
-    static magma_int_t lwkopt;
+    int left, notran, lquery;
+    magma_int_t lwkopt;
 
     *info = 0;
     left   = lapackf77_lsame(side_, "L");

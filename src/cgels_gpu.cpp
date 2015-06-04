@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:36 2012
+       @generated c Thu Jun 28 12:30:43 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *hwork, magma_int_t lwork, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -85,7 +85,7 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     magma_int_t nb     = magma_get_cgeqrf_nb(m);
     magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
-    long int lquery = (lwork == -1);
+    int lquery = (lwork == -1);
 
     hwork[0] = MAGMA_C_MAKE( (float)lwkopt, 0. );
 
@@ -130,8 +130,8 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
         return *info;
     }
     
-    tau = (cuFloatComplex*) malloc( k * sizeof(cuFloatComplex) );
-    if( tau == NULL ) {
+    magma_cmalloc_cpu( &tau, k );
+    if ( tau == NULL ) {
         magma_free( dT );
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;

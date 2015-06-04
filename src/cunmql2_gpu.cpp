@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:44 2012
+       @generated c Thu Jun 28 12:30:46 2012
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_cunmql2_gpu(const char side, const char trans,
                   cuFloatComplex *wa, magma_int_t ldwa,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -44,7 +44,7 @@ magma_cunmql2_gpu(const char side, const char trans,
 
           Q = H(k) . . . H(2) H(1)   
 
-    as returned by ZGEQLF. Q is of order M if SIDE = 'L' and of order N   
+    as returned by CGEQLF. Q is of order M if SIDE = 'L' and of order N   
     if SIDE = 'R'.   
 
     Arguments   
@@ -72,7 +72,7 @@ magma_cunmql2_gpu(const char side, const char trans,
     DA      (input) COMPLEX*16 array, dimension (LDA,K)   
             The i-th column must contain the vector which defines the   
             elementary reflector H(i), for i = 1,2,...,k, as returned by   
-            ZGEQLF in the last k columns of its array argument A.   
+            CGEQLF in the last k columns of its array argument A.   
             The diagonal and the lower part
             are destroyed, the reflectors are not modified.
  
@@ -83,7 +83,7 @@ magma_cunmql2_gpu(const char side, const char trans,
 
     TAU     (input) COMPLEX*16 array, dimension (K)   
             TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by ZGEQLF.   
+            reflector H(i), as returned by CGEQLF.   
 
     DC      (device input/output) COMPLEX array, dimension (LDDC,N)   
             On entry, the M-by-N matrix C.   
@@ -116,11 +116,11 @@ magma_cunmql2_gpu(const char side, const char trans,
 
     magma_int_t wa_offset, dc_offset, i__4;
     
-    static magma_int_t i__;
-    static cuFloatComplex t[2*4160]        /* was [65][64] */;
-    static magma_int_t i1, i2, i3, ib, nb, mi, ni, nq, nw;
-    static magma_int_t ldwork;
-    long int left, notran;
+    magma_int_t i__;
+    cuFloatComplex t[2*4160]        /* was [65][64] */;
+    magma_int_t i1, i2, i3, ib, nb, mi, ni, nq, nw;
+    magma_int_t ldwork;
+    int left, notran;
 
     wa_offset = 1 + ldwa;
     wa -= wa_offset;

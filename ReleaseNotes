@@ -23,6 +23,25 @@ Included are routines for the following algorithms:
     * MAGMA BLAS in real arithmetic (single and double), including
       gemm, gemv, symv, and trsm.
 
+ 1.x.x
+    * Fix bug in [zcsd]getrf_gpu.cpp
+    * Fix workspace requirement for SVD in [zcsd]gesvd.cpp
+    * Fix a bug in freeing pinned memory (in interface_cuda/alloc.cpp)
+    * Fix a bug in [zcsd]geqrf_mgpu.cpp 
+    * Fix zdotc to use cblas for portability
+    * Fix uppercase entries in blas/lapack headers
+    * Use magma_int_t in blas/lapack headers, and fix sources accordingly
+    * Fix magma_is_devptr error handling
+    * Add magma_malloc_cpu to allocate CPU memory aligned to 32-byte boundary
+      for performance and reproducibility
+    * Fix memory leaks in latrd* and zcgeqrsv_gpu
+    * Remove dependency on CUDA device driver
+    * Add QR with pivoting in CPU interface (functions [zcsd]geqp3)
+    * Add hegst/sygst Fortran interface
+    * Improve performance of gesv CPU interface by 30%
+    * Improve performance of ungqr/orgqr CPU and GPU interfaces by 30%;
+      more for small matrices
+
  1.2.0
     * Fix bugs in [zcsd]hegst[_gpu].cpp
     * Fix a bug in [zcsd]latrd.cpp
@@ -39,9 +58,12 @@ Included are routines for the following algorithms:
     * Fix warning in *getrf.cpp when nb0 is zero.
     * Add reduction to band-diagonal for symmetric/Hermitian definite matrices
       in [zc]hebbd.cpp and [ds]sybbd.cpp
+    * Updated eigensolvers for standard and generalized eigenproblems for
+      symmetric/Hermitian definite matrices 
     * Add wrappers around CUDA and CUBLAS functions,
       for portability and error checking.
     * Add tracing functions.
+    * Add two-stage reduction to tridiabonal form
     * Add matrix print functions.
     * Make info and return codes consistent.
     * Change GPU_TARGET in make.inc to descriptive name (e.g., Fermi).

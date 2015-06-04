@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated s Tue May 15 18:17:54 2012
+ *     @generated s Thu Jun 28 12:30:58 2012
  *
  */
 
@@ -19,7 +19,7 @@
  
 
 //////////////////////////////////////////////////////////////
-//          DSTEDC          Divide and Conquer for tridiag
+//          SSTEDC          Divide and Conquer for tridiag
 //////////////////////////////////////////////////////////////
 extern "C" void  magma_sstedc_withZ(char JOBZ, magma_int_t N, float *D, float * E, float *Z, magma_int_t LDZ) {
   float *WORK;
@@ -49,7 +49,7 @@ extern "C" void  magma_sstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
 
   if(INFO!=0){
         printf("=================================================\n");
-        printf("DSTEDC ERROR OCCURED. HERE IS INFO %d \n ",INFO);
+        printf("SSTEDC ERROR OCCURED. HERE IS INFO %d \n ", (int) INFO);
         printf("=================================================\n");
           //assert(INFO==0);
   }
@@ -61,7 +61,7 @@ extern "C" void  magma_sstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
 //////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////
-//          DSTEDX          Divide and Conquer for tridiag
+//          SSTEDX          Divide and Conquer for tridiag
 //////////////////////////////////////////////////////////////
 extern "C" void  magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, float * E, float *Z, magma_int_t LDZ) {
   float *WORK;
@@ -78,7 +78,7 @@ extern "C" void  magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
 
   if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*N*(N/2 + 1) )) {
      printf("=================================================\n");
-     printf("DSTEDC ERROR OCCURED IN CUDAMALLOC\n");
+     printf("SSTEDC ERROR OCCURED IN CUDAMALLOC\n");
      printf("=================================================\n");
      return;
   }
@@ -88,7 +88,7 @@ extern "C" void  magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
 
   if(INFO!=0){
         printf("=================================================\n");
-        printf("DSTEDC ERROR OCCURED. HERE IS INFO %d \n ",INFO);
+        printf("SSTEDC ERROR OCCURED. HERE IS INFO %d \n ", (int) INFO);
         printf("=================================================\n");
           //assert(INFO==0);
   }

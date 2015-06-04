@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:02 2012
+       @generated s Thu Jun 28 12:31:16 2012
 
 */
 #include "common_magma.h"
@@ -39,9 +39,9 @@ slacpy_kernel( int m, int n,
 
 
 extern "C" void 
-magmablas_slacpy( char uplo, int m, int n,
-                  float *A, int lda,
-                  float *B, int ldb )
+magmablas_slacpy( char uplo, magma_int_t m, magma_int_t n,
+                  float *A, magma_int_t lda,
+                  float *B, magma_int_t ldb )
 {
 /*
     Note
@@ -52,7 +52,7 @@ magmablas_slacpy( char uplo, int m, int n,
   Purpose
   =======
 
-  ZLACPY copies all or part of a two-dimensional matrix A to another
+  SLACPY copies all or part of a two-dimensional matrix A to another
   matrix B.
 
   Arguments

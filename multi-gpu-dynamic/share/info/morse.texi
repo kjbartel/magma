@@ -1,0 +1,111 @@
+\input texinfo   @c -*-texinfo-*-
+
+@c %**start of header
+@setfilename morse.info
+@settitle MORSE Handbook
+@c %**end of header
+
+@include version.texi
+
+@copying
+Copyright @copyright{} 2012 Inria
+
+@noindent
+Copyright @copyright{} 2012 The University of Tennessee
+
+@noindent
+Copyright @copyright{} 2012 King Abdullah University of Science and Technology
+
+@quotation
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+@itemize @bullet
+@item
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+@item
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer listed in this license in the documentation and/or other materials provided with the distribution.
+
+@item
+Neither the name of the copyright holders nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+@end itemize
+
+This software is provided by the copyright holders and contributors "as is" and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. in no event shall the copyright owner or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+@end quotation
+@end copying
+
+@setchapternewpage odd
+@dircategory Development
+@direntry
+* MORSE: (morse).             MORSE Handbook
+@end direntry
+
+@titlepage
+@title MORSE Handbook
+@subtitle for MORSE @value{VERSION}
+
+@page
+@vskip 0pt plus 1filll
+
+@insertcopying
+
+@end titlepage
+
+@c @summarycontents
+@contents
+@page
+
+@node Top
+@top Preface
+
+This manual documents the usage of MORSE version @value{VERSION}.  It
+was last updated on @value{UPDATED}.
+
+@ifnottex
+@insertcopying
+@end ifnottex
+
+@comment
+@comment  When you add a new menu item, please keep the right hand
+@comment  aligned to the same column.  Do not use tabs.  This provides
+@comment  better formatting.
+@comment
+@menu
+* Introduction::                Getting started
+* Installing MORSE::            How to configure, build and install MORSE
+* Configuring MORSE::           How to configure MORSE
+* Using MORSE::                 How to run MORSE application
+@end menu
+
+@c ---------------------------------------------------------------------
+@c Introduction to MORSE
+@c ---------------------------------------------------------------------
+
+@node Introduction
+@chapter Introduction to MORSE
+@include chapters/introduction.texi
+
+@c ---------------------------------------------------------------------
+@c Installing MORSE
+@c ---------------------------------------------------------------------
+
+@node Installing MORSE
+@chapter Installing MORSE
+@include chapters/installing.texi
+
+@c ---------------------------------------------------------------------
+@c Configuration options
+@c ---------------------------------------------------------------------
+
+@node Configuring MORSE
+@chapter Configuring MORSE
+@include chapters/configuration.texi
+
+@c ---------------------------------------------------------------------
+@c Using MORSE
+@c ---------------------------------------------------------------------
+
+@node Using MORSE
+@chapter Using MORSE
+@include chapters/using.texi
+
+@bye

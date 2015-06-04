@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:05 2012
+       @generated d Thu Jun 28 12:31:22 2012
 
 */
 #include "common_magma.h"
@@ -13,9 +13,9 @@
 #include "commonblas.h"
 
 extern "C" void
-magmablas_dtranspose2s(double *odata, int ldo,
-                       double *idata, int ldi,
-                       int m, int n, cudaStream_t *stream );
+magmablas_dtranspose2s(double *odata, magma_int_t ldo,
+                       double *idata, magma_int_t ldi,
+                       magma_int_t m, magma_int_t n, cudaStream_t *stream );
 
 
 //
@@ -27,12 +27,12 @@ magmablas_dtranspose2s(double *odata, int ldo,
 //             Note that lda >= m and lddat >= n.
 //
 extern "C" void 
-magmablas_dgetmatrix_transpose( int m, int n,
-                                double *dat, int ldda,
-                                double  *ha, int lda,
-                                double  *dB, int lddb, int nb )
+magmablas_dgetmatrix_transpose( magma_int_t m, magma_int_t n,
+                                double *dat, magma_int_t ldda,
+                                double  *ha, magma_int_t lda,
+                                double  *dB, magma_int_t lddb, magma_int_t nb )
 {
-    int i = 0, j = 0, ib;
+    magma_int_t i = 0, j = 0, ib;
 
     /* Quick return */
     if ( (m == 0) || (n == 0) )
@@ -43,7 +43,7 @@ magmablas_dgetmatrix_transpose( int m, int n,
         return;
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -68,15 +68,16 @@ magmablas_dgetmatrix_transpose( int m, int n,
 //  is 1D block cyclic. The input arrays are pointers for the corresponding
 //  GPUs. The streams are passed as argument, in contrast to the single GPU
 //  routine.
+//  NOTE: see magmablas_dgetmatrix_transpose_mgpu.
 //===========================================================================
 extern "C" void
-magmablas_dgetmatrix_transpose2( int m, int n,
-                                 double **dat, int *ldda,
-                                 double  *ha,  int  lda,
-                                 double **dB,  int  lddb, int nb,
-                                 int num_gpus, cudaStream_t stream[][2] )
+magmablas_dgetmatrix_transpose2( magma_int_t m, magma_int_t n,
+                                 double **dat, magma_int_t *ldda,
+                                 double  *ha,  magma_int_t  lda,
+                                 double **dB,  magma_int_t  lddb, magma_int_t nb,
+                                 magma_int_t num_gpus, cudaStream_t stream[][2] )
 {
-    int i = 0, j[4] = {0, 0, 0, 0}, ib, k;
+    magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k;
 
     /* Quick return */
     if ( (m == 0) || (n == 0) )

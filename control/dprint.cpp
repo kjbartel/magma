@@ -1,57 +1,24 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Mark Gates
-       @generated d Tue May 15 18:17:08 2012
+       @generated d Thu Jun 28 12:30:05 2012
 
 */
 #include "common_magma.h"
-
-// -------------------------
-// Returns:
-//  1 if A is a device pointer (definitely),
-//  0 if A is a host   pointer (definitely or inferred from error),
-// -1 if unknown.
-// On 2.0 cards with unified addressing, CUDA can tell if this is a device pointer.
-// For malloc'd host pointers, cudaPointerGetAttributes returns error.
-static int is_devptr( void* A )
-{
-    cudaError_t err;
-    cudaDeviceProp prop;
-    cudaPointerAttributes attr;
-    int dev;
-    err = cudaGetDevice( &dev );
-    if ( ! err ) {
-        err = cudaGetDeviceProperties( &prop, dev );
-        if ( ! err and prop.unifiedAddressing ) {
-            err = cudaPointerGetAttributes( &attr, A );
-            if ( ! err ) {
-                // definitely know type
-                return (attr.memoryType == cudaMemoryTypeDevice);
-            }
-            else if ( err == cudaErrorInvalidValue ) {
-                // infer as host pointer
-                return 0;
-            }
-        }
-    }
-    // unknown, e.g., device doesn't support unified addressing
-    return -1;
-}
-
 
 #define A(i,j) (A + i + j*lda)
 
 // -------------------------
 // Prints a matrix that is on the CPU host.
 extern "C"
-void magma_dprint( int m, int n, double *A, int lda )
+void magma_dprint( magma_int_t m, magma_int_t n, double *A, magma_int_t lda )
 {
-    if ( is_devptr( A ) == 1 ) {
+    if ( magma_is_devptr( A ) == 1 ) {
         fprintf( stderr, "ERROR: dprint called with device pointer.\n" );
         exit(1);
     }
@@ -78,9 +45,9 @@ void magma_dprint( int m, int n, double *A, int lda )
 // Internally allocates memory on host, copies it to the host, prints it,
 // and de-allocates host memory.
 extern "C"
-void magma_dprint_gpu( int m, int n, double *dA, int ldda )
+void magma_dprint_gpu( magma_int_t m, magma_int_t n, double *dA, magma_int_t ldda )
 {
-    if ( is_devptr( dA ) == 0 ) {
+    if ( magma_is_devptr( dA ) == 0 ) {
         fprintf( stderr, "ERROR: dprint_gpu called with host pointer.\n" );
         exit(1);
     }

@@ -1,13 +1,13 @@
 /*
-   -- MAGMA (version 1.2.0) --
+   -- MAGMA (version 1.2.1) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      May 2012
+      June 2012
  
       @author Raffaele Solca
 
-      @generated c Tue May 15 18:17:46 2012
+      @generated c Thu Jun 28 12:31:01 2012
  
  */
 #include "common_magma.h"
@@ -37,11 +37,11 @@ magma_chegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 { 
 /*  
-   -- MAGMA (version 1.2.0) --
+   -- MAGMA (version 1.2.1) --
    Univ. of Tennessee, Knoxville
    Univ. of California, Berkeley
    Univ. of Colorado, Denver
-   May 2012
+   June 2012
    
    ITYPE   (input) INTEGER
            Specifies the problem type to be solved:
@@ -121,10 +121,10 @@ magma_chegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
            by reducing A to tridiagonal form.
  
            Eigenvalues will be computed most accurately when ABSTOL is
-           set to twice the underflow threshold 2*DLAMCH('S'), not zero.
+           set to twice the underflow threshold 2*SLAMCH('S'), not zero.
            If this routine returns with INFO>0, indicating that some
            eigenvectors did not converge, try setting ABSTOL to
-           2*DLAMCH('S').
+           2*SLAMCH('S').
  
    M       (output) INTEGER
            The total number of eigenvalues found.  0 <= M <= N.
@@ -210,15 +210,15 @@ magma_chegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
   magma_int_t lddb = n;
   magma_int_t lddz = n;  
   
-  static magma_int_t lower;
-  static char trans[1];
-  static magma_int_t wantz;
-  static magma_int_t lquery;
-  static magma_int_t alleig, valeig, indeig;
+  magma_int_t lower;
+  char trans[1];
+  magma_int_t wantz;
+  magma_int_t lquery;
+  magma_int_t alleig, valeig, indeig;
   
-  static magma_int_t lwmin;
+  magma_int_t lwmin;
   
-  static cudaStream_t stream;
+  cudaStream_t stream;
   magma_queue_create( &stream );
   
   wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);

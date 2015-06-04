@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- * @generated d Tue May 15 18:18:14 2012
+ * @generated d Thu Jun 28 12:31:37 2012
  *
  **/
 
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -82,7 +81,7 @@ int main( int argc, char** argv)
                 transA = MagmaTrans;
                 transB = MagmaNoTrans;
             }
-#if defined(PRECISION_z) || defined(PRECISION_c)
+//#if defined(PRECISION_z) || defined(PRECISION_c)
             else if (strcmp("-NC", argv[i])==0){
                 transA = MagmaNoTrans;
                 transB = MagmaTrans;
@@ -102,7 +101,7 @@ int main( int argc, char** argv)
             else if (strcmp("-CC", argv[i])==0){
                 transA = transB = MagmaTrans;
             }
-#endif
+//#endif
         }
     }
 
@@ -152,7 +151,6 @@ int main( int argc, char** argv)
     printf("\nUsage: \n");
     printf("  testing_dgemm [-NN|NT|TN|TT] [-N %d] \n\n", 1024);
 
-    printf("\n");
     printf("Testing transA = %c  transB = %c\n", transA, transB);
     printf("    M    N    K     MAGMA GFLop/s    CUBLAS GFlop/s       error\n");
     printf("==================================================================\n");
@@ -232,7 +230,7 @@ int main( int argc, char** argv)
         blasf77_daxpy(&szeC, &c_neg_one, h_C, &ione, h_C2, &ione);
         error = lapackf77_dlange("M", &M, &N, h_C2, &ldc, work);
         printf("%5d %5d %5d       %6.2f           %6.2f         %e\n",
-               M, N, K, magma_perf, cuda_perf, error);
+               (int) M, (int) N, (int) K, magma_perf, cuda_perf, error);
     }
 
     /* Memory clean up */

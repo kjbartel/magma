@@ -1,9 +1,9 @@
 /*
-    -- clMAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       April 2012
+       June 2012
 */
 
 // ==== Definition of blocking sizes for Nvidia Tesla (pre-Fermi) cards
@@ -39,6 +39,29 @@ int magma_get_cpotrf_nb(int n) {
 
 extern "C"
 int magma_get_zpotrf_nb(int n) {
+    return 64;
+}
+
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Return nb for geqp3 based on m
+*/
+extern "C"
+int magma_get_sgeqp3_nb(int m) {
+    return 64;
+}
+
+extern "C"
+int magma_get_dgeqp3_nb(int m) {
+    return 64;
+}
+
+extern "C"
+int magma_get_cgeqp3_nb(int m) {
+    return 64;
+}
+
+extern "C"
+int magma_get_zgeqp3_nb(int m) {
     return 64;
 }
 
@@ -322,6 +345,30 @@ int magma_get_cgetri_nb(int m) {
 extern "C"
 int magma_get_zgetri_nb(int m) {
     return 64;
+}
+
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Return nb for gesvd based on m
+*/
+
+extern "C"
+int magma_get_sgesvd_nb(int m){
+    return magma_get_sgebrd_nb(m);
+}
+
+extern "C"
+int magma_get_dgesvd_nb(int m){
+    return magma_get_dgebrd_nb(m);
+}
+
+extern "C"
+int magma_get_cgesvd_nb(int m){
+    return magma_get_cgebrd_nb(m);
+}
+
+extern "C"
+int magma_get_zgesvd_nb(int m){
+    return magma_get_zgebrd_nb(m);
 }
 
 #endif  // HAVE_CUBLAS

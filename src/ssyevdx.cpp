@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
 
-       @generated s Tue May 15 18:17:46 2012
+       @generated s Thu Jun 28 12:30:54 2012
 
 */
 #include "common_magma.h"
@@ -62,11 +62,11 @@ magma_ssyevdx(char jobz, char range, char uplo,
               magma_int_t *iwork, magma_int_t liwork,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -188,32 +188,32 @@ magma_ssyevdx(char jobz, char range, char uplo,
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
     char range_[2] = {range, 0};
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
-    static magma_int_t c__0 = 0;
-    static float c_b18 = 1.;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
+    magma_int_t c__0 = 0;
+    float c_b18 = 1.;
 
     magma_int_t a_dim1, a_offset;
     float d__1;
 
-    static float eps;
-    static magma_int_t inde;
-    static float anrm;
-    static float rmin, rmax;
-    static magma_int_t lopt;
-    static float sigma;
-    static magma_int_t iinfo, lwmin, liopt;
-    static magma_int_t lower;
-    static magma_int_t wantz;
-    static magma_int_t indwk2, llwrk2;
-    static magma_int_t iscale;
-    static float safmin;
-    static float bignum;
-    static magma_int_t indtau;
-    static magma_int_t indwrk, liwmin;
-    static magma_int_t llwork;
-    static float smlnum;
-    static magma_int_t lquery;
+    float eps;
+    magma_int_t inde;
+    float anrm;
+    float rmin, rmax;
+    magma_int_t lopt;
+    float sigma;
+    magma_int_t iinfo, lwmin, liopt;
+    magma_int_t lower;
+    magma_int_t wantz;
+    magma_int_t indwk2, llwrk2;
+    magma_int_t iscale;
+    float safmin;
+    float bignum;
+    magma_int_t indtau;
+    magma_int_t indwrk, liwmin;
+    magma_int_t llwork;
+    float smlnum;
+    magma_int_t lquery;
     magma_int_t alleig, valeig, indeig;
 
     float* dwork;
@@ -340,8 +340,8 @@ magma_ssyevdx(char jobz, char range, char uplo,
     printf("time ssytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
-    /* For eigenvalues only, call DSTERF.  For eigenvectors, first call
-       ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
+    /* For eigenvalues only, call SSTERF.  For eigenvectors, first call
+       SSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
        tridiagonal matrix, then call SORMTR to multiply it to the Householder
        transformations represented as Householder vectors in A. */
     if (! wantz) {

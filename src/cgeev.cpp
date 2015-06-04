@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:45 2012
+       @generated c Thu Jun 28 12:31:03 2012
 
 */
 #include "common_magma.h"
@@ -29,11 +29,11 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
             cuFloatComplex *work, magma_int_t lwork,
             float *rwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -45,7 +45,7 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
     where lambda(j) is its eigenvalue.   
     The left eigenvector u(j) of A satisfies   
                   u(j)**H * A = lambda(j) * u(j)**H   
-    where u(j)**H denotes the conjfugate transpose of u(j).   
+    where u(j)**H denotes the conjugate transpose of u(j).   
 
     The computed eigenvectors are normalized to have Euclidean norm   
     equal to 1 and largest component real.   
@@ -136,11 +136,11 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
     magma_int_t scalea;
     float cscale;
     magma_int_t select[1];
-    static float bignum;
+    float bignum;
     magma_int_t minwrk;
     magma_int_t wantvl;
-    static float smlnum;
-    static magma_int_t irwork;
+    float smlnum;
+    magma_int_t irwork;
     magma_int_t lquery, wantvr;
     magma_int_t nb = 0;
     cuFloatComplex *dT = NULL;
@@ -361,7 +361,7 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
                 &vr[vr_offset], &ldvr, &work[iwrk], &i__1, info);
     }
 
-    /* If INFO > 0 from ZHSEQR, then quit */
+    /* If INFO > 0 from CHSEQR, then quit */
     if (*info > 0) {
         goto L50;
     }
@@ -403,7 +403,7 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
             k = cblas_isamax(n, &rwork[irwork], 1)+1;
             z__2 = MAGMA_C_CNJG(vl[k + i__ * vl_dim1]);
             d__1 = magma_ssqrt(rwork[irwork + k - 1]);
-            MAGMA_C_DSCALE(z__1, z__2, d__1);
+            MAGMA_C_SSCALE(z__1, z__2, d__1);
             tmp = z__1;
             cblas_cscal(n, CBLAS_SADDR(tmp), &vl[i__ * vl_dim1 + 1], 1);
             i__2 = k + i__ * vl_dim1;
@@ -440,7 +440,7 @@ magma_cgeev(char jobvl, char jobvr, magma_int_t n,
             k = cblas_isamax(n, &rwork[irwork], 1)+1;
             z__2 = MAGMA_C_CNJG(vr[k + i__ * vr_dim1]);
             d__1 = magma_ssqrt(rwork[irwork + k - 1]);
-            MAGMA_C_DSCALE(z__1, z__2, d__1);
+            MAGMA_C_SSCALE(z__1, z__2, d__1);
             tmp = z__1;
             cblas_cscal(n, CBLAS_SADDR(tmp), &vr[i__ * vr_dim1 + 1], 1);
             i__2 = k + i__ * vr_dim1;

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:07 2012
+       @generated d Thu Jun 28 12:31:20 2012
 
 */
 #include "common_magma.h"
@@ -947,7 +947,7 @@ magmablas_dsymv_200( char uplo, magma_int_t n,
                      double *Y, magma_int_t incy)
 {
     char      uplo_[2] = {uplo, 0};
-    long int  upper    = lapackf77_lsame(uplo_, "U");
+    int  upper    = lapackf77_lsame(uplo_, "U");
 
     /*
      * Test the input parameters.
@@ -1044,8 +1044,8 @@ magmablas_dsymv2_200( char uplo, magma_int_t n,
                       double *dC_work,
                       magma_int_t lwork)
 {
-    char      uplo_[2] = {uplo, 0};
-    long int  upper    = lapackf77_lsame(uplo_, "U");
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
 
     /*
      * Test the input parameters.

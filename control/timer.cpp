@@ -1,5 +1,5 @@
 /*
-    -- clMAGMA (version 1.2.0) --
+    -- clMAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -41,7 +41,7 @@ int gettimeofday(struct timeval* tv, struct timezone* tz)
 {
     FILETIME         ft;
     unsigned __int64 tmpres = 0;
-    static int       tzflag;
+    static int       tzflag = 0;
 
     if (NULL != tv) {
         GetSystemTimeAsFileTime(&ft);
@@ -59,7 +59,7 @@ int gettimeofday(struct timeval* tv, struct timezone* tz)
     if (NULL != tz) {
         if (!tzflag) {
             _tzset();
-            tzflag++;
+            tzflag = 1;
         }
         tz->tz_minuteswest = _timezone / 60;
         tz->tz_dsttime     = _daylight;

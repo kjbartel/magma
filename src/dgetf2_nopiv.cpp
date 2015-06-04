@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:29 2012
+       @generated d Thu Jun 28 12:30:42 2012
 
 */
 #include "common_magma.h"
@@ -22,15 +22,15 @@ extern "C" magma_int_t
 magma_dgetf2_nopiv(magma_int_t *m, magma_int_t *n, double *a, 
                    magma_int_t *lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
-    ZGETF2_NOPIV computes an LU factorization of a general m-by-n
+    DGETF2_NOPIV computes an LU factorization of a general m-by-n
     matrix A without pivoting.
 
     The factorization has the form   
@@ -67,12 +67,12 @@ magma_dgetf2_nopiv(magma_int_t *m, magma_int_t *n, double *a,
     =====================================================================   */
     
   double c_one = MAGMA_D_ONE, c_zero = MAGMA_D_ZERO;
-    static magma_int_t c__1 = 1;
+    magma_int_t c__1 = 1;
     
     magma_int_t a_dim1, a_offset, i__1, i__2, i__3;
     double z__1;
-    static magma_int_t i__, j;
-    static double sfmin;
+    magma_int_t i__, j;
+    double sfmin;
 
     a_dim1 = *lda;
     a_offset = 1 + a_dim1;
@@ -132,8 +132,10 @@ magma_dgetf2_nopiv(magma_int_t *m, magma_int_t *n, double *a,
           i__2 = *m - j;
           i__3 = *n - j;
           z__1 = MAGMA_D_NEG_ONE; 
-          dger_(&i__2, &i__3, &z__1, &a[j + 1 + j * a_dim1], &c__1,
-                 &a[j + (j+1) * a_dim1], lda, &a[j + 1 + (j+1) * a_dim1], lda);
+          blasf77_dger( &i__2, &i__3, &z__1,
+                         &a[j + 1 + j * a_dim1], &c__1,
+                         &a[j + (j+1) * a_dim1], lda,
+                         &a[j + 1 + (j+1) * a_dim1], lda);
         }
       }
     

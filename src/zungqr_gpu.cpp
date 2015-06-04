@@ -1,26 +1,31 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
-
+       
+       @author Stan Tomov
+       @author Mark Gates
 */
+#include <assert.h>
+
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
-                 cuDoubleComplex *da, magma_int_t ldda,
-                 cuDoubleComplex *tau, cuDoubleComplex *dT,
-                 magma_int_t nb, magma_int_t *info)
+                 cuDoubleComplex *dA, magma_int_t ldda,
+                 cuDoubleComplex *tau,
+                 cuDoubleComplex *dT, magma_int_t nb,
+                 magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -44,11 +49,11 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
             The number of elementary reflectors whose product defines the
             matrix Q. N >= K >= 0.
 
-    DA      (input/output) COMPLEX_16 array A on the GPU device, 
-            dimension (LDDA,N). On entry, the i-th column must contain 
-            the vector which defines the elementary reflector H(i), for
-            i = 1,2,...,k, as returned by ZGEQRF_GPU in the first k 
-            columns of its array argument A.
+    DA      (input/output) COMPLEX_16 array A on the GPU, dimension (LDDA,N).
+            On entry, the i-th column must contain the vector
+            which defines the elementary reflector H(i), for
+            i = 1,2,...,k, as returned by ZGEQRF_GPU in the
+            first k columns of its array argument A.
             On exit, the M-by-N matrix Q.
 
     LDDA    (input) INTEGER
@@ -58,32 +63,32 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
             TAU(i) must contain the scalar factor of the elementary
             reflector H(i), as returned by ZGEQRF_GPU.
 
-    DT      (input) COMPLEX_16 work space array on the GPU device,
+    DT      (input/workspace) COMPLEX_16 work space array on the GPU,
             dimension (2*MIN(M, N) + (N+31)/32*32 )*NB.
             This must be the 6th argument of magma_zgeqrf_gpu
             [ note that if N here is bigger than N in magma_zgeqrf_gpu,
-              the workspace requirement DT in magma_zgeqrf_gpu must be 
+              the workspace requirement DT in magma_zgeqrf_gpu must be
               as specified in this routine ].
 
     NB      (input) INTEGER
             This is the block size used in ZGEQRF_GPU, and correspondingly
-            the size of the T matrices, used in the factorization, and 
-            stored in DT. 
+            the size of the T matrices, used in the factorization, and
+            stored in DT.
 
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument has an illegal value
     =====================================================================    */
 
-    #define da_ref(a_1,a_2) (da+(a_2)*(ldda) + (a_1))
-    #define t_ref(a_1)      (dT+(a_1)*nb)
+#define dA(i,j) (dA + (i) + (j)*ldda)
+#define dT(j)   (dT + (j)*nb)
 
-    magma_int_t  i__1, i__2, i__3;
-    magma_int_t lwork;
-    static magma_int_t i, ib, ki, kk, iinfo;
-    magma_int_t lddwork = min(m, n);
+    magma_int_t m_kk, n_kk, k_kk, mi;
+    magma_int_t lwork, lpanel;
+    magma_int_t i, ib, ki, kk, iinfo;
+    magma_int_t lddwork;
+    cuDoubleComplex *dV, *dW;
     cuDoubleComplex *work, *panel;
-    static cudaStream_t stream[2];
 
     *info = 0;
     if (m < 0) {
@@ -100,92 +105,99 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
         return *info;
     }
 
-    if (n <= 0)
-      return *info;
+    if (n <= 0) {
+        return *info;
+    }
 
-    if ( (nb > 1) && (nb < k) )
-      {
-        /*  Use blocked code after the last block.
-            The first kk columns are handled by the block method. */
+    // first kk columns are handled by blocked method.
+    if ((nb > 1) && (nb < k)) {
         ki = (k - nb - 1) / nb * nb;
-        kk = min(k, ki + nb);
+        kk = min( k, ki+nb );
+    } else {
+        kk = 0;
+    }
 
-        /* Set A(1:kk,kk+1:n) to zero. */
-        magmablas_zlaset(MagmaUpperLower, kk, n-kk, da_ref(0,kk), ldda);
-      }
-    else
-      kk = 0;
-
-    /* Allocate work space on CPU in pinned memory */
-    lwork = (n+m) * nb;
-    if (kk < n)
-      lwork = max(lwork, n * nb + (m-kk)*(n-kk));
-
-    if (MAGMA_SUCCESS != magma_zmalloc_host( &work, (lwork) )) {
+    // Allocate CPU work space
+    // n*nb for zungqr workspace
+    // (m - kk)*(n - kk) for last block's panel
+    lwork = n*nb;
+    lpanel = (m - kk)*(n - kk);
+    magma_zmalloc_cpu( &work, lwork + lpanel );
+    if ( work == NULL ) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
-    panel = work + n * nb;
+    panel = work + lwork;
+    
+    // Allocate work space on GPU
+    if (MAGMA_SUCCESS != magma_zmalloc( &dV, ldda*nb )) {
+        free( work );
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
+    }
+    
+    // dT workspace has:
+    // 2*min(m,n)*nb      for T and R^{-1} matrices from geqrf
+    // ((n+31)/32*32 )*nb for dW larfb workspace.
+    lddwork = min(m,n);
+    dW = dT + 2*lddwork*nb;
 
-    magma_queue_create( &stream[0] );
-    magma_queue_create( &stream[1] );
+    cudaStream_t stream;
+    magma_queue_create( &stream );
 
-    /* Use unblocked code for the last or only block. */
-    if (kk < n)
-      {
-        i__1 = m - kk;
-        i__2 = n - kk;
-        i__3 = k - kk;
-        magma_zgetmatrix( i__1, i__2, da_ref(kk, kk), ldda, panel, i__1 );
-        lapackf77_zungqr(&i__1, &i__2, &i__3, panel, &i__1, &tau[kk], 
-                         work, &lwork, &iinfo);
+    // Use unblocked code for the last or only block.
+    if (kk < n) {
+        m_kk = m - kk;
+        n_kk = n - kk;
+        k_kk = k - kk;
+        magma_zgetmatrix( m_kk, n_kk,
+                          dA(kk, kk), ldda, panel, m_kk );
+        
+        lapackf77_zungqr( &m_kk, &n_kk, &k_kk,
+                          panel, &m_kk,
+                          &tau[kk], work, &lwork, &iinfo );
+        
+        magma_zsetmatrix( m_kk, n_kk,
+                          panel, m_kk, dA(kk, kk), ldda );
+        
+        // Set A(1:kk,kk+1:n) to zero.
+        magmablas_zlaset( MagmaUpperLower, kk, n - kk, dA(0, kk), ldda );
+    }
 
-        magma_zsetmatrix( i__1, i__2, panel, i__1, da_ref(kk, kk), ldda );
-      }
+    if (kk > 0) {
+        // Use blocked code
+        // stream:  copy Aii to V --> laset --> laset --> larfb --> [next]
+        // CPU has no computation
+        magmablasSetKernelStream( stream );
+        
+        for (i = ki; i >= 0; i -= nb) {
+            ib = min( nb, k-i );
+            mi = m - i;
+            
+            // Copy current panel on the GPU from dA to dV
+            magma_zcopymatrix_async( mi, ib,
+                                     dA(i,i), ldda,
+                                     dV,      ldda, stream );
 
-    if (kk > 0)
-      {
-        /* Use blocked code */
-        for (i = ki; i >= 0; i-=nb)
-          {
-            ib = min(nb, k - i);
-
-            /* Send current panel to the CPU for update */
-            i__2 = m - i;
-            magma_zgetmatrix_async( i__2, ib,
-                                    da_ref(i,i), ldda,
-                                    panel,       i__2, stream[0] );
-
-            if (i + ib < n)
-              {
-                /* Apply H to A(i:m,i+ib:n) from the left */
-                i__3 = n - i - ib;
+            // set panel to identity
+            magmablas_zlaset( MagmaUpperLower, i, ib, dA(0, i), ldda );
+            magmablas_zlaset_identity( mi, ib, dA(i, i), ldda );
+            
+            if (i < n) {
+                // Apply H to A(i:m,i:n) from the left
                 magma_zlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise,
-                                  i__2, i__3, ib,
-                                  da_ref(i, i   ), ldda, t_ref(i),             nb,
-                                  da_ref(i, i+ib), ldda, dT + 2*lddwork*nb, lddwork);
-              }
+                                  mi, n-i, ib,
+                                  dV,       ldda, dT(i), nb,
+                                  dA(i, i), ldda, dW, lddwork );
+            }
+        }
+    }
+    magma_queue_sync( stream );
 
-            /* Apply H to rows i:m of current block on the CPU */
-            magma_queue_sync( stream[0] );
-            lapackf77_zungqr(&i__2, &ib, &ib, panel, &i__2, &tau[i], 
-                             work, &lwork, &iinfo);
-            magma_zsetmatrix_async( i__2, ib,
-                                    panel,       i__2,
-                                    da_ref(i,i), ldda, stream[1] );
-
-            /* Set rows 1:i-1 of current block to zero */
-            i__2 = i + ib;
-            magmablas_zlaset(MagmaUpperLower, i, i__2 - i, da_ref(0,i), ldda);
-          }
-      }
-
-    magma_free_host( work );
-    magma_queue_destroy( stream[0] );
-    magma_queue_destroy( stream[1] );
+    magmablasSetKernelStream( NULL );
+    magma_free( dV );
+    free( work );
+    magma_queue_destroy( stream );
 
     return *info;
 } /* magma_zungqr_gpu */
-
-#undef da_ref
-#undef t_ref

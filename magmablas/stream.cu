@@ -2,11 +2,11 @@
  *
  * @file common.cpp
  *
- *  MAGMA (version 1.2.0) --
+ *  MAGMA (version 1.2.1) --
  *  Univ. of Tennessee, Knoxville
  *  Univ. of California, Berkeley
  *  Univ. of Colorado, Denver
- *  May 2012
+ *  June 2012
  *
  **/
 #include "common_magma.h"
@@ -15,11 +15,11 @@ cudaStream_t magma_stream = 0;
 
 cublasStatus_t magmablasSetKernelStream( cudaStream_t stream )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -41,11 +41,11 @@ cublasStatus_t magmablasSetKernelStream( cudaStream_t stream )
 
 cublasStatus_t magmablasGetKernelStream( cudaStream_t *stream )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

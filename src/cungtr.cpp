@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:33 2012
+       @generated c Thu Jun 28 12:30:56 2012
 
 */
 #include "common_magma.h"
@@ -17,15 +17,15 @@ magma_cungtr(char uplo, magma_int_t n, cuFloatComplex *a,
              cuFloatComplex *dT, magma_int_t nb, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======
-    ZUNGTR generates a complex unitary matrix Q which is defined as the   
+    CUNGTR generates a complex unitary matrix Q which is defined as the   
     product of n-1 elementary reflectors of order N, as returned by   
     CHETRD:   
 
@@ -88,8 +88,8 @@ magma_cungtr(char uplo, magma_int_t n, cuFloatComplex *a,
     char uplo_[2]  = {uplo, 0};
     
     magma_int_t i__1;
-    static magma_int_t i, j;
-    static magma_int_t iinfo;
+    magma_int_t i, j;
+    magma_int_t iinfo;
     magma_int_t upper, lwkopt, lquery;
 
     *info = 0;

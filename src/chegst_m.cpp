@@ -1,18 +1,16 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:49 2012
+       @generated c Thu Jun 28 12:31:02 2012
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
-#include "cblas.h"
+#include <cblas.h>
 
 extern "C"
 magma_int_t magma_get_chegst_m_nb() { return 256;}
@@ -30,11 +28,11 @@ magma_chegst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                cuFloatComplex *b, magma_int_t ldb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.0) --
+  -- MAGMA (version 1.2.1) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     May 2012
+     June 2012
 
 
    Purpose
@@ -102,15 +100,15 @@ magma_chegst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
     cuFloatComplex    c_neg_one  = MAGMA_C_NEG_ONE;
     cuFloatComplex    c_half     = MAGMA_C_HALF;
     cuFloatComplex    c_neg_half = MAGMA_C_NEG_HALF;
-    cuFloatComplex* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][3];
+    cuFloatComplex* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][3];
     magma_int_t igpu = 0;
 
     int gpu_b;
     magma_getdevice(&gpu_b);
 
     float             d_one = 1.0;
-    long int           upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
 
     magma_int_t nb = magma_get_chegst_m_nb();
 
@@ -212,7 +210,7 @@ magma_chegst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                 }
 
                 lapackf77_chegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
-printf("hegs2%d\n", k);
+printf("hegs2%d\n", (int) k);
                 if (k+1<nbl) {
                     magma_csetmatrix_async( kb, kb,
                                             A(k, k),              lda,
@@ -299,7 +297,7 @@ printf("hegs2%d\n", k);
 
             if (n > nb){
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
 
                 jb = min(nb, n-nb);
                 for (igpu = 0; igpu < nrgpu; ++igpu){
@@ -491,7 +489,7 @@ printf("hegs2%d\n", k);
 
             if (n > nb){
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
 
                 jb = min(nb, n-nb);
                 for (igpu = 0; igpu < nrgpu; ++igpu){
@@ -620,7 +618,7 @@ printf("hegs2%d\n", k);
 
 /*                        if (n > nb){
 
-            magma_int_t nloc[N_MAX_GPU];
+            magma_int_t nloc[MagmaMaxGPUs];
             for(igpu = 0; igpu < nrgpu; ++igpu)
                 nloc[igpu] = 0;
 

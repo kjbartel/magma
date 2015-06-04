@@ -48,15 +48,22 @@ ZSRC =  zgels.c  zgelqf.c zgelqs.c zgeqrf.c zgeqrs.c 	\
         pzpack.c  pzshift.c pzgetmi2.c				\
 
 ZSRC =  zplrnt.c zplghe.c zplgsy.c ztile.c 		\
-	zgemm.c ztrsm.c					\
+	zgemm.c ztrsm.c ztrsmpl.c 			\
 	zpotrf.c zpotrs.c zposv.c     			\
-	zgetrf.c ztrsmpl.c zgetrs.c zgesv.c		\
+	zgetrf_incpiv.c zgetrs_incpiv.c zgesv_incpiv.c	\
 	zgeqrf.c					\
+	zlauum.c ztrtri.c zpotri.c                      \
 	\
 	pzplrnt.c pzplghe.c pzplgsy.c pztile.c 		\
-	pzgemm.c pztrsm.c				\
-	pztrsmpl.c					\
-	pzpotrf.c pzgetrf.c pzgeqrf.c
+	pzgemm.c pztrsm.c pztrsmpl.c			\
+	pzpotrf.c pzgetrf_incpiv.c pzgeqrf.c		\
+	pztrtri.c pzlauum.c				\
+
+# 	\
+#	zpotrf_extra.c					\
+#	zpotri_extra.c                                	\
+#	ztrtri_extra.c                                	\
+
 
 CSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p c)
 DSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p "d ds")

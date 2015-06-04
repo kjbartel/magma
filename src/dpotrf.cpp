@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:23 2012
+       @generated d Thu Jun 28 12:30:34 2012
 
 */
 #include "common_magma.h"
@@ -44,11 +44,11 @@ extern "C" magma_int_t
 magma_dpotrf(char uplo, magma_int_t n, 
              double *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -88,7 +88,7 @@ magma_dpotrf(char uplo, magma_int_t n,
             factorization A = U**T * U or A = L * L**T.   
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER   
             The leading dimension of the array A.  LDA >= max(1,N).   
@@ -107,13 +107,13 @@ magma_dpotrf(char uplo, magma_int_t n,
     /* Local variables */
     char uplo_[2] = {uplo, 0};
     magma_int_t        ldda, nb;
-    static magma_int_t j, jb;
+    magma_int_t j, jb;
     double    c_one     = MAGMA_D_ONE;
     double    c_neg_one = MAGMA_D_NEG_ONE;
     double   *work;
     double             d_one     =  1.0;
     double             d_neg_one = -1.0;
-    long int           upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
 
     *info = 0;
     if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
@@ -132,12 +132,7 @@ magma_dpotrf(char uplo, magma_int_t n,
     if ( n == 0 )
       return *info;
 
-    char * num_gpus_char = getenv("MAGMA_NUM_GPUS");
-    magma_int_t num_gpus = 1;
-
-    if( num_gpus_char != NULL ) {
-      num_gpus = atoi(num_gpus_char);
-    }
+    magma_int_t num_gpus = magma_num_gpus();
     if( num_gpus > 1 ) {
       /* call multiple-GPU interface  */
       return magma_dpotrf2_ooc(num_gpus, uplo, n, a, lda, info);
@@ -151,7 +146,7 @@ magma_dpotrf(char uplo, magma_int_t n,
         //return magma_dpotrf_ooc( uplo, n, a, lda, info);
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 

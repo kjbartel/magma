@@ -29,7 +29,9 @@ void morse_zdisplay_allprofile()
     /* profiling_display_zsyr2k_info(); */
 
     profiling_display_zlacpy_info();
+#if defined(PRECISION_z) || defined(PRECISION_c)
     profiling_display_zplghe_info();
+#endif
     profiling_display_zplgsy_info();
     profiling_display_zplrnt_info();
     /* profiling_display_zlange_info(); */
@@ -72,7 +74,9 @@ void morse_zdisplay_oneprofile( morse_kernel_t kernel )
     /* case MORSE_SYR2K: profiling_display_zsyr2k_info(); break; */
 
     case MORSE_LACPY: profiling_display_zlacpy_info(); break;
+#if defined(PRECISION_z) || defined(PRECISION_c)
     case MORSE_PLGHE: profiling_display_zplghe_info(); break;
+#endif
     case MORSE_PLGSY: profiling_display_zplgsy_info(); break;
     case MORSE_PLRNT: profiling_display_zplrnt_info(); break;
     /* case MORSE_LANGE: profiling_display_zlange_info(); break; */

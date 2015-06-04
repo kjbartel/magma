@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 #
@@ -23,8 +23,9 @@ ARCHFLAGS = cr
 RANLIB    = ranlib
 
 OPTS      = -O3 -DADD_
+F77OPTS   = -O3 -DADD_
 FOPTS     = -O3 -DADD_ -x f95-cpp-input
-NVOPTS    = --compiler-options -fno-strict-aliasing -DUNIX -O3 -DADD_
+NVOPTS    = -O3 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX
 LDOPTS    = -fPIC -Xlinker -zmuldefs
 
 LIB       = /home/tomov/LIB/lapack-lite-3.1.1/lapack_LINUX64.a \
@@ -36,6 +37,3 @@ LIBDIR    = -L/home/tomov/LIB/ATLAS/lib/Linux_UNKNOWNSSE2 \
             -L/home/tomov/LIB/CLAPACK-3.1.1/F2CLIBS/ \
             -L$(CUDADIR)/lib64
 INC       = -I$(CUDADIR)/include
-
-#LIBMAGMA     = $(MAGMA_DIR)/lib/magma.a
-#LIBMAGMABLAS = $(MAGMA_DIR)/lib/magmablas.a

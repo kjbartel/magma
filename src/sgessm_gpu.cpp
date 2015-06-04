@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated s Tue May 15 18:17:51 2012
+       @generated s Thu Jun 28 12:30:39 2012
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_sgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
                   float *dA,  magma_int_t ldda, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

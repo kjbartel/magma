@@ -16,9 +16,9 @@
  **/
 #include "morse_starpu.h"
 
+#ifdef MORSE_USE_CUDA
 void morse_zlocality_allrestrict( uint32_t where )
 {
-#ifdef MORSE_USE_CUDA
     cl_zgemm_restrict_where( where );
     cl_ztrsm_restrict_where( where );
     /* cl_ztrmm_restrict_where( where ); */
@@ -57,12 +57,10 @@ void morse_zlocality_allrestrict( uint32_t where )
     /* cl_ztsmlq_restrict_where( where ); */
     /* cl_zttlqt_restrict_where( where ); */
     /* cl_zttmlq_restrict_where( where ); */
-#endif
 }
 
 void morse_zlocality_onerestrict( morse_kernel_t kernel, uint32_t where )
 {
-#ifdef MORSE_USE_CUDA
     switch( kernel ) {
     case MORSE_GEMM:  cl_zgemm_restrict_where( where );  break;
     case MORSE_TRSM:  cl_ztrsm_restrict_where( where );  break;
@@ -105,12 +103,10 @@ void morse_zlocality_onerestrict( morse_kernel_t kernel, uint32_t where )
     default:
       return;
     }
-#endif
 }
 
 void morse_zlocality_allrestore( )
 {
-#ifdef MORSE_USE_CUDA
     cl_zgemm_restore_where();
     cl_ztrsm_restore_where();
     /* cl_ztrmm_restore_where(); */
@@ -149,54 +145,56 @@ void morse_zlocality_allrestore( )
     /* cl_ztsmlq_restore_where(); */
     /* cl_zttlqt_restore_where(); */
     /* cl_zttmlq_restore_where(); */
-#endif
 }
 
 void morse_zlocality_onerestore( morse_kernel_t kernel )
 {
-#ifdef MORSE_USE_CUDA
     switch( kernel ) {
-    case MORSE_GEMM:  cl_zgemm_restore_where();  break;
-    case MORSE_TRSM:  cl_ztrsm_restore_where();  break;
-    /* case MORSE_TRMM:  cl_ztrmm_restore_where();  break; */
-    /* case MORSE_HEMM:  cl_zhemm_restore_where();  break; */
-    /* case MORSE_SYMM:  cl_zsymm_restore_where();  break; */
-    case MORSE_HERK:  cl_zherk_restore_where();  break;
-    /* case MORSE_SYRK:  cl_zsyrk_restore_where();  break; */
-    /* case MORSE_HER2K: cl_zher2k_restore_where(); break; */
-    /* case MORSE_SYR2K: cl_zsyr2k_restore_where(); break; */
+        case MORSE_GEMM:  cl_zgemm_restore_where();  break;
+        case MORSE_TRSM:  cl_ztrsm_restore_where();  break;
+        /* case MORSE_TRMM:  cl_ztrmm_restore_where();  break; */
+        /* case MORSE_HEMM:  cl_zhemm_restore_where();  break; */
+        /* case MORSE_SYMM:  cl_zsymm_restore_where();  break; */
+        case MORSE_HERK:  cl_zherk_restore_where();  break;
+        /* case MORSE_SYRK:  cl_zsyrk_restore_where();  break; */
+        /* case MORSE_HER2K: cl_zher2k_restore_where(); break; */
+        /* case MORSE_SYR2K: cl_zsyr2k_restore_where(); break; */
 
-    case MORSE_LACPY: cl_zlacpy_restore_where(); break;
-    /* case MORSE_PLGHE: cl_zplghe_restore_where(); break; */
-    /* case MORSE_PLGSY: cl_zplgsy_restore_where(); break; */
-    /* case MORSE_PLRNT: cl_zplrnt_restore_where(); break; */
-    /* case MORSE_LANGE: cl_zlange_restore_where(); break; */
-    /* case MORSE_LANHE: cl_zlanhe_restore_where(); break; */
-    /* case MORSE_LANSY: cl_zlansy_restore_where(); break; */
+        case MORSE_LACPY: cl_zlacpy_restore_where(); break;
+        /* case MORSE_PLGHE: cl_zplghe_restore_where(); break; */
+        /* case MORSE_PLGSY: cl_zplgsy_restore_where(); break; */
+        /* case MORSE_PLRNT: cl_zplrnt_restore_where(); break; */
+        /* case MORSE_LANGE: cl_zlange_restore_where(); break; */
+        /* case MORSE_LANHE: cl_zlanhe_restore_where(); break; */
+        /* case MORSE_LANSY: cl_zlansy_restore_where(); break; */
 
-    case MORSE_POTRF: cl_zpotrf_restore_where(); break;
+        case MORSE_POTRF: cl_zpotrf_restore_where(); break;
 
-    case MORSE_GETRL: cl_zgetrl_restore_where(); break;
-    case MORSE_GESSM: cl_zgessm_restore_where(); break;
-    case MORSE_TSTRF: cl_ztstrf_restore_where(); break;
-    case MORSE_SSSSM: cl_zssssm_restore_where(); break;
+        case MORSE_GETRL: cl_zgetrl_restore_where(); break;
+        case MORSE_GESSM: cl_zgessm_restore_where(); break;
+        case MORSE_TSTRF: cl_ztstrf_restore_where(); break;
+        case MORSE_SSSSM: cl_zssssm_restore_where(); break;
 
-    /* case MORSE_GEQRT: cl_zgeqrt_restore_where(); break; */
-    /* case MORSE_UNMQR: cl_zunmqr_restore_where(); break; */
-    /* case MORSE_TSQRT: cl_ztsqrt_restore_where(); break; */
-    /* case MORSE_TSMQR: cl_ztsmqr_restore_where(); break; */
-    /* case MORSE_TTQRT: cl_zttqrt_restore_where(); break; */
-    /* case MORSE_TTMQR: cl_zttmqr_restore_where(); break; */
+        /* case MORSE_GEQRT: cl_zgeqrt_restore_where(); break; */
+        /* case MORSE_UNMQR: cl_zunmqr_restore_where(); break; */
+        /* case MORSE_TSQRT: cl_ztsqrt_restore_where(); break; */
+        /* case MORSE_TSMQR: cl_ztsmqr_restore_where(); break; */
+        /* case MORSE_TTQRT: cl_zttqrt_restore_where(); break; */
+        /* case MORSE_TTMQR: cl_zttmqr_restore_where(); break; */
 
-    /* case MORSE_GELQT: cl_zgelqt_restore_where(); break; */
-    /* case MORSE_UNMLQ: cl_zunmlq_restore_where(); break; */
-    /* case MORSE_TSLQT: cl_ztslqt_restore_where(); break; */
-    /* case MORSE_TSMLQ: cl_ztsmlq_restore_where(); break; */
-    /* case MORSE_TTLQT: cl_zttlqt_restore_where(); break; */
-    /* case MORSE_TTMLQ: cl_zttmlq_restore_where(); break; */
+        /* case MORSE_GELQT: cl_zgelqt_restore_where(); break; */
+        /* case MORSE_UNMLQ: cl_zunmlq_restore_where(); break; */
+        /* case MORSE_TSLQT: cl_ztslqt_restore_where(); break; */
+        /* case MORSE_TSMLQ: cl_ztsmlq_restore_where(); break; */
+        /* case MORSE_TTLQT: cl_zttlqt_restore_where(); break; */
+        /* case MORSE_TTMLQ: cl_zttmlq_restore_where(); break; */
     default:
-      return;
+        return;
     }
-#endif
 }
-
+#else
+void morse_zlocality_allrestrict() {}
+void morse_zlocality_onerestrict() {}
+void morse_zlocality_allrestore( ) {}
+void morse_zlocality_onerestore( ) {}
+#endif

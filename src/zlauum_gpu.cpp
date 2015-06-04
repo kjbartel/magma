@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -33,16 +33,16 @@ magma_zlauum_gpu(char uplo, magma_int_t n,
 {
 
 
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
         Purpose
         =======
 
-        DLAUUM computes the product U * U' or L' * L, where the triangular
+        ZLAUUM computes the product U * U' or L' * L, where the triangular
         factor U or L is stored in the upper or lower triangular part of
         the array dA.
 
@@ -89,7 +89,7 @@ magma_zlauum_gpu(char uplo, magma_int_t n,
         cuDoubleComplex     c_one = MAGMA_Z_ONE;
         cuDoubleComplex     *work;
 
-        long int upper  = lapackf77_lsame(uplo_, "U");
+        int upper  = lapackf77_lsame(uplo_, "U");
 
         *info = 0;
 
@@ -107,12 +107,12 @@ magma_zlauum_gpu(char uplo, magma_int_t n,
 
         nb = magma_get_zpotrf_nb(n);
 
-        if (MAGMA_SUCCESS != magma_zmalloc_host( &work, nb*nb )) {
+        if (MAGMA_SUCCESS != magma_zmalloc_pinned( &work, nb*nb )) {
                 *info = MAGMA_ERR_HOST_ALLOC;
                 return *info;
         }
         
-        static cudaStream_t stream[2];
+        cudaStream_t stream[2];
         magma_queue_create( &stream[0] );
         magma_queue_create( &stream[1] );
 
@@ -202,7 +202,7 @@ magma_zlauum_gpu(char uplo, magma_int_t n,
         magma_queue_destroy( stream[0] );
         magma_queue_destroy( stream[1] );
 
-        magma_free_host( work );
+        magma_free_pinned( work );
 
         return *info;
 }

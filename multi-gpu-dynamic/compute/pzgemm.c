@@ -29,8 +29,6 @@ void magma_pzgemm(PLASMA_enum transA, PLASMA_enum transB,
 {
     magma_context_t *magma;
     MorseOption_t options;
-    PLASMA_desc A = dA->desc;
-    PLASMA_desc C = dC->desc;
     int k, m, n;
     int tempmm, tempnn, tempkn, tempkm;
 
@@ -43,17 +41,17 @@ void magma_pzgemm(PLASMA_enum transA, PLASMA_enum transB,
 
     morse_options_init( &options, magma, sequence, request );
 
-    for (m = 0; m < C.mt; m++) {
-        tempmm = m == C.mt-1 ? C.m-m*C.mb : C.mb;
-        for (n = 0; n < C.nt; n++) {
-            tempnn = n == C.nt-1 ? C.n-n*C.nb : C.nb;
+    for (m = 0; m < dC->mt; m++) {
+        tempmm = m == dC->mt-1 ? dC->m-m*dC->mb : dC->mb;
+        for (n = 0; n < dC->nt; n++) {
+            tempnn = n == dC->nt-1 ? dC->n-n*dC->nb : dC->nb;
             /*
              *  A: PlasmaNoTrans / B: PlasmaNoTrans
              */
             if (transA == PlasmaNoTrans) {
                 if (transB == PlasmaNoTrans) {
-                    for (k = 0; k < A.nt; k++) {
-                        tempkn = k == A.nt-1 ? A.n-k*A.nb : A.nb;
+                    for (k = 0; k < dA->nt; k++) {
+                        tempkn = k == dA->nt-1 ? dA->n-k*dA->nb : dA->nb;
                         zbeta = k == 0 ? beta : zone;
                         MORSE_zgemm(
                             &options,
@@ -68,8 +66,8 @@ void magma_pzgemm(PLASMA_enum transA, PLASMA_enum transB,
                  *  A: PlasmaNoTrans / B: Plasma[Conj]Trans
                  */
                 else {
-                    for (k = 0; k < A.nt; k++) {
-                        tempkn = k == A.nt-1 ? A.n-k*A.nb : A.nb;
+                    for (k = 0; k < dA->nt; k++) {
+                        tempkn = k == dA->nt-1 ? dA->n-k*dA->nb : dA->nb;
                         zbeta = k == 0 ? beta : zone;
                         MORSE_zgemm(
                             &options,
@@ -86,8 +84,8 @@ void magma_pzgemm(PLASMA_enum transA, PLASMA_enum transB,
              */
             else {
                 if (transB == PlasmaNoTrans) {
-                    for (k = 0; k < A.mt; k++) {
-                        tempkm = k == A.mt-1 ? A.m-k*A.mb : A.mb;
+                    for (k = 0; k < dA->mt; k++) {
+                        tempkm = k == dA->mt-1 ? dA->m-k*dA->mb : dA->mb;
                         zbeta = k == 0 ? beta : zone;
                         MORSE_zgemm(
                             &options,
@@ -102,8 +100,8 @@ void magma_pzgemm(PLASMA_enum transA, PLASMA_enum transB,
                  *  A: Plasma[Conj]Trans / B: Plasma[Conj]Trans
                  */
                 else {
-                    for (k = 0; k < A.mt; k++) {
-                        tempkm = k == A.mt-1 ? A.m-k*A.mb : A.mb;
+                    for (k = 0; k < dA->mt; k++) {
+                        tempkm = k == dA->mt-1 ? dA->m-k*dA->mb : dA->mb;
                         zbeta = k == 0 ? beta : zone;
                         MORSE_zgemm(
                             &options,

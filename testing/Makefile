@@ -1,15 +1,16 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
 include ../Makefile.internal
 
-ZSRC  = testing_zgemm.cpp	\
+ZSRC := \
+	testing_zgemm.cpp	\
 	testing_zhemv.cpp	\
 	testing_zgemv.cpp	\
 	testing_zsymv.cpp	\
@@ -23,6 +24,9 @@ ZSRC  = testing_zgemm.cpp	\
 	testing_zgeqrf.cpp 	\
 	testing_zgeqlf.cpp 	\
 	testing_zgelqf.cpp 	\
+        testing_zgeqp3.cpp      \
+        testing_dgeqp3.cpp      \
+	testing_zungqr.cpp	\
 	\
 	testing_zpotrf_gpu.cpp 	\
 	testing_zpotri_gpu.cpp 	\
@@ -62,9 +66,9 @@ ZSRC  = testing_zgemm.cpp	\
 	testing_zlacpy.cpp \
 	testing_auxiliary.cpp	\
 	testing_zblas.cpp	\
-
-
-#testing_zswap.cpp
+	testing_zher2k_mgpu.cpp	\
+	testing_zhemm_mgpu.cpp	\
+	testing_zsymmetrize.cpp	\
 
 ifeq ($(FORT), pgfortran)
 	FOBJ  = fortran_thunking.o
@@ -111,20 +115,17 @@ testing_%.o : testing_%.f90
 	$(FORT) $(FOPTS) $(INC) -c $< -o $@ 
 endif
 
-%.o: %.cpp
-	$(CC) $(OPTS) $(INC) -c $< -o $@
-
-#
-# MAGMA Fortran module. Once finalized, the generated magma.mod
-# has to be moved in the include directory
-#
 testing_%_f : testing_%_f.o $(FOBJ)
-	$(FORT) $(OPTS) $(LDOPTS) $< $(FOBJ) -o $@ lin/liblapacktest.a -L../lib \
-          -lcuda -lmagma -lmagmablas $(LIBDIR) $(LIB) 
+	$(FORT) $(LDOPTS) $< $(FOBJ) -o $@ \
+	lin/liblapacktest.a -L../lib -lmagma -lmagmablas -lmagma \
+	$(LIBDIR) \
+	$(LIB) 
 
 testing_% : testing_%.o
-	$(CC) $(OPTS) $(LDOPTS) $(NOMAIN) $< $(OBJ) -o $@ lin/liblapacktest.a -L../lib \
-          -lcuda -lmagma -lmagmablas $(LIBDIR) $(LIB) 
+	$(CC) $(LDOPTS) $(NOMAIN) $< $(OBJ) -o $@ \
+	lin/liblapacktest.a -L../lib -lmagma -lmagmablas -lmagma \
+	$(LIBDIR) \
+	$(LIB) 
 
 #
 # These two files are provided by cuda

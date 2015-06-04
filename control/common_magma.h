@@ -2,11 +2,11 @@
  *
  * @file common_magma.h
  *
- *  MAGMA (version 1.2.0) --
+ *  MAGMA (version 1.2.1) --
  *  Univ. of Tennessee, Knoxville
  *  Univ. of California, Berkeley
  *  Univ. of Colorado, Denver
- *  May 2012
+ *  June 2012
  *
  * @version 1.0.0
  * @author Mathieu Faverge
@@ -22,13 +22,14 @@
 #ifndef _MAGMA_COMMON_H_
 #define _MAGMA_COMMON_H_
 
+#include <stdlib.h>
 #include <stdio.h>
-#include <cuda.h>
-#include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
+
+#include <cuda_runtime_api.h>
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 

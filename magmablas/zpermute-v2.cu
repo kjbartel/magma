@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -98,14 +98,15 @@ extern "C" void zlaswp3( zlaswp_params_t2 &params )
 
 
 extern "C" void 
-magmablas_zpermute_long2( cuDoubleComplex *dAT, int lda, int *ipiv, int nb, int ind )
+magmablas_zpermute_long2( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
+                          magma_int_t *ipiv, magma_int_t nb, magma_int_t ind )
 {
         int k;
 
         for( k = 0; k < nb-BLOCK_SIZE; k += BLOCK_SIZE )
         {
                 //zlaswp_params_t params = { dAT, lda, lda, ind + k };
-                zlaswp_params_t2 params = { dAT, lda, lda, ind + k, BLOCK_SIZE };
+                zlaswp_params_t2 params = { dAT, n, lda, ind + k, BLOCK_SIZE };
                 for( int j = 0; j < BLOCK_SIZE; j++ )
                 {
                         params.ipiv[j] = ipiv[ind + k + j] - k - 1;
@@ -117,7 +118,7 @@ magmablas_zpermute_long2( cuDoubleComplex *dAT, int lda, int *ipiv, int nb, int 
 
         int num_pivots = nb - k;
 
-        zlaswp_params_t2 params = { dAT, lda, lda, ind + k, num_pivots};
+        zlaswp_params_t2 params = { dAT, n, lda, ind + k, num_pivots};
         for( int j = 0; j < num_pivots; j++ )
         {
             params.ipiv[j] = ipiv[ind + k + j] - k - 1;
@@ -127,8 +128,8 @@ magmablas_zpermute_long2( cuDoubleComplex *dAT, int lda, int *ipiv, int nb, int 
 }
 
 extern "C" void 
-magmablas_zlaswp( int n, cuDoubleComplex *dAT, int lda, 
-                  int i1, int i2, int *ipiv, int inci )
+magmablas_zlaswp( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda, 
+                  magma_int_t i1, magma_int_t i2, magma_int_t *ipiv, magma_int_t inci )
 {
   int k;
   
@@ -146,8 +147,8 @@ magmablas_zlaswp( int n, cuDoubleComplex *dAT, int lda,
 }
 
 extern "C" void 
-magmablas_zlaswpx( int n, cuDoubleComplex *dAT, int ldx, int ldy, 
-                   int i1, int i2, int *ipiv, int inci )
+magmablas_zlaswpx( magma_int_t n, cuDoubleComplex *dAT, magma_int_t ldx, magma_int_t ldy, 
+                   magma_int_t i1, magma_int_t i2, magma_int_t *ipiv, magma_int_t inci )
 {
   int k;
   

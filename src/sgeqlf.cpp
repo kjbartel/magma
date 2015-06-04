@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:32 2012
+       @generated s Thu Jun 28 12:30:49 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
              float *a,    magma_int_t lda, float *tau, 
              float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -47,7 +47,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
             (see Further Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -60,7 +60,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,N).
@@ -101,7 +101,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
     magma_int_t i, k, lddwork, old_i, old_ib, nb;
     magma_int_t rows, cols;
     magma_int_t ib, ki, kk, mu, nu, iinfo, ldda;
-    long int lquery;
+    int lquery;
 
     nb = magma_get_sgeqlf_nb(m);
     *info = 0;
@@ -147,7 +147,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
     }
     dwork = da + ldda*(n);
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 

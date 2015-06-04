@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:25 2012
+       @generated s Thu Jun 28 12:30:34 2012
 
 */
 #include "common_magma.h"
@@ -39,11 +39,11 @@ magma_spotrf3_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, magma_
                    float **d_lA, magma_int_t ldda, float **d_lP, magma_int_t lddp, 
                    float *a, magma_int_t lda, cudaStream_t stream[][3], magma_int_t *info ) 
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -100,7 +100,7 @@ magma_spotrf3_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, magma_
     float c_neg_one = MAGMA_S_NEG_ONE;
     float          d_one     =  1.0;
     float          d_neg_one = -1.0;
-    long int        upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
     float *dlpanel;
     magma_int_t n_local[4], ldpanel;
     cudaEvent_t event0[4], /* compute next block -> ssyrk     */

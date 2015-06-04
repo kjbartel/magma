@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- clMAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      April 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -14,6 +14,7 @@ INC += -I$(MAGMA_DIR)/control
 ZSRC  = blas_z.cpp	\
 	zset_get.cpp	\
 
+-include Makefile.local
 -include Makefile.src
 
 ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC) \
@@ -30,12 +31,6 @@ all: $(LIBMAGMA)
 $(LIBMAGMA): $(ALLOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
-
-.cpp.o:
-	$(CC) $(OPTS) $(INC) -c $< -o $@
-
-.f.o:
-	$(FORT) $(OPTS) $(INC) -c $< -o $@
 
 clean:
 	rm -f *.o *~ *.linkinfo

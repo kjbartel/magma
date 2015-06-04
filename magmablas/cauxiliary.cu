@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:00 2012
+       @generated c Thu Jun 28 12:31:15 2012
 
 */
 #include "common_magma.h"
@@ -16,7 +16,8 @@
       32x32 block of A.
 */
 
-__global__ void cset_to_zero(cuFloatComplex *A, int lda){
+__global__ void cset_to_zero(cuFloatComplex *A, int lda)
+{
     int ind = blockIdx.x*lda + threadIdx.x;
 
     A += ind;
@@ -24,24 +25,27 @@ __global__ void cset_to_zero(cuFloatComplex *A, int lda){
 //   A[16*lda] = 0.;
 }
 
-__global__ void cset_nbxnb_to_zero(int nb, cuFloatComplex *A, int lda){
+__global__ void cset_nbxnb_to_zero(int nb, cuFloatComplex *A, int lda)
+{
    int ind = blockIdx.x*lda + threadIdx.x, i, j;
 
    A += ind;
-   for(i=0; i<nb; i+=32){
+   for(i=0; i<nb; i+=32) {
      for(j=0; j<nb; j+=32)
          A[j] = MAGMA_C_ZERO;
      A += 32*lda;
    }
 }
 
-void czero_32x32_block(cuFloatComplex *A, int lda)
+extern "C"
+void czero_32x32_block(cuFloatComplex *A, magma_int_t lda)
 {
   // cset_to_zero<<< 16, 32, 0, magma_stream >>>(A, lda);
   cset_to_zero<<< 32, 32, 0, magma_stream >>>(A, lda);
 }
 
-void czero_nbxnb_block(int nb, cuFloatComplex *A, int lda)
+extern "C"
+void czero_nbxnb_block(magma_int_t nb, cuFloatComplex *A, magma_int_t lda)
 {
   cset_nbxnb_to_zero<<< 32, 32, 0, magma_stream >>>(nb, A, lda);
 }
@@ -51,7 +55,8 @@ void czero_nbxnb_block(int nb, cuFloatComplex *A, int lda)
 */
 #define claset_threads 64
 
-__global__ void claset(int m, int n, cuFloatComplex *A, int lda){
+__global__ void claset(int m, int n, cuFloatComplex *A, int lda)
+{
    int ibx = blockIdx.x * claset_threads;
    int iby = blockIdx.y * 32;
 
@@ -65,7 +70,8 @@ __global__ void claset(int m, int n, cuFloatComplex *A, int lda){
         A[i*lda] = MAGMA_C_ZERO;
 }
 
-__global__ void claset_identity(int m, int n, cuFloatComplex *A, int lda){
+__global__ void claset_identity(int m, int n, cuFloatComplex *A, int lda)
+{
    int ibx = blockIdx.x * claset_threads;
    int iby = blockIdx.y * 32;
 
@@ -83,7 +89,8 @@ __global__ void claset_identity(int m, int n, cuFloatComplex *A, int lda){
      }
 }
 
-__global__ void claset_identityonly(int m, int n, cuFloatComplex *A, int lda){
+__global__ void claset_identityonly(int m, int n, cuFloatComplex *A, int lda)
+{
    int ibx = blockIdx.x * claset_threads;
    int iby = blockIdx.y * 32;
 
@@ -100,7 +107,8 @@ __global__ void claset_identityonly(int m, int n, cuFloatComplex *A, int lda){
 }
 
 
-__global__ void clasetlower(int m, int n, cuFloatComplex *A, int lda){
+__global__ void clasetlower(int m, int n, cuFloatComplex *A, int lda)
+{
    int ibx = blockIdx.x * claset_threads;
    int iby = blockIdx.y * 32;
 
@@ -114,7 +122,8 @@ __global__ void clasetlower(int m, int n, cuFloatComplex *A, int lda){
         A[i*lda] = MAGMA_C_ZERO;
 }
 
-__global__ void clasetupper(int m, int n, cuFloatComplex *A, int lda){
+__global__ void clasetupper(int m, int n, cuFloatComplex *A, int lda)
+{
    int ibx = blockIdx.x * claset_threads;
    int iby = blockIdx.y * 32;
 
@@ -181,17 +190,19 @@ magmablas_claset_identityonly(magma_int_t m, magma_int_t n,
       returns the Frobenious norm of the difference of the two matrices.
       The function is used for debugging.
 */
-float cpu_gpu_cdiff(int M, int N, cuFloatComplex * a, int lda, cuFloatComplex *da, int ldda)
+extern "C"
+float cpu_gpu_cdiff(magma_int_t M, magma_int_t N, cuFloatComplex * a, magma_int_t lda, cuFloatComplex *da, magma_int_t ldda)
 {
-  int one = 1, j;
-  cuFloatComplex mone = MAGMA_C_NEG_ONE;
+  magma_int_t d_one = 1;
+  magma_int_t j;
+  cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
   float  work[1];
   cuFloatComplex *ha = (cuFloatComplex*)malloc( M * N * sizeof(cuFloatComplex));
   float res;
 
   cublasGetMatrix(M, N, sizeof(cuFloatComplex), da, ldda, ha, M);
   for(j=0; j<N; j++)
-    blasf77_caxpy(&M, &mone, a+j*lda, &one, ha+j*M, &one);
+    blasf77_caxpy(&M, &c_neg_one, a+j*lda, &d_one, ha+j*M, &d_one);
   res = lapackf77_clange("f", &M, &N, ha, &M, work);
 
   free(ha);
@@ -202,7 +213,8 @@ float cpu_gpu_cdiff(int M, int N, cuFloatComplex * a, int lda, cuFloatComplex *d
  -- GPU kernel for setting 0 in the nb-1 upper subdiagonals and 1 in the diagonal
     @author Raffaele Solca
  */
-__global__ void csetdiag1subdiag0_L(int k, cuFloatComplex *A, int lda){
+__global__ void csetdiag1subdiag0_L(int k, cuFloatComplex *A, int lda)
+{
 
   int nb = blockDim.x;
   int ibx = blockIdx.x * nb;
@@ -217,7 +229,7 @@ __global__ void csetdiag1subdiag0_L(int k, cuFloatComplex *A, int lda){
 
 #pragma unroll
   for(int i=0; i<nb; i++)
-    if (ibx+i < k && ind + i  >= nb){
+    if (ibx+i < k && ind + i  >= nb) {
       A[i*(lda+1)] = tmp;
     }
 
@@ -228,7 +240,8 @@ __global__ void csetdiag1subdiag0_L(int k, cuFloatComplex *A, int lda){
     @author Raffaele Solca
  */
 
-__global__ void csetdiag1subdiag0_U(int k, cuFloatComplex *A, int lda){
+__global__ void csetdiag1subdiag0_U(int k, cuFloatComplex *A, int lda)
+{
 
   int nb = blockDim.x;
   int ibx = blockIdx.x * nb;
@@ -243,7 +256,7 @@ __global__ void csetdiag1subdiag0_U(int k, cuFloatComplex *A, int lda){
 
 #pragma unroll
   for(int i=0; i<nb; i++)
-    if (ibx+i < k && ind + i < k){
+    if (ibx+i < k && ind + i < k) {
       A[i*(lda+1)] = tmp;
     }
 
@@ -265,7 +278,7 @@ magmablas_csetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
     fprintf(stderr,"wrong second argument of csetdiag1subdiag0");
   if(uplo == MagmaLower)
     csetdiag1subdiag0_L<<< grid, threads, 0, stream >>> (k, A, lda);
-  else if(uplo == MagmaUpper){
+  else if(uplo == MagmaUpper) {
     csetdiag1subdiag0_U<<< grid, threads, 0, stream >>> (k, A, lda);
   }
   else

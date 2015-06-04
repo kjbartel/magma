@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:35 2012
+       @generated s Thu Jun 28 12:30:44 2012
 
 */
 #include "common_magma.h"
@@ -40,11 +40,11 @@ magma_sgeqrf3_gpu( magma_int_t m, magma_int_t n,
                   float *tau, float *dT, 
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -144,7 +144,7 @@ magma_sgeqrf3_gpu( magma_int_t m, magma_int_t n,
     lwork  = (m + n + nb)*nb;
     lhwork = lwork - m*nb;
 
-    if (MAGMA_SUCCESS != magma_smalloc_host( &work, lwork )) {
+    if (MAGMA_SUCCESS != magma_smalloc_pinned( &work, lwork )) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
@@ -152,7 +152,7 @@ magma_sgeqrf3_gpu( magma_int_t m, magma_int_t n,
     ut = hwork+nb*(n);
     memset( ut, 0, nb*nb*sizeof(float));
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -237,7 +237,7 @@ magma_sgeqrf3_gpu( magma_int_t m, magma_int_t n,
 
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );
-    magma_free_host( work );
+    magma_free_pinned( work );
     return *info;
 
 /*     End of MAGMA_SGEQRF */

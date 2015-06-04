@@ -1,9 +1,9 @@
 /*
- *   -- MAGMA (version 1.2.0) --
+ *   -- MAGMA (version 1.2.1) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      May 2012
+ *      June 2012
  *
  * @precisions normal z -> s d c
  */
@@ -24,10 +24,10 @@ extern "C" {
  // maximum contexts
 #define MAX_THREADS_BLG         256
 
- real_Double_t get_time_azz(void);
- void findVTpos(int N, int NB, int Vblksiz, int sweep, int st, int *Vpos, int *TAUpos, int *Tpos, int *myblkid);
- void findVTsiz(int N, int NB, int Vblksiz, int *blkcnt, int *LDV);
-  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
+real_Double_t get_time_azz(void);
+void findVTpos(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t sweep, magma_int_t st, magma_int_t *Vpos, magma_int_t *TAUpos, magma_int_t *Tpos, magma_int_t *myblkid);
+void findVTsiz(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t *blkcnt, magma_int_t *LDV);
+magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
 
 
 /*

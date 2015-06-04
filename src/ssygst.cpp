@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:47 2012
+       @generated s Thu Jun 28 12:31:00 2012
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
              float *b, magma_int_t ldb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.0) --
+  -- MAGMA (version 1.2.1) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     May 2012
+     June 2012
 
  
    Purpose
@@ -100,7 +100,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
   magma_int_t        ldda = n;
   magma_int_t        lddb = n;
   float             d_one = 1.0;
-  long int           upper = lapackf77_lsame(uplo_, "U");
+  int upper = lapackf77_lsame(uplo_, "U");
   
   /* Test the input parameters. */
   *info = 0;
@@ -131,7 +131,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
   
   nb = magma_get_ssygst_nb(n);
   
-  static cudaStream_t stream[2];
+  cudaStream_t stream[2];
   magma_queue_create( &stream[0] );
   magma_queue_create( &stream[1] );
 
@@ -151,7 +151,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
           
           /* Update the upper triangle of A(k:n,k:n) */
           
-          lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+          lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
           
           magma_ssetmatrix_async( kb, kb,
                                   A(k, k),  lda,
@@ -211,7 +211,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
           
           /* Update the lower triangle of A(k:n,k:n) */
           
-          lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+          lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
           
           magma_ssetmatrix_async( kb, kb,
                                   A(k, k),  lda,
@@ -312,7 +312,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
           
           magma_queue_sync( stream[0] );
           
-          lapackf77_shegs2( &itype, uplo_, &kb, A(k, k), &lda, B(k, k), &ldb, info);
+          lapackf77_ssygs2( &itype, uplo_, &kb, A(k, k), &lda, B(k, k), &ldb, info);
           
           magma_ssetmatrix_async( kb, kb,
                                   A(k, k),  lda,
@@ -369,7 +369,7 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
           
           magma_queue_sync( stream[0] );
           
-          lapackf77_shegs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
+          lapackf77_ssygs2( &itype, uplo_, &kb, A(k,k), &lda, B(k,k), &ldb, info);
           
           magma_ssetmatrix_async( kb, kb,
                                   A(k, k),  lda,

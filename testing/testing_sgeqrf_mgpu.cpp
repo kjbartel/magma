@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:21 2012
+       @generated s Thu Jun 28 12:31:45 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -54,7 +53,9 @@ int main( int argc, char** argv)
     magma_int_t M = 0, N = 0, n2, n_local[4], lda, ldda, lhwork;
     magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,9984};
 
-    magma_int_t i, k, nk, info, min_mn, num_gpus = 1, max_num_gpus;
+    magma_int_t i, k, nk, info, min_mn;
+    int max_num_gpus, num_gpus = 1;
+    
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
 
@@ -74,7 +75,7 @@ int main( int argc, char** argv)
             N = M;
         }
         if (M>0 && N>0)
-          printf("  testing_sgeqrf_gpu -M %d -N %d -NGPU %d\n\n", M, N, num_gpus);
+          printf("  testing_sgeqrf_gpu -M %d -N %d -NGPU %d\n\n", (int) M, (int) N, (int) num_gpus);
         else
             {
                 printf("\nUsage: \n");
@@ -100,7 +101,7 @@ int main( int argc, char** argv)
       printf("More GPUs requested than available. Have to change it.\n");
       num_gpus = max_num_gpus;
     }
-    printf("Number of GPUs to be used = %d\n", num_gpus);
+    printf("Number of GPUs to be used = %d\n", (int) num_gpus);
 
     /* Allocate host memory for the matrix */
     TESTING_MALLOC(    tau, float, min_mn );
@@ -118,7 +119,7 @@ int main( int argc, char** argv)
          cudaSetDevice(i);
       #endif
       TESTING_DEVALLOC(  d_lA[i], float, ldda*n_local[i] );
-      printf("device %2d n_local = %4d\n", i, n_local[i]);  
+      printf("device %2d n_local = %4d\n", (int) i, (int) n_local[i]);  
     }
     cudaSetDevice(0);
 
@@ -128,7 +129,6 @@ int main( int argc, char** argv)
 
     TESTING_MALLOC( hwork, float, lhwork );
 
-    printf("\n\n");
     printf("  M     N   CPU GFlop/s   GPU GFlop/s    ||R||_F / ||A||_F\n");
     printf("==========================================================\n");
     for(i=0; i<10; i++){
@@ -152,7 +152,7 @@ int main( int argc, char** argv)
         lapackf77_sgeqrf(&M, &N, h_A, &M, tau, hwork, &lhwork, &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of lapack_sgeqrf had an illegal value.\n", -info);
+            printf("Argument %d of lapack_sgeqrf had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start, end);
 
@@ -166,7 +166,7 @@ int main( int argc, char** argv)
         end = get_current_time();
 
         if (info < 0)
-          printf("Argument %d of magma_sgeqrf2 had an illegal value.\n", -info);
+          printf("Argument %d of magma_sgeqrf2 had an illegal value.\n", (int) -info);
         
         gpu_perf = flops / GetTimerValue(start, end);
         
@@ -179,7 +179,7 @@ int main( int argc, char** argv)
         blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         
         printf("%5d %5d  %6.2f         %6.2f        %e\n",
-               M, N, cpu_perf, gpu_perf,
+               (int) M, (int) N, cpu_perf, gpu_perf,
                lapackf77_slange("f", &M, &N, h_R, &M, work) / matnorm);
         
         if (argc != 1)

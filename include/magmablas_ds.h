@@ -1,18 +1,15 @@
 /*
- *   -- MAGMA (version 1.2.0) --
+ *   -- MAGMA (version 1.2.1) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      May 2012
+ *      June 2012
  *
- * @generated ds Tue May 15 18:17:05 2012
+ * @generated ds Thu Jun 28 12:30:02 2012
  */
 
 #ifndef _MAGMABLAS_DS_H_
 #define _MAGMABLAS_DS_H_
-
-#include "cublas.h"
-#include "cuda.h"
 
 #ifdef __cplusplus
 extern "C" {

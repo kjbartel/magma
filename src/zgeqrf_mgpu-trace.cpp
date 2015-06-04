@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -82,10 +82,10 @@ void dump_trace(int cores_num)
   for (core = 0; core < cores_num; core++)
     for (event = 0; event < event_num[core]; event += 4)
       {
-        int    thread = event_log[core][event+0];
-        double start  = event_log[core][event+1];
-        double end    = event_log[core][event+2];
-        int    color  = event_log[core][event+3];
+        int    thread = (int) event_log[core][event+0];
+        double start  =       event_log[core][event+1];
+        double end    =       event_log[core][event+2];
+        int    color  = (int) event_log[core][event+3];
 
         start -= event_log[core][2];
         end   -= event_log[core][2];
@@ -122,16 +122,16 @@ void dump_trace(int cores_num)
 //===========================================================================
 
 extern "C" magma_int_t
-magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
+magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
                     cuDoubleComplex **dlA, magma_int_t ldda,
                     cuDoubleComplex *tau, 
                     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -198,7 +198,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
     magma_int_t nbmin, nx, ib, nb;
     magma_int_t lhwork, lwork;
 
-    magma_int_t cdevice;
+    magma_device_t cdevice;
     magma_getdevice(&cdevice);
 
     float ctime, dtime;
@@ -247,7 +247,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
         n_local[i] += n%nb;
     }
 
-    if (MAGMA_SUCCESS != magma_zmalloc_host( &local_work, lwork )) {
+    if (MAGMA_SUCCESS != magma_zmalloc_pinned( &local_work, lwork )) {
       for(i=0; i<num_gpus; i++){
         #ifdef  MultiGPUs
           magma_setdevice(i);
@@ -259,7 +259,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
       return *info;
     }
 
-    static cudaStream_t streaml[4][2];
+    cudaStream_t streaml[4][2];
     cudaEvent_t start[4], stop[4][10];
     for(i=0; i<num_gpus; i++){
       #ifdef  MultiGPUs
@@ -537,6 +537,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
 
     magma_setdevice(cdevice);
     dump_trace(num_gpus+1);
+    magma_free_pinned( local_work );
 
     return *info;
 } /* magma_zgeqrf2_mgpu */

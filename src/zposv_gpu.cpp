@@ -1,32 +1,25 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_ztrsm magmablas_ztrsm
-#endif
-// === End defining what BLAS to use =======================================
-
 extern "C" magma_int_t
 magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs, 
                  cuDoubleComplex *dA, magma_int_t ldda, 
                  cuDoubleComplex *dB, magma_int_t lddb, magma_int_t *info )
 {
-/*  -- magma (version 1.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
     Purpose
     =======

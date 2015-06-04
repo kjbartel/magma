@@ -1,0 +1,19 @@
+@c -*-texinfo-*-
+
+@c This file is part of the MORSE Handbook.
+@c Copyright (C) 2012 Inria
+@c Copyright (C) 2012 The University of Tennessee
+@c Copyright (C) 2012 King Abdullah University of Science and Technology
+@c See the file ../morse.texi for copying conditions.
+
+@menu
+* Compilation configuration::   
+* Execution configuration through environment variables::  
+@end menu
+
+@node Compilation configuration
+@section Compilation configuration
+
+@node Execution configuration through environment variables
+@section Execution configuration through environment variables
+

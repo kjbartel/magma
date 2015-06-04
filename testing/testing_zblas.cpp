@@ -1,14 +1,15 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
  * @author Mark Gates
  * @precisions normal z -> c d s
  *
  **/
+#include <stdlib.h>
 #include <stdio.h>
 
 // make sure that asserts are enabled
@@ -17,7 +18,9 @@
 #endif
 #include <assert.h>
 
-#include "common_magma.h"
+// includes, project
+#include "magma.h"
+#include "magma_lapack.h"
 #include "testings.h"
 
 #define A(i,j)  &A[  (i) + (j)*ld ]
@@ -59,10 +62,10 @@ int main( int argc, char** argv )
     size = maxn*maxn;
     piv = (magma_int_t*) malloc( maxn * sizeof(magma_int_t) );
     assert( piv != NULL );
-    err = magma_zmalloc_host( &A , size );  assert( err == 0 );
-    err = magma_zmalloc_host( &B , size );  assert( err == 0 );
-    err = magma_zmalloc_host( &C , size );  assert( err == 0 );
-    err = magma_zmalloc_host( &C2, size );  assert( err == 0 );
+    err = magma_zmalloc_pinned( &A , size );  assert( err == 0 );
+    err = magma_zmalloc_pinned( &B , size );  assert( err == 0 );
+    err = magma_zmalloc_pinned( &C , size );  assert( err == 0 );
+    err = magma_zmalloc_pinned( &C2, size );  assert( err == 0 );
     err = magma_zmalloc( &dA,  size );      assert( err == 0 );
     err = magma_zmalloc( &dB,  size );      assert( err == 0 );
     err = magma_zmalloc( &dC1, size );      assert( err == 0 );
@@ -300,10 +303,10 @@ int main( int argc, char** argv )
     }}}}
     
     // cleanup
-    magma_free_host( A  );
-    magma_free_host( B  );
-    magma_free_host( C  );
-    magma_free_host( C2 );
+    magma_free_pinned( A  );
+    magma_free_pinned( B  );
+    magma_free_pinned( C  );
+    magma_free_pinned( C2 );
     magma_free( dA  );
     magma_free( dB  );
     magma_free( dC1 );

@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- * @generated c Tue May 15 18:18:20 2012
+ * @generated c Thu Jun 28 12:31:44 2012
  *
  **/
 // includes, system
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -77,7 +76,7 @@ int main( int argc, char** argv)
     lwork = -1;
     lapackf77_cgetri( &N, h_A, &lda, ipiv, work, &lwork, &info );
     if (info != 0)
-        printf( "An error occured in magma_cgetri, info=%d\n", info );
+        printf( "An error occured in magma_cgetri, info=%d\n", (int) info );
     lwork = int( MAGMA_C_REAL( *work ));
 
     /* query for Magma workspace size */
@@ -93,7 +92,6 @@ int main( int argc, char** argv)
     TESTING_DEVALLOC(  d_A,   cuFloatComplex, ldda*N );
     TESTING_DEVALLOC(  dwork, cuFloatComplex, ldwork );
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s    ||R||_F / ||A||_F\n");
     printf("========================================================\n");
     for( i=0; i < ntest; i++ ){
@@ -120,7 +118,7 @@ int main( int argc, char** argv)
         magma_cgetri_gpu( N,    d_A, ldda, ipiv, dwork, ldwork, &info );
         end = get_current_time();
         if (info != 0)
-            printf( "An error occured in magma_cgetri, info=%d\n", info );
+            printf( "An error occured in magma_cgetri, info=%d\n", (int) info );
 
         gpu_perf = flops / GetTimerValue(start, end);
         
@@ -133,7 +131,7 @@ int main( int argc, char** argv)
         lapackf77_cgetri( &N,     h_A, &lda, ipiv, work, &lwork, &info );
         end = get_current_time();
         if (info != 0)
-            printf( "An error occured in cgetri, info=%d\n", info );
+            printf( "An error occured in cgetri, info=%d\n", (int) info );
         
         cpu_perf = flops / GetTimerValue(start, end);
         
@@ -144,7 +142,7 @@ int main( int argc, char** argv)
         R_norm = lapackf77_clange( "f", &N, &N, h_R, &lda, rwork );
         
         printf( "%5d    %6.2f         %6.2f        %e\n",
-                N, cpu_perf, gpu_perf, R_norm / A_norm );
+                (int) N, cpu_perf, gpu_perf, R_norm / A_norm );
         
         if (argc != 1)
             break;

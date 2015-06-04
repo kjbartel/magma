@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -25,9 +25,9 @@ magma_zlarfb_gpu( char side, char trans, char direct, char storev,
           cuDoubleComplex *dC,    magma_int_t ldc, 
           cuDoubleComplex *dwork, magma_int_t ldwork)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Univ. of California Berkeley
-       May 2012
+       June 2012
 
     Purpose
     =======

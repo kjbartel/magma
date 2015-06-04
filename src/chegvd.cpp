@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated c Tue May 15 18:17:46 2012
+       @generated c Thu Jun 28 12:31:01 2012
 
 */
 #include "common_magma.h"
@@ -40,11 +40,11 @@ magma_chegvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
              float *rwork, magma_int_t lrwork,
              magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -200,19 +200,19 @@ magma_chegvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
     magma_int_t ldda = n;
     magma_int_t lddb = n;
 
-    static magma_int_t lower;
-    static char trans[1];
-    static magma_int_t wantz;
-    static magma_int_t lquery;
+    magma_int_t lower;
+    char trans[1];
+    magma_int_t wantz;
+    magma_int_t lquery;
 
-    //    static magma_int_t lopt;
-    static magma_int_t lwmin;
-    //    static magma_int_t liopt;
-    static magma_int_t liwmin;
-    //    static magma_int_t lropt;
-    static magma_int_t lrwmin;
+    //    magma_int_t lopt;
+    magma_int_t lwmin;
+    //    magma_int_t liopt;
+    magma_int_t liwmin;
+    //    magma_int_t lropt;
+    magma_int_t lrwmin;
 
-    static cudaStream_t stream;
+    cudaStream_t stream;
     magma_queue_create( &stream );
 
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);

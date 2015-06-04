@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:38 2012
+       @generated c Thu Jun 28 12:31:06 2012
 
 */
 #include "common_magma.h"
@@ -27,11 +27,11 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
              cuFloatComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -149,9 +149,9 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
 
     magma_int_t ncol, nrow, jmax, nb, ldda;
 
-    static magma_int_t i, j, nx;
-    static cuFloatComplex ws;
-    static magma_int_t iinfo;
+    magma_int_t i, j, nx;
+    cuFloatComplex ws;
+    magma_int_t iinfo;
 
     magma_int_t minmn;
     magma_int_t ldwrkx, ldwrky, lwkopt;

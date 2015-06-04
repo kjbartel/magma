@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:39 2012
+       @generated c Thu Jun 28 12:31:04 2012
 
 */
 #include "common_magma.h"
@@ -28,12 +28,12 @@ magma_clahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
 
-    ZLAHR2 reduces the first NB columns of a complex general n-BY-(n-k+1)   
+    CLAHR2 reduces the first NB columns of a complex general n-BY-(n-k+1)   
     matrix A so that elements below the k-th subdiagonal are zero. The   
     reduction is performed by an orthogonal similarity transformation   
     Q' * A * Q. The routine returns the matrices V and T which determine   

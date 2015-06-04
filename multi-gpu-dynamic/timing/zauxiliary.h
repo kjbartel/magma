@@ -27,4 +27,8 @@ double zcheck_solution(int M, int N, int NRHS,
                       PLASMA_Complex64_t *B1, PLASMA_Complex64_t *B2, int LDB,
                       double *anorm, double *bnorm, double *xnorm);
 
+int zcheck_inverse(int N, PLASMA_Complex64_t *A1, PLASMA_Complex64_t *A2,
+                         int LDA, PLASMA_enum uplo, double *rnorm, double *anorm, double *ainvnorm);
+
+
 #endif /* ZAUXILIARY_H */

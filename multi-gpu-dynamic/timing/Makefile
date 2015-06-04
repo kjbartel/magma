@@ -40,11 +40,21 @@ ZSRC  = time_zgemm.c 		\
         time_zgecfi.c           \
         time_zlapack2tile.c
 
-ZSRC  = time_zposv_tile.c 	\
-	time_zgemm_tile.c 	\
-	time_zpotrf_tile.c	\
-	time_zgetrf_tile.c	\
-	time_zgeqrf_tile.c
+ZSRC  = time_zgemm.c			\
+	time_zgemm_tile.c 		\
+	time_zgeqrf_tile.c		\
+	time_zgesv_incpiv.c		\
+	time_zgesv_incpiv_tile.c	\
+	time_zgetrf_incpiv.c		\
+	time_zgetrf_incpiv_tile.c	\
+	time_zposv_tile.c 		\
+	time_zpotrf_tile.c		\
+	time_zpotri_tile.c		\
+	time_ztrsm.c
+
+#	time_zgels.c			\
+#	time_zgels_tile.c		\
+#	time_zgeqrf.c			\
 
 CSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p c)
 DSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p "d ds")

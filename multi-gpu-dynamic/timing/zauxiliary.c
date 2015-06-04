@@ -236,7 +236,7 @@ double zcheck_gemm(PLASMA_enum transA, PLASMA_enum transB, int M, int N, int K,
 }
 
 /*--------------------------------------------------------------
- * Check the gemm
+ * Check the trsm
  */
 double zcheck_trsm(PLASMA_enum side, PLASMA_enum uplo, PLASMA_enum trans, PLASMA_enum diag,
                    int M, int NRHS, PLASMA_Complex64_t alpha,
@@ -293,4 +293,65 @@ double zcheck_solution(int M, int N, int NRHS, PLASMA_Complex64_t *A, int LDA,
     free(work);
 
     return Rnorm;
+}
+
+/*------------------------------------------------------------------------
+ *  *  Check the accuracy of the computed inverse
+ *   */
+
+int zcheck_inverse(int N, PLASMA_Complex64_t *A1, PLASMA_Complex64_t *A2, int LDA,
+                        PLASMA_enum uplo, double *rnorm, double *anorm, double *ainvnorm )
+{
+    int info_inverse;
+    int i, j;
+    double result;
+    PLASMA_Complex64_t alpha, beta, zone;
+    PLASMA_Complex64_t *workz = (PLASMA_Complex64_t *)malloc(N*N*sizeof(PLASMA_Complex64_t));
+    double *workd = (double *)malloc(N*sizeof(double));
+    double eps;
+
+    eps = LAPACKE_dlamch_work('e');
+
+    alpha = -1.0;
+    beta  = 0.0;
+    zone = 1.0;
+
+    /* Rebuild the other part of the inverse matrix */
+    if(uplo == PlasmaUpper){
+       for(j=0; j<N; j++)
+          for(i=0; i<j; i++)
+             *(A2+j+i*LDA) = *(A2+i+j*LDA);
+       cblas_zhemm(CblasColMajor, CblasLeft, CblasUpper, N, N, CBLAS_SADDR(alpha), A2, LDA, A1, LDA, CBLAS_SADDR(beta), workz, N);
+
+    }
+    else {
+       for(j=0; j<N; j++)
+          for(i=j; i<N; i++)
+             *(A2+j+i*LDA) = *(A2+i+j*LDA);
+       cblas_zhemm(CblasColMajor, CblasLeft, CblasLower, N, N, CBLAS_SADDR(alpha), A2, LDA, A1, LDA, CBLAS_SADDR(beta), workz, N);
+    }
+
+    /* Add the identity matrix to workz */
+     for(i=0; i<N; i++)
+        *(workz+i+i*N) = *(workz+i+i*N) + zone;
+
+
+    *rnorm = LAPACKE_zlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaOneNorm), N, N,    workz, N, workd);
+    *anorm = LAPACKE_zlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaOneNorm), N, N, A1, LDA, workd);
+    *ainvnorm = LAPACKE_zlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaOneNorm), N, N, A2, LDA, workd);
+
+
+      result = *rnorm / ( ((*anorm) * (*ainvnorm))*N*eps ) ;
+
+    if (  isnan(*ainvnorm) || isinf(*ainvnorm) || isnan(result) || isinf(result) || (result > 60.0) ) {
+        info_inverse = 1;
+     }
+    else{
+        info_inverse = 0;
+    }
+
+    free(workz);
+    free(workd);
+
+    return info_inverse;
 }

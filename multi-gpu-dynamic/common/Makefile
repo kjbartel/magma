@@ -26,14 +26,15 @@ ALLHDR= common.h	\
 	async.h		\
 	$(ZHDR) $(CHDR) $(DHDR) $(SHDR)
 
-# ZSRC = 
-# CSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p c)
-# DSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p "d ds")
-# SSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p s)
+ZSRC =  workspace_z.c
+CSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p c)
+DSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p "d ds")
+SSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p s)
 
 ALLSRC= context.c control.c 	\
 	descriptor.c		\
 	async.c			\
+	workspace.c		\
 	$(ZSRC) $(CSRC) $(DSRC) $(SSRC)
 
 ALLOBJ = $(ALLSRC:.c=.o)

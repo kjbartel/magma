@@ -36,9 +36,10 @@ static void cl_zunmqr_cpu_func(void *descr[], void *cl_arg)
     PLASMA_Complex64_t *WORK;
     int LDWORK;
     morse_starpu_ws_t *h_work;
+    morse_starpu_ws_t *d_work;
 
-    starpu_unpack_cl_args(cl_arg, &side, &trans, &M, &N, &K, &IB,
-                          &LDA, &LDT, &LDC, &LDWORK, &h_work, NULL);
+    starpu_codelet_unpack_args(cl_arg, &side, &trans, &M, &N, &K, &IB,
+                          &LDA, &LDT, &LDC, &LDWORK, &h_work, &d_work);
 
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
     T = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[1]);
@@ -81,7 +82,7 @@ static void cl_zunmqr_cuda_func(void *descr[], void *cl_arg)
     int LDWORK;
     morse_starpu_ws_t *h_work;
 
-    starpu_unpack_cl_args(cl_arg, &side, &trans, &M, &N, &K, &IB,
+    starpu_codelet_unpack_args(cl_arg, &side, &trans, &M, &N, &K, &IB,
                           &LDA, &LDT, &LDC, &LDWORK, &h_work);
 
     A = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[0]);
@@ -140,12 +141,12 @@ void MORSE_zunmqr( MorseOption_t *options,
                    magma_desc_t *T, int Tm, int Tn,
                    magma_desc_t *C, int Cm, int Cn)
 {
-    starpu_codelet *zunmqr_codelet;
+    struct starpu_codelet *zunmqr_codelet;
     void (*callback)(void*) = options->profiling ? cl_zunmqr_callback : NULL;
     int lda = BLKLDD( A, Am );
     int ldt = BLKLDD( T, Tm );
     int ldc = BLKLDD( C, Cm );
-    int ldw = A->desc.mb;
+    int ldw = A->mb;
     morse_starpu_ws_t *h_work = (morse_starpu_ws_t*)(options->ws_host);
     morse_starpu_ws_t *d_work = (morse_starpu_ws_t*)(options->ws_device);
 
@@ -155,24 +156,24 @@ void MORSE_zunmqr( MorseOption_t *options,
     zunmqr_codelet = &cl_zunmqr;
 #endif
 
-    starpu_Insert_Task(
+    starpu_insert_task(
         zunmqr_codelet,
-        VALUE,    &side,   sizeof(PLASMA_enum),
-        VALUE,    &trans,  sizeof(PLASMA_enum),
-        VALUE,    &m,      sizeof(int),
-        VALUE,    &n,      sizeof(int),
-        VALUE,    &k,      sizeof(int),
-        VALUE,    &ib,     sizeof(int),
-        INPUT,     BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-        VALUE,    &lda,    sizeof(int),
-        INPUT,     BLKADDR( T, PLASMA_Complex64_t, Tm, Tn ),
-        VALUE,    &ldt,    sizeof(int),
-        INOUT,     BLKADDR( C, PLASMA_Complex64_t, Cm, Cn ),
-        VALUE,    &ldc,    sizeof(int),
-        VALUE,    &ldw,    sizeof(int),
-        VALUE,    &h_work, sizeof(morse_starpu_ws_t *),
-        VALUE,    &d_work, sizeof(morse_starpu_ws_t *),
-        PRIORITY, options->priority,
-        CALLBACK, callback, NULL,
+        STARPU_VALUE,    &side,   sizeof(PLASMA_enum),
+        STARPU_VALUE,    &trans,  sizeof(PLASMA_enum),
+        STARPU_VALUE,    &m,      sizeof(int),
+        STARPU_VALUE,    &n,      sizeof(int),
+        STARPU_VALUE,    &k,      sizeof(int),
+        STARPU_VALUE,    &ib,     sizeof(int),
+        STARPU_R,     BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+        STARPU_VALUE,    &lda,    sizeof(int),
+        STARPU_R,     BLKADDR( T, PLASMA_Complex64_t, Tm, Tn ),
+        STARPU_VALUE,    &ldt,    sizeof(int),
+        STARPU_RW,     BLKADDR( C, PLASMA_Complex64_t, Cm, Cn ),
+        STARPU_VALUE,    &ldc,    sizeof(int),
+        STARPU_VALUE,    &ldw,    sizeof(int),
+        STARPU_VALUE,    &h_work, sizeof(morse_starpu_ws_t *),
+        STARPU_VALUE,    &d_work, sizeof(morse_starpu_ws_t *),
+        STARPU_PRIORITY, options->priority,
+        STARPU_CALLBACK, callback, NULL,
         0);
 }

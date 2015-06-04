@@ -29,7 +29,7 @@ static void cl_zlacpy_cpu_func(void *descr[], void *cl_arg)
     PLASMA_Complex64_t *B;
     int LDB;
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &M, &N, &LDA, &LDB);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &M, &N, &LDA, &LDB);
 
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
     B = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[1]);
@@ -63,7 +63,7 @@ static void cl_zlacpy_cuda_func(void *descr[], void *cl_arg)
     cuDoubleComplex *B;
     int LDB;
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &M, &N, &LDA, &LDB);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &M, &N, &LDA, &LDB);
 
     A = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[0]);
     B = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[1]);
@@ -95,7 +95,7 @@ void MORSE_zlacpy( MorseOption_t *options,
                    magma_desc_t *A, int Am, int An,
                    magma_desc_t *B, int Bm, int Bn)
 {
-    starpu_codelet *zlacpy_codelet;
+    struct starpu_codelet *zlacpy_codelet;
     void (*callback)(void*) = options->profiling ? cl_zlacpy_callback : NULL;
     int lda = BLKLDD( A, Am );
     int ldb = BLKLDD( B, Bm );
@@ -106,16 +106,16 @@ void MORSE_zlacpy( MorseOption_t *options,
     zlacpy_codelet = &cl_zlacpy;
 #endif
     
-    starpu_Insert_Task(
-            &cl_zlacpy,
-            VALUE,  &uplo,  sizeof(PLASMA_enum),
-            VALUE,  &m,     sizeof(int),
-            VALUE,  &n,     sizeof(int), 
-            INPUT,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-            VALUE,  &lda,   sizeof(int),
-            OUTPUT, BLKADDR( B, PLASMA_Complex64_t, Bm, Bn ),
-            VALUE,  &ldb,   sizeof(int),
-            PRIORITY, options->priority,
-            CALLBACK, callback, NULL,
+    starpu_insert_task(
+            zlacpy_codelet,
+            STARPU_VALUE,  &uplo,  sizeof(PLASMA_enum),
+            STARPU_VALUE,  &m,     sizeof(int),
+            STARPU_VALUE,  &n,     sizeof(int), 
+            STARPU_R,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+            STARPU_VALUE,  &lda,   sizeof(int),
+            STARPU_W, BLKADDR( B, PLASMA_Complex64_t, Bm, Bn ),
+            STARPU_VALUE,  &ldb,   sizeof(int),
+            STARPU_PRIORITY, options->priority,
+            STARPU_CALLBACK, callback, NULL,
             0);
 }

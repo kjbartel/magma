@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:33 2012
+       @generated d Thu Jun 28 12:30:56 2012
 
 */
 #include "common_magma.h"
@@ -17,15 +17,15 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
              double *dT, magma_int_t nb, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======
-    ZUNGTR generates a real unitary matrix Q which is defined as the   
+    DORGTR generates a real unitary matrix Q which is defined as the   
     product of n-1 elementary reflectors of order N, as returned by   
     DSYTRD:   
 
@@ -88,8 +88,8 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
     char uplo_[2]  = {uplo, 0};
     
     magma_int_t i__1;
-    static magma_int_t i, j;
-    static magma_int_t iinfo;
+    magma_int_t i, j;
+    magma_int_t iinfo;
     magma_int_t upper, lwkopt, lquery;
 
     *info = 0;
@@ -144,7 +144,7 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
         
         /* Generate Q(1:n-1,1:n-1) */
         i__1 = n - 1;
-        lapackf77_dungql(&i__1, &i__1, &i__1, a_ref(0,0), &lda, tau, work, 
+        lapackf77_dorgql(&i__1, &i__1, &i__1, a_ref(0,0), &lda, tau, work, 
                          &lwork, &iinfo);
     } else {
         

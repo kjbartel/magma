@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:52 2012
+       @generated c Thu Jun 28 12:30:33 2012
 
 */
 #include "common_magma.h"
@@ -31,16 +31,16 @@ extern "C" magma_int_t
 magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
              cuFloatComplex *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
 
-        DTRTRI computes the inverse of a real upper or lower triangular
+        CTRTRI computes the inverse of a real upper or lower triangular
         matrix dA.
 
         This is the Level 3 BLAS version of the algorithm.
@@ -91,8 +91,8 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
         cuFloatComplex     c_neg_one  = MAGMA_C_NEG_ONE;
         cuFloatComplex     *work;
 
-        long int        upper  = lapackf77_lsame(uplo_, "U");
-        long int    nounit = lapackf77_lsame(diag_, "N");
+        int upper  = lapackf77_lsame(uplo_, "U");
+        int nounit = lapackf77_lsame(diag_, "N");
 
         *info = 0;
 
@@ -124,12 +124,12 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
 
         nb = magma_get_cpotrf_nb(n);
         
-        if (MAGMA_SUCCESS != magma_cmalloc_host( &work, nb*nb )) {
+        if (MAGMA_SUCCESS != magma_cmalloc_pinned( &work, nb*nb )) {
                 *info = MAGMA_ERR_HOST_ALLOC;
                 return *info;
         }
         
-        static cudaStream_t stream[2];
+        cudaStream_t stream[2];
         magma_queue_create( &stream[0] );
         magma_queue_create( &stream[1] );
 
@@ -227,7 +227,7 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
         magma_queue_destroy( stream[0] );
         magma_queue_destroy( stream[1] );
 
-        magma_free_host( work );
+        magma_free_pinned( work );
 
         return *info;
 }

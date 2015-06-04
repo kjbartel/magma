@@ -206,7 +206,6 @@ int MAGMA_zplghe_Tile_Async( double          bump,
                              magma_sequence_t *sequence, 
                              magma_request_t  *request)
 {
-    PLASMA_desc descA = A->desc;
     magma_context_t *magma;
 
     magma = magma_context_self();
@@ -234,13 +233,13 @@ int MAGMA_zplghe_Tile_Async( double          bump,
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }
     /* Check input arguments */
-    if (descA.nb != descA.mb) {
+    if (A->nb != A->mb) {
         magma_error("MAGMA_zplghe_Tile", "only square tiles supported");
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }
 
     /* Quick return */
-    if (min( descA.m, descA.n ) == 0)
+    if (min( A->m, A->n ) == 0)
         return MAGMA_SUCCESS;
 
     magma_pzplghe( bump, A, seed, sequence, request);

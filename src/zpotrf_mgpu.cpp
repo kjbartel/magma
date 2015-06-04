@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -35,11 +35,11 @@ extern "C" magma_int_t
 magma_zpotrf_mgpu(int num_gpus, char uplo, magma_int_t n, 
                  cuDoubleComplex **d_lA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -95,10 +95,10 @@ magma_zpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
     cuDoubleComplex *work;
     double          d_one     =  1.0;
     double          d_neg_one = -1.0;
-    long int        upper = lapackf77_lsame(uplo_, "U");
-    cuDoubleComplex *d_lP[4], *dlpanel;
-        magma_int_t n_local[4], lddat_local[4], lddat, ldpanel;
-    static cudaStream_t stream[4][4];
+    int upper = lapackf77_lsame(uplo_, "U");
+    cuDoubleComplex *d_lP[MagmaMaxGPUs], *dlpanel;
+    magma_int_t n_local[MagmaMaxGPUs], lddat_local[MagmaMaxGPUs], lddat, ldpanel;
+    cudaStream_t stream[MagmaMaxGPUs][4];
 
     *info = 0;
     if ( (! upper) && (! lapackf77_lsame(uplo_, "L")) ) {
@@ -109,14 +109,14 @@ magma_zpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
         *info = -4;
     }
     if (*info != 0) {
-                magma_xerbla( __func__, -(*info) );
+        magma_xerbla( __func__, -(*info) );
         return *info;
-        }
+    }
     nb = magma_get_zpotrf_nb(n);
 
-    if (MAGMA_SUCCESS != magma_zmalloc_host( &work, n*nb )) {
-          *info = MAGMA_ERR_HOST_ALLOC;
-          return *info;
+    if (MAGMA_SUCCESS != magma_zmalloc_pinned( &work, n*nb )) {
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
 
     if ((nb <= 1) || (nb >= n)) {
@@ -455,7 +455,7 @@ magma_zpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
     } /* end of not lapack */
 
         /* free workspace */
-        magma_free_host( work );
+        magma_free_pinned( work );
 
         return *info;
 } /* magma_zpotrf_mgpu */

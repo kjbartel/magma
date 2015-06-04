@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal s -> s
+
 */
 #include "common_magma.h"
 
@@ -19,7 +22,7 @@ __device__ void saxpy(float a,float *b, float *c) {
               c[i] += a * b[i];
 }
 
-extern "C" __global__ void 
+__global__ void 
 Ssyr2k_v16_ts_even_generic(float *C, const float *A, const float *B, 
                            int m, int in, int k, 
                            int lda, int ldb, int ldc, 
@@ -334,7 +337,7 @@ Ssyr2k_v16_ts_even_generic(float *C, const float *A, const float *B,
 }
 }
 
-extern "C" __global__ void 
+__global__ void 
 Ssyr2k_v16_ts_odd_generic(float *C, const float *A, const float *B, 
                           int m, int in, int k,
                           int lda, int ldb, int ldc,
@@ -655,7 +658,7 @@ if( (ibx + threadIdx.x ) >= m )
 }
 }
 
-extern "C" __global__ void
+__global__ void
 Ssyr2k_v16_ts_even_special(int flag , 
                            float *C, const float *A, const float *B, 
                            int m, int in, int k, 
@@ -971,7 +974,7 @@ else{
 }
 }
 
-extern "C" __global__ void 
+__global__ void 
 Ssyr2k_v16_ts_odd_special(int flag,
                           float *C, const float *A, const float *B, 
                           int m, int in, int k,
@@ -1297,18 +1300,16 @@ else{
 }
 }
 
-#include<stdio.h>
-
 extern "C" void
-magmablas_ssyr2k(char UPLO, char TRANS, int m , int k, float alpha,  
-                 const float *A, int lda , const float *B, int ldb, 
-                 float beta, float *C, int ldc)
+magmablas_ssyr2k(char UPLO, char TRANS, magma_int_t m , magma_int_t k, float alpha,  
+                 const float *A, magma_int_t lda , const float *B, magma_int_t ldb, 
+                 float beta, float *C, magma_int_t ldc)
 {
-/* -- MAGMA (version 1.2.0) --
+/* -- MAGMA (version 1.2.1) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      May 2012
+      June 2012
 
    Purpose
    =======

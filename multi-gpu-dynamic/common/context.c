@@ -143,7 +143,7 @@ int MAGMA_Enable(MAGMA_enum option)
     }
     
     /* Enable at the lower level if required */
-    morse_enable( magma, option );
+    morse_enable( option );
 
     return MAGMA_SUCCESS;
 }
@@ -201,7 +201,7 @@ int MAGMA_Disable(MAGMA_enum option)
     }
     
     /* Disable at the lower level if required */
-    morse_disable( magma, option );
+    morse_disable( option );
 
     return MAGMA_SUCCESS;
 }

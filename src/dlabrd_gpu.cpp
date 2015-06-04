@@ -1,14 +1,16 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:38 2012
+       @generated d Thu Jun 28 12:31:06 2012
 
 */
 #include "common_magma.h"
+
+#include <assert.h>
 
 // === Define what BLAS to use ============================================
 #define PRECISION_d
@@ -24,11 +26,11 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                   double *x, magma_int_t ldx, double *dx, magma_int_t lddx,
                   double *y, magma_int_t ldy, double *dy, magma_int_t lddy)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -153,14 +155,13 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
     /* Table of constant values */
     double c_neg_one = MAGMA_D_NEG_ONE;
     double c_one = MAGMA_D_ONE;
-    static int c__1 = 1;
     double c_zero = MAGMA_D_ZERO;
+    magma_int_t c__1 = 1;
     
     /* System generated locals */
-    int a_dim1, a_offset, x_dim1, x_offset, y_dim1, y_offset, i__2, 
-            i__3;
+    magma_int_t a_dim1, a_offset, x_dim1, x_offset, y_dim1, y_offset, i__2, i__3;
     /* Local variables */
-    static int i__;
+    magma_int_t i__;
     double alpha;
 
     a_dim1 = lda;
@@ -186,10 +187,12 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
         return 0;
     }
 
-    double *f = (double *)malloc(max(n,m)*sizeof(double ));
-    static cudaStream_t stream;
+    double *f;
+    cudaStream_t stream;
     magma_queue_create( &stream );
-
+    magma_dmalloc_cpu( &f, max(n,m) );
+    assert( f != NULL );  // TODO return error, or allocate outside dlatrd
+    
     if (m >= n) {
 
         /* Reduce to upper bidiagonal form */
@@ -358,7 +361,7 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
 #if defined(PRECISION_z) || defined(PRECISION_c)
                 i__2 = n - i__;
                 lapackf77_dlacgv( &i__2,  &a[i__+(i__+1)*a_dim1], &lda );
-                // 4. Send the block reflector  A(i+1:m,i) to the GPU after ZLACGV()
+                // 4. Send the block reflector  A(i+1:m,i) to the GPU after DLACGV()
                 magma_dsetvector( i__2,
                                   a + i__   + (i__   +1)* a_dim1, lda,
                                   da+(i__-1)+((i__-1)+1)*(ldda),  ldda );

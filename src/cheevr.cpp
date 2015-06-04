@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:45 2012
+       @generated c Thu Jun 28 12:30:54 2012
  
 */
 #include "common_magma.h"
@@ -30,11 +30,11 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
              float *rwork, magma_int_t lrwork, magma_int_t *iwork, 
              magma_int_t liwork, magma_int_t *info)
 {
-    /*  -- MAGMA (version 1.2.0) --
+    /*  -- MAGMA (version 1.2.1) --
         Univ. of Tennessee, Knoxville
         Univ. of California, Berkeley
         Univ. of Colorado, Denver
-        May 2012
+        June 2012
    
     Purpose   
     =======   
@@ -44,8 +44,8 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
     be selected by specifying either a range of values or a range of   
     indices for the desired eigenvalues.   
 
-    Whenever possible, CHEEVR calls ZSTEGR to compute the   
-    eigenspectrum using Relatively Robust Representations.  ZSTEGR   
+    Whenever possible, CHEEVR calls CSTEGR to compute the   
+    eigenspectrum using Relatively Robust Representations.  CSTEGR   
     computes eigenvalues by the dqds algorithm, while orthogonal   
     eigenvectors are computed from various "good" L D L^T representations   
     (also known as Relatively Robust Representations). Gram-Schmidt   
@@ -70,12 +70,12 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
     UC Berkeley, May 1997.   
 
 
-    Note 1 : CHEEVR calls ZSTEGR when the full spectrum is requested   
+    Note 1 : CHEEVR calls CSTEGR when the full spectrum is requested   
     on machines which conform to the ieee-754 floating point standard.   
-    CHEEVR calls DSTEBZ and ZSTEIN on non-ieee machines and   
+    CHEEVR calls SSTEBZ and CSTEIN on non-ieee machines and   
     when partial spectrum requests are made.   
 
-    Normal execution of ZSTEGR may create NaNs and infinities and   
+    Normal execution of CSTEGR may create NaNs and infinities and   
     hence may abort due to a floating point exception in environments   
     which do not handle NaNs and infinities in the ieee standard default   
     manner.   
@@ -143,7 +143,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
             Kahan, LAPACK Working Note #3.   
 
             If high relative accuracy is important, set ABSTOL to   
-            DLAMCH( 'Safe minimum' ).  Doing so will guarantee that   
+            SLAMCH( 'Safe minimum' ).  Doing so will guarantee that   
             eigenvalues are computed to high relative accuracy when   
             possible in future releases.  The current code does not   
             make any guarantees about high relative accuracy, but   
@@ -238,31 +238,31 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
   char jobz_[2] = {jobz, 0};
   char range_[2] = {range, 0};
   
-  static magma_int_t izero = 0;
-  static magma_int_t ione = 1;
-  static float szero = 0.;
-  static float sone = 1.;
+  magma_int_t izero = 0;
+  magma_int_t ione = 1;
+  float szero = 0.;
+  float sone = 1.;
   
-  static magma_int_t indrd, indre;
-  static magma_int_t imax;
-  static magma_int_t lopt, itmp1, indree, indrdd;
-  static magma_int_t lower, wantz, tryrac;
-  static magma_int_t i, j, jj, i__1;
-  static magma_int_t alleig, valeig, indeig;
-  static magma_int_t iscale, indibl, indifl;
-  static magma_int_t indiwo, indisp, indtau;
-  static magma_int_t indrwk, indwk;
-  static magma_int_t llwork, llrwork, nsplit;
-  static magma_int_t lquery, ieeeok;
-  static magma_int_t iinfo;
-  static magma_int_t lwmin, lrwmin, liwmin;
-  static float safmin;
-  static float bignum;
-  static float smlnum;
-  static float eps, tmp1;
-  static float anrm;
-  static float sigma, d__1;
-  static float rmin, rmax;
+  magma_int_t indrd, indre;
+  magma_int_t imax;
+  magma_int_t lopt, itmp1, indree, indrdd;
+  magma_int_t lower, wantz, tryrac;
+  magma_int_t i, j, jj, i__1;
+  magma_int_t alleig, valeig, indeig;
+  magma_int_t iscale, indibl, indifl;
+  magma_int_t indiwo, indisp, indtau;
+  magma_int_t indrwk, indwk;
+  magma_int_t llwork, llrwork, nsplit;
+  magma_int_t lquery, ieeeok;
+  magma_int_t iinfo;
+  magma_int_t lwmin, lrwmin, liwmin;
+  float safmin;
+  float bignum;
+  float smlnum;
+  float eps, tmp1;
+  float anrm;
+  float sigma, d__1;
+  float rmin, rmax;
   
   lower = lapackf77_lsame(uplo_, MagmaLowerStr);
   wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
@@ -409,12 +409,12 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
   
   
   /*     If all eigenvalues are desired and ABSTOL is less than or equal to   
-   zero, then call DSTERF  
-   or ZUNGTR and ZSTEQR.  If this fails for   
-   some eigenvalue, then try DSTEBZ. */
+   zero, then call SSTERF  
+   or CUNGTR and CSTEQR.  If this fails for   
+   some eigenvalue, then try SSTEBZ. */
   ieeeok = lapackf77_ieeeck( &ione, &szero, &sone); 
   
-  /*     If only the eigenvalues are required call DSTERF for all or DSTEBZ for a part */
+  /*     If only the eigenvalues are required call SSTERF for all or SSTEBZ for a part */
   
   if (! wantz) {
     blasf77_scopy(&n, &rwork[indrd], &ione, &w[1], &ione);
@@ -429,7 +429,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
                          &rwork[indrwk], &iwork[indiwo], info);
     }
     
-  /* Otherwise call ZSTEMR if infinite and NaN arithmetic is supported */
+  /* Otherwise call CSTEMR if infinite and NaN arithmetic is supported */
     
   } else if (ieeeok==1){
     i__1 = n - 1;
@@ -453,7 +453,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
   }
   
   
-  /*  Call DSTEBZ and ZSTEIN if infinite and NaN arithmetic is not supported or ZSTEMR didn't converge. */
+  /*  Call SSTEBZ and CSTEIN if infinite and NaN arithmetic is not supported or CSTEMR didn't converge. */
   if (wantz && (ieeeok ==0 || *info != 0)) {
     *info = 0;
     
@@ -464,7 +464,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
                        z, &ldz, &rwork[indrwk], &iwork[indiwo], &iwork[indifl], info);
       
       /*        Apply unitary matrix used in reduction to tridiagonal   
-       form to eigenvectors returned by ZSTEIN. */
+       form to eigenvectors returned by CSTEIN. */
     magma_cunmtr(MagmaLeft, uplo, MagmaNoTrans, n, *m, a, lda, &work[indtau],
                    z, ldz, &work[indwk], llwork, &iinfo);
   }
@@ -477,7 +477,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
       imax = *info - 1;
     }
     d__1 = 1. / sigma;
-    sscal_(&imax, &d__1, &w[1], &ione);
+    blasf77_sscal(&imax, &d__1, &w[1], &ione);
   }
   
   /*     If eigenvalues are not in order, then sort them, along with   

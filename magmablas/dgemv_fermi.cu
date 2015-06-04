@@ -1,10 +1,12 @@
-
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal d
+
 */
 #include "common_magma.h"
 
@@ -59,11 +61,11 @@ dgemvn_kernel_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, double alpha, 
 extern "C" void
 magmablas_dgemvn_fermi(magma_int_t n, magma_int_t m, double alpha, double *A, magma_int_t lda, double *x, double *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -174,11 +176,11 @@ extern "C" void
 magmablas_dgemvt_fermi(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
                  double *x, double *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -221,11 +223,11 @@ void magmablas_dgemv_fermi(char trans,
                            double beta,
                            double *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:48 2012
+       @generated c Thu Jun 28 12:31:06 2012
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              cuFloatComplex *work, magma_int_t lwork_,
              float *rwork, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -32,7 +32,7 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     M-by-N matrix A, optionally computing the left and/or right singular   
     vectors. The SVD is written   
 
-         A = U * SIGMA * conjfugate-transpose(V)   
+         A = U * SIGMA * conjugate-transpose(V)   
 
     where SIGMA is an M-by-N matrix which is zero except for its   
     min(m,n) diagonal elements, U is an M-by-M unitary matrix, and   
@@ -119,7 +119,7 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
 
     LWORK   (input) INTEGER   
             The dimension of the array WORK.   
-            LWORK >=  (M+N)*nb+N.   
+            LWORK >=  (M+N)*nb + 2*N.   
 
             If LWORK = -1, then a workspace query is assumed; the routine   
             only calculates the optimal size of the WORK array, returns   
@@ -136,7 +136,7 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     INFO    (output) INTEGER   
             = 0:  successful exit.   
             < 0:  if INFO = -i, the i-th argument had an illegal value.   
-            > 0:  if ZBDSQR did not converge, INFO specifies how many   
+            > 0:  if CBDSQR did not converge, INFO specifies how many   
                   superdiagonals of an intermediate bidiagonal form B   
                   did not converge to zero. See the description of RWORK   
                   above for details.   
@@ -153,31 +153,31 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     magma_int_t *ldvt  = &ldvt_;
     magma_int_t *lwork = &lwork_;
 
-    static cuFloatComplex c_b1 = MAGMA_C_ZERO;
-    static cuFloatComplex c_b2 = MAGMA_C_ONE;
-    static magma_int_t c__0 = 0;
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
+    cuFloatComplex c_b1 = MAGMA_C_ZERO;
+    cuFloatComplex c_b2 = MAGMA_C_ONE;
+    magma_int_t c__0 = 0;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
     
     magma_int_t a_dim1, a_offset, u_dim1, u_offset, vt_dim1, vt_offset, 
         i__2, i__3, i__4;
 
-    static magma_int_t i__, ie, ir, iu, blk, ncu;
-    static float dum[1], eps;
-    static magma_int_t nru;
-    static cuFloatComplex cdum[1];
-    static magma_int_t iscl;
-    static float anrm;
-    static magma_int_t ierr, itau, ncvt, nrvt;
-    static magma_int_t chunk, minmn;
-    static magma_int_t wrkbl, itaup, itauq, mnthr, iwork;
+    magma_int_t i__, ie, ir, iu, blk, ncu;
+    float dum[1], eps;
+    magma_int_t nru;
+    cuFloatComplex cdum[1];
+    magma_int_t iscl;
+    float anrm;
+    magma_int_t ierr, itau, ncvt, nrvt;
+    magma_int_t chunk, minmn;
+    magma_int_t wrkbl, itaup, itauq, mnthr, iwork;
     magma_int_t wntua, wntva, wntun, wntuo, wntvn, wntvo, wntus, wntvs;
-    static float bignum;
-    static magma_int_t ldwrkr;
-    static magma_int_t ldwrku, maxwrk;
+    float bignum;
+    magma_int_t ldwrkr;
+    magma_int_t ldwrku, maxwrk;
     magma_int_t minwrk;
-    static float smlnum;
-    static magma_int_t irwork;
+    float smlnum;
+    magma_int_t irwork;
     magma_int_t lquery, wntuas, wntvas;
 
     magma_int_t nb;
@@ -216,19 +216,16 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     /*     Compute workspace   */
     lapackf77_cgesvd(jobu_, jobvt_, m, n, a, lda, s, u, ldu,
                      vt, ldvt, work, &c_n1, rwork, info );
-
     maxwrk = (magma_int_t)MAGMA_C_REAL(work[0]);
     if (*info == 0) {
-
-        nb = magma_get_cgebrd_nb(*n);
-
-        minwrk = ((*m)+(*n))*nb+(*n);
-        MAGMA_C_SET2REAL(work[0], (float) minwrk);
-
+        nb = magma_get_cgesvd_nb(*n);
+        minwrk = ((*m)+(*n))*nb + 2*(*n);
+        // multiply by 1+eps to ensure length gets rounded up,
+        // if it cannot be exactly represented in floating point.
+        MAGMA_C_SET2REAL( work[0], minwrk * (1. + slamch_("Epsilon")));
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
         }
-
     }
     
     if (*info != 0) {

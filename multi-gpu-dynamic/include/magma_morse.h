@@ -30,16 +30,42 @@ typedef int MAGMA_bool;
 
 #if !defined(__STARPU_DATA_H__)
 struct starpu_data_state_t;
-typedef struct starpu_data_state_t * starpu_data_handle;
+typedef struct starpu_data_state_t * starpu_data_handle_t;
 #endif
 
-typedef struct magma_desc_s {
-    PLASMA_desc desc;
+struct magma_desc_s;
+typedef struct magma_desc_s  magma_desc_t;
+
+struct magma_desc_s {
+    void *(*get_blkaddr)( const magma_desc_t*, int, int );
+    int   (*get_blkldd )( const magma_desc_t*, int );
+    void *mat;          // pointer to the beginning of the matrix
+    size_t A21;        // pointer to the beginning of the matrix A21
+    size_t A12;        // pointer to the beginning of the matrix A12
+    size_t A22;        // pointer to the beginning of the matrix A22
+    PLASMA_enum styp;   // storage layout of the matrix
+    PLASMA_enum dtyp;   // precision of the matrix
+    int mb;             // number of rows in a tile
+    int nb;             // number of columns in a tile
+    int bsiz;           // size in elements including padding
+    int lm;             // number of rows of the entire matrix
+    int ln;             // number of columns of the entire matrix
+    int lm1;            // number of tile rows of the A11 matrix - derived parameter
+    int ln1;            // number of tile columns of the A11 matrix - derived parameter
+    int lmt;            // number of tile rows of the entire matrix - derived parameter
+    int lnt;            // number of tile columns of the entire matrix - derived parameter
+    int i;              // row index to the beginning of the submatrix
+    int j;              // column index to the beginning of the submatrix
+    int m;              // number of rows of the submatrix
+    int n;              // number of columns of the submatrix
+    int mt;             // number of tile rows of the submatrix - derived parameter
+    int nt;             // number of tile columns of the submatrix - derived parameter
     int occurences;
+    int myrank;
     union {
-        starpu_data_handle *starpu_handles;
+        starpu_data_handle_t *starpu_handles;
     } schedopt;
-} magma_desc_t;
+};
 
 struct magma_context_s;
 typedef struct magma_context_s magma_context_t;
@@ -105,6 +131,7 @@ typedef struct magma_sequence_s {
 /** ****************************************************************************
  *  MAGMA constants - success & error codes
  **/
+#ifndef _MAGMA_
 #define MAGMA_SUCCESS                 0
 #define MAGMA_ERR_NOT_INITIALIZED  -101
 #define MAGMA_ERR_REINITIALIZED    -102
@@ -117,10 +144,12 @@ typedef struct magma_sequence_s {
 #define MAGMA_ERR_FILESYSTEM       -109
 #define MAGMA_ERR_UNEXPECTED       -110
 #define MAGMA_ERR_SEQUENCE_FLUSHED -111
+#endif
 
 int MAGMA_Init(int nworkers, int ncudas);
 int MAGMA_InitPar(int nworkers, int ncudas, int nthreads_per_worker);
 int MAGMA_Finalize(void);
+int MAGMA_my_mpi_rank(void);
 
 /* Descriptor */
 int MAGMA_Desc_Create(magma_desc_t **desc, void *mat, MAGMA_enum dtyp, 
@@ -130,12 +159,20 @@ int MAGMA_Desc_Destroy(magma_desc_t **desc);
 int MAGMA_Desc_acquire(magma_desc_t  *desc);
 int MAGMA_Desc_release(magma_desc_t  *desc);
 
-/*int MAGMA_Dealloc_Handle_Tile(magma_desc_t **desc);*/
+/* Workspaces */
+int MAGMA_Dealloc_Workspace(magma_desc_t **desc);
 
+/* Options */
 int MAGMA_Enable (MAGMA_enum option);
 int MAGMA_Disable(MAGMA_enum option);
 int MAGMA_Set(MAGMA_enum param, int  value);
 int MAGMA_Get(MAGMA_enum param, int *value);
+
+/* Sequences */
+int MAGMA_Sequence_Create (magma_sequence_t **sequence);
+int MAGMA_Sequence_Destroy(magma_sequence_t *sequence);
+int MAGMA_Sequence_Wait   (magma_sequence_t *sequence);
+int MAGMA_Sequence_Flush  (magma_sequence_t *sequence, magma_request_t *request);
 
 /*void MAGMA_profile_display(void);*/
 

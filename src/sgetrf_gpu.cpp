@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:27 2012
+       @generated s Thu Jun 28 12:30:36 2012
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
                  float *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -109,7 +109,11 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
 
     if (nb <= 1 || nb >= min(m,n)) {
         /* Use CPU code. */
-        work = (float*)malloc(m * n * sizeof(float));
+        magma_smalloc_cpu( &work, m * n );
+        if ( work == NULL ) {
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
+        }
         magma_sgetmatrix( m, n, dA, ldda, work, m );
         lapackf77_sgetrf(&m, &n, work, &m, ipiv, info);
         magma_ssetmatrix( m, n, work, m, dA, ldda );
@@ -143,7 +147,7 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
             magmablas_stranspose2( dAT, lddat, dA, ldda, m, n );
         }
 
-        if (MAGMA_SUCCESS != magma_smalloc_host( &work, maxm*nb )) {
+        if (MAGMA_SUCCESS != magma_smalloc_pinned( &work, maxm*nb )) {
             magma_free( dAP );
             if (! ((m == n) && (m % 32 == 0) && (ldda%32 == 0)) )
                 magma_free( dAT );
@@ -179,7 +183,7 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
                 if ( (*info == 0) && (iinfo > 0) )
                     *info = iinfo + i*nb;
 
-                magmablas_spermute_long2( dAT, lddat, ipiv, nb, i*nb );
+                magmablas_spermute_long2( n, dAT, lddat, ipiv, nb, i*nb );
 
                 // upload i-th panel
                 magma_ssetmatrix( m-i*nb, nb, work, lddwork, dAP, maxm );
@@ -224,7 +228,7 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
         lapackf77_sgetrf( &rows, &nb0, work, &lddwork, ipiv+s*nb, &iinfo);
         if ( (*info == 0) && (iinfo > 0) )
             *info = iinfo + s*nb;
-        magmablas_spermute_long2( dAT, lddat, ipiv, nb0, s*nb );
+        magmablas_spermute_long2( n, dAT, lddat, ipiv, nb0, s*nb );
 
         // upload i-th panel
         magma_ssetmatrix( rows, nb0, work, lddwork, dAP, maxm );
@@ -244,7 +248,7 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
         }
 
         magma_free( dAP );
-        magma_free_host( work );
+        magma_free_pinned( work );
     }
     return *info;
 

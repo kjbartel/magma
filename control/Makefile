@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -17,13 +17,14 @@ ifeq ($(PGIFORTRAN), 0)
 ZSRC := $(ZSRC) 		\
 	magma_zf77.cpp		\
 	magma_param.f90		\
-	magma_zfortran.f90	\
+	magma_zfortran.F90	\
 	magma.f90
 else
 ZSRC := $(ZSRC) 		\
 	magma_zf77pgi.cpp
 endif
 
+-include Makefile.local
 -include Makefile.src
 
 ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
@@ -38,6 +39,7 @@ ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
 
 ALLOBJ := $(ALLSRC:.cpp=.o)
 ALLOBJ := $(ALLOBJ:.f90=.o)
+ALLOBJ := $(ALLOBJ:.F90=.o)
 
 all: $(LIBMAGMA) $(PTREXEC)
 
@@ -49,14 +51,8 @@ $(LIBMAGMA): $(ALLOBJ)
 $(PTREXEC): $(PTRFILE)
 	$(CC) $(OPTS) -o $@ $<
 
-%.o: %.cpp
-	$(CC) $(OPTS) $(INC) -c $< -o $@
-
-%.o: %.f90 $(PTREXEC)
-	$(FORT) $(FOPTS) $(INC) -c $< -o $@
-
 clean:
-	rm -f *.cu_o *.o *~ *.linkinfo *.mod
+	rm -f *.cu_o *.o *~ *.linkinfo *.mod sizeptr
 
 cleanall: clean
 	rm -f *.a

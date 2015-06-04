@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- * @generated s Tue May 15 18:18:16 2012
+ * @generated s Thu Jun 28 12:31:38 2012
  *
  **/
 // includes, system
@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -64,14 +63,14 @@ int main( int argc, char** argv)
     }
     N = size[size_n-1];
     if (N<=0) {
-      printf( "N=%d\n",N );
+      printf( "N=%d\n", (int) N );
       exit(1);
     } else {
         printf("\nUsage: \n");
         if (strcmp(MagmaLowerStr,uplo) )
-        printf("  testing_spotrf -UPLO L -N %d:%d\n\n", size[0],size[size_n-1]);
+            printf("  testing_spotrf -UPLO L -N %d:%d\n\n", (int) size[0], (int) size[size_n-1]);
         else
-        printf("  testing_spotrf -UPLO U -N %d:%d\n\n", size[0],size[size_n-1]);
+            printf("  testing_spotrf -UPLO U -N %d:%d\n\n", (int) size[0], (int) size[size_n-1]);
     }
 
     /* Allocate host memory for the matrix */
@@ -79,7 +78,6 @@ int main( int argc, char** argv)
     TESTING_MALLOC(    h_A, float, n2);
     TESTING_HOSTALLOC( h_R, float, n2);
 
-    printf("\n\n");
     printf("  N    CPU GFlop/s    GPU GFlop/s    ||R_magma - R_lapack||_F / ||R_lapack||_F\n");
     printf("========================================================\n");
     for(i=0; i<size_n; i++){
@@ -113,7 +111,7 @@ int main( int argc, char** argv)
         magma_spotrf(uplo[0], N, h_R, lda, &info);
         end = get_current_time();
         if (info != 0)
-            printf("Argument %d of magma_spotrf had an illegal value.\n", -info);
+            printf("Argument %d of magma_spotrf had an illegal value.\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start, end);
 
@@ -124,7 +122,7 @@ int main( int argc, char** argv)
         lapackf77_spotrf(uplo, &N, h_A, &lda, &info);
         end = get_current_time();
         if (info != 0)
-            printf("Argument %d of lapack_spotrf had an illegal value.\n", -info);
+            printf("Argument %d of lapack_spotrf had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start, end);
 
@@ -134,7 +132,7 @@ int main( int argc, char** argv)
         matnorm = lapackf77_slange("f", &N, &N, h_A, &N, work);
         blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d    %6.2f         %6.2f        %e\n",
-               size[i], cpu_perf, gpu_perf,
+               (int) size[i], cpu_perf, gpu_perf,
                lapackf77_slange("f", &N, &N, h_R, &N, work) / matnorm );
 
         if (flag == 1)

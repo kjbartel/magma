@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:00 2012
+       @generated s Thu Jun 28 12:31:15 2012
 
 */
 #include "common_magma.h"
@@ -16,7 +16,8 @@
       32x32 block of A.
 */
 
-__global__ void sset_to_zero(float *A, int lda){
+__global__ void sset_to_zero(float *A, int lda)
+{
     int ind = blockIdx.x*lda + threadIdx.x;
 
     A += ind;
@@ -24,24 +25,27 @@ __global__ void sset_to_zero(float *A, int lda){
 //   A[16*lda] = 0.;
 }
 
-__global__ void sset_nbxnb_to_zero(int nb, float *A, int lda){
+__global__ void sset_nbxnb_to_zero(int nb, float *A, int lda)
+{
    int ind = blockIdx.x*lda + threadIdx.x, i, j;
 
    A += ind;
-   for(i=0; i<nb; i+=32){
+   for(i=0; i<nb; i+=32) {
      for(j=0; j<nb; j+=32)
          A[j] = MAGMA_S_ZERO;
      A += 32*lda;
    }
 }
 
-void szero_32x32_block(float *A, int lda)
+extern "C"
+void szero_32x32_block(float *A, magma_int_t lda)
 {
   // sset_to_zero<<< 16, 32, 0, magma_stream >>>(A, lda);
   sset_to_zero<<< 32, 32, 0, magma_stream >>>(A, lda);
 }
 
-void szero_nbxnb_block(int nb, float *A, int lda)
+extern "C"
+void szero_nbxnb_block(magma_int_t nb, float *A, magma_int_t lda)
 {
   sset_nbxnb_to_zero<<< 32, 32, 0, magma_stream >>>(nb, A, lda);
 }
@@ -51,7 +55,8 @@ void szero_nbxnb_block(int nb, float *A, int lda)
 */
 #define slaset_threads 64
 
-__global__ void slaset(int m, int n, float *A, int lda){
+__global__ void slaset(int m, int n, float *A, int lda)
+{
    int ibx = blockIdx.x * slaset_threads;
    int iby = blockIdx.y * 32;
 
@@ -65,7 +70,8 @@ __global__ void slaset(int m, int n, float *A, int lda){
         A[i*lda] = MAGMA_S_ZERO;
 }
 
-__global__ void slaset_identity(int m, int n, float *A, int lda){
+__global__ void slaset_identity(int m, int n, float *A, int lda)
+{
    int ibx = blockIdx.x * slaset_threads;
    int iby = blockIdx.y * 32;
 
@@ -83,7 +89,8 @@ __global__ void slaset_identity(int m, int n, float *A, int lda){
      }
 }
 
-__global__ void slaset_identityonly(int m, int n, float *A, int lda){
+__global__ void slaset_identityonly(int m, int n, float *A, int lda)
+{
    int ibx = blockIdx.x * slaset_threads;
    int iby = blockIdx.y * 32;
 
@@ -100,7 +107,8 @@ __global__ void slaset_identityonly(int m, int n, float *A, int lda){
 }
 
 
-__global__ void slasetlower(int m, int n, float *A, int lda){
+__global__ void slasetlower(int m, int n, float *A, int lda)
+{
    int ibx = blockIdx.x * slaset_threads;
    int iby = blockIdx.y * 32;
 
@@ -114,7 +122,8 @@ __global__ void slasetlower(int m, int n, float *A, int lda){
         A[i*lda] = MAGMA_S_ZERO;
 }
 
-__global__ void slasetupper(int m, int n, float *A, int lda){
+__global__ void slasetupper(int m, int n, float *A, int lda)
+{
    int ibx = blockIdx.x * slaset_threads;
    int iby = blockIdx.y * 32;
 
@@ -181,17 +190,19 @@ magmablas_slaset_identityonly(magma_int_t m, magma_int_t n,
       returns the Frobenious norm of the difference of the two matrices.
       The function is used for debugging.
 */
-float cpu_gpu_sdiff(int M, int N, float * a, int lda, float *da, int ldda)
+extern "C"
+float cpu_gpu_sdiff(magma_int_t M, magma_int_t N, float * a, magma_int_t lda, float *da, magma_int_t ldda)
 {
-  int one = 1, j;
-  float mone = MAGMA_S_NEG_ONE;
+  magma_int_t d_one = 1;
+  magma_int_t j;
+  float c_neg_one = MAGMA_S_NEG_ONE;
   float  work[1];
   float *ha = (float*)malloc( M * N * sizeof(float));
   float res;
 
   cublasGetMatrix(M, N, sizeof(float), da, ldda, ha, M);
   for(j=0; j<N; j++)
-    blasf77_saxpy(&M, &mone, a+j*lda, &one, ha+j*M, &one);
+    blasf77_saxpy(&M, &c_neg_one, a+j*lda, &d_one, ha+j*M, &d_one);
   res = lapackf77_slange("f", &M, &N, ha, &M, work);
 
   free(ha);
@@ -202,7 +213,8 @@ float cpu_gpu_sdiff(int M, int N, float * a, int lda, float *da, int ldda)
  -- GPU kernel for setting 0 in the nb-1 upper subdiagonals and 1 in the diagonal
     @author Raffaele Solca
  */
-__global__ void ssetdiag1subdiag0_L(int k, float *A, int lda){
+__global__ void ssetdiag1subdiag0_L(int k, float *A, int lda)
+{
 
   int nb = blockDim.x;
   int ibx = blockIdx.x * nb;
@@ -217,7 +229,7 @@ __global__ void ssetdiag1subdiag0_L(int k, float *A, int lda){
 
 #pragma unroll
   for(int i=0; i<nb; i++)
-    if (ibx+i < k && ind + i  >= nb){
+    if (ibx+i < k && ind + i  >= nb) {
       A[i*(lda+1)] = tmp;
     }
 
@@ -228,7 +240,8 @@ __global__ void ssetdiag1subdiag0_L(int k, float *A, int lda){
     @author Raffaele Solca
  */
 
-__global__ void ssetdiag1subdiag0_U(int k, float *A, int lda){
+__global__ void ssetdiag1subdiag0_U(int k, float *A, int lda)
+{
 
   int nb = blockDim.x;
   int ibx = blockIdx.x * nb;
@@ -243,7 +256,7 @@ __global__ void ssetdiag1subdiag0_U(int k, float *A, int lda){
 
 #pragma unroll
   for(int i=0; i<nb; i++)
-    if (ibx+i < k && ind + i < k){
+    if (ibx+i < k && ind + i < k) {
       A[i*(lda+1)] = tmp;
     }
 
@@ -265,7 +278,7 @@ magmablas_ssetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
     fprintf(stderr,"wrong second argument of ssetdiag1subdiag0");
   if(uplo == MagmaLower)
     ssetdiag1subdiag0_L<<< grid, threads, 0, stream >>> (k, A, lda);
-  else if(uplo == MagmaUpper){
+  else if(uplo == MagmaUpper) {
     ssetdiag1subdiag0_U<<< grid, threads, 0, stream >>> (k, A, lda);
   }
   else

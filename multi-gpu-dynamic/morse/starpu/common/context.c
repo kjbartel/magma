@@ -50,7 +50,7 @@ void morse_context_destroy( magma_context_t *magma )
 /***************************************************************************//**
  *
  */
-void morse_enable( magma_context_t *magma, MAGMA_enum lever )
+void morse_enable( MAGMA_enum lever )
 {
     switch (lever)
     {
@@ -66,7 +66,7 @@ void morse_enable( magma_context_t *magma, MAGMA_enum lever )
 /***************************************************************************//**
  *
  **/
-void morse_disable( magma_context_t *magma, MAGMA_enum lever )
+void morse_disable( MAGMA_enum lever )
 {
     switch (lever)
     {

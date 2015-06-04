@@ -1,0 +1,13 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${exec_prefix}/include
+
+Name: magma_mgpu
+Description: Parallel Linear Algebra for Scalable Multi-core Architectures and GPGPUs
+Version: @MORSE_VERSION_MAJOR@.@MORSE_VERSION_MINOR@.@MORSE_VERSION_PATCH@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lmorse_quark -lmagma_mgpu
+Libs.private: 
+Requires:@MORSE_REQUIRED@
+Requires.private: 

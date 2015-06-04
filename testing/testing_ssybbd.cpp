@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        November 2010
 
-       @generated s Tue May 15 18:18:25 2012
+       @generated s Thu Jun 28 12:31:50 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -31,9 +30,9 @@
 // Flops formula
 #define PRECISION_s
 #if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_HETRD(n) + 2. * FADDS_HETRD(n))
+#define FLOPS(n) ( 6. * FMULS_SYTRD(n) + 2. * FADDS_SYTRD(n))
 #else
-#define FLOPS(n) (      FMULS_HETRD(n) +      FADDS_HETRD(n))
+#define FLOPS(n) (      FMULS_SYTRD(n) +      FADDS_SYTRD(n))
 #endif
 
 
@@ -107,7 +106,7 @@ int main( int argc, char** argv)
                 uplo = (char *)MagmaLowerStr;
         }
         if ( N > 0 )
-            printf("  testing_ssybbd -L|U -N %d\n\n", N);
+            printf("  testing_ssybbd -L|U -N %d\n\n", (int) N);
         else
         {
             printf("\nUsage: \n");
@@ -146,7 +145,6 @@ int main( int argc, char** argv)
     //TESTING_DEVALLOC( dT1,  float, (2*min(N,N)+(N+31)/32*32)*NB );
     TESTING_DEVALLOC( dT1,  float, (N*NB) );
 
-    printf("\n\n");
     printf("  N    GPU GFlop/s   \n");
     printf("=====================\n");
     for(i=0; i<10; i++){
@@ -292,7 +290,7 @@ return 0;
         magma_ssytrd_bsy2trc(THREADS, WANTZ, uplo[0], NE, N, NB, h_R, lda, D, E, dT1, ldt);
         end = get_current_time();
         if ( info < 0 )
-            printf("Argument %d of magma_ssybbd had an illegal value\n", -info);
+            printf("Argument %d of magma_ssybbd had an illegal value\n", (int) -info);
 
         gpu_perf = flops / GetTimerValue(start,end);
         gpu_time = GetTimerValue(start,end) / 1000.;
@@ -346,7 +344,7 @@ return 0;
 #if defined(CHECKEIG)
 #if defined(PRECISION_z)  || defined(PRECISION_d)
         if ( checkres ) {
-            printf("  Total N %5d  flops %6.2f  timing %6.2f seconds\n", N, gpu_perf, gpu_time );
+            printf("  Total N %5d  flops %6.2f  timing %6.2f seconds\n", (int) N, gpu_perf, gpu_time );
             char JOBZ;
             if(WANTZ==0) 
                     JOBZ='N';
@@ -414,7 +412,7 @@ return 0;
 
            printf("\n");
            printf(" ================================================================================================================\n");
-           printf("   ==> INFO voici  threads=%d    N=%d    NB=%d   WANTZ=%d\n",THREADS,N, NB, WANTZ);
+           printf("   ==> INFO voici  threads=%d    N=%d    NB=%d   WANTZ=%d\n", (int) THREADS, (int) N, (int) NB, (int) WANTZ);
            printf(" ================================================================================================================\n");
            printf("            DSBTRD                : %15s \n", "STATblgv9withQ    ");
            printf(" ================================================================================================================\n");
@@ -434,7 +432,7 @@ return 0;
 #endif         
 #endif  
 
-      printf("  Total N %5d  flops %6.2f        timing %6.2f seconds\n", N, 0.0, gpu_time );
+      printf("  Total N %5d  flops %6.2f        timing %6.2f seconds\n", (int) N, 0.0, gpu_time );
       printf("============================================================================\n\n\n");
 
       if ( once )

@@ -1,14 +1,15 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
  * @author Mark Gates
- * @generated c Tue May 15 18:18:27 2012
+ * @generated c Thu Jun 28 12:31:51 2012
  *
  **/
+#include <stdlib.h>
 #include <stdio.h>
 
 // make sure that asserts are enabled
@@ -17,7 +18,9 @@
 #endif
 #include <assert.h>
 
-#include "common_magma.h"
+// includes, project
+#include "magma.h"
+#include "magma_lapack.h"
 #include "testings.h"
 
 #define A(i,j)  &A[  (i) + (j)*ld ]
@@ -59,10 +62,10 @@ int main( int argc, char** argv )
     size = maxn*maxn;
     piv = (magma_int_t*) malloc( maxn * sizeof(magma_int_t) );
     assert( piv != NULL );
-    err = magma_cmalloc_host( &A , size );  assert( err == 0 );
-    err = magma_cmalloc_host( &B , size );  assert( err == 0 );
-    err = magma_cmalloc_host( &C , size );  assert( err == 0 );
-    err = magma_cmalloc_host( &C2, size );  assert( err == 0 );
+    err = magma_cmalloc_pinned( &A , size );  assert( err == 0 );
+    err = magma_cmalloc_pinned( &B , size );  assert( err == 0 );
+    err = magma_cmalloc_pinned( &C , size );  assert( err == 0 );
+    err = magma_cmalloc_pinned( &C2, size );  assert( err == 0 );
     err = magma_cmalloc( &dA,  size );      assert( err == 0 );
     err = magma_cmalloc( &dB,  size );      assert( err == 0 );
     err = magma_cmalloc( &dC1, size );      assert( err == 0 );
@@ -76,7 +79,7 @@ int main( int argc, char** argv )
     
     printf( "========== Level 1 BLAS ==========\n" );
     
-    // ----- test ZSWAP
+    // ----- test CSWAP
     // swap 2nd and 3rd columns of dA, then copy to C2 and compare with A
     printf( "\ntesting cswap\n" );
     assert( k >= 4 );
@@ -91,7 +94,7 @@ int main( int argc, char** argv )
     error = lapackf77_clange( "F", &m, &size, C2, &ld, work );
     printf( "cswap diff %.2g\n", error );
     
-    // ----- test IZAMAX
+    // ----- test ICAMAX
     // get argmax of column of A
     printf( "\ntesting icamax\n" );
     magma_csetmatrix( m, k, A, ld, dA, ld );
@@ -104,7 +107,7 @@ int main( int argc, char** argv )
     
     printf( "\n========== Level 2 BLAS ==========\n" );
     
-    // ----- test ZGEMV
+    // ----- test CGEMV
     // c = alpha*A*b + beta*c,  with A m*n; b,c m or n-vectors
     // try no-trans/trans
     printf( "\ntesting cgemv\n" );
@@ -300,10 +303,10 @@ int main( int argc, char** argv )
     }}}}
     
     // cleanup
-    magma_free_host( A  );
-    magma_free_host( B  );
-    magma_free_host( C  );
-    magma_free_host( C2 );
+    magma_free_pinned( A  );
+    magma_free_pinned( B  );
+    magma_free_pinned( C  );
+    magma_free_pinned( C2 );
     magma_free( dA  );
     magma_free( dB  );
     magma_free( dC1 );

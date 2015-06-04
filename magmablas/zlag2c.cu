@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions mixed zc -> ds
 
@@ -13,9 +13,10 @@
 #define PRECISION_z
 #define blksize 64
 
+// TODO get rid of global variable!
 __device__ int flag = 0; 
 
-static __global__ void 
+__global__ void 
 magmaint_zlag2c( magma_int_t M, magma_int_t N, 
                   const cuDoubleComplex *A, int lda, 
                   cuFloatComplex *SA,       int ldsa, 
@@ -51,9 +52,9 @@ magmaint_zlag2c( magma_int_t M, magma_int_t N,
 
 
 extern "C" void 
-magmablas_zlag2c( int M, int N , 
-                  const cuDoubleComplex *A, int lda, 
-                  cuFloatComplex *SA,       int ldsa, 
+magmablas_zlag2c( magma_int_t M, magma_int_t N , 
+                  const cuDoubleComplex *A, magma_int_t lda, 
+                  cuFloatComplex *SA,       magma_int_t ldsa, 
                   magma_int_t *info ) 
 {    
 /*

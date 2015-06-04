@@ -1,12 +1,12 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
-    @generated s Tue May 15 18:17:48 2012
+    @generated s Thu Jun 28 12:30:54 2012
 */
 
 #include "common_magma.h"
@@ -70,9 +70,9 @@ magma_slaex3(magma_int_t k, magma_int_t n, magma_int_t n1, float* d,
      Purpose
      =======
 
-     DLAEX3 finds the roots of the secular equation, as defined by the
+     SLAEX3 finds the roots of the secular equation, as defined by the
      values in D, W, and RHO, between 1 and K.  It makes the
-     appropriate calls to DLAED4 and then updates the eigenvectors by
+     appropriate calls to SLAED4 and then updates the eigenvectors by
      multiplying the matrix of eigenvectors of the pair of eigensystems
      being combined by the matrix of eigenvectors of the K-by-K system
      which is solved here.
@@ -94,7 +94,7 @@ magma_slaex3(magma_int_t k, magma_int_t n, magma_int_t n1, float* d,
 
      K       (input) INTEGER
      The number of terms in the rational function to be solved by
-     DLAED4.  K >= 0.
+     SLAED4.  K >= 0.
 
      N       (input) INTEGER
      The number of rows and columns in the Q matrix.
@@ -133,8 +133,8 @@ magma_slaex3(magma_int_t k, magma_int_t n, magma_int_t n1, float* d,
 
      INDX    (input) INTEGER array, dimension (N)
      The permutation used to arrange the columns of the deflated
-     Q matrix into three groups (see DLAED2).
-     The rows of the eigenvectors found by DLAED4 must be likewise
+     Q matrix into three groups (see SLAED2).
+     The rows of the eigenvectors found by SLAED4 must be likewise
      permuted before the matrix multiply can take place.
 
      CTOT    (input) INTEGER array, dimension (4)
@@ -190,7 +190,7 @@ magma_slaex3(magma_int_t k, magma_int_t n, magma_int_t n1, float* d,
 
     magma_int_t i,iq2,j,n12,n2,n23,tmp,lq2;
     float temp;
-//    static cudaStream_t stream;
+//    cudaStream_t stream;
     magma_int_t alleig, valeig, indeig;
 
     alleig = lapackf77_lsame(range_, "A");

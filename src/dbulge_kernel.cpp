@@ -7,11 +7,13 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated d Tue May 15 18:17:54 2012
+ *     @generated d Thu Jun 28 12:30:59 2012
  *
  */
 
 #include "common_magma.h"
+#include <cblas.h>
+
 //#include "magma_dbulgeinc.h"
 // === Define what BLAS to use ============================================
 #define PRECISION_d
@@ -23,13 +25,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- void findVTpos(int N, int NB, int Vblksiz, int sweep, int st, int *Vpos, int *TAUpos, int *Tpos, int *myblkid);
- void findVTsiz(int N, int NB, int Vblksiz, int *blkcnt, int *LDV);
-  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
+
+void findVTpos(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t sweep, magma_int_t st, magma_int_t *Vpos, magma_int_t *TAUpos, magma_int_t *Tpos, magma_int_t *myblkid);
+
+void findVTsiz(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t *blkcnt, magma_int_t *LDV);
+
+magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
 
 void magma_dtrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, 
                                 double *A, magma_int_t LDA, double *V, double *TAU, 
                                 magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+
 void magma_dtrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, double *A, magma_int_t LDA, double *V, double *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
    
 void magma_dtrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, double *A, magma_int_t LDA, double *V, double *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
@@ -60,13 +66,13 @@ magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, double *TA
   blasf77_dsymv("L",&N, TAU, A, &LDA, V, &IONE, &Z_ZERO, WORK, &IONE);
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
-   dtmp = Z_ZERO; 
-   for (j = 0; j < N ; j++)
-      dtmp = dtmp + MAGMA_D_CNJG(WORK[j]) * V[j];  
-   // cblas_ddot_sub(N, WORK, IONE, V, IONE, &dtmp);
+   //dtmp = Z_ZERO;
+   //for (j = 0; j < N ; j++)
+   //   dtmp = dtmp + MAGMA_D_CNJG(WORK[j]) * V[j];
+   cblas_ddot_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
-  dtmp = blasf77_ddot(&N,WORK,&IONE,V,&IONE);
-#endif  
+  dtmp = cblas_ddot(N, WORK, IONE, V, IONE);
+#endif
   /* je calcul 1/2 X'*V*t = 1/2*dtmp*tau  */
   dtmp = -dtmp * Z_HALF * (*TAU);
   /* je calcul W=X-1/2VX'Vt = X - dtmp*V */
@@ -75,7 +81,7 @@ magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, double *TA
       WORK[j] = WORK[j] + (dtmp*V[j]); */
   blasf77_daxpy(&N, &dtmp, V, &IONE, WORK, &IONE);
   /* performs the symmetric rank 2 operation A := alpha*x*y' + alpha*y*x' + A */
-  blasf77_dher2("L",&N,&Z_MONE,WORK,&IONE,V,&IONE,A,&LDA);
+  blasf77_dsyr2("L",&N,&Z_MONE,WORK,&IONE,V,&IONE,A,&LDA);
   
   free(WORK);
 }
@@ -91,7 +97,7 @@ extern "C" void magma_dtrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
   magma_int_t    J1, J2, J3, len, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  double tmp;
+  double conjtmp;
   double Z_ONE  =  MAGMA_D_ONE;
   double *WORK  = (double *) malloc( N * sizeof(double) );
 
@@ -107,8 +113,8 @@ extern "C" void magma_dtrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
   lapackf77_dlarfg( &len, A(st, st-1), V(vpos+1), &IONE, TAU(taupos) );
   /* apply left and right on A(st:ed,st:ed)*/
   magma_dlarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
-  //tmp = MAGMA_D_CNJG(*TAU(taupos));
-  //lapackf77_dlarfy("L", &len, V(vpos), &IONE, &tmp, A(st,st), &LDX, WORK); //&(MAGMA_D_CNJG(*TAU(taupos)))
+  //conjtmp = MAGMA_D_CNJG(*TAU(taupos));
+  //lapackf77_dlarfy("L", &len, V(vpos), &IONE, &conjtmp, A(st,st), &LDX, WORK); //&(MAGMA_D_CNJG(*TAU(taupos)))
   free(WORK);
 }
 #undef A
@@ -127,7 +133,7 @@ extern "C" void magma_dtrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
   magma_int_t    J1, J2, len, lem, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  double tmp;
+  double conjtmp;
   double Z_ONE  =  MAGMA_D_ONE;
   //double WORK[NB];
   double *WORK  = (double *) malloc( NB * sizeof(double) );
@@ -153,8 +159,8 @@ extern "C" void magma_dtrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
      lapackf77_dlarfg( &lem, A(J1, st), V(vpos+1), &IONE, TAU(taupos) );
      /* apply left on A(J1:J2,st+1:ed) */
      len = len-1; /* because we start at col st+1 instead of st. col st is the col that has been revomved;*/
-     tmp = MAGMA_D_CNJG(*TAU(taupos));
-     lapackf77_dlarfx("L", &lem, &len, V(vpos),  &tmp, A(J1, st+1), &LDX, WORK);
+     conjtmp = MAGMA_D_CNJG(*TAU(taupos));
+     lapackf77_dlarfx("L", &lem, &len, V(vpos),  &conjtmp, A(J1, st+1), &LDX, WORK);
   }
   free (WORK);
 }
@@ -174,7 +180,7 @@ extern "C" void magma_dtrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
   magma_int_t    J1, J2, J3, len, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  double tmp;
+  double conjtmp;
   double *WORK  = (double *) malloc( N * sizeof(double) );
 
 
@@ -184,7 +190,7 @@ extern "C" void magma_dtrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
 
   /* apply left and right on A(st:ed,st:ed)*/
   magma_dlarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
-  //tmp = MAGMA_D_CNJG(*TAU(taupos));
+  //conjtmp = MAGMA_D_CNJG(*TAU(taupos));
   //lapackf77_dlarfy("L", &len, V(vpos), &IONE,  &(MAGMA_D_CNJG(*TAU(taupos))), A(st,st), &LDX, WORK);
   free(WORK);
 }

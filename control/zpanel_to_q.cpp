@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Mark Gates
        @precisions normal z -> s d c
@@ -14,7 +14,7 @@
 // Put 0s in the upper triangular part of a panel and 1s on the diagonal.
 // Stores previous values in work array, to be restored later with zq_to_panel.
 extern "C"
-void zpanel_to_q(char uplo, int ib, cuDoubleComplex *A, int lda, cuDoubleComplex *work)
+void zpanel_to_q(char uplo, magma_int_t ib, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *work)
 {
     int i, j, k = 0;
     cuDoubleComplex *col;
@@ -54,7 +54,7 @@ void zpanel_to_q(char uplo, int ib, cuDoubleComplex *A, int lda, cuDoubleComplex
 // -------------------------
 // Restores a panel, after call to zpanel_to_q.
 extern "C"
-void zq_to_panel(char uplo, int ib, cuDoubleComplex *A, int lda, cuDoubleComplex *work)
+void zq_to_panel(char uplo, magma_int_t ib, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *work)
 {
     int i, j, k = 0;
     cuDoubleComplex *col;

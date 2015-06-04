@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
-       @generated s Tue May 15 18:18:06 2012
+       @generated s Thu Jun 28 12:31:23 2012
 */
 #include "common_magma.h"
 #define PRECISION_s
@@ -17,12 +17,13 @@
 //  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
-magmablas_ssetmatrix_1D_bcyclic( int m, int n,
-                                 float  *hA,   int lda,
-                                 float  *dA[], int ldda,
-                                 int num_gpus, int nb )
+magmablas_ssetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
+                                 float  *hA,   magma_int_t lda,
+                                 float  *dA[], magma_int_t ldda,
+                                 magma_int_t num_gpus, magma_int_t nb )
 {
-    int i, d, nk, cdevice;
+    magma_int_t i, d, nk;
+    magma_device_t cdevice;
 
     magma_getdevice( &cdevice );
 
@@ -44,12 +45,13 @@ magmablas_ssetmatrix_1D_bcyclic( int m, int n,
 //  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
-magmablas_sgetmatrix_1D_bcyclic( int m, int n,
-                                 float  *dA[], int ldda,
-                                 float  *hA,   int lda,
-                                 int num_gpus, int nb )
+magmablas_sgetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
+                                 float  *dA[], magma_int_t ldda,
+                                 float  *hA,   magma_int_t lda,
+                                 magma_int_t num_gpus, magma_int_t nb )
 {
-    int i, d, nk, cdevice;
+    magma_int_t i, d, nk;
+    magma_device_t cdevice;
 
     magma_getdevice( &cdevice );
 

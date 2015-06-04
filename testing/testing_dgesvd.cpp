@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:25 2012
+       @generated d Thu Jun 28 12:31:49 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -58,7 +57,7 @@ int main( int argc, char** argv)
               M = atoi(argv[++i]);
         }
         if (M>0 && N>0)
-          printf("  testing_dgesvd -M %d -N %d\n\n", M, N);
+          printf("  testing_dgesvd -M %d -N %d\n\n", (int) M, (int) N);
         else
             {
                 printf("\nUsage: \n");
@@ -92,12 +91,17 @@ int main( int argc, char** argv)
 #endif
     TESTING_HOSTALLOC(h_R, double, n2);
 
-    magma_int_t nb = 128; // magma_get_dgesvd_nb(N);
-    magma_int_t lwork = max(5*min_mn, (3*min_mn + max(M,N)))*nb;
+    magma_int_t nb = magma_get_dgesvd_nb(N);
+    magma_int_t lwork;
+
+#if defined(PRECISION_z) || defined(PRECISION_c)
+    lwork = (M+N)*nb+2*N;
+#else
+    lwork = (M+N)*nb+3*N;
+#endif    
 
     TESTING_HOSTALLOC(h_work, double, lwork);
 
-    printf("\n\n");
     printf("  N     CPU Time(s)    GPU Time(s)     ||R||_F / ||A||_F\n");
     printf("==========================================================\n");
     for(i=0; i<8; i++){
@@ -151,20 +155,24 @@ int main( int argc, char** argv)
              =================================================================== */
           magma_int_t izero    = 0;
           double *E, result[4], zero = 0., eps = lapackf77_dlamch( "E" );
+
+          double *h_work_err;
+          magma_int_t lwork_err = max(5*min_mn, (3*min_mn + max(M,N)))*128;
+          TESTING_MALLOC(h_work_err, double, lwork_err);
           
           #if defined(PRECISION_z) || defined(PRECISION_c)
              lapackf77_dbdt01(&M, &N, &izero, h_A, &M,
-                              U, &M, S1, E, VT, &N, h_work, rwork, &result[0]);
+                              U, &M, S1, E, VT, &N, h_work_err, rwork, &result[0]);
              if (M != 0 && N != 0) {
-               lapackf77_dort01("Columns",&M,&M, U,&M, h_work,&lwork, rwork, &result[1]);
-               lapackf77_dort01(   "Rows",&N,&N,VT,&N, h_work,&lwork, rwork, &result[2]);
+               lapackf77_dort01("Columns",&M,&M, U,&M, h_work_err,&lwork_err, rwork, &result[1]);
+               lapackf77_dort01(   "Rows",&N,&N,VT,&N, h_work_err,&lwork_err, rwork, &result[2]);
              }
           #else
              lapackf77_dbdt01(&M, &N, &izero, h_A, &M,
-                              U, &M, S1, E, VT, &N, h_work,        &result[0]);
+                              U, &M, S1, E, VT, &N, h_work_err, &result[0]);
              if (M != 0 && N != 0) {
-               lapackf77_dort01("Columns",&M,&M, U,&M, h_work,&lwork,        &result[1]);
-               lapackf77_dort01(   "Rows",&N,&N,VT,&N, h_work,&lwork,        &result[2]);
+               lapackf77_dort01("Columns",&M,&M, U,&M, h_work_err, &lwork_err, &result[1]);
+               lapackf77_dort01(   "Rows",&N,&N,VT,&N, h_work_err, &lwork_err, &result[2]);
              }
           #endif
           
@@ -180,12 +188,14 @@ int main( int argc, char** argv)
             if (S1[min_mn-1] < zero)
               result[3] = 1./eps;
 
-          printf("\n SVD test A = U diag(S) VT for M = %d N = %d:\n", M, N);
+          printf("\n SVD test A = U diag(S) VT for M = %d N = %d:\n", (int) M, (int) N);
           printf("(1)    | A - U diag(S) VT | / (|A| max(M,N)) = %e\n", result[0]*eps);
           printf("(2)    | I -   U'U  | /  M                   = %e\n", result[1]*eps);
           printf("(3)    | I - VT VT' | /  N                   = %e\n", result[2]*eps);
           printf("(4)    0 if S contains MNMIN nonnegative \n");
           printf("         values in decreasing order          = %e\n", result[3]);
+
+          TESTING_FREE( h_work_err );
         }
 
         /* =====================================================================
@@ -203,7 +213,7 @@ int main( int argc, char** argv)
 #endif
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of dgesvd had an illegal value.\n", -info);
+            printf("Argument %d of dgesvd had an illegal value.\n", (int) -info);
 
         cpu_time = GetTimerValue(start,end)/1000.;
 
@@ -217,7 +227,7 @@ int main( int argc, char** argv)
         blasf77_daxpy(&min_mn, &mone, S1, &one, S2, &one);
 
         printf("%5d     %6.2f         %6.2f         %e\n",
-               N, cpu_time, gpu_time,
+               (int) N, cpu_time, gpu_time,
                lapackf77_dlange("f", &min_mn, &one, S2, &min_mn, work) / matnorm);
 
         if (argc != 1)

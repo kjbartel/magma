@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -33,11 +33,11 @@ extern "C" magma_int_t
 magma_zlauum(char uplo, magma_int_t n,
              cuDoubleComplex *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
         Purpose
         =======
@@ -84,11 +84,11 @@ magma_zlauum(char uplo, magma_int_t n,
         /* Local variables */
         char uplo_[2] = {uplo, 0};
         magma_int_t     ldda, nb;
-        static magma_int_t i, ib;
+        magma_int_t i, ib;
         cuDoubleComplex    c_one = MAGMA_Z_ONE;
         double             d_one = MAGMA_D_ONE;
         cuDoubleComplex    *work;
-        long int           upper = lapackf77_lsame(uplo_, "U");
+        int upper = lapackf77_lsame(uplo_, "U");
 
         *info = 0;
         if ((! upper) && (! lapackf77_lsame(uplo_, "L")))
@@ -114,7 +114,7 @@ magma_zlauum(char uplo, magma_int_t n,
                 return *info;
         }
 
-        static cudaStream_t stream[2];
+        cudaStream_t stream[2];
         magma_queue_create( &stream[0] );
         magma_queue_create( &stream[1] );
 

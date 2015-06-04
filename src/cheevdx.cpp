@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:45 2012
+       @generated c Thu Jun 28 12:30:54 2012
 
 */
 #include "common_magma.h"
@@ -27,11 +27,11 @@ magma_cheevdx(char jobz, char range, char uplo,
               magma_int_t *iwork, magma_int_t liwork,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -329,8 +329,8 @@ magma_cheevdx(char jobz, char range, char uplo,
     printf("time chetrd = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
-    /* For eigenvalues only, call DSTERF.  For eigenvectors, first call
-     ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
+    /* For eigenvalues only, call SSTERF.  For eigenvectors, first call
+     CSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
      tridiagonal matrix, then call CUNMTR to multiply it to the Householder
      transformations represented as Householder vectors in A. */
     if (! wantz) {

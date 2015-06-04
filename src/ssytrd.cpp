@@ -1,21 +1,21 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:40 2012
+       @generated s Thu Jun 28 12:30:55 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
 
-//#define FAST_HEMV
+//#define FAST_SYMV
 
 // === End defining what BLAS to use ======================================
 #define PRECISION_s
@@ -35,11 +35,11 @@ magma_ssytrd(char uplo, magma_int_t n,
              float *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -159,14 +159,14 @@ magma_ssytrd(char uplo, magma_int_t n,
     float c_one     = MAGMA_S_ONE;
     float          d_one     = MAGMA_D_ONE;
     
-    static magma_int_t kk, nx;
-    static magma_int_t i, j, i_n;
-    static magma_int_t iinfo;
-    static magma_int_t ldwork, lddwork, lwkopt;
-    static magma_int_t lquery;
+    magma_int_t kk, nx;
+    magma_int_t i, j, i_n;
+    magma_int_t iinfo;
+    magma_int_t ldwork, lddwork, lwkopt;
+    magma_int_t lquery;
 
     *info = 0;
-    long int upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
     lquery = lwork == -1;
     if (! upper && ! lapackf77_lsame(uplo_, "L")) {
         *info = -1;
@@ -261,7 +261,7 @@ magma_ssytrd(char uplo, magma_int_t n,
         if (1<=n-nx)
           magma_ssetmatrix( n, n, A(0,0), lda, dA(0,0), ldda );
 
-        #ifdef FAST_HEMV
+        #ifdef FAST_SYMV
         // TODO this leaks memory from da, above
         float *dwork2;
         if (MAGMA_SUCCESS != magma_smalloc( &dwork2, n*n )) {
@@ -279,7 +279,7 @@ magma_ssytrd(char uplo, magma_int_t n,
             /*   Get the current panel (no need for the 1st iteration) */
             if (i!=0)
               magma_sgetmatrix( n-i, nb, dA(i, i), ldda, A(i, i), lda );
-            #ifdef FAST_HEMV
+            #ifdef FAST_SYMV
             magma_slatrd2(uplo, n-i, nb, A(i, i), lda, &e[i], 
                          &tau[i], work, ldwork, 
                          dA(i, i), ldda,
@@ -307,7 +307,7 @@ magma_ssytrd(char uplo, magma_int_t n,
             }
           }
 
-        #ifdef FAST_HEMV
+        #ifdef FAST_SYMV
         magma_free( dwork2 );
         #endif
 

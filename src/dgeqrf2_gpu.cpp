@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:34 2012
+       @generated d Thu Jun 28 12:30:43 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_dgeqrf2_gpu( magma_int_t m, magma_int_t n,
                    double *tau, 
                    magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -81,9 +81,9 @@ magma_dgeqrf2_gpu( magma_int_t m, magma_int_t n,
 
     double *dwork;
     double *work;
-    int i, k, ldwork, lddwork, old_i, old_ib, rows;
-    int nbmin, nx, ib, nb;
-    int lhwork, lwork;
+    magma_int_t i, k, ldwork, lddwork, old_i, old_ib, rows;
+    magma_int_t nbmin, nx, ib, nb;
+    magma_int_t lhwork, lwork;
 
     /* Function Body */
     *info = 0;
@@ -113,13 +113,13 @@ magma_dgeqrf2_gpu( magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    if (MAGMA_SUCCESS != magma_dmalloc_host( &work, lwork )) {
+    if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, lwork )) {
         magma_free( dwork );
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -200,7 +200,7 @@ magma_dgeqrf2_gpu( magma_int_t m, magma_int_t n,
         magma_dsetmatrix( rows, ib, work, rows, dA(i, i), ldda );
     }
 
-    magma_free_host( work );
+    magma_free_pinned( work );
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );
     return *info;

@@ -1,13 +1,14 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
  * @author Mark Gates
  *
  **/
+#include <stdlib.h>
 #include <stdio.h>
 
 // make sure that asserts are enabled

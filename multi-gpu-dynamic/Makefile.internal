@@ -21,7 +21,7 @@ prefix ?= ./install
 #///// D /// O ////// N /// O /// T ////// T /// O /// U /// C /// H /////
 
 # Include directory
-INC         = -I$(MAGMA_DIR)/include -I$(MAGMA_DIR)/morse/include $(INCSTARPU) $(INCPLASMA)
+INC         = -I$(MAGMA_DIR)/include -I$(MAGMA_DIR)/morse/include $(INCPLASMA)
 
 # Location of the libraries.
 LIBDIR      = -L$(MAGMA_DIR)/lib
@@ -39,26 +39,54 @@ endif
 
 # Cuda
 ifeq (${MORSE_USE_CUDA}, 1)
-    CFLAGS += -DMORSE_USE_CUDA
-    INC    += $(INCMAGMA) -I$(CUDADIR)/include
-    LIBCUDA = $(LIBMAGMA) -L$(CUDADIR)/lib64 -lcublas -lcudart 
+	CFLAGS += -DMORSE_USE_CUDA
+	INC    += $(INCMAGMA) -I$(CUDADIR)/include
+	LIBCUDA = $(LIBMAGMA) -L$(CUDADIR)/lib64 -lcublas -lcudart 
 else
-    LIBCUDA = 
+	INCMAGMA=
+	LIBMAGMA=
+	LIBCUDA= 
 endif
 
 ifeq (${MORSE_USE_STARPU}, 1)
-	LIBMORSE= $(LIBMORSE_STARPU)
+ifeq (${MORSE_USE_MPI}, 1)
+	INC+= ${INCSTARPUMPI}
+	LIBSCHED= $(LIBSTARPUMPI)
+else
+	INC+= ${INCSTARPU}
 	LIBSCHED= $(LIBSTARPU)
+endif
+	LIBMORSE= $(LIBMORSE_STARPU)
 else      
 	LIBMORSE= $(LIBMORSE_QUARK)
 	LIBSCHED= -lquark
+endif
+
+
+ifeq (${MORSE_USE_MPI}, 1)
+	CC= ${MPICC}
+	FC= ${MPIFC}
+	LOADER= ${MPIFC}
+	CFLAGS += -DMORSE_USE_MPI
+endif
+
+#             Trace librairies 
+# (we guess that all librairies have been installed 
+#     in the same directory by the installer)
+EZT_DIR ?= /usr
+GTG_DIR ?= $(EZT_DIR)
+FXT_DIR ?= $(EZT_DIR)
+
+ifeq (${MORSE_TRACE}, 1)
+	LIBTRACE = -L${EZT_DIR}/lib -leztrace -leztrace-coreblas -L$(FXT_DIR)/lib -lfxt
+	CFLAGS += -DMORSE_TRACE -I${EZT_DIR}/include
 endif
 
 # Double plasma in plasma libs
 LIBPLASMA := $(LIBPLASMA) -lplasma
 
 #  All internal libraries
-LIB    = $(LIBDIR) -lmagma_mgpu ${LIBTRACE} $(LIBMORSE) 
+LIB    = $(LIBDIR) -lmagma_mgpu $(LIBMORSE) ${LIBTRACE}
 #  All external libraries
 LIBEXT = $(LIB) $(LIBMAGMA) $(LIBSCHED) $(LIBPLASMA) $(LIBCUDA)
 

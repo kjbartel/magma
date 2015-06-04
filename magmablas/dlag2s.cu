@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated ds Tue May 15 18:18:07 2012
+       @generated ds Thu Jun 28 12:31:16 2012
 
 */
 #include "common_magma.h"
@@ -13,9 +13,10 @@
 #define PRECISION_d
 #define blksize 64
 
+// TODO get rid of global variable!
 __device__ int flag = 0; 
 
-static __global__ void 
+__global__ void 
 magmaint_dlag2s( magma_int_t M, magma_int_t N, 
                   const double *A, int lda, 
                   float *SA,       int ldsa, 
@@ -51,9 +52,9 @@ magmaint_dlag2s( magma_int_t M, magma_int_t N,
 
 
 extern "C" void 
-magmablas_dlag2s( int M, int N , 
-                  const double *A, int lda, 
-                  float *SA,       int ldsa, 
+magmablas_dlag2s( magma_int_t M, magma_int_t N , 
+                  const double *A, magma_int_t lda, 
+                  float *SA,       magma_int_t ldsa, 
                   magma_int_t *info ) 
 {    
 /*

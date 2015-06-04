@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 */
 
 /*#include <quark.h>*/
@@ -15,8 +15,6 @@
  * MAGMA Blas Functions
  * --------------------------------------------------------- */
 #include "magmablas.h"
-
-#include "auxiliary.h"
 
 /* ------------------------------------------------------------
  * MAGMA functions
@@ -82,12 +80,23 @@
 /* ------------------------------------------------------------
  *   Return codes
  * --------------------------------------------------------- */
-#define MAGMA_SUCCESS               0
-#define MAGMA_ERR_ILLEGAL_VALUE    -100
-#define MAGMA_ERR_HOST_ALLOC       -102
-#define MAGMA_ERR_DEVICE_ALLOC     -103
-#define MAGMA_ERR_CUDASTREAM       -104
-#define MAGMA_ERR_INVALID_PTR      -105
+#define MAGMA_SUCCESS                 0
+#define MAGMA_ERR_NOT_INITIALIZED  -101
+#define MAGMA_ERR_REINITIALIZED    -102
+#define MAGMA_ERR_NOT_SUPPORTED    -103
+#define MAGMA_ERR_ILLEGAL_VALUE    -104
+#define MAGMA_ERR_NOT_FOUND        -105
+#define MAGMA_ERR_OUT_OF_RESOURCES -106
+#define MAGMA_ERR_ALLOCATION       -106
+#define MAGMA_ERR_INTERNAL_LIMIT   -107
+#define MAGMA_ERR_UNALLOCATED      -108
+#define MAGMA_ERR_FILESYSTEM       -109
+#define MAGMA_ERR_UNEXPECTED       -110
+#define MAGMA_ERR_SEQUENCE_FLUSHED -111
+#define MAGMA_ERR_HOST_ALLOC       -112
+#define MAGMA_ERR_DEVICE_ALLOC     -113
+#define MAGMA_ERR_CUDASTREAM       -114
+#define MAGMA_ERR_INVALID_PTR      -115
 
 /* ------------------------------------------------------------
  *   Define new type that will not be changed by the generator
@@ -118,7 +127,7 @@ typedef double real_Double_t;
 
 #define MAGMA_C_SET2REAL(v, t)    {(v).x = (t); (v).y = 0.0;}
 #define MAGMA_C_EQUAL(u,v)        (((u).x == (v).x) && ((u).y == (v).y))
-#define MAGMA_C_DSCALE(v, t, s)   {(v).x = (t).x/(s); (v).y = (t).y/(s);}
+#define MAGMA_C_SSCALE(v, t, s)   {(v).x = (t).x/(s); (v).y = (t).y/(s);}
 #define MAGMA_C_MAKE(r, i)        make_cuFloatComplex((r), (i))
 #define MAGMA_C_REAL(a)           cuCrealf(a)
 #define MAGMA_C_IMAG(a)           cuCimagf(a)
@@ -158,7 +167,7 @@ typedef double real_Double_t;
 #define MAGMA_S_SET2REAL(v, t)    (v) = (t)
 #define MAGMA_S_OP_NEG_ASGN(t, z) (t) = -(z)
 #define MAGMA_S_EQUAL(u,v)        ((u) == (v))
-#define MAGMA_S_DSCALE(v, t, s)   (v) = (t)/(s)
+#define MAGMA_S_SSCALE(v, t, s)   (v) = (t)/(s)
 #define MAGMA_S_MAKE(r, i)        (r)
 #define MAGMA_S_REAL(a)           (a)
 #define MAGMA_S_IMAG(a)           (a)
@@ -190,29 +199,35 @@ extern "C" {
 // ========================================
 // initialization
 void magma_init( void );
-
 void magma_finalize( void );
-
 
 // ========================================
 // memory allocation
 magma_err_t magma_malloc( magma_devptr *ptrPtr, size_t bytes );
 magma_err_t magma_free  ( magma_devptr ptr );
 
-magma_err_t magma_malloc_host( void **ptrPtr, size_t bytes );
-magma_err_t magma_free_host  ( void *ptr );
+magma_err_t magma_malloc_cpu( void **ptrPtr, size_t bytes );
+magma_err_t magma_free_cpu  ( void *ptr );
+
+magma_err_t magma_malloc_pinned( void **ptrPtr, size_t bytes );
+magma_err_t magma_free_pinned  ( void *ptr );
 
 // type-safe convenience functions to avoid using (void**) cast and sizeof(...)
 // here n is the number of elements (floats, doubles, etc.) not the number of bytes.
-inline magma_err_t magma_smalloc( float           **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(float)           ); }
-inline magma_err_t magma_dmalloc( double          **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(double)          ); }
-inline magma_err_t magma_cmalloc( cuFloatComplex  **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(cuFloatComplex)  ); }
-inline magma_err_t magma_zmalloc( cuDoubleComplex **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(cuDoubleComplex) ); }
+static inline magma_err_t magma_smalloc( float           **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(float)           ); }
+static inline magma_err_t magma_dmalloc( double          **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(double)          ); }
+static inline magma_err_t magma_cmalloc( cuFloatComplex  **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(cuFloatComplex)  ); }
+static inline magma_err_t magma_zmalloc( cuDoubleComplex **ptrPtr, size_t n ) { return magma_malloc( (void**) ptrPtr, n*sizeof(cuDoubleComplex) ); }
 
-inline magma_err_t magma_smalloc_host( float           **ptrPtr, size_t n ) { return magma_malloc_host( (void**) ptrPtr, n*sizeof(float)           ); }
-inline magma_err_t magma_dmalloc_host( double          **ptrPtr, size_t n ) { return magma_malloc_host( (void**) ptrPtr, n*sizeof(double)          ); }
-inline magma_err_t magma_cmalloc_host( cuFloatComplex  **ptrPtr, size_t n ) { return magma_malloc_host( (void**) ptrPtr, n*sizeof(cuFloatComplex)  ); }
-inline magma_err_t magma_zmalloc_host( cuDoubleComplex **ptrPtr, size_t n ) { return magma_malloc_host( (void**) ptrPtr, n*sizeof(cuDoubleComplex) ); }
+static inline magma_err_t magma_smalloc_cpu( float           **ptrPtr, size_t n ) { return magma_malloc_cpu( (void**) ptrPtr, n*sizeof(float)           ); }
+static inline magma_err_t magma_dmalloc_cpu( double          **ptrPtr, size_t n ) { return magma_malloc_cpu( (void**) ptrPtr, n*sizeof(double)          ); }
+static inline magma_err_t magma_cmalloc_cpu( cuFloatComplex  **ptrPtr, size_t n ) { return magma_malloc_cpu( (void**) ptrPtr, n*sizeof(cuFloatComplex)  ); }
+static inline magma_err_t magma_zmalloc_cpu( cuDoubleComplex **ptrPtr, size_t n ) { return magma_malloc_cpu( (void**) ptrPtr, n*sizeof(cuDoubleComplex) ); }
+
+static inline magma_err_t magma_smalloc_pinned( float           **ptrPtr, size_t n ) { return magma_malloc_pinned( (void**) ptrPtr, n*sizeof(float)           ); }
+static inline magma_err_t magma_dmalloc_pinned( double          **ptrPtr, size_t n ) { return magma_malloc_pinned( (void**) ptrPtr, n*sizeof(double)          ); }
+static inline magma_err_t magma_cmalloc_pinned( cuFloatComplex  **ptrPtr, size_t n ) { return magma_malloc_pinned( (void**) ptrPtr, n*sizeof(cuFloatComplex)  ); }
+static inline magma_err_t magma_zmalloc_pinned( cuDoubleComplex **ptrPtr, size_t n ) { return magma_malloc_pinned( (void**) ptrPtr, n*sizeof(cuDoubleComplex) ); }
 
 
 // ========================================
@@ -283,9 +298,28 @@ void magma_getvector_async(
 // error handler
 void magma_xerbla( const char *name, magma_int_t info );
 
+/* ------------------------------------------------------------
+ *   -- MAGMA Auxiliary structures and functions
+ * --------------------------------------------------------- */
+typedef struct magma_timestr_s
+{
+  unsigned int sec;
+  unsigned int usec;
+} magma_timestr_t;
+
+magma_timestr_t get_current_time(void);
+double GetTimerValue(magma_timestr_t time_1, magma_timestr_t time_2);
+void printout_devices();
+void swp2pswp(char trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv);
+float getv(float *da);
+
+double magma_wtime( void );
+size_t magma_strlcpy(char *dst, const char *src, size_t siz);
+int magma_num_gpus( void );
+int magma_is_devptr( void* A );
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

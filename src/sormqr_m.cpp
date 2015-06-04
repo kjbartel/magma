@@ -1,17 +1,15 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
 
-       @generated s Tue May 15 18:17:44 2012
+       @generated s Thu Jun 28 12:30:51 2012
 
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
 
 #define  A(i, j) ( a+(j)*lda  + (i))
@@ -28,7 +26,7 @@ extern"C"{
 }
 
 extern "C" magma_int_t
-magma_sormqr_m(magma_int_t nrgpu, const char side, const char trans,
+magma_sormqr_m(magma_int_t nrgpu, char side, char trans,
                magma_int_t m, magma_int_t n, magma_int_t k,
                float *a,    magma_int_t lda,
                float *tau,
@@ -36,11 +34,11 @@ magma_sormqr_m(magma_int_t nrgpu, const char side, const char trans,
                float *work, magma_int_t lwork,
                magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -126,8 +124,8 @@ magma_sormqr_m(magma_int_t nrgpu, const char side, const char trans,
     char side_[2] = {side, 0};
     char trans_[2] = {trans, 0};
 
-    float* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][2];
+    float* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][2];
 
     magma_int_t ind_c, kb;
 
@@ -207,7 +205,7 @@ magma_sormqr_m(magma_int_t nrgpu, const char side, const char trans,
     for (igpu = 0; igpu < nrgpu; ++igpu){
         magma_setdevice(igpu);
         if (MAGMA_SUCCESS != magma_smalloc( &dw[igpu], (n_l*lddc + 2*lddac*lddar + 2*(nb + 1 + lddwork)*nb) )) {
-            printf("%d: size: %ld\n", igpu, (n_l*lddc + 2*lddac*lddar + (nb+1+lddwork)*nb)*sizeof(float));
+            printf("%d: size: %ld\n", (int) igpu, (n_l*lddc + 2*lddac*lddar + (nb+1+lddwork)*nb)*sizeof(float));
             magma_xerbla( __func__, -(*info) );
             *info = MAGMA_ERR_DEVICE_ALLOC;
             return *info;

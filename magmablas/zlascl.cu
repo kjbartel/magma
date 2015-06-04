@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -37,10 +37,10 @@ u_zlascl (int m, int n, double mul, cuDoubleComplex* A, int lda){
 
 
 extern "C" void
-magmablas_zlascl(char type, int kl, int ku, 
+magmablas_zlascl(char type, magma_int_t kl, magma_int_t ku, 
                  double cfrom, double cto,
-                 int m, int n, 
-                 cuDoubleComplex *A, int lda, int *info )
+                 magma_int_t m, magma_int_t n, 
+                 cuDoubleComplex *A, magma_int_t lda, magma_int_t *info )
 {
     int blocks;
     if (m % zlascl_bs==0)

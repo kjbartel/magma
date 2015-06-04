@@ -43,6 +43,10 @@ struct magma_context_s {
     int nworkers;
     int ncudas;
     int nthreads_per_worker;
+#if defined(MORSE_USE_MPI)
+    int my_mpi_rank;
+    int mpi_comm_size;
+#endif
     int world_size;
     int group_size;
 

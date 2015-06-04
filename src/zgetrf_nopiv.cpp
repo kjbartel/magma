@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -27,11 +27,11 @@ extern "C" magma_int_t
 magma_zgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a, 
                    magma_int_t *lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -75,7 +75,7 @@ magma_zgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
     
     magma_int_t a_dim1, a_offset, min_mn, i__3, i__4;
     cuDoubleComplex z__1;
-    static magma_int_t j, jb, nb, iinfo;
+    magma_int_t j, jb, nb, iinfo;
 
     a_dim1 = *lda;
     a_offset = 1 + a_dim1;
@@ -136,15 +136,15 @@ magma_zgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
               {
                 /* Compute block row of U. */
                 i__3 = *n - j - jb + 1;
-                ztrsm_("Left", "Lower", "No transpose", "Unit", &jb, &i__3, &
-                       c_one, &a[j + j * a_dim1], lda, &a[j + (j+jb)*a_dim1], lda);
+                blasf77_ztrsm("Left", "Lower", "No transpose", "Unit", &jb, &i__3,
+                       &c_one, &a[j + j * a_dim1], lda, &a[j + (j+jb)*a_dim1], lda);
                 if (j + jb <= *m) 
                   {
                     /* Update trailing submatrix. */
                     i__3 = *m - j - jb + 1;
                     i__4 = *n - j - jb + 1;
                     z__1 = MAGMA_Z_NEG_ONE;
-                    zgemm_("No transpose", "No transpose", &i__3, &i__4, &jb, 
+                    blasf77_zgemm("No transpose", "No transpose", &i__3, &i__4, &jb, 
                            &z__1, &a[j + jb + j * a_dim1], lda, 
                            &a[j + (j + jb) * a_dim1], lda, &c_one, 
                            &a[j + jb + (j + jb) * a_dim1], lda);

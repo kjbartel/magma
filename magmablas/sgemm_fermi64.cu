@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal s
+
 */
 
 
@@ -606,16 +609,16 @@ fermiSgemm_v2_kernel_NT_64(float *C, const float *A, const float *B,
 //=================================================================================
 
 extern "C" void
-magmablas_sgemm_fermi64(char TRANSA, char TRANSB, int m , int n , int k , 
-                        float alpha, const float *A, int lda, 
-                        const float *B, int ldb, 
-                        float beta, float *C, int ldc ) 
+magmablas_sgemm_fermi64(char TRANSA, char TRANSB, magma_int_t m , magma_int_t n , magma_int_t k , 
+                        float alpha, const float *A, magma_int_t lda, 
+                                     const float *B, magma_int_t ldb, 
+                        float beta,        float *C, magma_int_t ldc ) 
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
    Purpose
    =======

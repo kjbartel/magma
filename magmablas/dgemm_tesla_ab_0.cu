@@ -1,14 +1,17 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal d
+
 */
 #include "common_magma.h"
 #include "commonblas_d.h"
 
-extern "C" __global__ void  
+__global__ void  
 dgemm_kernel_ab_0(double *C, const double *A, const double *B,
                   int m, int n, int k, 
                   int lda, int ldb, int ldc, 
@@ -213,8 +216,8 @@ dgemm_kernel_ab_0(double *C, const double *A, const double *B,
 
 extern "C" void
 magmablas_dgemm_kernel_ab_0(double *C, const double *A, const double *B,
-                            int m, int n, int k, 
-                            int lda, int ldb, int ldc, 
+                            magma_int_t m, magma_int_t n, magma_int_t k, 
+                            magma_int_t lda, magma_int_t ldb, magma_int_t ldc, 
                             double alpha, double beta)
 {
         dim3 threads( 16, 4 );

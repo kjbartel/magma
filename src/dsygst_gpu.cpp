@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated d Tue May 15 18:17:47 2012
+       @generated d Thu Jun 28 12:31:02 2012
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
                  double *db, magma_int_t lddb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.0) --
+  -- MAGMA (version 1.2.1) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     May 2012
+     June 2012
  
    Purpose
    =======
@@ -96,7 +96,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
   magma_int_t        lda;
   magma_int_t        ldb;
   double             d_one = 1.0;
-  long int           upper = lapackf77_lsame(uplo_, "U");
+  int upper = lapackf77_lsame(uplo_, "U");
   
   /* Test the input parameters. */
   *info = 0;
@@ -125,12 +125,12 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
   lda = nb;
   ldb = nb;
   
-  if (MAGMA_SUCCESS != magma_dmalloc_host( &w, 2*nb*nb )) {
+  if (MAGMA_SUCCESS != magma_dmalloc_pinned( &w, 2*nb*nb )) {
     *info = MAGMA_ERR_DEVICE_ALLOC;
     return *info;
   }
   
-  static cudaStream_t stream[3];
+  cudaStream_t stream[3];
   magma_queue_create( &stream[0] );
   magma_queue_create( &stream[1] );
   magma_queue_create( &stream[2] );
@@ -159,7 +159,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
             magma_queue_sync( stream[2] );
             magma_queue_sync( stream[1] );
             
-            lapackf77_dhegs2( &itype, uplo_, &kb, A(0,0), &lda, B(0,0), &ldb, info);
+            lapackf77_dsygs2( &itype, uplo_, &kb, A(0,0), &lda, B(0,0), &ldb, info);
             
             magma_dsetmatrix_async( kb, kb,
                                     A(0, 0),  lda,
@@ -234,7 +234,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
           magma_queue_sync( stream[2] );
           magma_queue_sync( stream[1] );
           
-          lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
+          lapackf77_dsygs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
           magma_dsetmatrix_async( kb, kb,
                                   A(0, 0),  lda,
@@ -347,7 +347,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
           magma_queue_sync( stream[2] );
           magma_queue_sync( stream[0] );
           
-          lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
+          lapackf77_dsygs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
           magma_dsetmatrix_async( kb, kb,
                                   A(0, 0),  lda,
@@ -413,7 +413,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
           magma_queue_sync( stream[2] );
           magma_queue_sync( stream[0] );
           
-          lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
+          lapackf77_dsygs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
           magma_dsetmatrix_async( kb, kb,
                                   A(0, 0),  lda,
@@ -428,7 +428,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
   magma_queue_destroy( stream[1] ); 
   magma_queue_destroy( stream[2] );
   
-  magma_free_host( w );
+  magma_free_pinned( w );
   
   return *info;
 } /* magma_dsygst_gpu */

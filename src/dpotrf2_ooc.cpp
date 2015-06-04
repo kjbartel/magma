@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:24 2012
+       @generated d Thu Jun 28 12:30:34 2012
 
 */
 #include "common_magma.h"
@@ -58,11 +58,11 @@ extern "C" magma_int_t
 magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n, 
                   double *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -102,7 +102,7 @@ magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n,
             factorization A = U**T * U or A = L * L**T.   
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER   
             The leading dimension of the array A.  LDA >= max(1,N).   
@@ -125,17 +125,11 @@ magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n,
 
     char                uplo_[2] = {uplo, 0};
     magma_int_t            ldda, lddla, ldwrk, nb, iinfo, n_local[4], J2, d, num_gpus;
-    static magma_int_t    j, jj, jb, jb1, jb2, jb3, J, JB, NB, MB;
+    magma_int_t    j, jj, jb, jb1, jb2, jb3, J, JB, NB, MB;
     double                d_one     =  1.0;
     double                d_neg_one = -1.0;
-    long int            upper = lapackf77_lsame(uplo_, "U");
-#if CUDA_VERSION > 3010
-    size_t totalMem;
-#else
-    unsigned int totalMem;
-#endif
-    CUdevice dev;
-    static cudaStream_t stream[4][3];
+    int upper = lapackf77_lsame(uplo_, "U");
+    cudaStream_t stream[4][3];
 //#define ROW_MAJOR_PROFILE
 #ifdef  ROW_MAJOR_PROFILE
     magma_timestr_t start, end, start0, end0;
@@ -170,11 +164,12 @@ magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n,
     ldda = num_gpus*((nb*ldda+31)/32)*32;
 
     /* figure out NB */
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(double);
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(double);
+    
     MB = n;  /* number of rows in the big panel    */
-    NB = (magma_int_t)(num_gpus*(0.8*totalMem/ldda-2*nb)); /* number of columns in the big panel */
+    NB = (magma_int_t)(num_gpus*(0.8*freeMem/ldda-2*nb)); /* number of columns in the big panel */
     if( NB >= n ) {
 #ifdef CHECK_DPOTRF_OOC
       printf( "      * still fit in GPU memory.\n" );
@@ -209,7 +204,7 @@ magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n,
 #endif
     magma_setdevice(0);
     ldwrk = n;
-    if (MAGMA_SUCCESS != magma_dmalloc_host( &work, ldwrk*nb )) {
+    if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, ldwrk*nb )) {
       *info = MAGMA_ERR_HOST_ALLOC;
       return *info;
     }
@@ -453,7 +448,7 @@ magma_dpotrf2_ooc(magma_int_t num_gpus0, char uplo, magma_int_t n,
         magma_queue_destroy( stream[d][2] );
     }
     magma_setdevice(0);
-    magma_free_host( work );
+    magma_free_pinned( work );
 
 #ifdef  ROW_MAJOR_PROFILE
     printf("\n n=%d NB=%d nb=%d\n",n,NB,nb);

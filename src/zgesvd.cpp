@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> c
 
@@ -20,11 +20,11 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              cuDoubleComplex *work, magma_int_t lwork_,
              double *rwork, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -119,7 +119,7 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
 
     LWORK   (input) INTEGER   
             The dimension of the array WORK.   
-            LWORK >=  (M+N)*nb+N.   
+            LWORK >=  (M+N)*nb + 2*N.   
 
             If LWORK = -1, then a workspace query is assumed; the routine   
             only calculates the optimal size of the WORK array, returns   
@@ -153,31 +153,31 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     magma_int_t *ldvt  = &ldvt_;
     magma_int_t *lwork = &lwork_;
 
-    static cuDoubleComplex c_b1 = MAGMA_Z_ZERO;
-    static cuDoubleComplex c_b2 = MAGMA_Z_ONE;
-    static magma_int_t c__0 = 0;
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
+    cuDoubleComplex c_b1 = MAGMA_Z_ZERO;
+    cuDoubleComplex c_b2 = MAGMA_Z_ONE;
+    magma_int_t c__0 = 0;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
     
     magma_int_t a_dim1, a_offset, u_dim1, u_offset, vt_dim1, vt_offset, 
         i__2, i__3, i__4;
 
-    static magma_int_t i__, ie, ir, iu, blk, ncu;
-    static double dum[1], eps;
-    static magma_int_t nru;
-    static cuDoubleComplex cdum[1];
-    static magma_int_t iscl;
-    static double anrm;
-    static magma_int_t ierr, itau, ncvt, nrvt;
-    static magma_int_t chunk, minmn;
-    static magma_int_t wrkbl, itaup, itauq, mnthr, iwork;
+    magma_int_t i__, ie, ir, iu, blk, ncu;
+    double dum[1], eps;
+    magma_int_t nru;
+    cuDoubleComplex cdum[1];
+    magma_int_t iscl;
+    double anrm;
+    magma_int_t ierr, itau, ncvt, nrvt;
+    magma_int_t chunk, minmn;
+    magma_int_t wrkbl, itaup, itauq, mnthr, iwork;
     magma_int_t wntua, wntva, wntun, wntuo, wntvn, wntvo, wntus, wntvs;
-    static double bignum;
-    static magma_int_t ldwrkr;
-    static magma_int_t ldwrku, maxwrk;
+    double bignum;
+    magma_int_t ldwrkr;
+    magma_int_t ldwrku, maxwrk;
     magma_int_t minwrk;
-    static double smlnum;
-    static magma_int_t irwork;
+    double smlnum;
+    magma_int_t irwork;
     magma_int_t lquery, wntuas, wntvas;
 
     magma_int_t nb;
@@ -216,19 +216,16 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     /*     Compute workspace   */
     lapackf77_zgesvd(jobu_, jobvt_, m, n, a, lda, s, u, ldu,
                      vt, ldvt, work, &c_n1, rwork, info );
-
     maxwrk = (magma_int_t)MAGMA_Z_REAL(work[0]);
     if (*info == 0) {
-
-        nb = magma_get_zgebrd_nb(*n);
-
-        minwrk = ((*m)+(*n))*nb+(*n);
-        MAGMA_Z_SET2REAL(work[0], (double) minwrk);
-
+        nb = magma_get_zgesvd_nb(*n);
+        minwrk = ((*m)+(*n))*nb + 2*(*n);
+        // multiply by 1+eps to ensure length gets rounded up,
+        // if it cannot be exactly represented in floating point.
+        MAGMA_Z_SET2REAL( work[0], minwrk * (1. + dlamch_("Epsilon")));
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
         }
-
     }
     
     if (*info != 0) {

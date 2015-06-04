@@ -35,13 +35,11 @@ static void cl_zherk_cpu_func(void *descr[], void *cl_arg)
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
     C = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[1]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
-    cblas_zherk(
-        CblasColMajor,
-        (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)trans,
-        N, K,
-        alpha, A, LDA,
-        beta, C, LDC);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
+    CORE_zherk(uplo, trans,
+               N, K,
+               alpha, A, LDA,
+               beta, C, LDC);
 }
 
 /*
@@ -64,7 +62,7 @@ static void cl_zherk_mc_func(void *descr[], void *cl_arg)
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
     C = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[1]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
 
     PLASMA_zherk_Lapack(
         uplo, trans, N, K,
@@ -95,7 +93,7 @@ static void cl_zherk_cuda_func(void *descr[], void *cl_arg)
     A = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[0]);
     C = (cuDoubleComplex *)STARPU_MATRIX_GET_PTR(descr[1]);
 
-    starpu_unpack_cl_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
+    starpu_codelet_unpack_args(cl_arg, &uplo, &trans, &N, &K, &alpha, &LDA, &beta, &LDC);
 
     cublasZherk (
                  plasma_lapack_constants[uplo][0], 
@@ -120,7 +118,7 @@ void MORSE_zherk( MorseOption_t *options,
                   double alpha, magma_desc_t *A, int Am, int An,
                   double beta,  magma_desc_t *C, int Cm, int Cn)
 {
-    starpu_codelet *zherk_codelet;
+    struct starpu_codelet *zherk_codelet;
     void (*callback)(void*) = options->profiling ? cl_zherk_callback : NULL;
     int lda = BLKLDD( A, Am );
     int ldc = BLKLDD( C, Cm );
@@ -131,19 +129,19 @@ void MORSE_zherk( MorseOption_t *options,
     zherk_codelet = &cl_zherk;
 #endif
     
-    starpu_Insert_Task(
+    starpu_insert_task(
         zherk_codelet,
-        VALUE,         &uplo,  sizeof(PLASMA_enum),             
-        VALUE,         &trans, sizeof(PLASMA_enum),             
-        VALUE,         &n,     sizeof(int),                     
-        VALUE,         &k,     sizeof(int),                     
-        VALUE,         &alpha, sizeof(double),                  
-        INPUT,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-        VALUE,         &lda,   sizeof(int),                     
-        VALUE,         &beta,  sizeof(double),                  
-        INOUT,  BLKADDR( C, PLASMA_Complex64_t, Cm, Cn ),
-        VALUE,         &ldc,   sizeof(int),
-        PRIORITY,       options->priority,
-        CALLBACK,       callback, NULL,
+        STARPU_VALUE,         &uplo,  sizeof(PLASMA_enum),             
+        STARPU_VALUE,         &trans, sizeof(PLASMA_enum),             
+        STARPU_VALUE,         &n,     sizeof(int),                     
+        STARPU_VALUE,         &k,     sizeof(int),                     
+        STARPU_VALUE,         &alpha, sizeof(double),                  
+        STARPU_R,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+        STARPU_VALUE,         &lda,   sizeof(int),                     
+        STARPU_VALUE,         &beta,  sizeof(double),                  
+        STARPU_RW,  BLKADDR( C, PLASMA_Complex64_t, Cm, Cn ),
+        STARPU_VALUE,         &ldc,   sizeof(int),
+        STARPU_PRIORITY,       options->priority,
+        STARPU_CALLBACK,       callback, NULL,
         0);
 }

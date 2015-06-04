@@ -1,12 +1,12 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
-    @generated c Tue May 15 18:17:50 2012
+    @generated c Thu Jun 28 12:30:57 2012
 */
 #include "common_magma.h"
 
@@ -31,11 +31,11 @@ magma_cstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
                magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -51,7 +51,7 @@ magma_cstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
     Purpose
     =======
 
-    ZSTEDX computes some eigenvalues and eigenvectors of a
+    CSTEDX computes some eigenvalues and eigenvectors of a
     symmetric tridiagonal matrix using the divide and conquer method.
 
     This code makes very mild assumptions about floating point
@@ -59,7 +59,7 @@ magma_cstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
     add/subtract, or on those binary machines without guard digits
     which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2.
     It could conceivably fail on hexadecimal or decimal machines
-    without guard digits, but we know of none. See DLAEX3 for details.
+    without guard digits, but we know of none. See SLAEX3 for details.
 
     Arguments
     =========
@@ -230,7 +230,7 @@ magma_cstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
         lapackf77_csteqr(char_I, &n, d, e, z, &ldz, rwork, info);
 
     } else {
-        // We simply call DSTEDX instead.
+        // We simply call SSTEDX instead.
         magma_sstedx_m(nrgpu, range, n, vl, vu, il, iu, d, e, rwork, n,
                        rwork+n*n, lrwork-n*n, iwork, liwork, info);
 

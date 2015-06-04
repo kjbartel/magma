@@ -1,18 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:53 2012
+       @generated d Thu Jun 28 12:31:00 2012
 
 */
 #include "common_magma.h"
-
-extern "C" void
-magmablas_dlaset_identity(magma_int_t m, magma_int_t n,
-                          double *A, magma_int_t lda);
 
 extern "C" magma_int_t
 magma_dorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
@@ -20,11 +16,11 @@ magma_dorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
                  double *tau, double *dT,
                  magma_int_t nb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -84,11 +80,11 @@ magma_dorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 
     magma_int_t  i__1, i__2, i__3;
     magma_int_t lwork;
-    static magma_int_t i, ib, ki, kk, iinfo;
+    magma_int_t i, ib, ki, kk, iinfo;
     magma_int_t lddwork = min(m, n);
     double *work, *panel;
     double *dwork;
-    //static cudaStream_t stream[2];
+    //cudaStream_t stream[2];
     magma_int_t ldt=nb; // need to be an input parameter
 
 
@@ -139,7 +135,7 @@ magma_dorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     //if (kk < n)
     //  lwork = max(lwork, n * nb + (m-kk)*(n-kk));
 
-    //if (MAGMA_SUCCESS != magma_dmalloc_host( &work, (lwork) )) {
+    //if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, (lwork) )) {
     //    *info = MAGMA_ERR_HOST_ALLOC;
     //    return *info;
     //}
@@ -220,7 +216,7 @@ magma_dorgqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 
 
     magma_free( dwork );
-    //magma_free_host( work );
+    //magma_free_pinned( work );
     //magma_queue_destroy( stream[0] );
     //magma_queue_destroy( stream[1] );
 

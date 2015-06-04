@@ -18,7 +18,7 @@
 
 static void morse_starpu_init_plasma_on_worker(void *_magma)
 {
-    magma_context_t *magma = (magma_context_t*)magma;
+    magma_context_t *magma = (magma_context_t*)_magma;
     int i;
     int id = starpu_worker_get_id();
     int nthreads = magma->nthreads_per_worker;
@@ -47,15 +47,23 @@ static void morse_starpu_finalize_plasma_on_worker(void *arg __attribute__((unus
 void morse_barrier( magma_context_t *magma )
 {
     (void)magma;
+#if defined(MORSE_USE_MPI)
+    starpu_mpi_barrier(MPI_COMM_WORLD);
+#else
     starpu_task_wait_for_all();
+#endif
 }
 
-void morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int nthreads_per_worker)
+int morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int nthreads_per_worker)
 {
+    int hres = -1;
     if ((nworkers == -1)||(nthreads_per_worker == -1))
     {
         magma->parallel_enabled = MAGMA_FALSE;
-        starpu_init( magma->schedopt.starpu );
+        magma->schedopt.starpu->ncpus = nworkers;
+        magma->schedopt.starpu->ncuda = ncudas;
+
+        hres = starpu_init( magma->schedopt.starpu );
     }
     else {
         int worker;
@@ -72,7 +80,7 @@ void morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int
 
         magma->schedopt.starpu->use_explicit_workers_bindid = 1;
 
-        starpu_init( magma->schedopt.starpu );
+        hres = starpu_init( magma->schedopt.starpu );
 
         magma->nworkers = nworkers;
         magma->nthreads_per_worker = nthreads_per_worker;
@@ -80,7 +88,11 @@ void morse_init_scheduler( magma_context_t *magma, int nworkers, int ncudas, int
         starpu_execute_on_each_worker(morse_starpu_init_plasma_on_worker, &magma, STARPU_CPU);
     }
 
-    return;
+#if defined(MORSE_USE_MPI)
+    starpu_mpi_initialize_extended(&(magma->my_mpi_rank), &(magma->mpi_comm_size));
+#endif // MORSE_USE_MPI
+
+    return hres;
 }
 
 /***************************************************************************//**

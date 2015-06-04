@@ -10,6 +10,8 @@
 MAKE        = make -j 4
 CC          = cc
 FC          = gfortran
+MPICC       = mpicc
+MPIFC       = mpif90
 LOADER      = $(FC) 
 
 ARCH        = ar
@@ -22,6 +24,7 @@ LDFLAGS     =
 
 MORSE_USE_MULTICORE=0  # Put 1 if you want to use multi-threaded kernels
 MORSE_USE_CUDA=0       # Put 1 if you want to use CUDA kernels
+MORSE_USE_MPI=1
 
 MORSE_USE_QUARK=0
 MORSE_USE_STARPU=1

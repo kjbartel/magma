@@ -1,18 +1,20 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:42 2012
+       @generated c Thu Jun 28 12:30:55 2012
 
 */
 #include "common_magma.h"
-#include <cblas.h> 
+
+#include <cblas.h>
+#include <assert.h>
 
 #define PRECISION_c
 
@@ -30,11 +32,11 @@ magma_clatrd(char uplo, magma_int_t n, magma_int_t nb,
              cuFloatComplex *da, magma_int_t ldda, 
              cuFloatComplex *dw, magma_int_t lddw)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -157,30 +159,29 @@ magma_clatrd(char uplo, magma_int_t n, magma_int_t nb,
   
     char uplo_[2]  = {uplo, 0};
 
-    static magma_int_t i;
+    magma_int_t i;
   
     cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex c_one     = MAGMA_C_ONE;
     cuFloatComplex c_zero    = MAGMA_C_ZERO;
 
-    #if defined(PRECISION_z) || defined(PRECISION_c)
-       cuFloatComplex value = MAGMA_C_ZERO;
-    #endif
+    cuFloatComplex value = MAGMA_C_ZERO;
     
-    static magma_int_t ione = 1;
+    magma_int_t ione = 1;
 
-    static magma_int_t i_n, i_1, iw;
+    magma_int_t i_n, i_1, iw;
   
-    static cuFloatComplex alpha;
-
-    cuFloatComplex *f = (cuFloatComplex *)malloc(n*sizeof(cuFloatComplex ));
+    cuFloatComplex alpha;
+    cuFloatComplex *f;
 
     if (n <= 0) {
       return 0;
     }
 
-    static cudaStream_t stream;
+    cudaStream_t stream;
     magma_queue_create( &stream );
+    magma_cmalloc_cpu( &f, n );
+    assert( f != NULL );  // TODO return error, or allocate outside clatrd
 
     if (lapackf77_lsame(uplo_, "U")) {
 
@@ -252,14 +253,12 @@ magma_clatrd(char uplo, magma_int_t n, magma_int_t nb,
 
           blasf77_cscal(&i, &tau[i - 1], W(0, iw), &ione);
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
-          cblas_cdotc_sub(i, W(0, iw), ione, A(0, i), ione, &value);
-
-//          blasf77_cdotc(&value, &i, W(0, iw), &ione, A(0, i), &ione);
-          alpha = tau[i - 1] * -.5f * value;
-#else
-          alpha = tau[i - 1] * -.5f * blasf77_cdotc(&i, W(0, iw), &ione, A(0, i), &ione);
-#endif
+          #if defined(PRECISION_z) || defined(PRECISION_c)
+          cblas_cdotc_sub( i, W(0,iw), ione, A(0,i), ione, &value );
+          #else
+          value = cblas_cdotc( i, W(0,iw), ione, A(0,i), ione );
+          #endif
+          alpha = tau[i - 1] * -0.5f * value;
           blasf77_caxpy(&i, &alpha, A(0, i), &ione,
                         W(0, iw), &ione);
         }
@@ -329,20 +328,11 @@ magma_clatrd(char uplo, magma_int_t n, magma_int_t nb,
               blasf77_cscal(&i_n, &tau[i], W(i+1,i), &ione);
               
               #if defined(PRECISION_z) || defined(PRECISION_c)
-                     /* Comment:
-                        To do - move to cblas in cases like this. The commented
-                        out version works with MKL but is not a standard interface
-                        for other BLAS zdoc implementations                        
-                     */
-                     
-                        cblas_cdotc_sub(i_n, W(i +1, i), ione,
-                                        A(i +1, i), ione, &value);
-                    
-                  //blasf77_cdotc(&value, &i_n, W(i+1,i), &ione, A(i+1, i), &ione);
-                  alpha = tau[i]* -.5f * value;
+              cblas_cdotc_sub( i_n, W(i+1,i), ione, A(i+1,i), ione, &value );
               #else
-                  alpha = tau[i]* -.5f* blasf77_cdotc(&i_n, W(i+1,i), &ione, A(i+1, i), &ione);
+              value = cblas_cdotc( i_n, W(i+1,i), ione, A(i+1,i), ione );
               #endif
+              alpha = tau[i] * -0.5f * value;
               blasf77_caxpy(&i_n, &alpha, A(i+1, i), &ione, W(i+1,i), &ione);
             }
         }

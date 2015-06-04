@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        November 2010
 
-       @generated s Tue May 15 18:17:28 2012
+       @generated s Thu Jun 28 12:30:41 2012
 
 */
 
@@ -22,10 +22,6 @@
 #endif
 /* === End defining what BLAS to use ======================================= */
 
-/* to appy pivoting from the previous big-panel: need some index-adjusting */
-extern "C" void
-magmablas_spermute_long3( float *dAT, int lda, int *ipiv, int nb, int ind );
-
 extern "C" magma_int_t
 magma_sgetrf1_gpu(magma_int_t m, magma_int_t n,
                   float *dAT, magma_int_t ldda,
@@ -38,25 +34,11 @@ magma_sgetrf1_mgpu(magma_int_t num_gpus,
                    float **d_lAP, float *work, magma_int_t lddwork, 
                    cudaStream_t **stream, magma_int_t *info);
 
-extern "C" void
-magmablas_sgetmatrix_transpose3(magma_int_t num_gpus, cudaStream_t **stream,
-                  float **dat, int ldda,
-                  float   *ha, int lda,
-                  float  **dB, int lddb,
-                  int m, int n , int nb);
-
-extern "C" void
-magmablas_ssetmatrix_transpose3(magma_int_t num_gpus, cudaStream_t** stream,
-                  float  *ha,  int lda,
-                  float **dat, int ldda, int starti,
-                  float **dB,  int lddb,
-                  int m, int n , int nb);
-
 extern "C" magma_int_t
 magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a, magma_int_t lda, 
          magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -94,7 +76,7 @@ magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
             A = P*L*U; the unit diagonal elements of L are not stored.
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -139,13 +121,8 @@ magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
     magma_int_t        iinfo = 0, nb, maxm, n_local[4], ldn_local;
     magma_int_t        N, M, NB, NBk, I, d, num_gpus;
     magma_int_t        i, ii, jj, h = 2, offset, ib, rows, s;
-#if CUDA_VERSION > 3010
-    size_t totalMem;
-#else
-    unsigned int totalMem;
-#endif
-    CUdevice dev;
-    static cudaStream_t stream[4][2];
+        
+    cudaStream_t stream[4][2];
 
     *info = 0;
 
@@ -170,12 +147,12 @@ magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
     maxm = ((m  + 31)/32)*32;
 
     /* figure out NB */
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(float);
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(float);
     
     /* number of columns in the big panel */
-    NB = (magma_int_t)(0.8*totalMem/maxm-h*nb); 
+    NB = (magma_int_t)(0.8*freeMem/maxm-h*nb); 
     char * ngr_nb_char = getenv("MAGMA_NGR_NB");
     if( ngr_nb_char != NULL ) NB = max( nb, min( NB, atoi(ngr_nb_char) ) );
 
@@ -260,7 +237,7 @@ magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
           start2 = get_current_time();
 #endif
           /* upload the next big panel into GPU, transpose (A->A'), and pivot it */
-          magmablas_ssetmatrix_transpose3(num_gpus, (cudaStream_t **)stream, A(0,I), lda, 
+          magmablas_ssetmatrix_transpose_mgpu(num_gpus, (cudaStream_t **)stream, A(0,I), lda, 
                               dAT, ldn_local, 0, dA, maxm, M, N, nb);
           //magmablas_shtodt3(num_gpus, (cudaStream_t **)stream, A(0,I), lda, 
           //                    dAT, ldn_local, dA, maxm, M, N, nb, h);
@@ -342,7 +319,7 @@ magma_sgetrf3_ooc(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
           time_mem += (GetTimerValue(start2, end1)-GetTimerValue(start1, end1))/1000.0;
 #endif      
           /* download the current big panel to CPU */
-          magmablas_sgetmatrix_transpose3(num_gpus, (cudaStream_t **)stream, dAT, ldn_local, A(0,I), lda,  dA, maxm, M, N, nb);
+          magmablas_sgetmatrix_transpose_mgpu(num_gpus, (cudaStream_t **)stream, dAT, ldn_local, A(0,I), lda,  dA, maxm, M, N, nb);
 #ifdef PROFILE
           end1 = get_current_time();
           time_rmajor2 += GetTimerValue(start1, end1);
@@ -405,20 +382,14 @@ magma_sgetrf2_piv(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a,
     maxm = ((m  + 31)/32)*32;
 
     /* figure out NB */
-#if CUDA_VERSION > 3010
-    size_t totalMem;
-#else
-    unsigned int totalMem;
-#endif
-    CUdevice dev;
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(float);
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(float);
 
     /* number of columns in the big panel */
-    NB = (magma_int_t)(0.8*totalMem/maxm-h*nb); 
-    //NB = (magma_int_t)min(n,num_gpus*(0.8*totalMem/maxm-h*nb)); 
-    //NB = (magma_int_t)min(n,(num_gpus*0.8*totalMem/(maxm))-2*nb); 
+    NB = (magma_int_t)(0.8*freeMem/maxm-h*nb); 
+    //NB = (magma_int_t)min(n,num_gpus*(0.8*freeMem/maxm-h*nb)); 
+    //NB = (magma_int_t)min(n,(num_gpus*0.8*freeMem/(maxm))-2*nb); 
     char * ngr_nb_char = getenv("MAGMA_NGR_NB");
     if( ngr_nb_char != NULL ) NB = max( nb, min( NB, atoi(ngr_nb_char) ) );
 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:31 2012
+       @generated s Thu Jun 28 12:30:50 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
                  float *work, magma_int_t lwork,
                  magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -49,7 +49,7 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
             Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -62,7 +62,7 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= N*NB,
@@ -106,7 +106,7 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
 
     int lwkopt = n * nb;
     work[0] = MAGMA_S_MAKE( (float)lwkopt, 0 );
-    long int lquery = (lwork == -1);
+    int lquery = (lwork == -1);
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
@@ -124,18 +124,11 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
         return *info;
 
     /* Check how much memory do we have */
-    #if CUDA_VERSION > 3010
-        size_t totalMem;
-    #else
-        unsigned int totalMem;
-    #endif
-
-    CUdevice dev;
-    cuDeviceGet( &dev, 0);
-    cuDeviceTotalMem( &totalMem, dev );
-    totalMem /= sizeof(float);
-
-    magma_int_t IB, NB = (magma_int_t)(0.8*totalMem/m);
+    size_t freeMem, totalMem;
+    cudaMemGetInfo( &freeMem, &totalMem );
+    freeMem /= sizeof(float);
+    
+    magma_int_t IB, NB = (magma_int_t)(0.8*freeMem/m);
     NB = (NB / nb) * nb;
 
     if (NB >= n)
@@ -155,7 +148,7 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -188,7 +181,7 @@ magma_sgeqrf_ooc(magma_int_t m, magma_int_t n,
             //   4. Send V to the GPU in ptr.
             //   5. Update the matrix.
             //   6. Restore the upper part of V.
-            int rows = m-j;
+            magma_int_t rows = m-j;
             lapackf77_slarft( MagmaForwardStr, MagmaColumnwiseStr,
                               &rows, &ib, a_ref(j,j), &lda, tau+j, work, &ib);
             magma_ssetmatrix_async( ib, ib,

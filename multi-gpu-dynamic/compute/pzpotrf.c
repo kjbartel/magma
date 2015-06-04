@@ -30,7 +30,6 @@ void magma_pzpotrf(PLASMA_enum uplo, magma_desc_t *dA,
 {
     magma_context_t *magma;
     MorseOption_t options;
-    PLASMA_desc A = dA->desc;
     int k, m, n;
     int tempkm, tempmm;
 
@@ -47,30 +46,30 @@ void magma_pzpotrf(PLASMA_enum uplo, magma_desc_t *dA,
      *  PlasmaLower
      */
     if (uplo == PlasmaLower) {
-        for (k = 0; k < A.mt; k++) {
-            tempkm = k == A.mt-1 ? A.m-k*A.mb : A.mb;
+        for (k = 0; k < dA->mt; k++) {
+            tempkm = k == dA->mt-1 ? dA->m-k*dA->mb : dA->mb;
 
             MORSE_zpotrf(
                 &options,
                 PlasmaLower, tempkm,
-                A(k, k), A.nb*k);
+                A(k, k), dA->nb*k);
             
-            for (m = k+1; m < A.mt; m++) {
-                tempmm = m == A.mt-1 ? A.m-m*A.mb : A.mb;
+            for (m = k+1; m < dA->mt; m++) {
+                tempmm = m == dA->mt-1 ? dA->m-m*dA->mb : dA->mb;
                 MORSE_ztrsm(
                     &options,
                     PlasmaRight, PlasmaLower, PlasmaConjTrans, PlasmaNonUnit,
-                    tempmm, A.mb,
+                    tempmm, dA->mb,
                     zone, A(k, k),
                           A(m, k));
             }
 
-            for (m = k+1; m < A.mt; m++) {
-                tempmm = m == A.mt-1 ? A.m-m*A.mb : A.mb;
+            for (m = k+1; m < dA->mt; m++) {
+                tempmm = m == dA->mt-1 ? dA->m-m*dA->mb : dA->mb;
                 MORSE_zherk(
                     &options,
                     PlasmaLower, PlasmaNoTrans,
-                    tempmm, A.mb,
+                    tempmm, dA->mb,
                     -1.0, A(m, k),
                      1.0, A(m, m));
 
@@ -78,7 +77,7 @@ void magma_pzpotrf(PLASMA_enum uplo, magma_desc_t *dA,
                     MORSE_zgemm(
                         &options,
                         PlasmaNoTrans, PlasmaConjTrans,
-                        tempmm, A.mb, A.mb,
+                        tempmm, dA->mb, dA->mb,
                         mzone, A(m, k),
                                A(n, k),
                         zone,  A(m, n));
@@ -90,31 +89,31 @@ void magma_pzpotrf(PLASMA_enum uplo, magma_desc_t *dA,
      *  PlasmaUpper
      */
     else {
-        for (k = 0; k < A.nt; k++) {
-            tempkm = k == A.nt-1 ? A.n-k*A.nb : A.nb;
+        for (k = 0; k < dA->nt; k++) {
+            tempkm = k == dA->nt-1 ? dA->n-k*dA->nb : dA->nb;
 
             MORSE_zpotrf(
                 &options,
                 PlasmaUpper, tempkm,
                 A(k, k),
-                A.nb*k);
+                dA->nb*k);
 
-            for (m = k+1; m < A.nt; m++) {
-                tempmm = m == A.nt-1 ? A.n-m*A.nb : A.nb;
+            for (m = k+1; m < dA->nt; m++) {
+                tempmm = m == dA->nt-1 ? dA->n-m*dA->nb : dA->nb;
                 MORSE_ztrsm(
                     &options,
                     PlasmaLeft, PlasmaUpper, PlasmaConjTrans, PlasmaNonUnit,
-                    A.nb, tempmm,
+                    dA->nb, tempmm,
                     zone, A(k, k),
                           A(k, m));
             }
 
-            for (m = k+1; m < A.nt; m++) {
-                tempmm = m == A.nt-1 ? A.n-m*A.nb : A.nb;
+            for (m = k+1; m < dA->nt; m++) {
+                tempmm = m == dA->nt-1 ? dA->n-m*dA->nb : dA->nb;
                 MORSE_zherk(
                     &options,
                     PlasmaUpper, PlasmaConjTrans,
-                    tempmm, A.mb,
+                    tempmm, dA->mb,
                     -1.0, A(k, m),
                      1.0, A(m, m));
 
@@ -122,7 +121,7 @@ void magma_pzpotrf(PLASMA_enum uplo, magma_desc_t *dA,
                     MORSE_zgemm(
                         &options,
                         PlasmaConjTrans, PlasmaNoTrans,
-                        A.mb, tempmm, A.mb,
+                        dA->mb, tempmm, dA->mb,
                         mzone, A(k, n),
                                A(k, m),
                         zone,  A(n, m));

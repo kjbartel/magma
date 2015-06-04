@@ -1,9 +1,9 @@
 /*    
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
 
@@ -21,11 +21,11 @@ magma_dsyevd(char jobz, char uplo,
              magma_int_t *iwork, magma_int_t liwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======
@@ -123,32 +123,32 @@ magma_dsyevd(char jobz, char uplo,
 
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
-    static magma_int_t c__0 = 0;
-    static double c_b18 = 1.;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
+    magma_int_t c__0 = 0;
+    double c_b18 = 1.;
     
     magma_int_t a_dim1, a_offset;
     double d__1;
 
-    static double eps;
-    static magma_int_t inde;
-    static double anrm;
-    static double rmin, rmax;
-    static magma_int_t lopt;
-    static double sigma;
-    static magma_int_t iinfo, lwmin, liopt;
-    static magma_int_t lower;
-    static magma_int_t wantz;
-    static magma_int_t indwk2, llwrk2;
-    static magma_int_t iscale;
-    static double safmin;
-    static double bignum;
-    static magma_int_t indtau;
-    static magma_int_t indwrk, liwmin;
-    static magma_int_t llwork;
-    static double smlnum;
-    static magma_int_t lquery;
+    double eps;
+    magma_int_t inde;
+    double anrm;
+    double rmin, rmax;
+    magma_int_t lopt;
+    double sigma;
+    magma_int_t iinfo, lwmin, liopt;
+    magma_int_t lower;
+    magma_int_t wantz;
+    magma_int_t indwk2, llwrk2;
+    magma_int_t iscale;
+    double safmin;
+    double bignum;
+    magma_int_t indtau;
+    magma_int_t indwrk, liwmin;
+    magma_int_t llwork;
+    double smlnum;
+    magma_int_t lquery;
 
     double* dwork;
 
@@ -256,7 +256,7 @@ magma_dsyevd(char jobz, char uplo,
 #endif        
 
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call   
-       ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
+       DSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
        tridiagonal matrix, then call DORMTR to multiply it to the Householder 
        transformations represented as Householder vectors in A. */
     if (! wantz) {

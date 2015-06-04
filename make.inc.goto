@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #
 #      Contributed by: Allan Menezes (Ontario, Canada)
 #//////////////////////////////////////////////////////////////////////////////
@@ -25,8 +25,9 @@ ARCHFLAGS = cr
 RANLIB    = ranlib
 
 OPTS      = -O3 -DADD_
+F77OPTS   = -O3 -DADD_
 FOPTS     = -O3 -DADD_ -x f95-cpp-input
-NVOPTS    = --compiler-options -fno-strict-aliasing -DUNIX -O3 -DADD_
+NVOPTS    = -O3 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX
 LDOPTS    = -fPIC -Xlinker -zmuldefs
 
 LIB       = -lgoto  -lpthread -lcublas -lcudart -llapack -lm 
@@ -35,6 +36,3 @@ CUDADIR   = /usr/local/cuda
 
 LIBDIR    = -L/bummer/GotoBLAS -L/usr/local/cuda/lib64 -L/usr/lib64
 INC       = -I$(CUDADIR)/include
-
-#LIBMAGMA     = $(MAGMA_DIR)/lib/magma.a
-#LIBMAGMABLAS = $(MAGMA_DIR)/lib/magmablas.a

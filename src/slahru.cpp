@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:39 2012
+       @generated s Thu Jun 28 12:31:04 2012
 
 */
 #include "common_magma.h"
@@ -29,11 +29,11 @@ magma_slahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
-    ZLAHRU is an auxiliary MAGMA routine that is used in SGEHRD to update
+    SLAHRU is an auxiliary MAGMA routine that is used in SGEHRD to update
     the trailing sub-matrices after the reductions of the corresponding
     panels.
     See further details below.

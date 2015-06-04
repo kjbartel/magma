@@ -1,4 +1,5 @@
-include ../../make.inc
+MAGMA_DIR = ../..
+include ../../Makefile.internal
 
 #######################################################################
 #  This is the makefile to create a library of the test matrix
@@ -93,9 +94,6 @@ FRC:
 
 clean:
 	rm -f *.o
-
-.f.o:
-	$(FORT) $(OPTS) -c $< -o $@
 
 #slaran.o: slaran.f
 #	$(FORT) $(NOOPT) -c $<

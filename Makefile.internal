@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 include $(MAGMA_DIR)/make.inc
@@ -32,15 +32,18 @@ prefix ?= ./install
 #
 # NVCC options for the different cards
 #
-TESLAOPT = -arch sm_13 -DGPUSHMEM=130 -gencode arch=compute_13,code=compute_13 -gencode arch=compute_10,code=compute_10 
+TESLAOPT = -arch sm_13 -DGPUSHMEM=130 \
+           -gencode arch=compute_13,code=compute_13 \
+           -gencode arch=compute_10,code=compute_10
+
 FERMIOPT = -arch sm_20 -DGPUSHMEM=200
 
 ifeq (${GPU_TARGET}, Tesla)
-	GPUOPT = ${TESLAOPT}
+	NVOPTS += ${TESLAOPT}
 	OPTS   += -DGPUSHMEM=130
 	LDOPTS += -DGPUSHMEM=130
 else ifeq (${GPU_TARGET}, Fermi)
-	GPUOPT = ${FERMIOPT}
+	NVOPTS += ${FERMIOPT}
 	OPTS   += -DGPUSHMEM=200
 	LDOPTS += -DGPUSHMEM=200
 else
@@ -67,5 +70,23 @@ PTRSIZE = $(shell $(PTREXEC))
 PTROPT  = -Dmagma_devptr_t="integer(kind=$(PTRSIZE))"
 
 FOPTS += $(PTROPT)
+
+#
+# Rules to compile object files
+#
+%.o: %.cpp
+	$(CC) $(OPTS) $(INC) -c $< -o $@
+
+%.cu_o: %.cu
+	$(NVCC) $(NVOPTS) $(INC) -c $< -o $@
+
+%.o: %.f90  $(PTREXEC)
+	$(FORT) $(FOPTS) $(INC) -c $< -o $@
+
+%.o: %.F90  $(PTREXEC)
+	$(FORT) $(FOPTS) $(INC) -c $< -o $@
+
+%.o: %.f    $(PTREXEC)
+	$(FORT) $(F77OPTS) $(INC) -c $< -o $@
 
 -include $(MAGMA_DIR)/Makefile.gen

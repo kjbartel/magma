@@ -1,13 +1,51 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 */
 
 #include "common_magma.h"
 #include <assert.h>
+
+// -------------------------
+// Returns:
+//  1 if A is a device pointer (definitely),
+//  0 if A is a host   pointer (definitely or inferred from error),
+// -1 if unknown.
+// On 2.0 cards with unified addressing, CUDA can tell if this is a device pointer.
+// For malloc'd host pointers, cudaPointerGetAttributes returns error.
+// @author Mark Gates
+int magma_is_devptr( void* A )
+{
+    cudaError_t err;
+    cudaDeviceProp prop;
+    cudaPointerAttributes attr;
+    int dev;
+    err = cudaGetDevice( &dev );
+    if ( ! err ) {
+        err = cudaGetDeviceProperties( &prop, dev );
+        if ( ! err and prop.unifiedAddressing ) {
+            err = cudaPointerGetAttributes( &attr, A );
+            if ( ! err ) {
+                // definitely know type
+                return (attr.memoryType == cudaMemoryTypeDevice);
+            }
+            else if ( err == cudaErrorInvalidValue ) {
+                // clear error; see http://icl.cs.utk.edu/magma/forum/viewtopic.php?f=2&t=529
+                cudaGetLastError();
+                // infer as host pointer
+                return 0;
+            }
+        }
+    }
+    // clear error
+    cudaGetLastError();
+    // unknown, e.g., device doesn't support unified addressing
+    return -1;
+}
+
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Get number of GPUs to use from $MAGMA_NUM_GPUS environment variable.
@@ -71,10 +109,10 @@ void printout_devices( )
       has to be done sequentially.
 */
 extern "C"
-void swp2pswp(char trans, int n, int *ipiv, int *newipiv){
+void swp2pswp(char trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv){
   int i, newind, ind;
   char            trans_[2] = {trans, 0};
-  long int    notran = lapackf77_lsame(trans_, "N");
+  int    notran = lapackf77_lsame(trans_, "N");
 
   for(i=0; i<n; i++)
     newipiv[i] = -1;

@@ -12,12 +12,7 @@
  * @precisions normal z -> c d s
  *
  **/
-#include <stdlib.h>
-#include <stdlib.h>
-#include <cuda.h>
-#include <cuda_runtime_api.h>
-#include <cublas.h>
-#include "magma.h"
+#include "common_magma.h"
 
 #undef REAL
 #define COMPLEX

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -23,11 +23,11 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
                  cuDoubleComplex *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -109,7 +109,11 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
 
     if (nb <= 1 || nb >= min(m,n)) {
         /* Use CPU code. */
-        work = (cuDoubleComplex*)malloc(m * n * sizeof(cuDoubleComplex));
+        magma_zmalloc_cpu( &work, m * n );
+        if ( work == NULL ) {
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
+        }
         magma_zgetmatrix( m, n, dA, ldda, work, m );
         lapackf77_zgetrf(&m, &n, work, &m, ipiv, info);
         magma_zsetmatrix( m, n, work, m, dA, ldda );
@@ -143,7 +147,7 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
             magmablas_ztranspose2( dAT, lddat, dA, ldda, m, n );
         }
 
-        if (MAGMA_SUCCESS != magma_zmalloc_host( &work, maxm*nb )) {
+        if (MAGMA_SUCCESS != magma_zmalloc_pinned( &work, maxm*nb )) {
             magma_free( dAP );
             if (! ((m == n) && (m % 32 == 0) && (ldda%32 == 0)) )
                 magma_free( dAT );
@@ -179,7 +183,7 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
                 if ( (*info == 0) && (iinfo > 0) )
                     *info = iinfo + i*nb;
 
-                magmablas_zpermute_long2( dAT, lddat, ipiv, nb, i*nb );
+                magmablas_zpermute_long2( n, dAT, lddat, ipiv, nb, i*nb );
 
                 // upload i-th panel
                 magma_zsetmatrix( m-i*nb, nb, work, lddwork, dAP, maxm );
@@ -224,7 +228,7 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
         lapackf77_zgetrf( &rows, &nb0, work, &lddwork, ipiv+s*nb, &iinfo);
         if ( (*info == 0) && (iinfo > 0) )
             *info = iinfo + s*nb;
-        magmablas_zpermute_long2( dAT, lddat, ipiv, nb0, s*nb );
+        magmablas_zpermute_long2( n, dAT, lddat, ipiv, nb0, s*nb );
 
         // upload i-th panel
         magma_zsetmatrix( rows, nb0, work, lddwork, dAP, maxm );
@@ -244,7 +248,7 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
         }
 
         magma_free( dAP );
-        magma_free_host( work );
+        magma_free_pinned( work );
     }
     return *info;
 

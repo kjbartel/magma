@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:05 2012
+       @generated s Thu Jun 28 12:31:22 2012
 
 */
 #include "common_magma.h"
@@ -13,9 +13,9 @@
 #include "commonblas.h"
 
 extern "C" void
-magmablas_stranspose2s(float *odata, int ldo,
-                       float *idata, int ldi,
-                       int m, int n, cudaStream_t *stream );
+magmablas_stranspose2s(float *odata, magma_int_t ldo,
+                       float *idata, magma_int_t ldi,
+                       magma_int_t m, magma_int_t n, cudaStream_t *stream );
 
 
 //
@@ -27,12 +27,12 @@ magmablas_stranspose2s(float *odata, int ldo,
 //             Note that lda >= m and lddat >= n.
 //
 extern "C" void 
-magmablas_sgetmatrix_transpose( int m, int n,
-                                float *dat, int ldda,
-                                float  *ha, int lda,
-                                float  *dB, int lddb, int nb )
+magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
+                                float *dat, magma_int_t ldda,
+                                float  *ha, magma_int_t lda,
+                                float  *dB, magma_int_t lddb, magma_int_t nb )
 {
-    int i = 0, j = 0, ib;
+    magma_int_t i = 0, j = 0, ib;
 
     /* Quick return */
     if ( (m == 0) || (n == 0) )
@@ -43,7 +43,7 @@ magmablas_sgetmatrix_transpose( int m, int n,
         return;
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -68,15 +68,16 @@ magmablas_sgetmatrix_transpose( int m, int n,
 //  is 1D block cyclic. The input arrays are pointers for the corresponding
 //  GPUs. The streams are passed as argument, in contrast to the single GPU
 //  routine.
+//  NOTE: see magmablas_sgetmatrix_transpose_mgpu.
 //===========================================================================
 extern "C" void
-magmablas_sgetmatrix_transpose2( int m, int n,
-                                 float **dat, int *ldda,
-                                 float  *ha,  int  lda,
-                                 float **dB,  int  lddb, int nb,
-                                 int num_gpus, cudaStream_t stream[][2] )
+magmablas_sgetmatrix_transpose2( magma_int_t m, magma_int_t n,
+                                 float **dat, magma_int_t *ldda,
+                                 float  *ha,  magma_int_t  lda,
+                                 float **dB,  magma_int_t  lddb, magma_int_t nb,
+                                 magma_int_t num_gpus, cudaStream_t stream[][2] )
 {
-    int i = 0, j[4] = {0, 0, 0, 0}, ib, k;
+    magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k;
 
     /* Quick return */
     if ( (m == 0) || (n == 0) )

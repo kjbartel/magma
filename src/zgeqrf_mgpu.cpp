@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -13,16 +13,16 @@
 #define MultiGPUs
 
 extern "C" magma_int_t
-magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
+magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
                     cuDoubleComplex **dlA, magma_int_t ldda,
                     cuDoubleComplex *tau, 
                     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -89,7 +89,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
     magma_int_t nbmin, nx, ib, nb;
     magma_int_t lhwork, lwork;
 
-    magma_int_t cdevice;
+    magma_device_t cdevice;
     magma_getdevice(&cdevice);
 
     int panel_gpunum, i_local, n_local[4], la_gpu, displacement; 
@@ -136,7 +136,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
         n_local[i] += n%nb;
     }
 
-    if (MAGMA_SUCCESS != magma_zmalloc_host( &local_work, lwork )) {
+    if (MAGMA_SUCCESS != magma_zmalloc_pinned( &local_work, lwork )) {
       *info = -9;
       for(i=0; i<num_gpus; i++){
         #ifdef  MultiGPUs
@@ -149,7 +149,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
       return *info;
     }
 
-    static cudaStream_t streaml[4][2];
+    cudaStream_t streaml[4][2];
     for(i=0; i<num_gpus; i++){
       #ifdef  MultiGPUs
          magma_setdevice(i);
@@ -358,6 +358,7 @@ magma_zgeqrf2_mgpu( int num_gpus, magma_int_t m, magma_int_t n,
     }
 
     magma_setdevice(cdevice);
+    magma_free_pinned( local_work );
 
     return *info;
 } /* magma_zgeqrf2_mgpu */

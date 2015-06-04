@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       February 2011
+       June 2012
        
+       @precisions normal s -> s
+
        @author Peng Du
 */
 #include "common_magma.h"
-
-#define magmablas_strsm_tesla magmablas_strsm
 
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 //#define cublasSgemm magmablas_sgemm_fermi64
@@ -242,6 +242,7 @@ __device__ void sgemm_kernel_16 (float *A, int lda, float *B, int ldb, float * C
  * B21 = -inv(A11)*A12*inv(A22)
  */
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
+
 __global__ void
 triple_sgemm_update_16_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
 {
@@ -415,6 +416,7 @@ triple_sgemm_update_16_R (float * Ain, float *d_dinvA, int blk, int lda, int npa
  * B21 = -inv(A22)*A21*inv(A11)
  */
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
+
 __global__ void
 triple_sgemm_update_16_part1_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
 {
@@ -516,6 +518,7 @@ triple_sgemm_update_16_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A22)*A21*inv(A11)
  */
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
+
 __global__ void
 triple_sgemm_update_16_part2_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
 {
@@ -1728,7 +1731,7 @@ b_copy_kernel (int M, int N, float *b, int ldb, float *d_x, int ldx)
 
 
 extern "C"
-void diag_strtri (int M, char uplo, char diag, float *A, float *d_dinvA, int lda)
+void diag_strtri (magma_int_t M, char uplo, char diag, float *A, float *d_dinvA, magma_int_t lda)
 {
         int nblocks = M/BLOCK_SIZE+(M%BLOCK_SIZE!=0);
 
@@ -1807,16 +1810,16 @@ void diag_strtri (int M, char uplo, char diag, float *A, float *d_dinvA, int lda
  * magmablas_strsm
  */
 extern "C"
-void magmablas_strsm_tesla( char side, char uplo, char tran, char diag, int M, int N, 
-                            float alpha, /*const*/ float* A, int lda, float* b, int ldb)
+void magmablas_strsm( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
+                      float alpha, /*const*/ float* A, magma_int_t lda, float* b, magma_int_t ldb)
 {
-        /*  -- magma (version 0.1) --
-                univ. of tennessee, knoxville
-                univ. of california, berkeley
-                univ. of colorado, denver
-                october 2009
+        /*  -- MAGMA (version 1.2.1) --
+                Univ. of Tennessee, Knoxville
+                Univ. of California, Berkeley
+                Univ. of Colorado, Denver
+                June 2012
 
-                purpose
+                Purpose
                 =======
 
                 strsm  solves one of the matrix equations on gpu
@@ -1943,8 +1946,8 @@ void magmablas_strsm_tesla( char side, char uplo, char tran, char diag, int M, i
 
         if (side == 'l' || side == 'L')
         {
-                /* inverse the diagonals
-                 * Allocate device memory for the inversed diagonal blocks, size=m*NB
+                /* invert the diagonals
+                 * Allocate device memory for the inverted diagonal blocks, size=m*NB
                  */
                 cudaMalloc((void**)&d_dinvA, NB*((M/NB)+(M%NB!=0))*NB*sizeof(float));
                 cudaMalloc((void**)&d_x, N*M*sizeof(float));
@@ -2086,8 +2089,8 @@ void magmablas_strsm_tesla( char side, char uplo, char tran, char diag, int M, i
         else
         {        // side=R
 
-                /* inverse the diagonals
-                 * Allocate device memory for the inversed diagonal blocks, size=N*BLOCK_SIZE 
+                /* invert the diagonals
+                 * Allocate device memory for the inverted diagonal blocks, size=N*BLOCK_SIZE 
                  */
                 cudaMalloc((void**)&d_dinvA, NB*((N/NB)+(N%NB!=0))*NB*sizeof(float));
                 cudaMalloc((void**)&d_x, N*M*sizeof(float));

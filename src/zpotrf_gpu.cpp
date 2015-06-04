@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -31,11 +31,11 @@ extern "C" magma_int_t
 magma_zpotrf_gpu(char uplo, magma_int_t n, 
                  cuDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -91,7 +91,7 @@ magma_zpotrf_gpu(char uplo, magma_int_t n,
     cuDoubleComplex *work;
     double          d_one     =  1.0;
     double          d_neg_one = -1.0;
-    long int        upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
 
     *info = 0;
     if ( (! upper) && (! lapackf77_lsame(uplo_, "L")) ) {
@@ -108,12 +108,12 @@ magma_zpotrf_gpu(char uplo, magma_int_t n,
 
     nb = magma_get_zpotrf_nb(n);
 
-    if (MAGMA_SUCCESS != magma_zmalloc_host( &work, nb*nb )) {
+    if (MAGMA_SUCCESS != magma_zmalloc_pinned( &work, nb*nb )) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -215,7 +215,7 @@ magma_zpotrf_gpu(char uplo, magma_int_t n,
 
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );
-    magma_free_host( work );
+    magma_free_pinned( work );
 
     return *info;
 } /* magma_zpotrf_gpu */

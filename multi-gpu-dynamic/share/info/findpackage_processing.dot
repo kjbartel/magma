@@ -1,0 +1,93 @@
+digraph howto_install{
+
+0 [style="invisible"]
+0 -> opt0 [style="invis"]
+
+opt0 [label="<PACKAGE>_TRYUSE\n [off if MORSE_USE_<PACKAGE>=off, on otherwise]",color=purple];
+
+opt0 -> notused    [label="off"];
+opt0 -> ti_uselib  [label="on"];
+
+isrequired [label="<PACKAGE>_REQUIRED\n [on if MORSE_USE_<PACKAGE>=on, on/off otherwise]",color=purple];
+
+#tryinstall  [label="TryInstall( <PACKAGE> )", color=red, shape=rectangle];
+
+notused     [label="MORSE_USES_<PACKAGE>=OFF>", shape=diamond,color=blue]
+tryinstallS [label="MORSE_USES_<PACKAGE>=ON>",     shape=diamond,color=blue];
+tryinstallA [label="Abort",                shape=diamond,color=blue];
+
+ti_uselib    [label="<PACKAGE>_USE_LIB",     color=green]
+ti_usesystem [label="<PACKAGE>_USE_SYSTEM",  color=green]
+ti_usetar    [label="<PACKAGE>_USE_TARBALL", color=green]
+ti_useweb    [label="<PACKAGE>_USE_WEB",     color=green]
+ti_usesvn    [label="<PACKAGE>_USE_SVN",     color=green]
+ti_useauto   [label="<PACKAGE>_USE_AUTO",    color=green]
+
+ti_hastar      [color=yellow, label="Do I have a tarball?"]
+ti_hastarF     [color=yellow, label="Do I have a tarball?"]
+ti_findpackage [shape=rectangle, color=red, label="FindPackage in <path>"]
+ti_findpackage2[shape=rectangle, color=red, label="FindPackage in <path>"]
+ti_untar       [shape=rectangle, color=red, label="Untar"]
+ti_compilation [shape=rectangle, color=red, label="Compile"]
+ti_download    [shape=rectangle, color=red, label="Download"]
+ti_checkout    [shape=rectangle, color=red, label="Checkout"]
+
+
+#tryinstall -> ti_uselib
+ti_uselib -> ti_findpackage  [label="on, path=<user_path>"]
+ti_uselib -> ti_usesystem    [label="off"]
+
+ti_usesystem -> ti_findpackage [label="on, path=<system_path>"]
+ti_usesystem -> ti_usetar      [label="off"]
+
+ti_usetar -> ti_hastar     [label="on"]
+ti_usetar -> ti_useweb     [label="off"]
+
+ti_hastar -> ti_untar     [label="on"]
+ti_hastar -> tryinstallA  [label="off"]
+
+ti_useweb -> ti_download   [label="on"]
+ti_useweb -> ti_usesvn     [label="off"]
+
+ti_usesvn -> ti_checkout   [label="on"]
+ti_usesvn -> ti_useauto    [label="off"]
+
+ti_useauto -> ti_findpackage2  [label="on, path=<system_path>"]
+ti_useauto -> notused          [label="off"]
+
+ti_findpackage -> tryinstallS [label="success"]
+ti_findpackage -> tryinstallA [label="failed"]
+
+ti_untar -> ti_compilation [label="success"]
+ti_untar -> tryinstallA    [label="failed"]
+
+ti_download -> ti_untar [label="success"]
+ti_download -> tryinstallA   [label="failed"]
+
+ti_checkout -> ti_compilation [label="success"]
+ti_checkout -> tryinstallA   [label="failed"]
+
+ti_compilation -> tryinstallS  [label="success"]
+ti_compilation -> tryinstallA  [label="failed"]
+
+ti_findpackage2 -> tryinstallS  [label="success"]
+ti_findpackage2 -> isrequired   [label="failed"]
+
+isrequired -> ti_hastarF   [label="true"]
+isrequired -> notused      [label="false"]
+
+ti_hastarF -> ti_untar     [label="success"]
+ti_hastarF -> ti_download  [label="failed"]
+
+{rank=same;tryinstallA;tryinstallS;notused};
+
+Function     [shape=rectangle, color=red]
+SystemOption [color=purple]
+UserOption   [color=green]
+Test         [color=yellow]
+Output       [shape=diamond,color=blue]
+
+{rank=same;Function;SystemOption;UserOption;Test;Output} 
+
+}
+

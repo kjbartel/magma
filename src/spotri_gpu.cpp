@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:26 2012
+       @generated s Thu Jun 28 12:30:31 2012
 
 */
 #include "common_magma.h"
@@ -31,18 +31,18 @@ extern "C" magma_int_t
 magma_spotri_gpu(char uplo, magma_int_t n,
               float *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
 
-        DPOTRI computes the inverse of a real symmetric positive definite
+        SPOTRI computes the inverse of a real symmetric positive definite
         matrix A using the Cholesky factorization A = U**T*U or A = L*L**T
-        computed by DPOTRF.
+        computed by SPOTRF.
 
     Arguments
     =========
@@ -57,7 +57,7 @@ magma_spotri_gpu(char uplo, magma_int_t n,
         A       (input/output) REAL array, dimension (LDA,N)
                         On entry, the triangular factor U or L from the Cholesky
                         factorization A = U**T*U or A = L*L**T, as computed by
-                        DPOTRF.
+                        SPOTRF.
                         On exit, the upper or lower triangle of the (symmetric)
                         inverse of A, overwriting the input factor U or L.
 

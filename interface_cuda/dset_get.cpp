@@ -1,12 +1,12 @@
 /*
- *   -- MAGMA (version 1.2.0) --
+ *   -- MAGMA (version 1.2.1) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      April 2012
+ *      June 2012
  *
  * @author Mark Gates
- * @generated d Tue May 15 18:17:56 2012
+ * @generated d Thu Jun 28 12:31:08 2012
  */
 
 #include <stdlib.h>

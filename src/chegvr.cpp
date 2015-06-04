@@ -1,13 +1,13 @@
 /*
-   -- MAGMA (version 1.2.0) --
+   -- MAGMA (version 1.2.1) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      May 2012
+      June 2012
  
       @author Raffaele Solca
 
-      @generated c Tue May 15 18:17:47 2012
+      @generated c Thu Jun 28 12:31:01 2012
  
  */
 #include "common_magma.h"
@@ -40,21 +40,21 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t liwork, magma_int_t *info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
     
     Purpose   
     =======   
-    ZHEGVR computes all the eigenvalues, and optionally, the eigenvectors   
+    CHEGVR computes all the eigenvalues, and optionally, the eigenvectors   
     of a complex generalized Hermitian-definite eigenproblem, of the form   
     A*x=(lambda)*B*x,  A*Bx=(lambda)*x,  or B*A*x=(lambda)*x.  Here A and   
     B are assumed to be Hermitian and B is also positive definite.   
 
-    Whenever possible, CHEEVR calls ZSTEGR to compute the   
-    eigenspectrum using Relatively Robust Representations.  ZSTEGR   
+    Whenever possible, CHEEVR calls CSTEGR to compute the   
+    eigenspectrum using Relatively Robust Representations.  CSTEGR   
     computes eigenvalues by the dqds algorithm, while orthogonal   
     eigenvectors are computed from various "good" L D L^T representations   
     (also known as Relatively Robust Representations). Gram-Schmidt   
@@ -79,12 +79,12 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
     UC Berkeley, May 1997.   
 
 
-    Note 1 : CHEEVR calls ZSTEGR when the full spectrum is requested   
+    Note 1 : CHEEVR calls CSTEGR when the full spectrum is requested   
     on machines which conform to the ieee-754 floating point standard.   
-    CHEEVR calls DSTEBZ and ZSTEIN on non-ieee machines and   
+    CHEEVR calls SSTEBZ and CSTEIN on non-ieee machines and   
     when partial spectrum requests are made.   
 
-    Normal execution of ZSTEGR may create NaNs and infinities and   
+    Normal execution of CSTEGR may create NaNs and infinities and   
     hence may abort due to a floating point exception in environments   
     which do not handle NaNs and infinities in the ieee standard default   
     manner.   
@@ -178,7 +178,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
             Kahan, LAPACK Working Note #3.   
 
             If high relative accuracy is important, set ABSTOL to   
-            DLAMCH( 'Safe minimum' ).  Doing so will guarantee that   
+            SLAMCH( 'Safe minimum' ).  Doing so will guarantee that   
             eigenvalues are computed to high relative accuracy when   
             possible in future releases.  The current code does not   
             make any guarantees about high relative accuracy, but   
@@ -282,15 +282,15 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
     magma_int_t lddb = n;
     magma_int_t lddz = n;  
     
-    static magma_int_t lower;
-    static char trans[1];
-    static magma_int_t wantz;
-    static magma_int_t lquery;
-    static magma_int_t alleig, valeig, indeig;
+    magma_int_t lower;
+    char trans[1];
+    magma_int_t wantz;
+    magma_int_t lquery;
+    magma_int_t alleig, valeig, indeig;
     
-    static magma_int_t lwmin, lrwmin, liwmin;
+    magma_int_t lwmin, lrwmin, liwmin;
     
-    static cudaStream_t stream;
+    cudaStream_t stream;
     magma_queue_create( &stream );
     
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);

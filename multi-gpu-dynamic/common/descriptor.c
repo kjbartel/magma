@@ -17,40 +17,48 @@
 /***************************************************************************//**
  *  Internal static descriptor initializer
  **/
-magma_desc_t magma_desc_init(MAGMA_enum dtyp, int mb, int nb, int bsiz,
-                           int lm, int ln, int i, int j, int m, int n)
+magma_desc_t magma_desc_init( MAGMA_enum dtyp, int mb, int nb, int bsiz,
+                              int lm, int ln, int i, int j, int m, int n )
 {
     magma_desc_t desc;
-    PLASMA_desc *pdesc = &(desc.desc);
+    
+    desc.get_blkaddr = magma_getaddr_ccrb;
+    desc.get_blkldd  = magma_get_blkldd_ccrb;
 
     // Matrix address
-    pdesc->mat = NULL;
-    pdesc->A21 = (lm - lm%mb)*(ln - ln%nb);
-    pdesc->A12 = (     lm%mb)*(ln - ln%nb) + pdesc->A21;
-    pdesc->A22 = (lm - lm%mb)*(     ln%nb) + pdesc->A12;
+    desc.mat = NULL;
+    desc.A21 = (lm - lm%mb)*(ln - ln%nb);
+    desc.A12 = (     lm%mb)*(ln - ln%nb) + desc.A21;
+    desc.A22 = (lm - lm%mb)*(     ln%nb) + desc.A12;
     // Matrix properties
-    pdesc->dtyp = dtyp;
-    pdesc->mb = mb;
-    pdesc->nb = nb;
-    pdesc->bsiz = bsiz;
+    desc.dtyp = dtyp;
+    desc.styp = PlasmaCCRB;
+    desc.mb = mb;
+    desc.nb = nb;
+    desc.bsiz = bsiz;
     // Large matrix parameters
-    pdesc->lm = lm;
-    pdesc->ln = ln;
+    desc.lm = lm;
+    desc.ln = ln;
     // Large matrix derived parameters
-    pdesc->lm1 = (lm/mb);
-    pdesc->ln1 = (ln/nb);
-    pdesc->lmt = (lm%mb==0) ? (lm/mb) : (lm/mb+1);
-    pdesc->lnt = (ln%nb==0) ? (ln/nb) : (ln/nb+1);
+    desc.lm1 = (lm/mb);
+    desc.ln1 = (ln/nb);
+    desc.lmt = (lm%mb==0) ? (lm/mb) : (lm/mb+1);
+    desc.lnt = (ln%nb==0) ? (ln/nb) : (ln/nb+1);
     // Submatrix parameters
-    pdesc->i = i;
-    pdesc->j = j;
-    pdesc->m = m;
-    pdesc->n = n;
+    desc.i = i;
+    desc.j = j;
+    desc.m = m;
+    desc.n = n;
     // Submatrix derived parameters
-    pdesc->mt = (i+m-1)/mb - i/mb + 1;
-    pdesc->nt = (j+n-1)/nb - j/nb + 1;
+    desc.mt = (i+m-1)/mb - i/mb + 1;
+    desc.nt = (j+n-1)/nb - j/nb + 1;
 
     desc.occurences = 0;
+#if defined(MORSE_USE_MPI)
+    MPI_Comm_rank( MPI_COMM_WORLD, &(desc.myrank) );
+#else
+    desc.myrank = 0;
+#endif
     morse_desc_init( &desc );
 
     return desc;
@@ -59,23 +67,22 @@ magma_desc_t magma_desc_init(MAGMA_enum dtyp, int mb, int nb, int bsiz,
 /***************************************************************************//**
  *  Internal static descriptor initializer for submatrices
  **/
-magma_desc_t magma_desc_submatrix(magma_desc_t descA, int i, int j, int m, int n)
+magma_desc_t magma_desc_submatrix( magma_desc_t descA, int i, int j, int m, int n )
 {
     magma_desc_t descB;
-    PLASMA_desc *pdescB = &(descB.desc);
     int mb, nb;
 
     descB = descA;
-    mb = descA.desc.mb;
-    nb = descA.desc.nb;
+    mb = descA.mb;
+    nb = descA.nb;
     // Submatrix parameters
-    pdescB->i = i;
-    pdescB->j = j;
-    pdescB->m = m;
-    pdescB->n = n;
+    descB.i = i;
+    descB.j = j;
+    descB.m = m;
+    descB.n = n;
     // Submatrix derived parameters
-    pdescB->mt = (i+m-1)/mb - i/mb + 1;
-    pdescB->nt = (j+n-1)/nb - j/nb + 1;
+    descB.mt = (i+m-1)/mb - i/mb + 1;
+    descB.nt = (j+n-1)/nb - j/nb + 1;
 
     morse_desc_submatrix( &descB );
 
@@ -85,36 +92,36 @@ magma_desc_t magma_desc_submatrix(magma_desc_t descA, int i, int j, int m, int n
 /***************************************************************************//**
  *  Check for descriptor correctness
  **/
-int magma_desc_check(magma_desc_t *desc)
+int magma_desc_check( magma_desc_t *desc )
 {
-    if (desc->desc.mat == NULL) {
+    if (desc->mat == NULL) {
         magma_error("magma_desc_check", "NULL matrix pointer");
         return MAGMA_ERR_UNALLOCATED;
     }
-    if (desc->desc.dtyp != PlasmaRealFloat &&
-        desc->desc.dtyp != PlasmaRealDouble &&
-        desc->desc.dtyp != PlasmaComplexFloat &&
-        desc->desc.dtyp != PlasmaComplexDouble  ) {
+    if (desc->dtyp != PlasmaRealFloat &&
+        desc->dtyp != PlasmaRealDouble &&
+        desc->dtyp != PlasmaComplexFloat &&
+        desc->dtyp != PlasmaComplexDouble  ) {
         magma_error("magma_desc_check", "invalid matrix type");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
-    if (desc->desc.mb <= 0 || desc->desc.nb <= 0) {
+    if (desc->mb <= 0 || desc->nb <= 0) {
         magma_error("magma_desc_check", "negative tile dimension");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
-    if (desc->desc.bsiz < desc->desc.mb*desc->desc.nb) {
+    if (desc->bsiz < desc->mb*desc->nb) {
         magma_error("magma_desc_check", "tile memory size smaller than the product of dimensions");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
-    if (desc->desc.lm <= 0 || desc->desc.ln <= 0) {
+    if (desc->lm <= 0 || desc->ln <= 0) {
         magma_error("magma_desc_check", "negative matrix dimension");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
-    if (desc->desc.i >= desc->desc.lm || desc->desc.j >= desc->desc.ln) {
+    if (desc->i >= desc->lm || desc->j >= desc->ln) {
         magma_error("magma_desc_check", "beginning of the matrix out of scope");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
-    if (desc->desc.i+desc->desc.m > desc->desc.lm || desc->desc.j+desc->desc.n > desc->desc.ln) {
+    if (desc->i+desc->m > desc->lm || desc->j+desc->n > desc->ln) {
         magma_error("magma_desc_check", "submatrix out of scope");
         return MAGMA_ERR_ILLEGAL_VALUE;
     }
@@ -128,8 +135,8 @@ int magma_desc_mat_alloc( magma_desc_t *desc )
 {
     size_t size;
 
-    size = (size_t)desc->desc.lm * (size_t)desc->desc.ln * (size_t)plasma_element_size(desc->desc.dtyp);
-    if ((desc->desc.mat = malloc(size)) == NULL) {
+    size = (size_t)desc->lm * (size_t)desc->ln * (size_t)plasma_element_size(desc->dtyp);
+    if ((desc->mat = malloc(size)) == NULL) {
         magma_error("magma_desc_mat_alloc", "malloc() failed");
         return MAGMA_ERR_OUT_OF_RESOURCES;
     }
@@ -142,14 +149,14 @@ int magma_desc_mat_alloc( magma_desc_t *desc )
 /***************************************************************************//**
  *
  **/
-int magma_desc_mat_free( magma_desc_t *desc)
+int magma_desc_mat_free( magma_desc_t *desc )
 {
 
     morse_desc_destroy( desc );
 
-    if (desc->desc.mat != NULL) {
-        free(desc->desc.mat);
-        desc->desc.mat = NULL;
+    if (desc->mat != NULL) {
+        free(desc->mat);
+        desc->mat = NULL;
     }
     return MAGMA_SUCCESS;
 }
@@ -226,7 +233,7 @@ int MAGMA_Desc_Create(magma_desc_t **desc, void *mat, MAGMA_enum dtyp, int mb, i
         return MAGMA_ERR_OUT_OF_RESOURCES;
     }
     **desc = magma_desc_init(dtyp, mb, nb, bsiz, lm, ln, i, j, m, n);
-    (**desc).desc.mat = mat;
+    (**desc).mat = mat;
 
     /* Create scheduler structure like registering data */
     morse_desc_create( *desc );
@@ -257,7 +264,7 @@ int MAGMA_Desc_Create(magma_desc_t **desc, void *mat, MAGMA_enum dtyp, int mb, i
  *          \retval MAGMA_SUCCESS successful exit
  *
  ******************************************************************************/
-int MAGMA_Desc_Destroy(magma_desc_t **desc)
+int MAGMA_Desc_Destroy( magma_desc_t **desc )
 {
     magma_context_t *magma;
 
@@ -279,5 +286,37 @@ int MAGMA_Desc_Destroy(magma_desc_t **desc)
     return MAGMA_SUCCESS;
 }
 
+// *******************************************************************************
+// *
+// * @ingroup Auxiliary
+// *
+// *  morse_desc_internalprint - morse_desc_internalprint.
+// *
+// *******************************************************************************
+int morse_desc_internalprint( magma_desc_t *desc )
+{
+    int lmt = desc->lmt;
+    int lnt = desc->lnt;
+    int lda = desc->lm;
+    int mb = desc->nb;
+    int size = desc->n;
+    int  m, n;
+    int64_t block_ind = 0;
 
+    for (int i=0; i<size; i++){//rows
+      if(i%mb==0)
+    printf("\n");
+      for (int j=0; j<size; j++){//columns
+    printf("%lf\t" , *(double*)magma_geteltaddr(desc,i, j, sizeof(PLASMA_Complex64_t)));
+    if((j+1)%mb==0 && j+1 < size){
+      if(j+1==i || j+2==i)
+        printf(">|");
+      else
+        printf("|");
+    }
+      }
+      printf("\n");
 
+    }
+    return MAGMA_SUCCESS;
+}

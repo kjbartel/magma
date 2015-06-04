@@ -3,6 +3,8 @@
 
 #include "common_magma.h"
 
+#include <cuda.h>
+
 // overloaded C++ functions to deal with errors
 void magma_xerror( cudaError_t    err, const char* func, const char* file, int line );
 void magma_xerror( CUresult       err, const char* func, const char* file, int line );

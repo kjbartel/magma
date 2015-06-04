@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:47 2012
+       @generated c Thu Jun 28 12:31:01 2012
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_chegst(magma_int_t itype, char uplo, magma_int_t n,
              cuFloatComplex *b, magma_int_t ldb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.0) --
+  -- MAGMA (version 1.2.1) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     May 2012
+     June 2012
 
  
    Purpose
@@ -100,7 +100,7 @@ magma_chegst(magma_int_t itype, char uplo, magma_int_t n,
   magma_int_t        ldda = n;
   magma_int_t        lddb = n;
   float             d_one = 1.0;
-  long int           upper = lapackf77_lsame(uplo_, "U");
+  int upper = lapackf77_lsame(uplo_, "U");
   
   /* Test the input parameters. */
   *info = 0;
@@ -131,7 +131,7 @@ magma_chegst(magma_int_t itype, char uplo, magma_int_t n,
   
   nb = magma_get_chegst_nb(n);
   
-  static cudaStream_t stream[2];
+  cudaStream_t stream[2];
   magma_queue_create( &stream[0] );
   magma_queue_create( &stream[1] );
 

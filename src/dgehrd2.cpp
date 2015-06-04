@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:39 2012
+       @generated d Thu Jun 28 12:31:04 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
               double *tau, double *work, 
               magma_int_t *lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -169,7 +169,7 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     magma_int_t i__;
 
     double *t, *d_t;
-    t = (double*) malloc( nb*nb * sizeof(double));
+    magma_dmalloc_cpu( &t, nb*nb );
     if ( t == NULL ) {
         magma_free( da );
         *info = MAGMA_ERR_HOST_ALLOC;

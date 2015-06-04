@@ -1,15 +1,13 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
-    @generated s Tue May 15 18:17:50 2012
+    @generated s Thu Jun 28 12:30:57 2012
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
 
 #define Q(ix, iy) (q + (ix) + ldq * (iy))
@@ -21,7 +19,7 @@ extern "C" {
                                float* q, magma_int_t ldq, float rho,
                                float* dlamda, float* q2, magma_int_t* indx,
                                magma_int_t* ctot, float* w, float* s, magma_int_t* indxq,
-                               float** dwork, cudaStream_t stream[N_MAX_GPU][2],
+                               float** dwork, cudaStream_t stream[MagmaMaxGPUs][2],
                                char range, float vl, float vu, magma_int_t il, magma_int_t iu,
                                magma_int_t* info );
 
@@ -39,16 +37,16 @@ extern "C" magma_int_t
 magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t ldq,
                magma_int_t* indxq, float rho, magma_int_t cutpnt,
                float* work, magma_int_t* iwork, float** dwork,
-               cudaStream_t stream[N_MAX_GPU][2],
+               cudaStream_t stream[MagmaMaxGPUs][2],
                char range, float vl, float vu,
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -63,7 +61,7 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
     Purpose
     =======
 
-    DLAEX1 computes the updated eigensystem of a diagonal
+    SLAEX1 computes the updated eigensystem of a diagonal
     matrix after modification by a rank-one symmetric matrix.
 
       T = Q(in) ( D(in) + RHO * Z*Z' ) Q'(in) = Q(out) * D(out) * Q'(out)
@@ -78,11 +76,11 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
           when there are multiple eigenvalues or if there is a zero in
           the Z vector.  For each such occurence the dimension of the
           secular equation problem is reduced by one.  This stage is
-          performed by the routine DLAED2.
+          performed by the routine SLAED2.
 
           The second stage consists of calculating the updated
           eigenvalues. This is done by finding the roots of the secular
-          equation via the routine DLAED4 (as called by DLAED3).
+          equation via the routine SLAED4 (as called by SLAED3).
           This routine also calculates the eigenvectors of the current
           problem.
 
@@ -135,7 +133,7 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
             NB * ((N-N1) + (N-N1) / floor(nrgpu/2))
 
     STREAM  (device stream) cudaStream_t array,
-            dimension (N_MAX_GPU,2)
+            dimension (MagmaMaxGPUs,2)
 
     RANGE   (input) CHARACTER*1
             = 'A': all eigenvalues will be found.
@@ -197,7 +195,7 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
 
     //  The following values are integer pointers which indicate
     //  the portion of the workspace
-    //  used by a particular array in DLAED2 and DLAED3.
+    //  used by a particular array in SLAED2 and SLAED3.
 
     iz = 0;
     idlmda = iz + n;

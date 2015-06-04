@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions mixed zc -> ds
 
@@ -22,11 +22,11 @@ magma_zcgesv_gpu(char trans, magma_int_t N, magma_int_t NRHS,
                  cuDoubleComplex *dworkd, cuFloatComplex *dworks,
                  magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -194,9 +194,13 @@ magma_zcgesv_gpu(char trans, magma_int_t N, magma_int_t NRHS,
     
     // Generate parallel pivots
     {
-        int *newipiv  = (int*)malloc(N * sizeof(int));
+        magma_int_t *newipiv;
+        magma_malloc_cpu( (void**) &newipiv, N * sizeof(magma_int_t) );
+        if ( newipiv == NULL ) {
+            goto L40;
+        }
         swp2pswp(trans, N, IPIV, newipiv);
-        magma_setvector( N, sizeof(int), newipiv, 1, dIPIV, 1 );
+        magma_setvector( N, sizeof(magma_int_t), newipiv, 1, dIPIV, 1 );
         free(newipiv);
     }
     

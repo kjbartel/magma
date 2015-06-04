@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated s Tue May 15 18:17:43 2012
+       @generated s Thu Jun 28 12:30:50 2012
 
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_sormql(const char side, const char trans,
              float *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -40,7 +40,7 @@ magma_sormql(const char side, const char trans,
 
           Q = H(k) . . . H(2) H(1)   
 
-    as returned by ZGEQLF. Q is of order M if SIDE = 'L' and of order N   
+    as returned by SGEQLF. Q is of order M if SIDE = 'L' and of order N   
     if SIDE = 'R'.   
 
     Arguments   
@@ -68,7 +68,7 @@ magma_sormql(const char side, const char trans,
     A       (input) COMPLEX*16 array, dimension (LDA,K)   
             The i-th column must contain the vector which defines the   
             elementary reflector H(i), for i = 1,2,...,k, as returned by   
-            ZGEQLF in the last k columns of its array argument A.   
+            SGEQLF in the last k columns of its array argument A.   
             A is modified by the routine but restored on exit.   
 
     LDA     (input) INTEGER   
@@ -78,7 +78,7 @@ magma_sormql(const char side, const char trans,
 
     TAU     (input) COMPLEX*16 array, dimension (K)   
             TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by ZGEQLF.   
+            reflector H(i), as returned by SGEQLF.   
 
     C       (input/output) COMPLEX*16 array, dimension (LDC,N)   
             On entry, the M-by-N matrix C.   
@@ -122,11 +122,11 @@ magma_sormql(const char side, const char trans,
 
     magma_int_t a_offset, c_dim1, c_offset, i__4;
     
-    static magma_int_t i__;
-    static float t[2*4160]        /* was [65][64] */;
-    static magma_int_t i1, i2, i3, ib, nb, mi, ni, nq, nw;
-    static magma_int_t iinfo, ldwork, lwkopt;
-    long int lquery, left, notran;
+    magma_int_t i__;
+    float t[2*4160]        /* was [65][64] */;
+    magma_int_t i1, i2, i3, ib, nb, mi, ni, nq, nw;
+    magma_int_t iinfo, ldwork, lwkopt;
+    int lquery, left, notran;
 
     a_offset = 1 + lda;
     a -= a_offset;

@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     @author Raffaele Solca
 
-    @generated c Tue May 15 18:18:25 2012
+    @generated c Thu Jun 28 12:31:49 2012
 
 */
 
@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -74,23 +73,23 @@ int main( int argc, char** argv)
             if (strcmp("-N", argv[i])==0){
                 N = atoi(argv[++i]);
                 if (N>0){
-                   printf("  testing_chegvd -N %d\n\n", N);
+                   printf("  testing_chegvd -N %d\n\n", (int) N);
                    flagN=1;
                 }
                 else {
                    printf("\nUsage: \n");
-                   printf("  testing_chegvd -N %d\n\n", N);
+                   printf("  testing_chegvd -N %d\n\n", (int) N);
                    exit(1);
                 }
             }
             if (strcmp("-itype", argv[i])==0){
                 itype = atoi(argv[++i]);
                 if (itype>0 && itype <= 3){
-                   printf("  testing_chegvd -itype %d\n\n", itype);
+                   printf("  testing_chegvd -itype %d\n\n", (int) itype);
                 }
                 else {
                    printf("\nUsage: \n");
-                   printf("  testing_chegvd -itype %d\n\n", itype);
+                   printf("  testing_chegvd -itype %d\n\n", (int) itype);
                    exit(1);
                 }
             }
@@ -133,7 +132,6 @@ int main( int argc, char** argv)
     TESTING_MALLOC(    rwork,          float, lrwork);
     TESTING_MALLOC(    iwork,     magma_int_t, liwork);
     
-    printf("\n\n");
     printf("  N     CPU Time(s)    GPU Time(s) \n");
     printf("===================================\n");
     for(i=0; i<4; i++){
@@ -275,7 +273,7 @@ int main( int argc, char** argv)
                          &info);
         end = get_current_time();
         if (info < 0)
-          printf("Argument %d of chegvd had an illegal value.\n", -info);
+          printf("Argument %d of chegvd had an illegal value.\n", (int) -info);
 
         cpu_time = GetTimerValue(start,end)/1000.;
 
@@ -284,7 +282,7 @@ int main( int argc, char** argv)
            Print execution time
            =================================================================== */
         printf("%5d     %6.2f         %6.2f\n",
-               N, cpu_time, gpu_time);
+               (int) N, cpu_time, gpu_time);
         if ( checkres ){
           printf("Testing the eigenvalues and eigenvectors for correctness:\n");
           if(itype==1)
@@ -294,10 +292,10 @@ int main( int argc, char** argv)
           else if(itype==3)
              printf("(1)    | B A Z - Z D | / (|A| |Z| N) = %e\n", result[0]);
           if(itype==1 || itype ==2)
-             printf("(2)    | I -   Z Z' B | /  N      = %e\n", result[1]);
+             printf("(2)    | I -   Z Z' B | /  N         = %e\n", result[1]);
           else
-             printf("(2)    | B -  Z Z' | / (|B| N)      = %e\n", result[1]);
-          printf("(3)    | D(w/ Z)-D(w/o Z)|/ |D| = %e\n\n", result[2]);
+             printf("(2)    | B -  Z Z' | / (|B| N)       = %e\n", result[1]);
+          printf("(3)    | D(w/ Z)-D(w/o Z)|/ |D|      = %e\n\n", result[2]);
         }
 
         if (flagN)

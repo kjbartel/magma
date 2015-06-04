@@ -1,0 +1,53 @@
+@c -*-texinfo-*-
+
+@c This file is part of the MORSE Handbook.
+@c Copyright (C) 2012 Inria
+@c Copyright (C) 2012 The University of Tennessee
+@c Copyright (C) 2012 King Abdullah University of Science and Technology
+@c See the file ../morse.texi for copying conditions.
+
+@menu
+* Objectives::                  Why MORSE?
+* Research fields::             Research fields abort in MORSE
+* Research papers::             Research papers abort in MORSE
+@end menu
+
+@node Objectives
+@section Objectives
+
+When processor clock speeds flatlined in 2004, after more than fifteen years of exponential increases, the era of near automatic performance improvements that the HPC application community had previously enjoyed came to an abrupt end. To develop software that will perform well on petascale and exascale systems with thousands of nodes and millions of cores, the list of major challenges that must now be confronted is formidable: 1) dramatic escalation in the costs of intrasystem communication between processors and/or levels of memory hierarchy; 2) increased heterogeneity of the processing units (mixing CPUs, GPUs, etc. in varying and unexpected design combinations); 3) high levels of parallelism and more complex constraints means that cooperating processes must be dynamically and unpredictably scheduled for asynchronous execution; 4) software will not run at scale without much better resilience to faults and far more robustness; and 5) new levels of self-adaptivity will be required to enable software to modulate process speed in order to satisfy limited energy budgets. The MORSE associate team will tackle the first three challenges in a orchestrating work between research groups respectively specialized in sparse linear algebra, dense linear algebra and runtime systems. The overall objective is to develop robust linear algebra libraries relying on innovative runtime systems that can fully benefit from the potential of those future large-scale complex machines. Challenges 4) and 5) will also be investigated by the different teams in the context of other partnerships1, but they will not be the main focus of the associate team as they are much more prospective.
+
+@node Research fields
+@section Research fields
+
+The overall goal of the MORSE associate team is to enable advanced numerical algorithms to be executed on a scalable unified runtime system for exploiting the full potential of future exascale machines.
+We expect advances in three directions based first on strong and closed interactions between the runtime and numerical linear algebra communities. This initial activity will then naturally expand to more focused but still joint research in both fields.
+
+@menu
+* Fine interaction between linear algebra and runtime systems::
+* Runtime systems::
+* Linear algebra::
+@end menu
+
+@node Fine interaction between linear algebra and runtime systems 
+@subsection Fine interaction between linear algebra and runtime systems
+
+On parallel machines, HPC applications need to take care of data movement and consistency, which can be either explicitly managed at the level of the application itself or delegated to a runtime system. We adopt the latter approach in order to better keep up with hardware trends whose complexity is growing exponentially. One major task in this project is to define a proper interface between HPC applications and runtime systems in order to maximize productivity and expressivity. As mentioned in the next section, a widely used approach consists in abstracting the application as a DAG that the runtime system is in charge of scheduling. Scheduling such a DAG over a set of heterogeneous processing units introduces a lot of new challenges, such as predicting accurately the execution time of each type of task over each kind of unit, minimizing data transfers between memory banks, performing data prefetching, etc. Expected advances: In a nutshell, a new runtime system API will be designed to allow applications to provide scheduling hints to the runtime system and to get real-time feedback about the consequences of scheduling decisions.
+
+@node Runtime systems
+@subsection Runtime systems
+
+A runtime environment is an intermediate layer between the system and the application. It provides low-level functionality not provided by the system (such as scheduling or management of the heterogeneity) and high-level features (such as performance portability). In the framework of this proposal, we will work on the scalability of runtime environment. To achieve scalability it is required to avoid all centralization. Here, the main problem is the scheduling of the tasks. In many task-based runtime environments the scheduler is centralized and becomes a bottleneck as soon as too many cores are involved. It is therefore required to distribute the scheduling decision or to compute a data distribution that impose the mapping of task using, for instance the so-called ``owner-compute'' rule. Expected advances: We will design runtime systems that enable an efficient and scalable use of thousands of distributed multicore nodes enhanced with accelerators.
+
+@node Linear algebra
+@subsection Linear algebra
+
+Because of its central position in HPC and of the well understood structure of its algorithms, dense linear algebra has often pioneered new challenges that HPC had to face. Again, dense linear algebra has been in the vanguard of the new era of petascale computing with the design of new algorithms that can efficiently run on a multicore node with GPU accelerators. These algorithms are called ``communication-avoiding'' since they have been redesigned to limit the amount of communication between processing units (and between the different levels of memory hierarchy). They are expressed through Direct Acyclic Graphs (DAG) of fine-grained tasks that are dynamically scheduled. Expected advances: First, we plan to investigate the impact of these principles in the case of sparse applications (whose algorithms are slightly more complicated but often rely on dense kernels). Furthermore, both in the dense and sparse cases, the scalability on thousands of nodes is still limited; new numerical approaches need to be found. We will specifically design sparse hybrid direct/iterative methods that represent a promising approach.
+
+@node Research papers
+@section Research papers
+
+Research papers about MORSE can be found at
+
+@indicateurl{http://icl.cs.utk.edu/projectsdev/morse/pubs/index.html}
+

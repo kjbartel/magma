@@ -234,7 +234,6 @@ int MAGMA_zpotrf_Tile(PLASMA_enum uplo, magma_desc_t *A)
 int MAGMA_zpotrf_Tile_Async(PLASMA_enum uplo, magma_desc_t *A,
                               magma_sequence_t *sequence, magma_request_t *request)
 {
-    PLASMA_desc descA = A->desc;
     magma_context_t *magma;
 
     magma = magma_context_self();
@@ -262,7 +261,7 @@ int MAGMA_zpotrf_Tile_Async(PLASMA_enum uplo, magma_desc_t *A,
     /*     return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE); */
     /* } */
     /* Check input arguments */
-    if (descA.nb != descA.mb) {
+    if (A->nb != A->mb) {
         magma_error("MAGMA_zpotrf_Tile", "only square tiles supported");
         return magma_request_fail(sequence, request, MAGMA_ERR_ILLEGAL_VALUE);
     }

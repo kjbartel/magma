@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Azzam Haidar
        @author Stan Tomov
 
-       @generated s Tue May 15 18:17:41 2012
+       @generated s Thu Jun 28 12:30:59 2012
 
 */
 #include "common_magma.h"
@@ -30,11 +30,11 @@ magma_ssybbd(char uplo, magma_int_t n, magma_int_t nb,
               float *dT,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -157,7 +157,7 @@ magma_ssybbd(char uplo, magma_int_t n, magma_int_t nb,
     int lddt = nb;
    
     float c_neg_one  = MAGMA_S_NEG_ONE, c_neg_half;
-    MAGMA_S_DSCALE(c_neg_half, c_neg_one, 2.);
+    MAGMA_S_SSCALE(c_neg_half, c_neg_one, 2.);
     float c_one  = MAGMA_S_ONE ;
     float c_zero = MAGMA_S_ZERO;
     float  d_one = MAGMA_D_ONE;
@@ -165,12 +165,12 @@ magma_ssybbd(char uplo, magma_int_t n, magma_int_t nb,
     magma_int_t pm, pn, indi, indj, pk;
     magma_int_t pm_old=0, pn_old=0, indi_old=0, indj_old=0;
 
-    static int i;
-    static int lwkopt;
-    static long int lquery;
+    int i;
+    int lwkopt;
+    int lquery;
 
     *info = 0;
-    long int upper = lapackf77_lsame(uplo_, "U");
+    int upper = lapackf77_lsame(uplo_, "U");
     lquery = lwork == -1;
     if (! upper && ! lapackf77_lsame(uplo_, "L")) {
         *info = -1;
@@ -209,7 +209,7 @@ magma_ssybbd(char uplo, magma_int_t n, magma_int_t nb,
     float *dwork = da+n*ldda;
     float *dW    = dwork + nb*ldda;
 
-    static cudaStream_t stream[2];
+    cudaStream_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 

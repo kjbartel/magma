@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:27 2012
+       @generated s Thu Jun 28 12:30:40 2012
 
 */
 #include "common_magma.h"
@@ -37,11 +37,11 @@ extern "C" magma_int_t
 magma_sgetrf(magma_int_t m, magma_int_t n, float *a, magma_int_t lda, 
              magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -72,7 +72,7 @@ magma_sgetrf(magma_int_t m, magma_int_t n, float *a, magma_int_t lda,
             A = P*L*U; the unit diagonal elements of L are not stored.
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -126,11 +126,9 @@ magma_sgetrf(magma_int_t m, magma_int_t n, float *a, magma_int_t lda,
         /* Use hybrid blocked code. */
         magma_int_t maxm, maxn, ldda, maxdim;
         magma_int_t i, rows, cols, s = min(m, n)/nb;
-        char * num_gpus_char = getenv("MAGMA_NUM_GPUS");
-        magma_int_t num_gpus = 1;
-
-        if( num_gpus_char != NULL ) num_gpus = atoi(num_gpus_char);
-        if( num_gpus_char != NULL && num_gpus >= 1 ) {
+        
+        magma_int_t num_gpus = magma_num_gpus();
+        if ( num_gpus > 1 ) {
           /* call multi-GPU non-GPU-resident interface  */
           magma_int_t rval = magma_sgetrf3_ooc(num_gpus, m, n, a, lda, ipiv, info);
           if( *info >= 0 ) magma_sgetrf2_piv( num_gpus, m, n, a, lda, ipiv, info);
@@ -223,7 +221,7 @@ magma_sgetrf(magma_int_t m, magma_int_t n, float *a, magma_int_t lda,
             }
             if (*info == 0 && iinfo > 0)
                 *info = iinfo + i*nb;
-            magmablas_spermute_long2( dAT, ldda, ipiv, nb, i*nb );
+            magmablas_spermute_long2( ldda, dAT, ldda, ipiv, nb, i*nb );
 
             // upload i-th panel
             magma_ssetmatrix( m-i*nb, nb, work, lda, dA, cols );
@@ -269,7 +267,7 @@ magma_sgetrf(magma_int_t m, magma_int_t n, float *a, magma_int_t lda,
             lapackf77_sgetrf( &rows, &nb0, work, &lda, ipiv+s*nb, &iinfo);
             if (*info == 0 && iinfo > 0)
                 *info = iinfo + s*nb;
-            magmablas_spermute_long2( dAT, ldda, ipiv, nb0, s*nb );
+            magmablas_spermute_long2( ldda, dAT, ldda, ipiv, nb0, s*nb );
     
             magma_ssetmatrix( rows, nb0, work, lda, dA, cols );
             magmablas_stranspose2( inAT(s,s), ldda, dA, cols, rows, nb0);

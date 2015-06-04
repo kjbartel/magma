@@ -1,0 +1,113 @@
+digraph G{
+
+# Pre-Depends:             purple, bold
+# Depends:                 blue
+# Recommends:              black
+# Suggests:                black, dotted
+# Conflicts:               red
+
+
+node [shape=box];
+
+0 [style="invis"];
+1 [style="invis"];
+2 [style="invis"];
+3 [style="invis"];
+0 -> 1 [color="blue", label="Depends"];
+1 -> 2 [color=black, label="Recommends"];
+2 -> 3 [color=black,style=dotted, label="Suggests"];
+{rank=same;0;1;2;3}
+
+0 -> Binary          [style="invis"]
+0 -> Library         [style="invis"]
+1 -> Option          [style="invis"]
+2 -> ExternalPackage [style="invis"]
+
+Binary            [color=green,style=bold]
+Library           [color=red,style=bold]
+Option            [color=blue]
+ExternalPackage   [shape=rectangle]
+
+{rank=same;Library;Option;ExternalPackage}
+
+Option -> MAGMA_BUILD_LIBMORSE  [style="invis"]
+
+MAGMA_TESTINGS [color=green, style=bold]
+MORSE_TIMINGS  [color=green, style=bold]
+
+MAGMA_LIBMORSE [color=red,style=bold]
+MAGMA_LIB1GPU  [color=red,style=bold]
+
+MAGMA_BUILD_LIBMORSE [color=blue]
+MAGMA_BUILD_LIB1GPU  [color=blue]
+
+MAGMA_USES_PLASMA   [color=blue]
+#MAGMA_USES_FERMI   [color=blue]
+MORSE_USES_CUDA     [color=blue]
+MORSE_USES_CUDA2    [color=blue,label="MORSE_USES_CUDA"]
+MORSE_USES_MPI      [color=blue]
+MORSE_USES_MPI2     [color=blue,label="MORSE_USES_MPI"]
+MORSE_PROF_FXT     [color=blue]
+
+alt1 [
+	shape = "record"
+	label = "<MORSE_SCHED_QUARK> MORSE_SCHED_QUARK | <MORSE_SCHED_STARPU> MORSE_SCHED_STARPU"
+        color=blue
+]
+
+
+PLASMA   [shape=rectangle]
+STARPU   [shape=rectangle]
+QUARK    [shape=rectangle]
+HWLOC    [shape=rectangle]
+CBLAS    [shape=rectangle]
+BLAS     [shape=rectangle]
+LAPACKE  [shape=rectangle]
+LAPACK   [shape=rectangle]
+CUDA     [shape=rectangle]
+MPI      [shape=rectangle]
+FXT      [shape=rectangle]
+
+PLASMA -> LAPACKE [color=blue]
+PLASMA -> CBLAS   [color=blue]
+PLASMA -> QUARK   [color=blue]
+PLASMA -> HWLOC   [color=blue]
+
+QUARK -> HWLOC    [color=blue]
+
+LAPACKE-> LAPACK  [color=blue]
+CBLAS  -> BLAS    [color=blue]
+
+STARPU -> HWLOC   [color=blue]
+STARPU -> MORSE_USES_CUDA -> CUDA [color=black]
+STARPU -> MORSE_USES_MPI  -> MPI  [color=black]
+STARPU -> MORSE_PROF_FXT -> FXT  [color=black, style=dotted]
+
+MAGMA_LIBMORSE -> MORSE_USES_MPI2 -> MPI  [color=black]
+
+MAGMA_LIB1GPU -> BLAS   [color=blue]
+MAGMA_LIB1GPU -> LAPACK [color=blue]
+MAGMA_LIB1GPU -> CUDA   [color=blue]
+MAGMA_LIB1GPU -> MAGMA_USES_PLASMA [color=black, style=dotted]
+MAGMA_USES_PLASMA -> PLASMA [color=blue]
+
+MAGMA_BUILD_LIBMORSE -> MORSE_TIMINGS   [color=blue]
+MAGMA_BUILD_LIB1GPU  -> MAGMA_TESTINGS  [color=blue]
+
+MAGMA_LIBMORSE -> alt1 [color=blue]
+MAGMA_LIBMORSE -> MORSE_USES_CUDA2 -> MAGMA_LIB1GPU [color=black]
+MORSE_USES_CUDA2 -> MAGMA_USES_PLASMA [color=blue]
+MAGMA_LIBMORSE -> PLASMA [color=blue]
+
+alt1:MORSE_SCHED_STARPU -> STARPU [color=blue]
+alt1:MORSE_SCHED_QUARK  -> QUARK  [color=blue]
+
+MAGMA_TESTINGS -> MAGMA_LIB1GPU  [color=blue]
+MORSE_TIMINGS  -> MAGMA_LIBMORSE [color=blue]
+
+
+#{rank=same; PLASMA STARPU QUARK}
+#{rank=same; CBLAS LAPACKE}
+#{rank=same; BLAS LAPACK}
+#{rank=same; CUDA HWLOC}
+}

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:18 2012
+       @generated c Thu Jun 28 12:31:40 2012
 
 */
 
@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -67,11 +66,11 @@ int main( int argc, char** argv)
             N = M;
         }
         if (N>0 && M>0)
-            printf("  testing_cgeqrf -M %d -N %d\n\n", M, N);
+            printf("  testing_cgeqrf -M %d -N %d\n\n", (int) M, (int) N);
         else
             {
                 printf("\nUsage: \n");
-                printf("  testing_cgeqrf -M %d -N %d\n\n", M, N);
+                printf("  testing_cgeqrf -M %d -N %d\n\n", (int) M, (int) N);
                 exit(1);
             }
     }
@@ -96,7 +95,6 @@ int main( int argc, char** argv)
 
     TESTING_MALLOC( h_work, cuFloatComplex, lwork );
 
-    printf("\n\n");
     printf("  M     N   CPU GFlop/s   GPU GFlop/s    ||R||_F / ||A||_F\n");
     printf("==========================================================\n");
     for(i=0; i<10; i++){
@@ -119,7 +117,7 @@ int main( int argc, char** argv)
         magma_cgeqrf(M, N, h_R, lda, tau, h_work, lwork, &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of magma_cgeqrf had an illegal value.\n", -info);
+            printf("Argument %d of magma_cgeqrf had an illegal value.\n", (int) -info);
         
         gpu_perf = flops / GetTimerValue(start, end);
 
@@ -130,7 +128,7 @@ int main( int argc, char** argv)
         lapackf77_cgeqrf(&M, &N, h_A, &lda, tau, h_work, &lwork, &info);
         end = get_current_time();
         if (info < 0)
-            printf("Argument %d of lapack_cgeqrf had an illegal value.\n", -info);
+            printf("Argument %d of lapack_cgeqrf had an illegal value.\n", (int) -info);
 
         cpu_perf = flops / GetTimerValue(start, end);
 
@@ -141,7 +139,7 @@ int main( int argc, char** argv)
         blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
 
         printf("%5d %5d  %6.2f         %6.2f        %e\n",
-               M, N, cpu_perf, gpu_perf,
+               (int) M, (int) N, cpu_perf, gpu_perf,
                lapackf77_clange("f", &M, &N, h_R, &lda, work) / matnorm);
 
         if (argc != 1)

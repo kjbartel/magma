@@ -25,6 +25,7 @@ ZSRC =  codelet_zlacpy.c 					               	\
 	codelet_zpotrf.c 					               	\
 	codelet_zgetrl.c codelet_ztstrf.c codelet_zgessm.c codelet_zssssm.c   	\
 	codelet_zgeqrt.c codelet_ztsqrt.c codelet_zunmqr.c codelet_ztsmqr.c	\
+	codelet_ztrtri.c codelet_zlauum.c codelet_ztrmm.c			\
 	codelet_zcallback.c
 
 CSRC = 	$(shell $(PYTHON) $(CODEGEN) -f "$(ZSRC)" -o -p c)

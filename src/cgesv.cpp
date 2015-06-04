@@ -1,14 +1,16 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:30 2012
+       @generated c Thu Jun 28 12:30:40 2012
 
 */
 #include "common_magma.h"
+
+#include <assert.h>
 
 extern "C" magma_int_t
 magma_cgesv(     magma_int_t n, magma_int_t nrhs, 
@@ -17,11 +19,11 @@ magma_cgesv(     magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *B, magma_int_t ldb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -46,7 +48,7 @@ magma_cgesv(     magma_int_t n, magma_int_t nrhs,
             The number of right hand sides, i.e., the number of columns
             of the matrix B.  NRHS >= 0.
 
-    A       (input/output) COMPLEX array on the GPU, dimension (LDA,N).
+    A       (input/output) COMPLEX array, dimension (LDA,N).
             On entry, the M-by-N matrix to be factored.
             On exit, the factors L and U from the factorization
             A = P*L*U; the unit diagonal elements of L are not stored.
@@ -58,7 +60,7 @@ magma_cgesv(     magma_int_t n, magma_int_t nrhs,
             The pivot indices; for 1 <= i <= min(M,N), row i of the
             matrix was interchanged with row IPIV(i).
 
-    B       (input/output) COMPLEX array on the GPU, dimension (LDB,NRHS)
+    B       (input/output) COMPLEX array, dimension (LDB,NRHS)
             On entry, the right hand side matrix B.
             On exit, the solution matrix X.
 
@@ -70,6 +72,8 @@ magma_cgesv(     magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
+    magma_int_t num_gpus, ldda, lddb;
+    
     *info = 0;
     if (n < 0) {
         *info = -1;
@@ -89,11 +93,42 @@ magma_cgesv(     magma_int_t n, magma_int_t nrhs,
     if (n == 0 || nrhs == 0) {
         return *info;
     }
+    
+    /* If single-GPU and allocation suceeds, use GPU interface. */
+    num_gpus = magma_num_gpus();
+    cuFloatComplex *dA, *dB;
+    if ( num_gpus > 1 ) {
+        goto CPU_INTERFACE;
+    }
+    ldda = ((n+31)/32)*32;
+    lddb = ldda;
+    if ( MAGMA_SUCCESS != magma_cmalloc( &dA, ldda*n )) {
+        goto CPU_INTERFACE;
+    }
+    if ( MAGMA_SUCCESS != magma_cmalloc( &dB, lddb*nrhs )) {
+        magma_free( dA );
+        dA = NULL;
+        goto CPU_INTERFACE;
+    }
+    assert( num_gpus == 1 and dA != NULL and dB != NULL );
+    magma_csetmatrix( n, n, A, lda, dA, ldda );
+    magma_cgetrf_gpu( n, n, dA, ldda, ipiv, info );
+    magma_cgetmatrix( n, n, dA, ldda, A, lda );
+    if ( *info == 0 ) {
+        magma_csetmatrix( n, nrhs, B, ldb, dB, lddb );
+        magma_cgetrs_gpu( MagmaNoTrans, n, nrhs, dA, ldda, ipiv, dB, lddb, info );
+        magma_cgetmatrix( n, nrhs, dB, lddb, B, ldb );
+    }
+    magma_free( dA );
+    magma_free( dB );
+    return *info;
 
+CPU_INTERFACE:
+    /* If multi-GPU or allocation failed, use CPU interface and LAPACK.
+     * Faster to use LAPACK for getrs than to copy A to GPU. */
     magma_cgetrf( n, n, A, lda, ipiv, info );
     if ( *info == 0 ) {
         lapackf77_cgetrs( MagmaNoTransStr, &n, &nrhs, A, &lda, ipiv, B, &ldb, info );
     }
-    
     return *info;
 }

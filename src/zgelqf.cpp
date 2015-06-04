@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -15,11 +15,11 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
               cuDoubleComplex *a,    magma_int_t lda,   cuDoubleComplex *tau, 
               cuDoubleComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -45,7 +45,7 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
             product of elementary reflectors (see Further Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -58,7 +58,7 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,M).
@@ -97,7 +97,7 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
     cuDoubleComplex c_one = MAGMA_Z_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo, ldda;
-    long int lquery;
+    int lquery;
 
     /* Function Body */
     *info = 0;

@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions mixed zc -> ds
 
 */
 #include "common_magma.h"
 
-static __global__ void 
+__global__ void 
 clag2z_generic(int M, int N, 
-               cuFloatComplex *SA, int LDSA , 
-               cuDoubleComplex *A , int LDA ) 
+               cuFloatComplex *SA, int LDSA, 
+               cuDoubleComplex *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -42,10 +42,10 @@ clag2z_generic(int M, int N,
     A[0] = Ap[0];
 }
 
-static __global__ void 
+__global__ void 
 clag2z_special(int M, int N, 
                cuFloatComplex *SA, int LDSA, 
-               cuDoubleComplex *A , int LDA ) 
+               cuDoubleComplex *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -65,10 +65,10 @@ clag2z_special(int M, int N,
     A[0] = Ap[0];
 }
 
-static void 
+void 
 magmablas_clag2z_64_64_16_4_v2( int M, int N, 
-                                cuFloatComplex *SA, int LDSA , 
-                                cuDoubleComplex *A , int LDA )
+                                cuFloatComplex *SA, int LDSA, 
+                                cuDoubleComplex *A, int LDA )
 {
     if( M == 0 || N==0 ) {
         printf("One of the dimension is ZERO\n");
@@ -85,7 +85,7 @@ magmablas_clag2z_64_64_16_4_v2( int M, int N,
 }
 
 extern "C" void 
-magmablas_clag2z(int M, int N, cuFloatComplex *SA, int LDSA, cuDoubleComplex *A, int LDA, int *INFO)
+magmablas_clag2z(magma_int_t M, magma_int_t N, cuFloatComplex *SA, magma_int_t LDSA, cuDoubleComplex *A, magma_int_t LDA, magma_int_t *INFO)
 {
 /*
   Purpose

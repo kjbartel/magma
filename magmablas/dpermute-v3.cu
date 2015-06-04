@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:01 2012
+       @generated d Thu Jun 28 12:31:18 2012
 
 */
 #include "common_magma.h"
@@ -39,7 +39,8 @@ typedef struct {
 extern "C" void dlaswp3( dlaswp_params_t2 &params );
 
 extern "C" void 
-magmablas_dpermute_long3( double *dAT, int lda, int *ipiv, int nb, int ind )
+magmablas_dpermute_long3( double *dAT, magma_int_t lda,
+                          magma_int_t *ipiv, magma_int_t nb, magma_int_t ind )
 {
         int k;
         for( k = 0; k < nb-BLOCK_SIZE; k += BLOCK_SIZE )

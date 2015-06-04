@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:04 2012
+       @generated d Thu Jun 28 12:31:21 2012
 
 */
 #include "common_magma.h"
@@ -176,9 +176,9 @@ __global__ void dtranspose2_32( double *B, int ldb,
 //             Note that ldi >= m and ldo >= n.
 //
 extern "C" void 
-magmablas_dtranspose2(double *odata, int ldo, 
-                      double *idata, int ldi, 
-                      int m, int n )
+magmablas_dtranspose2(double *odata, magma_int_t ldo, 
+                      double *idata, magma_int_t ldi, 
+                      magma_int_t m, magma_int_t n )
 {
     /* Quick return */
     if ( (m == 0) || (n == 0) )
@@ -192,9 +192,9 @@ magmablas_dtranspose2(double *odata, int ldo,
 }
 
 extern "C" void
-magmablas_dtranspose2s(double *odata, int ldo,
-                       double *idata, int ldi,
-                       int m, int n, cudaStream_t *stream )
+magmablas_dtranspose2s(double *odata, magma_int_t ldo,
+                       double *idata, magma_int_t ldi,
+                       magma_int_t m, magma_int_t n, cudaStream_t *stream )
 {
     /* Quick return */
     if ( (m == 0) || (n == 0) )

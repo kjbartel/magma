@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:04 2012
+       @generated c Thu Jun 28 12:31:21 2012
 
 */
 #include "common_magma.h"
@@ -65,9 +65,9 @@ __global__ void ctranspose_32( cuFloatComplex *B, int ldb, cuFloatComplex *A, in
 //             This version works when m and n are divisible by 32.
 //
 extern "C" void 
-magmablas_ctranspose(cuFloatComplex *odata, int ldo, 
-                     cuFloatComplex *idata, int ldi, 
-                     int m, int n )
+magmablas_ctranspose(cuFloatComplex *odata, magma_int_t ldo, 
+                     cuFloatComplex *idata, magma_int_t ldi, 
+                     magma_int_t m, magma_int_t n )
 {
         //assert( (m%32) == 0 && (n%32) == 0, "misaligned transpose" );
         dim3 threads( CSIZE_1SHARED, 8, 1 );

@@ -32,8 +32,6 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
 {
     magma_context_t *magma;
     MorseOption_t options;
-    PLASMA_desc A = dA->desc;
-    PLASMA_desc T = dT->desc;
 #if !defined(MORSE_NON_EXPLICIT_COPY)
     magma_desc_t descD;
     magma_desc_t *dD = &descD;
@@ -42,7 +40,7 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
     int k, m, n;
     int tempkm, tempkn, tempmm, tempnn;
     int ib;
-    int minMN = min(A.mt, A.nt);
+    int minMN = min(dA->mt, dA->nt);
     size_t h_work_size, d_work_size;
 
     magma = magma_context_self();
@@ -50,17 +48,17 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
       return;
 
     /* Be sure the global NB is equal to the one used in those matrices */
-    MAGMA_NB = T.nb;
+    MAGMA_NB = dT->nb;
 
     morse_options_init( &options, magma, sequence, request );
     
 #if !defined(MORSE_NON_EXPLICIT_COPY)
-    magma_zdesc_alloc2( descD, A.mb, A.nb, minMN*A.mb, A.nb, 0, 0, minMN*A.mb, A.nb );
+    magma_zdesc_alloc2( descD, dA->mb, dA->nb, minMN*dA->mb, dA->nb, 0, 0, minMN*dA->mb, dA->nb );
 #endif
 
     ib = MAGMA_IB;
-    h_work_size  = A.mb;       /* size of tau                           */
-    h_work_size += T.nb * ib;  /* workspace required by unmqr and tsmqr */
+    h_work_size  = dA->mb;       /* size of tau                           */
+    h_work_size += dT->nb * ib;  /* workspace required by unmqr and tsmqr */
     h_work_size *= sizeof(PLASMA_Complex64_t);
     d_work_size  = 0;
 
@@ -86,8 +84,8 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
     morse_options_ws_alloc( &options, h_work_size, d_work_size );
     
     for (k = 0; k < minMN; k++) {
-        tempkm = k == A.mt-1 ? A.m-k*A.mb : A.mb;
-        tempkn = k == A.nt-1 ? A.n-k*A.nb : A.nb;
+        tempkm = k == dA->mt-1 ? dA->m-k*dA->mb : dA->mb;
+        tempkn = k == dA->nt-1 ? dA->n-k*dA->nb : dA->nb;
         MORSE_zgeqrt(
             &options,
             tempkm, tempkn, ib,
@@ -95,7 +93,7 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
             T(k, k));
 
  #if !defined(MORSE_NON_EXPLICIT_COPY)
-        if ( k < (A.nt-1) ) {
+        if ( k < (dA->nt-1) ) {
             MORSE_zlacpy(
                 &options,
                 PlasmaUpperLower, tempkm, tempkn,
@@ -104,8 +102,8 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
         }
 #endif
 
-       for (n = k+1; n < A.nt; n++) {
-            tempnn = n == A.nt-1 ? A.n-n*A.nb : A.nb;
+       for (n = k+1; n < dA->nt; n++) {
+            tempnn = n == dA->nt-1 ? dA->n-n*dA->nb : dA->nb;
             MORSE_zunmqr(
                 &options,
                 PlasmaLeft, PlasmaConjTrans,
@@ -114,8 +112,8 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
                 T(k, k),
                 A(k, n));
         }
-        for (m = k+1; m < A.mt; m++) {
-            tempmm = m == A.mt-1 ? A.m-m*A.mb : A.mb;
+        for (m = k+1; m < dA->mt; m++) {
+            tempmm = m == dA->mt-1 ? dA->m-m*dA->mb : dA->mb;
             MORSE_ztsqrt(
                 &options,
                 tempmm, tempkn, ib,
@@ -123,12 +121,12 @@ void magma_pzgeqrf(magma_desc_t *dA, magma_desc_t *dT,
                 A(m, k),
                 T(m, k));
 
-            for (n = k+1; n < A.nt; n++) {
-                tempnn = n == A.nt-1 ? A.n-n*A.nb : A.nb;
+            for (n = k+1; n < dA->nt; n++) {
+                tempnn = n == dA->nt-1 ? dA->n-n*dA->nb : dA->nb;
                 MORSE_ztsmqr(
                     &options,
                     PlasmaLeft, PlasmaConjTrans,
-                    A.mb, tempnn, tempmm, tempnn, A.nb, ib,
+                    dA->mb, tempnn, tempmm, tempnn, dA->nb, ib,
                     A(k, n),
                     A(m, n),
                     A(m, k),

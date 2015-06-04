@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:18:03 2012
+       @generated d Thu Jun 28 12:31:17 2012
 
 */
 #include "common_magma.h"
@@ -728,8 +728,8 @@ extern "C" void dlansy_max (char uplo, int m, double *A , int lda , double *y){
 }
  
 extern "C" double 
-magmablas_dlansy(char norm, char uplo, int n, 
-                 double *A, int lda, double *WORK )
+magmablas_dlansy(char norm, char uplo, magma_int_t n, 
+                 double *A, magma_int_t lda, double *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {

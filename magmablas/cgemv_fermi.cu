@@ -1,9 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
+
+       @precisions normal d
+
 */
 #include "common_magma.h"
 
@@ -88,11 +91,11 @@ cgemvn_kernel2_fermi(int n, int m, int n1, cuFloatComplex alpha,  cuFloatComplex
 extern "C" void
 magmablas_cgemvn_fermi(int n, int m, cuFloatComplex alpha, cuFloatComplex *A, int lda, cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -214,11 +217,11 @@ extern "C" void
 magmablas_cgemvt_fermi(int m, int n, cuFloatComplex alpha, cuFloatComplex *A, int lda, 
                  cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -332,14 +335,14 @@ cgemvc_kernel_fermi(int m, int n, cuFloatComplex alpha, int n1, cuFloatComplex* 
 
 
 extern "C" void
-magmablas_cgemvc_fermi(int m, int n, cuFloatComplex alpha, cuFloatComplex *A, int lda, 
+magmablas_cgemvc_fermi(magma_int_t m, magma_int_t n, cuFloatComplex alpha, cuFloatComplex *A, magma_int_t lda, 
                  cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -381,7 +384,7 @@ magmablas_cgemvc_fermi(int m, int n, cuFloatComplex alpha, cuFloatComplex *A, in
 
 
 extern "C" void
-magmablas_cgemv_fermi(char flag, int m, int n, cuFloatComplex alpha, cuFloatComplex *A, int lda, cuFloatComplex *x, int incx, cuFloatComplex beta, cuFloatComplex *y, int incy ) 
+magmablas_cgemv_fermi(char flag, magma_int_t m, magma_int_t n, cuFloatComplex alpha, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *x, magma_int_t incx, cuFloatComplex beta, cuFloatComplex *y, magma_int_t incy ) 
 {
 
     if(beta.x==0 && beta.y==0)

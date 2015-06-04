@@ -32,9 +32,10 @@ static void cl_zgeqrt_cpu_func(void *descr[], void *cl_arg)
     PLASMA_Complex64_t *WORK;
 
     morse_starpu_ws_t *h_work;
+    morse_starpu_ws_t *d_work;
 
-    starpu_unpack_cl_args(cl_arg, &M, &N, &IB, &LDA, &LDT,
-                          &h_work, NULL);
+    starpu_codelet_unpack_args(cl_arg, &M, &N, &IB, &LDA, &LDT,
+                          &h_work, &d_work);
 
     /* descr[0] : tile from A, descr[1] : tile from T */
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
@@ -83,7 +84,7 @@ static void cl_zgeqrt_cuda_func(void *descr[], void *cl_arg)
     morse_starpu_ws_t *scratch_d_D;
     morse_starpu_ws_t *scratch_tau;
 
-    starpu_unpack_cl_args(cl_arg, &M, &N, &IB, &LDA, &LDT, 
+    starpu_codelet_unpack_args(cl_arg, &M, &N, &IB, &LDA, &LDT, 
                           &scratch_tau, &scratch_work, 
                           &scratch_h_work, &scratch_h_a, 
                           &scratch_h_T, &scratch_h_D, &scratch_d_D);
@@ -141,7 +142,7 @@ void MORSE_zgeqrt( MorseOption_t *options,
                    magma_desc_t *A, int Am, int An,
                    magma_desc_t *T, int Tm, int Tn)
 {
-    starpu_codelet *zgeqrt_codelet;
+    struct starpu_codelet *zgeqrt_codelet;
     void (*callback)(void*) = options->profiling ? cl_zgeqrt_callback : NULL;
     int lda = BLKLDD( A, Am );
     int ldt = BLKLDD( T, Tm );
@@ -154,18 +155,18 @@ void MORSE_zgeqrt( MorseOption_t *options,
     zgeqrt_codelet = &cl_zgeqrt;
 #endif
     
-    starpu_Insert_Task(
-            &cl_zgeqrt,
-            VALUE,  &m,      sizeof(int),
-            VALUE,  &n,      sizeof(int),
-            VALUE,  &ib,     sizeof(int),
-            INOUT,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-            VALUE,  &lda,    sizeof(int),
-            OUTPUT, BLKADDR( T, PLASMA_Complex64_t, Tm, Tn ),
-            VALUE,  &ldt,    sizeof(int),
-            VALUE,  &h_work, sizeof(morse_starpu_ws_t *),
-            VALUE,  &d_work, sizeof(morse_starpu_ws_t *),
-            PRIORITY, options->priority,
-            CALLBACK, callback, NULL,
+    starpu_insert_task(
+            zgeqrt_codelet,
+            STARPU_VALUE,  &m,      sizeof(int),
+            STARPU_VALUE,  &n,      sizeof(int),
+            STARPU_VALUE,  &ib,     sizeof(int),
+            STARPU_RW,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+            STARPU_VALUE,  &lda,    sizeof(int),
+            STARPU_W, BLKADDR( T, PLASMA_Complex64_t, Tm, Tn ),
+            STARPU_VALUE,  &ldt,    sizeof(int),
+            STARPU_VALUE,  &h_work, sizeof(morse_starpu_ws_t *),
+            STARPU_VALUE,  &d_work, sizeof(morse_starpu_ws_t *),
+            STARPU_PRIORITY, options->priority,
+            STARPU_CALLBACK, callback, NULL,
             0);
 }

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -24,11 +24,11 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -82,7 +82,7 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     cuDoubleComplex c_one = MAGMA_Z_ONE;
     cuDoubleComplex *work = NULL;
     char            trans_[2] = {trans, 0};
-    long int    notran = lapackf77_lsame(trans_, "N");
+    int notran = lapackf77_lsame(trans_, "N");
     magma_int_t i1, i2, inc;
 
     *info = 0;
@@ -109,8 +109,8 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         return *info;
     }
 
-    work = (cuDoubleComplex*)malloc(n * nrhs * sizeof(cuDoubleComplex));
-    if ( !work ) {
+    magma_zmalloc_cpu( &work, n * nrhs );
+    if ( work == NULL ) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }

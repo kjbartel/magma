@@ -29,11 +29,11 @@ extern char *diagstr[2];
 
 extern void *formatmap[6];
 
-int map_CM  (int m, int n, int mb, int nb, int i, int j);
+int map_CM  (int m, int i, int j);
+int map_RM  (int n, int i, int j);
 int map_CCRB(int m, int n, int mb, int nb, int i, int j);
 int map_CRRB(int m, int n, int mb, int nb, int i, int j);
 int map_RCRB(int m, int n, int mb, int nb, int i, int j);
 int map_RRRB(int m, int n, int mb, int nb, int i, int j);
-int map_RM  (int m, int n, int mb, int nb, int i, int j);
 
 #endif /* AUXILIARY_H */

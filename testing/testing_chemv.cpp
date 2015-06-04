@@ -1,18 +1,17 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
- *  @generated c Tue May 15 18:18:15 2012
+ *  @generated c Thu Jun 28 12:31:37 2012
  *
  **/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <cblas.h>
@@ -128,8 +127,8 @@ int main(int argc, char **argv)
         lda = ((m+31)/32)*32;
         flops = FLOPS( (float)m ) / 1e6;
 
-        printf(      "%5d ", m );
-        fprintf( fp, "%5d ", m );
+        printf(      "%5d ", (int) m );
+        fprintf( fp, "%5d ", (int) m );
 
         vecsize = m * incx;
         lapackf77_clarnv( &ione, ISEED, &vecsize, X );

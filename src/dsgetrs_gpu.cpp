@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated ds Tue May 15 18:17:50 2012
+       @generated ds Thu Jun 28 12:30:36 2012
 
 */
 #include "common_magma.h"
@@ -26,11 +26,11 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                   float  *dSX,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -47,7 +47,7 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
             Specifies the form of the system of equations:
             = 'N':  A * X = B  (No transpose)
             = 'T':  A'* X = B  (Transpose)
-            = 'C':  A'* X = B  (ugate transpose = Transpose)
+            = 'C':  A'* X = B  (Conjugate transpose = Transpose)
 
     N       (input) INTEGER   
             The order of the matrix A.  N >= 0.   
@@ -89,7 +89,7 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
 
     float cone = MAGMA_S_ONE;
     char            trans_[2] = {trans, 0};
-    long int    notran = lapackf77_lsame(trans_, "N");
+    int notran = lapackf77_lsame(trans_, "N");
     magma_int_t inc;
 
     *info = 0;

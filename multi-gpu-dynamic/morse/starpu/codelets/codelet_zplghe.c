@@ -31,7 +31,7 @@ static void cl_zplghe_cpu_func(void *descr[], void *cl_arg)
     int n0;
     unsigned long long int seed;
 
-    starpu_unpack_cl_args( cl_arg, &bump, &m, &n, &lda, &bigM, &m0, &n0, &seed );
+    starpu_codelet_unpack_args( cl_arg, &bump, &m, &n, &lda, &bigM, &m0, &n0, &seed );
 
     A = (PLASMA_Complex64_t *)STARPU_MATRIX_GET_PTR(descr[0]);
 
@@ -69,7 +69,7 @@ void MORSE_zplghe( MorseOption_t *options,
                    double bump, int m, int n, magma_desc_t *A, int Am, int An,
                    int bigM, int m0, int n0, unsigned long long int seed )
 {
-    starpu_codelet *zplghe_codelet;
+    struct starpu_codelet *zplghe_codelet;
     void (*callback)(void*) = options->profiling ? cl_zplghe_callback : NULL;
     int lda = BLKLDD( A, Am );
 
@@ -79,18 +79,18 @@ void MORSE_zplghe( MorseOption_t *options,
     zplghe_codelet = &cl_zplghe;
 #endif
     
-    starpu_Insert_Task(
-            &cl_zplghe,
-            VALUE,  &bump,  sizeof(double),
-            VALUE,  &m,     sizeof(int),
-            VALUE,  &n,     sizeof(int), 
-            OUTPUT,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
-            VALUE,  &lda,   sizeof(int),
-            VALUE,  &bigM,  sizeof(int),
-            VALUE,  &m0,    sizeof(int), 
-            VALUE,  &n0,    sizeof(int),
-            VALUE,  &seed,  sizeof(unsigned long long int), 
-            PRIORITY, options->priority,
-            CALLBACK, callback, NULL,
+    starpu_insert_task(
+            zplghe_codelet,
+            STARPU_VALUE,  &bump,  sizeof(double),
+            STARPU_VALUE,  &m,     sizeof(int),
+            STARPU_VALUE,  &n,     sizeof(int), 
+            STARPU_W,  BLKADDR( A, PLASMA_Complex64_t, Am, An ),
+            STARPU_VALUE,  &lda,   sizeof(int),
+            STARPU_VALUE,  &bigM,  sizeof(int),
+            STARPU_VALUE,  &m0,    sizeof(int), 
+            STARPU_VALUE,  &n0,    sizeof(int),
+            STARPU_VALUE,  &seed,  sizeof(unsigned long long int), 
+            STARPU_PRIORITY, options->priority,
+            STARPU_CALLBACK, callback, NULL,
             0);
 }

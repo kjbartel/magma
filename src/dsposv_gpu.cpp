@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated ds Tue May 15 18:17:50 2012
+       @generated ds Thu Jun 28 12:30:30 2012
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
                  double *dworkd, float *dworks,
                  magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

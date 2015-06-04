@@ -37,6 +37,10 @@ ZCODELETS_HEADER(tsqrt)
 ZCODELETS_HEADER(tstrf)
 ZCODELETS_HEADER(unmqr)
 
+ZCODELETS_HEADER(trtri)
+ZCODELETS_HEADER(lauum)
+ZCODELETS_HEADER(trmm)
+
 /*
  * CPU only functions
  */

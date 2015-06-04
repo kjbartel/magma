@@ -20,7 +20,7 @@
 #define B(m, n) dB, m, n
 #define L(m, n) dL, m, n
 
-#define IPIV(m,n) &(IPIV[(int64_t)A.nb*((int64_t)(m)+(int64_t)A.mt*(int64_t)(n))])
+#define IPIV(m,n) &(IPIV[(int64_t)dA->nb*((int64_t)(m)+(int64_t)dA->mt*(int64_t)(n))])
 
 /***************************************************************************//**
  *  Parallel forward substitution for tile LU - dynamic scheduling
@@ -30,13 +30,11 @@ void magma_pztrsmpl(magma_desc_t *dA, magma_desc_t *dB, magma_desc_t *dL, int *I
 {
     magma_context_t *magma;
     MorseOption_t options;
-    PLASMA_desc A = dA->desc;
-    PLASMA_desc B = dB->desc;
 
     int k, m, n;
     int tempkm, tempnn, tempkmin, tempmm, tempkn;
     int ib;
-    int maxk = min(A.mt, A.nt);
+    int maxk = min(dA->mt, dA->nt);
 
     magma = magma_context_self();
     if (sequence->status != MAGMA_SUCCESS)
@@ -47,11 +45,11 @@ void magma_pztrsmpl(magma_desc_t *dA, magma_desc_t *dB, magma_desc_t *dL, int *I
     ib = MAGMA_IB;
 
     for (k = 0; k < maxk; k++) {
-        tempkm   = k == A.mt-1 ? A.m-k*A.mb : A.mb;
-        tempkn   = k == A.nt-1 ? A.n-k*A.nb : A.nb;
-        tempkmin = k == maxk-1 ? min(A.m, A.n)-k*A.mb : A.mb;
-        for (n = 0; n < B.nt; n++) {
-            tempnn = n == B.nt-1 ? B.n-n*B.nb : B.nb;
+        tempkm   = k == dA->mt-1 ? dA->m-k*dA->mb : dA->mb;
+        tempkn   = k == dA->nt-1 ? dA->n-k*dA->nb : dA->nb;
+        tempkmin = k == maxk-1 ? min(dA->m, dA->n)-k*dA->mb : dA->mb;
+        for (n = 0; n < dB->nt; n++) {
+            tempnn = n == dB->nt-1 ? dB->n-n*dB->nb : dB->nb;
             MORSE_zgessm(
                 &options,
                 tempkm, tempnn, tempkmin, ib,
@@ -60,13 +58,13 @@ void magma_pztrsmpl(magma_desc_t *dA, magma_desc_t *dB, magma_desc_t *dL, int *I
                 A(k, k),
                 B(k, n));
         }
-        for (m = k+1; m < A.mt; m++) {
-            tempmm = m == A.mt-1 ? A.m-m*A.mb : A.mb;
-            for (n = 0; n < B.nt; n++) {
-                tempnn  = n == B.nt-1 ? B.n-n*B.nb : B.nb;
+        for (m = k+1; m < dA->mt; m++) {
+            tempmm = m == dA->mt-1 ? dA->m-m*dA->mb : dA->mb;
+            for (n = 0; n < dB->nt; n++) {
+                tempnn  = n == dB->nt-1 ? dB->n-n*dB->nb : dB->nb;
                 MORSE_zssssm(
                     &options,
-                    A.nb, tempnn, tempmm, tempnn, tempkn, ib,
+                    dA->nb, tempnn, tempmm, tempnn, tempkn, ib,
                     B(k, n),
                     B(m, n),
                     L(m, k),

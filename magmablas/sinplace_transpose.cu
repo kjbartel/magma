@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
         Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:05 2012
+       @generated s Thu Jun 28 12:31:22 2012
 
 */
 #include "common_magma.h"
@@ -103,7 +103,7 @@ __global__ void sinplace_T_odd( float *matrix, int lda, int half )
 } 
 
 extern "C" void 
-magmablas_sinplace_transpose( float *A, int lda, int n )
+magmablas_sinplace_transpose( float *A, magma_int_t lda, magma_int_t n )
 {
         dim3 threads( SSIZE_2SHARED, 16 );
         int in = n / SSIZE_2SHARED;

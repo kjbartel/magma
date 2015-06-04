@@ -1,12 +1,12 @@
 /*
- *  -- MAGMA (version 1.2.0) --
+ *  -- MAGMA (version 1.2.1) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     May 2012
+ *     June 2012
  *
  * @author Mark Gates
- * @generated s Tue May 15 18:18:23 2012
+ * @generated s Thu Jun 28 12:31:47 2012
  *
  **/
 
@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 #include <assert.h>
@@ -172,7 +171,7 @@ int main( int argc, char** argv )
         blasf77_saxpy( &size, &c_neg_one, C, &ione, R, &ione );
         error = lapackf77_slange( "Fro", &m, &n, R, &ldc, work ) / error;
         printf( "%5d %5d %5d  %-10s %-10s %-10s %-10s  %8.2e\n",
-                m, n, k, storev[iv], side[is], direct[id], trans[it], error );
+                (int) m, (int) n, (int) k, storev[iv], side[is], direct[id], trans[it], error );
     }}}}
     
     // Memory clean up

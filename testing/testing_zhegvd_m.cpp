@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     @author Raffaele Solca
 
@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
@@ -141,7 +140,6 @@ int main( int argc, char** argv)
     TESTING_MALLOC(    rwork,          double, lrwork);
     TESTING_MALLOC(    iwork,     magma_int_t, liwork);
     
-    printf("\n\n");
     printf("  N     CPU Time(s)    GPU Time(s)   MGPU Time(s) \n");
     printf("==================================================\n");
     for(i=0; i<4; i++){

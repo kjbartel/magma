@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:18:03 2012
+       @generated s Thu Jun 28 12:31:17 2012
 
 */
 #include "common_magma.h"
@@ -728,8 +728,8 @@ extern "C" void slansy_max (char uplo, int m, float *A , int lda , float *y){
 }
  
 extern "C" float 
-magmablas_slansy(char norm, char uplo, int n, 
-                 float *A, int lda, float *WORK )
+magmablas_slansy(char norm, char uplo, magma_int_t n, 
+                 float *A, magma_int_t lda, float *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {

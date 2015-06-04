@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated s Tue May 15 18:17:29 2012
+       @generated s Thu Jun 28 12:30:37 2012
 
 */
 #include "common_magma.h"
@@ -27,11 +27,11 @@ magma_sgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
                        float *dA, magma_int_t ldda,
                        magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -107,7 +107,11 @@ magma_sgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
 
     if (nb <= 1 || nb >= min(m,n)) {
         /* Use CPU code. */
-        work = (float*)malloc(m * n * sizeof(float));
+        magma_smalloc_cpu( &work, m * n );
+        if ( work == NULL ) {
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
+        }
         magma_sgetmatrix( m, n, dA, ldda, work, m );
         magma_sgetrf_nopiv(&m, &n, work, &m, info);
         magma_ssetmatrix( m, n, work, m, dA, ldda );
@@ -120,7 +124,7 @@ magma_sgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
 
         lddwork = maxm;
 
-        if (MAGMA_SUCCESS != magma_smalloc_host( &work, maxm*nb )) {
+        if (MAGMA_SUCCESS != magma_smalloc_pinned( &work, maxm*nb )) {
             *info = MAGMA_ERR_HOST_ALLOC;
             return *info;
         }
@@ -198,7 +202,7 @@ magma_sgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
                      c_one, inA(s,s),     ldda, 
                             inA(s,s)+nb0, ldda);
 
-        magma_free_host( work );
+        magma_free_pinned( work );
     }
 
     return *info;

@@ -35,7 +35,6 @@ ALLSRC= control.c 	\
 	context.c 	\
 	descriptor.c 	\
 	async.c		\
-	scheduler.c	\
 	options.c	\
 	profiling.c	\
 	workspace.c	\

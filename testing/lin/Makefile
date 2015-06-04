@@ -41,6 +41,7 @@ SRC =   zbdt01.f  \
         zhet21.f  \
         zhst01.f  \
         zunt01.f  \
+	zqpt01.f  \
         zqrt02.f  \
         zlarfy.f  \
         zstt21.f  \
@@ -50,6 +51,7 @@ SRC =   zbdt01.f  \
         chet21.f  \
         chst01.f  \
         cunt01.f  \
+	cqpt01.f  \
         cqrt02.f  \
         clarfy.f  \
         cstt21.f  \
@@ -59,6 +61,7 @@ SRC =   zbdt01.f  \
         dsyt21.f  \
         dhst01.f  \
         dort01.f  \
+	dqpt01.f  \
         dqrt02.f  \
         dlarfy.f  \
         dstt21.f  \
@@ -68,6 +71,7 @@ SRC =   zbdt01.f  \
         ssyt21.f  \
         shst01.f  \
         sort01.f  \
+	sqpt01.f  \
         sqrt02.f  \
         slarfy.f  \
         sstt21.f
@@ -258,36 +262,36 @@ liblapacktest.a: $(OBJ)
 	$(RANLIB) $@
 
 xlintsts : $(ALINTST) $(SLINTST) $(SCLNTST) ../fortran.o
-	$(FORT) $(OPTS)  $(ALINTST) $(SCLNTST) $(SLINTST) \
-        ../matgen/$(TMGLIB) -o xlintsts \
+	$(FORT) $(ALINTST) $(SCLNTST) $(SLINTST) \
+	../matgen/$(TMGLIB) -o xlintsts \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
 	-lcuda -lmagma -lmagmablas \
-        $(LIBDIR) $(LIB) 
+	$(LIBDIR) $(LIB) 
 
 xlintstc : $(ALINTST) $(CLINTST) $(SCLNTST) ../fortran.o
-	$(FORT) $(OPTS)  $(ALINTST) $(SCLNTST) $(CLINTST) \
-        ../matgen/$(TMGLIB) -o xlintstc \
+	$(FORT) $(ALINTST) $(SCLNTST) $(CLINTST) \
+	../matgen/$(TMGLIB) -o xlintstc \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
 	-lcuda -lmagma -lmagmablas \
-        $(LIBDIR) $(LIB) 
+	$(LIBDIR) $(LIB) 
  
 xlintstd : $(ALINTST) $(DLINTST) $(DZLNTST) ../fortran.o
-	$(FORT) $(OPTS) $(ALINTST) $(DLINTST) $(DZLNTST) \
-        ../matgen/$(TMGLIB) -o xlintstd \
+	$(FORT) $(ALINTST) $(DLINTST) $(DZLNTST) \
+	../matgen/$(TMGLIB) -o xlintstd \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
 	-lcuda -lmagma -lmagmablas \
-        $(LIBDIR) $(LIB) 
+	$(LIBDIR) $(LIB) 
  
 xlintstz : $(ALINTST) $(ZLINTST) $(DZLNTST) ../fortran.o
-	$(FORT) $(OPTS)  $(ALINTST) $(DZLNTST) $(ZLINTST) \
-        ../matgen/$(TMGLIB) -o xlintstz \
+	$(FORT) $(ALINTST) $(DZLNTST) $(ZLINTST) \
+	../matgen/$(TMGLIB) -o xlintstz \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
 	-lcuda -lmagma -lmagmablas -lmagma \
-        $(LIBDIR) $(LIB) 
+	$(LIBDIR) $(LIB) 
  
 $(ALINTST): $(FRC)
 $(SCLNTST): $(FRC)
@@ -306,21 +310,19 @@ clean:
 cleanall: clean
 	rm -f liblapacktest.a xlintsts xlintstd xlintstc xlintstz testing_results.txt
 
-schkaa.o: schkaa.f
-	cp ../../control/magma.mod . 
-	$(FORT) $(OPTS) -c $< -o $@
-
-dchkaa.o: dchkaa.f
-	$(FORT) $(OPTS) -c $< -o $@
-
-cchkaa.o: cchkaa.f
-	$(FORT) $(OPTS) -c $< -o $@
-
-zchkaa.o: zchkaa.f
-	$(FORT) $(OPTS) -c $< -o $@
- 
-.f.o: 
-	$(FORT) $(OPTS) $(INC) -c $< -o $@
+# These are handled by generic %.o: %.f rule in Makefile.internal
+#schkaa.o: schkaa.f
+#	cp ../../control/magma.mod . 
+#	$(FORT) $(F77OPTS) -c $< -o $@
+#
+#dchkaa.o: dchkaa.f
+#	$(FORT) $(F77OPTS) -c $< -o $@
+#
+#cchkaa.o: cchkaa.f
+#	$(FORT) $(F77OPTS) -c $< -o $@
+#
+#zchkaa.o: zchkaa.f
+#	$(FORT) $(F77OPTS) -c $< -o $@
 
 ../fortran.o : $(CUDADIR)/src/fortran.c
 	$(CC) $(OPTS) $(INC) -c $< -o $@

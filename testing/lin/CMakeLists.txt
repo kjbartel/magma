@@ -1,16 +1,70 @@
-set(ALINTST  
+###
+#
+# @file      : CMakeLists.txt
+#
+# @description   : Project MAGMA
+#
+# @version       :
+# @created by    : 
+# @creation date : 23-01-2012
+# @last modIFied : lun. 23 janv. 2012 19:44:56 CET
+#
+###
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+# List of sources files
+# ---------------------
+SET(SRCS zbdt01.f
+     zget22.f
+     zhet21.f
+     zhst01.f
+     zunt01.f
+     zqrt02.f
+     zlarfy.f
+     zstt21.f
+###
+     cbdt01.f
+     cget22.f
+     chet21.f
+     chst01.f
+     cunt01.f
+     cqrt02.f
+     clarfy.f
+     cstt21.f
+###
+     dbdt01.f
+     dget22.f
+     dsyt21.f
+     dhst01.f
+     dort01.f
+     dqrt02.f
+     dlarfy.f
+     dstt21.f
+###
+     sbdt01.f
+     sget22.f
+     ssyt21.f
+     shst01.f
+     sort01.f
+     sqrt02.f
+     slarfy.f
+     sstt21.f
+     )
+
+SET(ALINTST  
    aladhd.f alaerh.f alaesm.f alahd.f alareq.f 
    alasum.f alasvm.f chkxer.f icopy.f ilaenv.f xlaenv.f xerbla.f)
 
-set(SCLNTST slaord.f)
+SET(SCLNTST slaord.f)
 
-set(DZLNTST dlaord.f )
+SET(DZLNTST dlaord.f )
 
-set(SLINTST  schkaa.f 
+SET(SLINTST  schkaa.f 
    schkeq.f schkgb.f schkge.f schkgt.f 
    schklq.f schkpb.f schkpo.f schkps.f schkpp.f 
    schkpt.f schkq3.f schkql.f schkqp.f schkqr.f schkrq.f 
-   schksp.f schksy.f schktb.f schktp.f schktr.f 
+   schksp.f schktb.f schktp.f schktr.f 
    schktz.f 
    sdrvgt.f sdrvls.f sdrvpb.f 
    sdrvpp.f sdrvpt.f sdrvsp.f sdrvsy.f 
@@ -26,7 +80,7 @@ set(SLINTST  schkaa.f
    spot02.f spot03.f spot05.f spst01.f sppt01.f 
    sppt02.f sppt03.f sppt05.f sptt01.f sptt02.f 
    sptt05.f sqlt01.f sqlt02.f sqlt03.f sqpt01.f 
-   sqrt01.f sqrt01p.f sqrt02.f sqrt03.f sqrt11.f sqrt12.f 
+   sqrt01.f sqrt02.f sqrt03.f sqrt11.f sqrt12.f 
    sqrt13.f sqrt14.f sqrt15.f sqrt16.f sqrt17.f 
    srqt01.f srqt02.f srqt03.f srzt01.f srzt02.f 
    sspt01.f ssyt01.f 
@@ -35,13 +89,24 @@ set(SLINTST  schkaa.f
    strt02.f strt03.f strt05.f strt06.f 
    stzt01.f stzt02.f sgennd.f)
 
-if(USEXBLAS)
-  list(APPEND SLINTST sdrvgex.f serrgex.f sdrvgbx.f sdrvpox.f sebchvxx.f)
-else()
-  list(APPEND SLINTST sdrvge.f serrge.f sdrvgb.f sdrvpo.f)
-endif()
+IF(USEXBLAS)
+    LIST(APPEND SLINTST 
+            sdrvgex.f
+            serrgex.f
+            sdrvgbx.f
+            sdrvpox.f
+            sebchvxx.f
+            )
+ELSE()
+    LIST(APPEND SLINTST
+            sdrvge.f
+            serrge.f
+            sdrvgb.f
+            sdrvpo.f
+            )
+ENDIF()
 
-set(CLINTST  cchkaa.f 
+SET(CLINTST  cchkaa.f 
    cchkeq.f cchkgb.f cchkge.f cchkgt.f 
    cchkhe.f cchkhp.f cchklq.f cchkpb.f 
    cchkpo.f cchkps.f cchkpp.f cchkpt.f cchkq3.f cchkql.f cchkqp.f 
@@ -64,7 +129,7 @@ set(CLINTST  cchkaa.f
    cpot01.f cpot02.f cpot03.f cpot05.f cpst01.f 
    cppt01.f cppt02.f cppt03.f cppt05.f cptt01.f 
    cptt02.f cptt05.f cqlt01.f cqlt02.f cqlt03.f 
-   cqpt01.f cqrt01.f cqrt01p.f cqrt02.f cqrt03.f cqrt11.f 
+   cqpt01.f cqrt01.f cqrt02.f cqrt03.f cqrt11.f 
    cqrt12.f cqrt13.f cqrt14.f cqrt15.f cqrt16.f 
    cqrt17.f crqt01.f crqt02.f crqt03.f crzt01.f crzt02.f 
    csbmv.f  cspt01.f 
@@ -74,14 +139,26 @@ set(CLINTST  cchkaa.f
    ctrt02.f ctrt03.f ctrt05.f ctrt06.f 
    ctzt01.f ctzt02.f sget06.f cgennd.f)
 
-if(USEXBLAS)
-  list(APPEND 
-    CLINTST cdrvgex.f cdrvgbx.f cerrgex.f cdrvpox.f cerrpox.f cebchvxx.f)
-else()
-  list(APPEND CLINTST cdrvge.f cdrvgb.f cerrge.f cdrvpo.f cerrpo.f)
-endif()
+IF(USEXBLAS)
+    LIST(APPEND CLINTST 
+            cdrvgex.f
+            cdrvgbx.f
+            cerrgex.f
+            cdrvpox.f
+            cerrpox.f
+            cebchvxx.f
+            )
+ELSE()
+    LIST(APPEND CLINTST
+            cdrvge.f
+            cdrvgb.f
+            cerrge.f
+            cdrvpo.f
+            cerrpo.f
+             )
+ENDIF()
 
-set(DLINTST  dchkaa.f 
+SET(DLINTST  dchkaa.f 
    dchkeq.f dchkgb.f dchkge.f dchkgt.f 
    dchklq.f dchkpb.f dchkpo.f dchkps.f dchkpp.f 
    dchkpt.f dchkq3.f dchkql.f dchkqp.f dchkqr.f dchkrq.f 
@@ -101,7 +178,7 @@ set(DLINTST  dchkaa.f
    dpot02.f dpot03.f dpot05.f dpst01.f dppt01.f 
    dppt02.f dppt03.f dppt05.f dptt01.f dptt02.f 
    dptt05.f dqlt01.f dqlt02.f dqlt03.f dqpt01.f 
-   dqrt01.f dqrt01p.f dqrt02.f dqrt03.f dqrt11.f dqrt12.f 
+   dqrt01.f dqrt02.f dqrt03.f dqrt11.f dqrt12.f 
    dqrt13.f dqrt14.f dqrt15.f dqrt16.f dqrt17.f 
    drqt01.f drqt02.f drqt03.f drzt01.f drzt02.f 
    dspt01.f dsyt01.f 
@@ -110,15 +187,26 @@ set(DLINTST  dchkaa.f
    dtrt02.f dtrt03.f dtrt05.f dtrt06.f 
    dtzt01.f dtzt02.f dgennd.f)
 
-if(USEXBLAS)
-  list(APPEND 
-    DLINTST  ddrvgex.f ddrvgbx.f derrgex.f ddrvpox.f derrpox.f debchvxx.f)
-else()
-  list(APPEND
-    DLINTST  ddrvge.f ddrvgb.f derrge.f ddrvpo.f derrpo.f)
-endif()
+IF(USEXBLAS)
+    LIST(APPEND DLINTST
+            ddrvgex.f
+            ddrvgbx.f      
+            derrgex.f
+            ddrvpox.f
+            derrpox.f
+            debchvxx.f
+            )
+ELSE()
+    LIST(APPEND DLINTST
+            ddrvge.f
+            ddrvgb.f
+            derrge.f
+            ddrvpo.f
+            derrpo.f
+            )
+ENDIF()
 
-set(ZLINTST  zchkaa.f 
+SET(ZLINTST  zchkaa.f 
    zchkeq.f zchkgb.f zchkge.f zchkgt.f 
    zchkhe.f zchkhp.f zchklq.f zchkpb.f 
    zchkpo.f zchkps.f zchkpp.f zchkpt.f zchkq3.f zchkql.f zchkqp.f 
@@ -141,7 +229,7 @@ set(ZLINTST  zchkaa.f
    zpot01.f zpot02.f zpot03.f zpot05.f zpst01.f 
    zppt01.f zppt02.f zppt03.f zppt05.f zptt01.f 
    zptt02.f zptt05.f zqlt01.f zqlt02.f zqlt03.f 
-   zqpt01.f zqrt01.f zqrt01p.f zqrt02.f zqrt03.f zqrt11.f 
+   zqpt01.f zqrt01.f zqrt02.f zqrt03.f zqrt11.f 
    zqrt12.f zqrt13.f zqrt14.f zqrt15.f zqrt16.f 
    zqrt17.f zrqt01.f zrqt02.f zrqt03.f zrzt01.f zrzt02.f 
    zsbmv.f  zspt01.f 
@@ -151,73 +239,107 @@ set(ZLINTST  zchkaa.f
    ztrt02.f ztrt03.f ztrt05.f ztrt06.f 
    ztzt01.f ztzt02.f dget06.f zgennd.f)
 
-if(USEXBLAS)
-  list(APPEND
-    ZLINTST  zdrvgex.f zdrvgbx.f zerrgex.f zdrvpox.f zerrpox.f zebchvxx.f)
-else()
-  list(APPEND
-    ZLINTST  zdrvge.f zdrvgb.f zerrge.f zdrvpo.f zerrpo.f)
-endif()
+IF(USEXBLAS)
+    LIST(APPEND ZLINTST
+            zdrvgex.f
+            zdrvgbx.f
+            zerrgex.f
+            zdrvpox.f
+            zerrpox.f
+            zebchvxx.f
+            )
+ELSE()
+    LIST(APPEND ZLINTST
+            zdrvge.f
+            zdrvgb.f
+            zerrge.f
+            zdrvpo.f
+            zerrpo.f
+            )
+ENDIF()
 
-set(DSLINTST  dchkab.f 
-	ddrvab.f ddrvac.f derrab.f derrac.f dget08.f          
+SET(DSLINTST  dchkab.f 
+	ddrvab.f ddrvac.f derrab.f derrac.f dget08.f      
 	alaerh.f alahd.f  aladhd.f alareq.f 
 	chkxer.f dlarhs.f dlatb4.f xerbla.f 
 	dget02.f dpot06.f)
 
-set(ZCLINTST  zchkab.f 
-	zdrvab.f zdrvac.f zerrab.f zerrac.f zget08.f          
+SET(ZCLINTST  zchkab.f 
+	zdrvab.f zdrvac.f zerrab.f zerrac.f zget08.f      
 	alaerh.f alahd.f  aladhd.f alareq.f 
 	chkxer.f zget02.f zlarhs.f zlatb4.f 
 	zsbmv.f  xerbla.f zpot06.f zlaipd.f)
 
-set(SLINTSTRFP  schkrfp.f sdrvrfp.f sdrvrf1.f sdrvrf2.f sdrvrf3.f sdrvrf4.f serrrfp.f 
+SET(SLINTSTRFP  schkrfp.f sdrvrfp.f sdrvrf1.f sdrvrf2.f sdrvrf3.f sdrvrf4.f serrrfp.f 
 	slatb4.f slarhs.f sget04.f spot01.f spot03.f spot02.f 
 	chkxer.f xerbla.f alaerh.f aladhd.f alahd.f alasvm.f )
 
-set(DLINTSTRFP  dchkrfp.f ddrvrfp.f ddrvrf1.f ddrvrf2.f ddrvrf3.f ddrvrf4.f derrrfp.f 
+SET(DLINTSTRFP  dchkrfp.f ddrvrfp.f ddrvrf1.f ddrvrf2.f ddrvrf3.f ddrvrf4.f derrrfp.f 
 	dlatb4.f dlarhs.f dget04.f dpot01.f dpot03.f dpot02.f 
 	chkxer.f xerbla.f alaerh.f aladhd.f alahd.f alasvm.f )
 
-set(CLINTSTRFP  cchkrfp.f cdrvrfp.f cdrvrf1.f cdrvrf2.f cdrvrf3.f cdrvrf4.f cerrrfp.f 
+SET(CLINTSTRFP  cchkrfp.f cdrvrfp.f cdrvrf1.f cdrvrf2.f cdrvrf3.f cdrvrf4.f cerrrfp.f 
   claipd.f clatb4.f clarhs.f csbmv.f cget04.f cpot01.f cpot03.f cpot02.f 
   chkxer.f xerbla.f alaerh.f aladhd.f alahd.f alasvm.f )
 
-set(ZLINTSTRFP  zchkrfp.f zdrvrfp.f zdrvrf1.f zdrvrf2.f zdrvrf3.f zdrvrf4.f zerrrfp.f 
+SET(ZLINTSTRFP  zchkrfp.f zdrvrfp.f zdrvrf1.f zdrvrf2.f zdrvrf3.f zdrvrf4.f zerrrfp.f 
   zlatb4.f zlaipd.f zlarhs.f zsbmv.f zget04.f zpot01.f zpot03.f zpot02.f 
   chkxer.f xerbla.f alaerh.f aladhd.f alahd.f alasvm.f )
 
-macro(add_lin_executable name )
-  add_executable(${name} ${ARGN})
-  target_link_libraries(${name} tmglib lapack)
-endmacro(add_lin_executable)
 
-add_lin_executable(xlintsts ${ALINTST} ${SCLNTST} ${SLINTST} 
-  ${SECOND_SRC} )
+# Create liblapacktest.a
+# ----------------------
+ADD_LIBRARY(lapacktest ${SRCS})
+SET_PROPERTY(TARGET lapacktest PROPERTY LINKER_LANGUAGE Fortran)
+TARGET_LINK_LIBRARIES(lapacktest tmglib)
+FOREACH(_external_package "blas" "lapack" "plasma")
+    STRING(TOUPPER "${_external_package}" _NAMEVAR)
+    IF(DEFINED ${_NAMEVAR}_BUILD_MODE)
+        ADD_DEPENDENCIES(lapacktest ${_external_package}_install)
+    ENDIF()
+ENDFOREACH()
 
-add_lin_executable(xlintstc  ${ALINTST} ${CLINTST} ${SCLNTST}
-  ${SECOND_SRC} )
- 
-add_lin_executable(xlintstd  ${ALINTST} ${DLINTST} ${DZLNTST}
-  ${DSECOND_SRC})
-add_lin_executable(xlintstz  ${ALINTST} ${ZLINTST} ${DZLNTST}
-  ${DSECOND_SRC})
- 
-add_lin_executable(xlintstds ${DSLINTST}
-		${SECOND_SRC} 
-		${DSECOND_SRC} )
-add_lin_executable(xlintstzc ${ZCLINTST}
-		${SECOND_SRC} 
-		${DSECOND_SRC} )
- 
-add_lin_executable(xlintstrfs ${SLINTSTRFP}
-		${SECOND_SRC})
- 
-add_lin_executable(xlintstrfd ${DLINTSTRFP}
-  ${DSECOND_SRC})
- 
-add_lin_executable(xlintstrfc  ${CLINTSTRFP}
-  ${SECOND_SRC})
-add_lin_executable(xlintstrfz ${ZLINTSTRFP}
-  ${DSECOND_SRC})
+# Install step of liblapacktest.a
+# -------------------------------
+INSTALL(TARGETS lapacktest
+    DESTINATION lib)
 
+# Create tests
+# ------------
+#MACRO(add_lin_executable _NAME )
+#  ADD_EXECUTABLE(${_NAME} ${ARGN})
+#  TARGET_LINK_LIBRARIES(${_NAME} tmg ${EXTRA_LIBS})
+#ENDMACRO(add_lin_executable)
+#
+#add_lin_executable(xlintsts ${ALINTST} ${SCLNTST} ${SLINTST} 
+#  ${SECOND_SRC} )
+#
+#add_lin_executable(xlintstc  ${ALINTST} ${CLINTST} ${SCLNTST}
+#  ${SECOND_SRC} )
+# 
+#add_lin_executable(xlintstd  ${ALINTST} ${DLINTST} ${DZLNTST}
+#  ${DSECOND_SRC})
+#add_lin_executable(xlintstz  ${ALINTST} ${ZLINTST} ${DZLNTST}
+#  ${DSECOND_SRC})
+# 
+#add_lin_executable(xlintstds ${DSLINTST}
+#		${SECOND_SRC} 
+#		${DSECOND_SRC} )
+#add_lin_executable(xlintstzc ${ZCLINTST}
+#		${SECOND_SRC} 
+#		${DSECOND_SRC} )
+# 
+#add_lin_executable(xlintstrfs ${SLINTSTRFP}
+#		${SECOND_SRC})
+# 
+#add_lin_executable(xlintstrfd ${DLINTSTRFP}
+#  ${DSECOND_SRC})
+# 
+#add_lin_executable(xlintstrfc  ${CLINTSTRFP}
+#  ${SECOND_SRC})
+#add_lin_executable(xlintstrfz ${ZLINTSTRFP}
+#  ${DSECOND_SRC})
+
+###
+### END CMakeLists.txt
+###

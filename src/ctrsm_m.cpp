@@ -1,16 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Raffaele Solca
 
-       @generated c Tue May 15 18:17:49 2012
+       @generated c Thu Jun 28 12:31:03 2012
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
 
 extern "C"
@@ -41,7 +39,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
     non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
 
 
-       op( A ) = A   or   op( A ) = A'   or   op( A ) = conjfg( A' ).
+       op( A ) = A   or   op( A ) = A'   or   op( A ) = conj( A' ).
 
     The matrix X is overwritten on B.
 
@@ -79,7 +77,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
 
                 TRANSA = 'T' or 't'   op( A ) = A'.
 
-                TRANSA = 'C' or 'c'   op( A ) = conjfg( A' ).
+                TRANSA = 'C' or 'c'   op( A ) = conj( A' ).
 
              Unchanged on exit.
 
@@ -171,8 +169,8 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
     cuFloatComplex  c_one     = MAGMA_C_ONE;
     cuFloatComplex  c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex  alpha_;
-    cuFloatComplex* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][3];
+    cuFloatComplex* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][3];
     magma_int_t lside;
     magma_int_t upper;
     magma_int_t notransp;
@@ -279,7 +277,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
 
                 //left upper notranspose
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     nloc[igpu] = 0;
 
@@ -352,7 +350,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
             {
                 //left lower notranspose
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     nloc[igpu] = 0;
 
@@ -430,9 +428,9 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
 
             if (upper) {
 
-                //left upper transpose or conjftranspose
+                //left upper transpose or conj transpose
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     nloc[igpu] = 0;
 
@@ -504,9 +502,9 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
             else
             {
 
-                //left lower transpose or conjftranspose
+                //left lower transpose or conj transpose
 
-                magma_int_t nloc[N_MAX_GPU];
+                magma_int_t nloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     nloc[igpu] = 0;
 
@@ -586,7 +584,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
             if (upper) {
 
                 //right upper notranspose
-                magma_int_t mloc[N_MAX_GPU];
+                magma_int_t mloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     mloc[igpu] = 0;
 
@@ -659,7 +657,7 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
             {
 
                 //right lower notranspose
-                magma_int_t mloc[N_MAX_GPU];
+                magma_int_t mloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     mloc[igpu] = 0;
 
@@ -735,8 +733,8 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
 
             if (upper) {
 
-                //right upper transpose or conjftranspose
-                magma_int_t mloc[N_MAX_GPU];
+                //right upper transpose or conj transpose
+                magma_int_t mloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     mloc[igpu] = 0;
 
@@ -807,8 +805,8 @@ magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
             else
             {
 
-                //right lower transpose or conjftranspose
-                magma_int_t mloc[N_MAX_GPU];
+                //right lower transpose or conj transpose
+                magma_int_t mloc[MagmaMaxGPUs];
                 for(igpu = 0; igpu < nrgpu; ++igpu)
                     mloc[igpu] = 0;
 

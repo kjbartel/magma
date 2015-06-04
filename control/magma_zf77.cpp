@@ -1,26 +1,15 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
 */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <stddef.h>
-#include <stdlib.h>
-#if defined(__GNUC__)
-#include <stdint.h>
-#endif /* __GNUC__ */
-#include <cuda.h>
-#include <cuda_runtime_api.h>
-#include <cublas.h>
-#include "magma.h"
+#include "common_magma.h"
 
 /* 
  * typedef comming from fortran.h file provided in $CUDADIR/src directory
@@ -68,6 +57,7 @@ typedef size_t devptr_t;
 #define MAGMAF_ZGEQRF  MAGMA_FORTRAN_NAME(zgeqrf,  ZGEQRF )
 #define MAGMAF_ZGESV   MAGMA_FORTRAN_NAME(zgesv,   ZGESV  )
 #define MAGMAF_ZGETRF  MAGMA_FORTRAN_NAME(zgetrf,  ZGETRF )
+#define MAGMAF_ZHEGST  MAGMA_FORTRAN_NAME(zhegst,  ZHEGST )
 #define MAGMAF_ZLATRD  MAGMA_FORTRAN_NAME(zlatrd,  ZLATRD )
 #define MAGMAF_ZLAHR2  MAGMA_FORTRAN_NAME(zlahr2,  ZLAHR2 )
 #define MAGMAF_ZLAHRU  MAGMA_FORTRAN_NAME(zlahru,  ZLAHRU )
@@ -97,6 +87,7 @@ typedef size_t devptr_t;
 #define MAGMAF_ZGETRL_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrl,  ZGETRL ) 
 #define MAGMAF_ZGETRF_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrf,  ZGETRF ) 
 #define MAGMAF_ZGETRS_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrs,  ZGETRS ) 
+#define MAGMAF_ZHEGST_GPU  MAGMA_GPU_FORTRAN_NAME(zhegst,  ZHEGST )
 #define MAGMAF_ZLABRD_GPU  MAGMA_GPU_FORTRAN_NAME(zlabrd,  ZLABRD ) 
 #define MAGMAF_ZLARFB_GPU  MAGMA_GPU_FORTRAN_NAME(zlarfb,  ZLARFB ) 
 #define MAGMAF_ZPOSV_GPU   MAGMA_GPU_FORTRAN_NAME(zposv,   ZPOSV  )  
@@ -193,6 +184,13 @@ void MAGMAF_ZGETRF( magma_int_t *m, magma_int_t *n, cuDoubleComplex *A,
     magma_zgetrf( *m, *n, A, 
                   *lda, ipiv, 
                   info);
+}
+
+void MAGMAF_ZHEGST( magma_int_t *itype, char *uplo, magma_int_t *n,
+                    cuDoubleComplex *A, magma_int_t *lda,
+                    cuDoubleComplex *B, magma_int_t *ldb, magma_int_t *info )
+{
+    magma_zhegst( *itype, *uplo, *n, A, *lda, B, *ldb, info );
 }
 
 // void MAGMAF_ZLATRD( char *uplo, magma_int_t *n, magma_int_t *nb, cuDoubleComplex *a, 
@@ -545,6 +543,15 @@ void MAGMAF_ZGETRS_GPU( char *trans, magma_int_t *n, magma_int_t *nrhs,
     magma_zgetrs_gpu( trans[0], *n, *nrhs,  
                       DEVPTR(dA), *ldda, ipiv,  
                       DEVPTR(dB), *lddb, info);
+}
+
+void MAGMAF_ZHEGST_GPU( magma_int_t *itype, char *uplo, magma_int_t *n,
+                        devptr_t *dA, magma_int_t *ldda,
+                        devptr_t *dB, magma_int_t *lddb, magma_int_t *info )
+{
+    magma_zhegst_gpu( *itype, *uplo, *n,
+                      DEVPTR(dA), *ldda,
+                      DEVPTR(dB), *lddb, info );
 }
 
 void MAGMAF_ZLABRD_GPU( magma_int_t *m, magma_int_t *n, magma_int_t *nb, 

@@ -12,6 +12,8 @@
  */
 
 #include "common_magma.h"
+#include <cblas.h>
+
 //#include "magma_zbulgeinc.h"
 // === Define what BLAS to use ============================================
 #define PRECISION_z
@@ -23,13 +25,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- void findVTpos(int N, int NB, int Vblksiz, int sweep, int st, int *Vpos, int *TAUpos, int *Tpos, int *myblkid);
- void findVTsiz(int N, int NB, int Vblksiz, int *blkcnt, int *LDV);
-  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
+
+void findVTpos(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t sweep, magma_int_t st, magma_int_t *Vpos, magma_int_t *TAUpos, magma_int_t *Tpos, magma_int_t *myblkid);
+
+void findVTsiz(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t *blkcnt, magma_int_t *LDV);
+
+magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
 
 void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, 
                                 cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, 
                                 magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+
 void magma_ztrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
    
 void magma_ztrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
@@ -60,13 +66,13 @@ magma_zlarfxsym(magma_int_t N, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComp
   blasf77_zhemv("L",&N, TAU, A, &LDA, V, &IONE, &Z_ZERO, WORK, &IONE);
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
-   dtmp = Z_ZERO; 
-   for (j = 0; j < N ; j++)
-      dtmp = dtmp + MAGMA_Z_CNJG(WORK[j]) * V[j];  
-   // cblas_zdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
+   //dtmp = Z_ZERO;
+   //for (j = 0; j < N ; j++)
+   //   dtmp = dtmp + MAGMA_Z_CNJG(WORK[j]) * V[j];
+   cblas_zdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
-  dtmp = blasf77_zdotc(&N,WORK,&IONE,V,&IONE);
-#endif  
+  dtmp = cblas_zdotc(N, WORK, IONE, V, IONE);
+#endif
   /* je calcul 1/2 X'*V*t = 1/2*dtmp*tau  */
   dtmp = -dtmp * Z_HALF * (*TAU);
   /* je calcul W=X-1/2VX'Vt = X - dtmp*V */

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated d Tue May 15 18:17:35 2012
+       @generated d Thu Jun 28 12:30:45 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
                   double *hwork, magma_int_t lwork, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -94,7 +94,7 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     magma_int_t nb     = magma_get_dgeqrf_nb(m);
     magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
-    long int lquery = (lwork == -1);
+    int lquery = (lwork == -1);
 
     hwork[0] = MAGMA_D_MAKE( (double)lwkopt, 0. );
 

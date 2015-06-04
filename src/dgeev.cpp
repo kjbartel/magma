@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal d -> s
 
@@ -30,11 +30,11 @@ magma_dgeev(char jobvl, char jobvr, magma_int_t n,
             double *work, magma_int_t lwork,
             magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -365,9 +365,9 @@ magma_dgeev(char jobvl, char jobvr, magma_int_t n,
                 &vr[vr_offset], &ldvr, &work[iwrk], &i__1, info);
     }
 
-    /* If INFO > 0 from ZHSEQR, then quit */
+    /* If INFO > 0 from DHSEQR, then quit */
     if (*info > 0) {
-        fprintf(stderr, "ZHSEQR returned with info = %d\n", *info);
+        fprintf(stderr, "DHSEQR returned with info = %d\n", (int) *info);
         goto L50;
     }
 

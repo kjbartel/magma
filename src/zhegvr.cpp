@@ -1,9 +1,9 @@
 /*
-   -- MAGMA (version 1.2.0) --
+   -- MAGMA (version 1.2.1) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      May 2012
+      June 2012
  
       @author Raffaele Solca
 
@@ -40,11 +40,11 @@ magma_zhegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t liwork, magma_int_t *info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
     
     Purpose   
     =======   
@@ -282,15 +282,15 @@ magma_zhegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
     magma_int_t lddb = n;
     magma_int_t lddz = n;  
     
-    static magma_int_t lower;
-    static char trans[1];
-    static magma_int_t wantz;
-    static magma_int_t lquery;
-    static magma_int_t alleig, valeig, indeig;
+    magma_int_t lower;
+    char trans[1];
+    magma_int_t wantz;
+    magma_int_t lquery;
+    magma_int_t alleig, valeig, indeig;
     
-    static magma_int_t lwmin, lrwmin, liwmin;
+    magma_int_t lwmin, lrwmin, liwmin;
     
-    static cudaStream_t stream;
+    cudaStream_t stream;
     magma_queue_create( &stream );
     
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);

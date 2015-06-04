@@ -1,15 +1,13 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
     @precisions normal d -> s
 */
-#define N_MAX_GPU 8
-
 #include "common_magma.h"
 
 #define Q(ix, iy) (q + (ix) + ldq * (iy))
@@ -21,7 +19,7 @@ extern "C" {
                                double* q, magma_int_t ldq, double rho,
                                double* dlamda, double* q2, magma_int_t* indx,
                                magma_int_t* ctot, double* w, double* s, magma_int_t* indxq,
-                               double** dwork, cudaStream_t stream[N_MAX_GPU][2],
+                               double** dwork, cudaStream_t stream[MagmaMaxGPUs][2],
                                char range, double vl, double vu, magma_int_t il, magma_int_t iu,
                                magma_int_t* info );
 
@@ -39,16 +37,16 @@ extern "C" magma_int_t
 magma_dlaex1_m(magma_int_t nrgpu, magma_int_t n, double* d, double* q, magma_int_t ldq,
                magma_int_t* indxq, double rho, magma_int_t cutpnt,
                double* work, magma_int_t* iwork, double** dwork,
-               cudaStream_t stream[N_MAX_GPU][2],
+               cudaStream_t stream[MagmaMaxGPUs][2],
                char range, double vl, double vu,
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -135,7 +133,7 @@ magma_dlaex1_m(magma_int_t nrgpu, magma_int_t n, double* d, double* q, magma_int
             NB * ((N-N1) + (N-N1) / floor(nrgpu/2))
 
     STREAM  (device stream) cudaStream_t array,
-            dimension (N_MAX_GPU,2)
+            dimension (MagmaMaxGPUs,2)
 
     RANGE   (input) CHARACTER*1
             = 'A': all eigenvalues will be found.

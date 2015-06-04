@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:30 2012
+       @generated c Thu Jun 28 12:30:38 2012
 
 */
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======
@@ -82,7 +82,7 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     cuFloatComplex c_one = MAGMA_C_ONE;
     cuFloatComplex *work = NULL;
     char            trans_[2] = {trans, 0};
-    long int    notran = lapackf77_lsame(trans_, "N");
+    int notran = lapackf77_lsame(trans_, "N");
     magma_int_t i1, i2, inc;
 
     *info = 0;
@@ -109,8 +109,8 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         return *info;
     }
 
-    work = (cuFloatComplex*)malloc(n * nrhs * sizeof(cuFloatComplex));
-    if ( !work ) {
+    magma_cmalloc_cpu( &work, n * nrhs );
+    if ( work == NULL ) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }

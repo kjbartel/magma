@@ -1,21 +1,14 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:17:30 2012
+       @generated c Thu Jun 28 12:30:36 2012
 
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_ctrsm magmablas_ctrsm
-#endif
-// === End defining what BLAS to use =======================================
 
 extern "C" magma_int_t
 magma_cgesv_gpu( magma_int_t n, magma_int_t nrhs, 
@@ -24,11 +17,11 @@ magma_cgesv_gpu( magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose
     =======

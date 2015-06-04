@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
@@ -16,11 +16,11 @@ magma_ztsqrt_gpu(int *m, int *n,
                  cuDoubleComplex  *tau, cuDoubleComplex *work, 
                  int *lwork, cuDoubleComplex *dwork, int *info )
 {
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
     Purpose   
     =======   
@@ -57,7 +57,7 @@ magma_ztsqrt_gpu(int *m, int *n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.   
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using magma_malloc_host.
+            allocated using magma_malloc_pinned.
 
     LWORK   (input) INTEGER   
             The dimension of the array WORK.  LWORK >= (M+N+NB)*NB,   
@@ -112,7 +112,7 @@ magma_ztsqrt_gpu(int *m, int *n,
 
    int lwkopt = (*n+*m) * nb;
    work[0] = (cuDoubleComplex) lwkopt;
-   long int lquery = *lwork == -1;
+   int lquery = *lwork == -1;
    if (*m < 0) {
      *info = -1;
    } else if (*n < 0) {
@@ -137,7 +137,7 @@ magma_ztsqrt_gpu(int *m, int *n,
 
    int lhwork = *lwork - (*m)*nb;
 
-   static cudaStream_t stream[2];
+   cudaStream_t stream[2];
    magma_queue_create( &stream[0] );
    magma_queue_create( &stream[1] );
 

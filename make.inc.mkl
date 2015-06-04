@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 #
@@ -23,6 +23,7 @@ ARCHFLAGS = cr
 RANLIB    = ranlib
 
 OPTS      = -O3 -DADD_
+F77OPTS   = -O3 -DADD_ -cpp
 FOPTS     = -O3 -DADD_ -cpp
 NVOPTS    = --compiler-options -fno-strict-aliasing -DUNIX -O3 -DADD_
 LDOPTS    = -fPIC -nofor_main -Xlinker -zmuldefs
@@ -34,6 +35,3 @@ CUDADIR   = /usr/local/cuda
 LIBDIR    = -L$(MKLROOT)/lib/intel64 \
             -L$(CUDADIR)/lib64
 INC       = -I$(CUDADIR)/include
-
-#LIBMAGMA     = $(MAGMA_DIR)/lib/magma.a
-#LIBMAGMABLAS = $(MAGMA_DIR)/lib/magmablas.a

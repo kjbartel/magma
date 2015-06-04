@@ -1,32 +1,27 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_ztrsm magmablas_ztrsm
-#endif
-// === End defining what BLAS to use =======================================
+#include <assert.h>
 
 extern "C" magma_int_t
 magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs, 
                  cuDoubleComplex *A, magma_int_t lda, 
                  cuDoubleComplex *B, magma_int_t ldb, magma_int_t *info )
 {
-/*  -- magma (version 1.0) --
+/*  -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
  
     Purpose
     =======
@@ -83,6 +78,8 @@ magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
+    magma_int_t num_gpus, ldda, lddb;
+    
     *info = 0 ; 
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
         *info = -1; 
@@ -104,6 +101,38 @@ magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
         return *info;
     }
 
+    /* If single-GPU and allocation suceeds, use GPU interface. */
+    num_gpus = magma_num_gpus();
+    cuDoubleComplex *dA, *dB;
+    if ( num_gpus > 1 ) {
+        goto CPU_INTERFACE;
+    }
+    ldda = ((n+31)/32)*32;
+    lddb = ldda;
+    if ( MAGMA_SUCCESS != magma_zmalloc( &dA, ldda*n )) {
+        goto CPU_INTERFACE;
+    }
+    if ( MAGMA_SUCCESS != magma_zmalloc( &dB, lddb*nrhs )) {
+        magma_free( dA );
+        dA = NULL;
+        goto CPU_INTERFACE;
+    }
+    assert( num_gpus == 1 and dA != NULL and dB != NULL );
+    magma_zsetmatrix( n, n, A, lda, dA, ldda );
+    magma_zpotrf_gpu( uplo, n, dA, ldda, info );
+    magma_zgetmatrix( n, n, dA, ldda, A, lda );
+    if ( *info == 0 ) {
+        magma_zsetmatrix( n, nrhs, B, ldb, dB, lddb );
+        magma_zpotrs_gpu( uplo, n, nrhs, dA, ldda, dB, lddb, info );
+        magma_zgetmatrix( n, nrhs, dB, lddb, B, ldb );
+    }
+    magma_free( dA );
+    magma_free( dB );
+    return *info;
+
+CPU_INTERFACE:
+    /* If multi-GPU or allocation failed, use CPU interface and LAPACK.
+     * Faster to use LAPACK for potrs than to copy A to GPU. */
     magma_zpotrf( uplo, n, A, lda, info );
     if ( *info == 0 ) {
         lapackf77_zpotrs( &uplo, &n, &nrhs, A, &lda, B, &ldb, info );

@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      May 2012
+#      June 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -13,42 +13,50 @@ INC += -I$(MAGMA_DIR)/control
 
 ZHDR  = commonblas_z.h
 
-ZSRC  = \
-	zauxiliary.cu	\
-	zpermute.cu	\
-	zpermute-v2.cu	\
-	zpermute-v3.cu	\
-	zswap.cu	\
-	zswapblk.cu	\
-	zswapdblk.cu	\
-	zlacpy.cu	\
-	zlange.cu	\
-	zlanhe.cu	\
-	zlascl.cu	\
-	ztranspose.cu	\
-	ztranspose-v2.cu\
+# mostly alphabetic order
+ZSRC := \
+	zauxiliary.cu		\
+	zcaxpycp.cu		\
+	zclaswp.cu		\
+	zhemv_fermi.cu		\
+	zlacpy.cu		\
+	zlag2c.cu		\
+	clag2z.cu		\
+	zlange.cu		\
+	zlanhe.cu		\
+	zlascl.cu		\
+	zlat2c.cu		\
+	zpermute.cu		\
+	zpermute-v2.cu		\
+	zpermute-v3.cu		\
+	zswap.cu		\
+	zswapblk.cu		\
+	zswapdblk.cu		\
+	zsymmetrize.cu		\
+	zsymv_fermi.cu		\
+	csymv_tesla.cu		\
+	ssyr2k.cu		\
+	ztranspose.cu		\
+	ztranspose-v2.cu	\
 	zinplace_transpose.cu	\
 	zgetmatrix_transpose.cu	\
-	zgetmatrix_transpose2.cu\
 	zsetmatrix_transpose.cu	\
-	zsetmatrix_transpose2.cu\
-	zbcyclic.cu	\
-	zclaswp.cu	\
-	zcaxpycp.cu	\
-	zlag2c.cu	\
-	clag2z.cu	\
-	zlat2c.cu	\
-	strsm.cu	\
-	dtrsm.cu	\
-	ssyr2k.cu	\
-	csymv_tesla.cu	\
-	zhemv_fermi.cu	\
-	zsymv_fermi.cu	\
+	dtrsm.cu		\
+	strsm.cu		\
+
+# multi-GPU
+ZSRC += \
+	zbcyclic.cu		\
+	zhemm_mgpu.cpp		\
+	zher2k_mgpu.cpp		\
+	zgetmatrix_transpose_mgpu.cu	\
+	zsetmatrix_transpose_mgpu.cu	\
 
 # Card-specific versions that need precisions generated must be above in ZSRC,
 # so they are all put into Makefile.src in the release. The code is #ifdef'd
 # for the correct card.
 
+-include Makefile.local
 -include Makefile.src
 
 FERMISRC = \
@@ -102,25 +110,18 @@ ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC) \
 
 ifeq (${GPU_TARGET}, Tesla)
     ALLSRC += $(TESLASRC)
-    GPUOPT  = ${TESLAOPT}
 else ifeq (${GPU_TARGET}, Fermi)
     ALLSRC += $(FERMISRC)
-    GPUOPT  = ${FERMIOPT}
 endif
 
 ALLOBJ := $(ALLSRC:.cu=.cu_o) 
+ALLOBJ := $(ALLOBJ:.cpp=.o)
 
 all: $(LIBMAGMABLAS) 
 
 $(LIBMAGMABLAS): $(ALLHDR) $(ALLOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
-
-%.o: %.cpp 
-	$(CC) $(OPTS) $(INC) -c $< -o $@
-
-%.cu_o: %.cu
-	$(NVCC) $(NVOPTS) $(GPUOPT) $(INC) -c $< -o $@
 
 clean:
 	rm -f *.cu_o *.o *~ *.linkinfo

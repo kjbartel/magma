@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
        @author Stan Tomov
-       @generated d Tue May 15 18:18:06 2012
+       @generated d Thu Jun 28 12:31:23 2012
 */
 #include "common_magma.h"
 #define PRECISION_d
@@ -17,12 +17,13 @@
 //  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
-magmablas_dsetmatrix_1D_bcyclic( int m, int n,
-                                 double  *hA,   int lda,
-                                 double  *dA[], int ldda,
-                                 int num_gpus, int nb )
+magmablas_dsetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
+                                 double  *hA,   magma_int_t lda,
+                                 double  *dA[], magma_int_t ldda,
+                                 magma_int_t num_gpus, magma_int_t nb )
 {
-    int i, d, nk, cdevice;
+    magma_int_t i, d, nk;
+    magma_device_t cdevice;
 
     magma_getdevice( &cdevice );
 
@@ -44,12 +45,13 @@ magmablas_dsetmatrix_1D_bcyclic( int m, int n,
 //  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
-magmablas_dgetmatrix_1D_bcyclic( int m, int n,
-                                 double  *dA[], int ldda,
-                                 double  *hA,   int lda,
-                                 int num_gpus, int nb )
+magmablas_dgetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
+                                 double  *dA[], magma_int_t ldda,
+                                 double  *hA,   magma_int_t lda,
+                                 magma_int_t num_gpus, magma_int_t nb )
 {
-    int i, d, nk, cdevice;
+    magma_int_t i, d, nk;
+    magma_device_t cdevice;
 
     magma_getdevice( &cdevice );
 

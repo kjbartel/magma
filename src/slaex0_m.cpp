@@ -1,14 +1,13 @@
-/*  -- MAGMA (version 1.2.0) --
+/*  -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
     @author Raffaele Solca
 
-    @generated s Tue May 15 18:17:50 2012
+    @generated s Thu Jun 28 12:30:57 2012
 */
-#define N_MAX_GPU 8
 #include "common_magma.h"
 
 #define Q(ix, iy) (q + (ix) + ldq * (iy))
@@ -17,7 +16,7 @@ extern "C" {
     magma_int_t magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t ldq,
                                magma_int_t* indxq, float rho, magma_int_t cutpnt,
                                float* work, magma_int_t* iwork, float** dwork,
-                               cudaStream_t stream[N_MAX_GPU][2],
+                               cudaStream_t stream[MagmaMaxGPUs][2],
                                char range, float vl, float vu,
                                magma_int_t il, magma_int_t iu, magma_int_t* info);
 
@@ -36,11 +35,11 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    May 2012
+    June 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -56,7 +55,7 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
     Purpose
     =======
 
-    DLAEX0 computes all eigenvalues and the choosen eigenvectors of a
+    SLAEX0 computes all eigenvalues and the choosen eigenvectors of a
     symmetric tridiagonal matrix using the divide and conquer method.
 
     Arguments
@@ -129,8 +128,8 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
     magma_int_t curlvl, curprb, i, indxq;
     magma_int_t igpu, j, k, matsiz, msd2, smlsiz;
     magma_int_t submat, subpbs, tlvls;
-    float* dw[N_MAX_GPU];
-    cudaStream_t stream [N_MAX_GPU][2];
+    float* dw[MagmaMaxGPUs];
+    cudaStream_t stream [MagmaMaxGPUs][2];
     int gpu_b;
     magma_getdevice(&gpu_b);
 
@@ -228,9 +227,9 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
         lapackf77_ssteqr(char_I , &matsiz, &d[submat], &e[submat],
                          Q(submat, submat), &ldq, work, info);  // change to edc?
         if(*info != 0){
-            printf("info: %d\n, submat: %d\n", *info, submat);
+            printf("info: %d\n, submat: %d\n", (int) *info, (int) submat);
             *info = (submat+1)*(n+1) + submat + matsiz;
-            printf("info: %d\n", *info);
+            printf("info: %d\n", (int) *info);
             return MAGMA_SUCCESS;
         }
         k = 1;
@@ -268,7 +267,7 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
 
             // Merge lower order eigensystems (of size MSD2 and MATSIZ - MSD2)
             // into an eigensystem of size MATSIZ.
-            // DLAEX1 is used only for the full eigensystem of a tridiagonal
+            // SLAEX1 is used only for the full eigensystem of a tridiagonal
             // matrix.
 
             if (matsiz == n)

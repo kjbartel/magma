@@ -1,9 +1,9 @@
 /*
- *   -- MAGMA (version 1.2.0) --
+ *   -- MAGMA (version 1.2.1) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      May 2012
+ *      June 2012
  *
  * @author Mark Gates
  */
@@ -150,7 +150,7 @@ extern "C"
 void magma_event_record( magma_event_t event, magma_queue_t queue )
 {
     cudaError_t err;
-    err = cudaEventRecord( event );
+    err = cudaEventRecord( event, queue );
     check_error( err );
 }
 

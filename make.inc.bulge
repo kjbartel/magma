@@ -1,5 +1,5 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.0) --
+#   -- MAGMA (version 1.2.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
@@ -26,9 +26,10 @@ RANLIB    = ranlib
 
 
 
-OPTS      = -O3 -DADD_ 
-FOPTS     = -O3 -DADD_  -Wall -x f95-cpp-input
-NVOPTS    = --compiler-options -fno-strict-aliasing -DUNIX -O3 -DADD_
+OPTS      = -O3 -DADD_
+F77OPTS   = -O3 -DADD_ -Wall
+FOPTS     = -O3 -DADD_ -Wall -x f95-cpp-input
+NVOPTS    = -O3 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX
 LDOPTS    = -fPIC -Xlinker -zmuldefs
 
 
@@ -49,11 +50,3 @@ LIBDIR    = -L/mnt/scratch/sw/intel/11.1.069/mkl/lib/em64t \
 
 INC       =  -I$(CUDADIR)/include -I/mnt/scratch/sw/intel/11.1.069/mkl/include 
 #INC       =  -I$(CUDADIR)/include -I/mnt/scratch/sw/intel/11.1.069/mkl/include -I/home/haidar/magma/trunk/testing/checkdiag/include
-
-
-LIBMAGMA     = ../lib/libmagma.a
-LIBMAGMABLAS = ../lib/libmagmablas.a
-
-
-
-

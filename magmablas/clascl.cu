@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.0) --
+    -- MAGMA (version 1.2.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       May 2012
+       June 2012
 
-       @generated c Tue May 15 18:18:04 2012
+       @generated c Thu Jun 28 12:31:17 2012
 
 */
 #include "common_magma.h"
@@ -37,10 +37,10 @@ u_clascl (int m, int n, float mul, cuFloatComplex* A, int lda){
 
 
 extern "C" void
-magmablas_clascl(char type, int kl, int ku, 
+magmablas_clascl(char type, magma_int_t kl, magma_int_t ku, 
                  float cfrom, float cto,
-                 int m, int n, 
-                 cuFloatComplex *A, int lda, int *info )
+                 magma_int_t m, magma_int_t n, 
+                 cuFloatComplex *A, magma_int_t lda, magma_int_t *info )
 {
     int blocks;
     if (m % clascl_bs==0)
