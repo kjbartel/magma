@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:22 2011
+       @generated d Tue May 15 18:17:35 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
                  double *hwork, magma_int_t lwork, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -93,7 +93,7 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     double c_one     = MAGMA_D_ONE;
     double c_neg_one = MAGMA_D_NEG_ONE;
     double *dwork;
-    magma_int_t i, k, lddwork, rows, ib, ret;
+    magma_int_t i, k, lddwork, rows, ib;
     magma_int_t ione = 1;
 
     magma_int_t nb     = magma_get_dgeqrf_nb(m);
@@ -118,24 +118,24 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     k = min(m,n);
     if (k == 0) {
         hwork[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* B := Q' * B */
-    ret = magma_dormqr_gpu( MagmaLeft, MagmaTrans, 
-                            m, nrhs, n,
-                            a_ref(0,0), ldda, tau, 
-                            dB, lddb, hwork, lwork, dT, nb, info);
-    if ( (ret != MAGMA_SUCCESS) || ( *info != 0 ) ) {
-        return ret;
+    magma_dormqr_gpu( MagmaLeft, MagmaTrans, 
+                      m, nrhs, n,
+                      a_ref(0,0), ldda, tau, 
+                      dB, lddb, hwork, lwork, dT, nb, info );
+    if ( *info != 0 ) {
+        return *info;
     }
 
     /* Solve R*X = B(1:n,:) */
@@ -161,17 +161,16 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     }
       
     // update the solution vector
-    cublasSetMatrix(ib, nrhs, sizeof(double),
-                    hwork+rows*ib, rows, dwork+i, lddwork);
+    magma_dsetmatrix( ib, nrhs, hwork+rows*ib, rows, dwork+i, lddwork );
 
     // update c
     if (nrhs == 1)
-        cublasDgemv( MagmaNoTrans, i, ib, 
+        magma_dgemv( MagmaNoTrans, i, ib, 
                      c_neg_one, a_ref(0, i), ldda,
                                 dwork + i,   1, 
                      c_one,     dB,           1);
     else
-        cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+        magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                      i, nrhs, ib, 
                      c_neg_one, a_ref(0, i), ldda,
                                 dwork + i,   lddwork, 
@@ -186,23 +185,23 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             if (i + ib < n) {
                 if (nrhs == 1)
                     {
-                        cublasDgemv( MagmaNoTrans, ib, ib, 
+                        magma_dgemv( MagmaNoTrans, ib, ib, 
                                      c_one,  d_ref(i), ib,
                                              dB+i,      1, 
                                      c_zero, dwork+i,  1);
-                        cublasDgemv( MagmaNoTrans, i, ib, 
+                        magma_dgemv( MagmaNoTrans, i, ib, 
                                      c_neg_one, a_ref(0, i), ldda,
                                                 dwork + i,   1, 
                                      c_one,     dB,           1);
                     }
                 else
                     {
-                        cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+                        magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                                      ib, nrhs, ib, 
                                      c_one,  d_ref(i), ib,
                                              dB+i,      lddb, 
                                      c_zero, dwork+i,  lddwork);
-                        cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+                        magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                                      i, nrhs, ib, 
                                      c_neg_one, a_ref(0, i), ldda,
                                                 dwork + i,   lddwork, 
@@ -212,11 +211,11 @@ magma_dgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
         }
     }
 
-    cudaMemcpy2D(dB,    lddb*sizeof(double),
-                 dwork, lddwork*sizeof(double),
-                 (n)*sizeof(double), nrhs, cudaMemcpyDeviceToDevice);
+    magma_dcopymatrix( (n), nrhs,
+                       dwork, lddwork,
+                       dB,    lddb );
     
-    return MAGMA_SUCCESS;
+    return *info;
 }
 
 #undef a_ref

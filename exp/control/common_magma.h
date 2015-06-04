@@ -2,11 +2,11 @@
  *
  * @file common_magma.h
  *
- *  MAGMA (version 1.1) --
+ *  MAGMA (version 1.2.0) --
  *  Univ. of Tennessee, Knoxville
  *  Univ. of California, Berkeley
  *  Univ. of Colorado, Denver
- *  November 2011
+ *  May 2012
  *
  * @version 1.0.0
  * @author Mathieu Faverge

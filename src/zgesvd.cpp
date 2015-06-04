@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> c
 
@@ -20,11 +20,11 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              cuDoubleComplex *work, magma_int_t lwork_,
              double *rwork, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -223,7 +223,7 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         nb = magma_get_zgebrd_nb(*n);
 
         minwrk = ((*m)+(*n))*nb+(*n);
-        MAGMA_Z_SET2REAL(work[1], (double) minwrk);
+        MAGMA_Z_SET2REAL(work[0], (double) minwrk);
 
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
@@ -233,15 +233,15 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (*m == 0 || *n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     mnthr  = (magma_int_t)( (double)(min( m_, n_ )) * 1.6 );
@@ -3586,6 +3586,6 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         }
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_zgesvd */
 

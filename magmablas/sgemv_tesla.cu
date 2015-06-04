@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 #include "common_magma.h"
 
@@ -103,11 +103,11 @@ magmablas_sgemv_tesla(char trans,
                       float beta,
                       float *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -192,11 +192,11 @@ magmablas_sgemv_tesla(char trans,
 extern "C" void
 magmablas_sgemv2(magma_int_t n, magma_int_t m, float *A, magma_int_t lda, float *x, magma_int_t incx, float *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -436,11 +436,11 @@ extern "C" void
 magmablas_sgemvt1_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
                         float *x, float *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -483,11 +483,11 @@ extern "C" void
 magmablas_sgemvt2_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
                         float *x, float *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -531,11 +531,11 @@ extern "C" void
 magmablas_sgemvt_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda, 
                        float *x, float *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======

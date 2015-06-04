@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 
 #ifndef _MAGMA_AUXILIARY_
@@ -66,23 +66,17 @@ int magma_get_zhegst_nb(int m);
 magma_timestr_t get_current_time(void);
 double GetTimerValue(magma_timestr_t time_1, magma_timestr_t time_2);
 
-void printout_devices();
+double magma_wtime( void );
 
-void spanel_to_q(char uplo, int ib, float *a, int lda, float *work);
-void sq_to_panel(char uplo, int ib, float *a, int lda, float *work);
+void printout_devices();
 
 void swp2pswp(char trans, int n, int *ipiv, int *newipiv);
 
-void cpanel_to_q(char uplo, int ib, cuFloatComplex *a, int lda, cuFloatComplex *work);
-void cq_to_panel(char uplo, int ib, cuFloatComplex *a, int lda, cuFloatComplex *work);
-
-void dpanel_to_q(char uplo, int ib, double *a, int lda, double *work);
-void dq_to_panel(char uplo, int ib, double *a, int lda, double *work);
-
-void zpanel_to_q(char uplo, int ib, cuDoubleComplex *a, int lda, cuDoubleComplex *work);
-void zq_to_panel(char uplo, int ib, cuDoubleComplex *a, int lda, cuDoubleComplex *work);
-
 float getv(float *da);
+
+size_t magma_strlcpy(char *dst, const char *src, size_t siz);
+
+int magma_num_gpus( void );
 
 #ifdef __cplusplus
 }

@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated d Sun Nov 13 20:48:48 2011
+ * @generated d Tue May 15 18:18:16 2012
  *
  **/
 /* includes, system */
@@ -54,7 +54,7 @@ int main( int argc, char** argv)
     
     magma_int_t i, j, k, info, num_gpus0 = 1, num_gpus;
     const char *uplo     = MagmaLowerStr;
-    double mzone= MAGMA_D_NEG_ONE;
+    double c_neg_one = MAGMA_D_NEG_ONE;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     double      work[1], matnorm;
@@ -123,7 +123,7 @@ int main( int argc, char** argv)
        {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_D_SET2REAL( h_A[i*lda+i], ( MAGMA_D_GET_X(h_A[i*lda+i]) + 1.*N ) );
+                MAGMA_D_SET2REAL( h_A[i*lda+i], ( MAGMA_D_REAL(h_A[i*lda+i]) + 1.*N ) );
                 for(j=0; j<i; j++)
                    h_A[i*lda+j] = (h_A[j*lda+i]);
             }
@@ -149,8 +149,9 @@ int main( int argc, char** argv)
               k = (j/nb)%num_gpus;
               cudaSetDevice(k);
               nk = min(nb, N-j);
-              cublasSetMatrix( N, nk, sizeof(double), h_A+j*lda, lda,
-                               d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda);
+              magma_dsetmatrix( N, nk,
+                                h_A+j*lda,                       lda,
+                                d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda );
             }
           } else {
             for(j=0; j<N; j+=nb){
@@ -164,8 +165,9 @@ int main( int argc, char** argv)
 
               cudaSetDevice(k);
               nk = min(nb, N-j);
-              cublasSetMatrix( nk, N, sizeof(double), h_A+j, lda,
-                               d_lA[k]+j/(nb*num_gpus)*nb, ldn_local);
+              magma_dsetmatrix( nk, N,
+                                h_A+j,                      lda,
+                                d_lA[k]+j/(nb*num_gpus)*nb, ldn_local );
             }
           }
           cudaSetDevice(0);
@@ -189,9 +191,9 @@ int main( int argc, char** argv)
               k = (j/nb)%num_gpus;
               cudaSetDevice(k);
               nk = min(nb, N-j);
-              cublasGetMatrix( N, nk, sizeof(double),
-                               d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda,
-                               h_R+j*lda, lda);
+              magma_dgetmatrix( N, nk,
+                                d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda,
+                                h_R+j*lda,                       lda );
                 }
           } else {
             for(j=0; j<N; j+=nb){
@@ -205,9 +207,9 @@ int main( int argc, char** argv)
 
               cudaSetDevice(k);
               nk = min(nb, N-j);
-              cublasGetMatrix( nk, N, sizeof(double), 
-                               d_lA[k]+j/(nb*num_gpus)*nb, ldn_local,
-                                           h_R+j, lda );
+              magma_dgetmatrix( nk, N,
+                                d_lA[k]+j/(nb*num_gpus)*nb, ldn_local,
+                                h_R+j,                      lda );
             }
           }
           cudaSetDevice(0);
@@ -231,7 +233,7 @@ int main( int argc, char** argv)
            Check the result compared to LAPACK
            =================================================================== */
           matnorm = lapackf77_dlange("f", &N, &N, h_A, &lda, work);
-          blasf77_daxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+          blasf77_daxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
           printf("%5d    %6.2f         %6.2f        %e\n", 
                  size[i], cpu_perf, gpu_perf,
                  lapackf77_dlange("f", &N, &N, h_R, &lda, work) / matnorm);

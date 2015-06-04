@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z 
 
@@ -55,8 +55,8 @@ magmablas_zsymv_130_kernel2( magma_int_t m, cuDoubleComplex alpha,
     magma_int_t tx = threadIdx.x;
     magma_int_t i;
     
-    cuDoubleComplex zero = MAGMA_Z_ZERO;
-    cuDoubleComplex res  = MAGMA_Z_ZERO;
+    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
+    cuDoubleComplex res    = MAGMA_Z_ZERO;
 
     magma_int_t m1 = ((m - blockIdx.y)/threadSize) * threadSize;
 
@@ -74,7 +74,7 @@ magmablas_zsymv_130_kernel2( magma_int_t m, cuDoubleComplex alpha,
         }
         else 
         {
-            res += zero;
+            res += c_zero;
         }
     }        
 

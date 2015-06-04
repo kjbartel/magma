@@ -1,13 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
+       @author Raffaele Solca
 
-       @generated c Sun Nov 13 20:48:28 2011
+       @generated c Tue May 15 18:17:45 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +23,11 @@ magma_cheevd(char jobz, char uplo,
              magma_int_t *iwork, magma_int_t liwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======
@@ -78,7 +79,7 @@ magma_cheevd(char jobz, char uplo,
     LWORK   (input) INTEGER   
             The length of the array WORK.   
             If N <= 1,                LWORK must be at least 1.   
-            If JOBZ  = 'N' and N > 1, LWORK must be at least N + 1.   
+            If JOBZ  = 'N' and N > 1, LWORK must be at least N * (NB + 1).   
             If JOBZ  = 'V' and N > 1, LWORK must be at least 2*N + N**2.   
 
             If LWORK = -1, then a workspace query is assumed; the routine   
@@ -141,38 +142,39 @@ magma_cheevd(char jobz, char uplo,
 
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
-    static magma_int_t c__1 = 1;
-    static magma_int_t c_n1 = -1;
-    static magma_int_t c__0 = 0;
-    static float c_b18 = 1.;
+    magma_int_t c__1 = 1;
+    magma_int_t c_n1 = -1;
+    magma_int_t c__0 = 0;
+    float c_b18 = 1.;
     
-    magma_int_t a_dim1, a_offset;
     float d__1;
-
-    static float eps;
-    static magma_int_t inde;
-    static float anrm;
-    static magma_int_t imax;
-    static float rmin, rmax;
-    static float sigma;
-    static magma_int_t iinfo, lwmin;
-    static magma_int_t lower;
-    static magma_int_t llrwk;
-    static magma_int_t wantz;
-    static magma_int_t indwk2, llwrk2;
-    static magma_int_t iscale;
-    static float safmin;
-    static float bignum;
-    static magma_int_t indtau;
-    static magma_int_t indrwk, indwrk, liwmin;
-    static magma_int_t lrwmin, llwork;
-    static float smlnum;
-    static magma_int_t lquery;
-
+    
+    float eps;
+    magma_int_t inde;
+    float anrm;
+    magma_int_t imax;
+    float rmin, rmax;
+    float sigma;
+    magma_int_t iinfo, lwmin;
+    magma_int_t lower;
+    magma_int_t llrwk;
+    magma_int_t wantz;
+    magma_int_t indwk2, llwrk2;
+    magma_int_t iscale;
+    float safmin;
+    float bignum;
+    magma_int_t indtau;
+    magma_int_t indrwk, indwrk, liwmin;
+    magma_int_t lrwmin, llwork;
+    float smlnum;
+    magma_int_t lquery;
+    
+    float* dwork;
+    
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || lrwork == -1 || liwork == -1;
-
+    
     *info = 0;
     if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
         *info = -1;
@@ -183,15 +185,23 @@ magma_cheevd(char jobz, char uplo,
     } else if (lda < max(1,n)) {
         *info = -5;
     }
-
-    lapackf77_cheevd(jobz_, uplo_, &n, 
-                     a, &lda, w, work, &c_n1, 
-                     rwork, &c_n1, iwork, &c_n1, info);
-
-    lwmin  = (magma_int_t)MAGMA_C_REAL(work[0]);
-    lrwmin = (magma_int_t)rwork[0];
-    liwmin = (magma_int_t)iwork[0];
-
+    
+    magma_int_t nb = magma_get_chetrd_nb(n); 
+    
+    if (wantz) {
+        lwmin = 2 * n + n * n;
+        lrwmin = 1 + 5 * n + 2 * n * n;
+        liwmin = 5 * n + 3;
+    } else {
+        lwmin = n * (nb + 1);
+        lrwmin = n;
+        liwmin = 1;
+    }
+    
+    MAGMA_C_SET2REAL(work[0],(float)lwmin);
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
+    
     if ((lwork < lwmin) && !lquery) {
         *info = -8;
     } else if ((lrwork < lrwmin) && ! lquery) {
@@ -199,36 +209,28 @@ magma_cheevd(char jobz, char uplo,
     } else if ((liwork < liwmin) && ! lquery) {
         *info = -12;
     }
-
+    
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
-
+    
     /* Quick return if possible */
     if (n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
-
+    
     if (n == 1) {
         w[0] = MAGMA_C_REAL(a[0]);
         if (wantz) {
             a[0] = MAGMA_C_ONE;
         }
-        return MAGMA_SUCCESS;
+        return *info;
     }
-
-    a_dim1 = lda;
-    a_offset = 1 + a_dim1;
-    a -= a_offset;
-    --w;
-    --work;
-    --rwork;
-    --iwork;
-
+    
     /* Get machine constants. */
     safmin = lapackf77_slamch("Safe minimum");
     eps = lapackf77_slamch("Precision");
@@ -236,9 +238,9 @@ magma_cheevd(char jobz, char uplo,
     bignum = 1. / smlnum;
     rmin = magma_ssqrt(smlnum);
     rmax = magma_ssqrt(bignum);
-
+    
     /* Scale matrix to allowable range, if necessary. */
-    anrm = lapackf77_clanhe("M", uplo_, &n, &a[a_offset], &lda, &rwork[1]);
+    anrm = lapackf77_clanhe("M", uplo_, &n, a, &lda, rwork);
     iscale = 0;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
@@ -248,45 +250,80 @@ magma_cheevd(char jobz, char uplo,
         sigma = rmax / anrm;
     }
     if (iscale == 1) {
-        lapackf77_clascl(uplo_, &c__0, &c__0, &c_b18, &sigma, &n, &n, &a[a_offset], 
-                &lda, info);
+        lapackf77_clascl(uplo_, &c__0, &c__0, &c_b18, &sigma, &n, &n, a, 
+                         &lda, info);
     }
-
+    
     /* Call CHETRD to reduce Hermitian matrix to tridiagonal form. */
-    inde = 1;
-    indtau = 1;
+    inde = 0;
+    indtau = 0;
     indwrk = indtau + n;
     indrwk = inde + n;
     indwk2 = indwrk + n * n;
-    llwork = lwork - indwrk + 1;
-    llwrk2 = lwork - indwk2 + 1;
-    llrwk = lrwork - indrwk + 1;
-    /*
-    lapackf77_chetrd(uplo_, &n, &a[a_offset], &lda, &w[1], &rwork[inde], 
-                     &work[indtau], &work[indwrk], &llwork, &iinfo);
-    */
-    magma_chetrd(uplo_[0], n, &a[a_offset], lda, &w[1], &rwork[inde],
+    llwork = lwork - indwrk;
+    llwrk2 = lwork - indwk2;
+    llrwk = lrwork - indrwk;
+    
+//#define ENABLE_TIMER
+#ifdef ENABLE_TIMER 
+    magma_timestr_t start, end;
+    
+    start = get_current_time();
+#endif
+    
+    magma_chetrd(uplo_[0], n, a, lda, w, &rwork[inde],
                  &work[indtau], &work[indwrk], llwork, &iinfo);
     
+#ifdef ENABLE_TIMER    
+    end = get_current_time();
+    
+    printf("time chetrd = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+    
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call   
-       ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
-       tridiagonal matrix, then call CUNMTR to multiply it to the Householder 
-       transformations represented as Householder vectors in A. */
+     ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
+     tridiagonal matrix, then call CUNMTR to multiply it to the Householder 
+     transformations represented as Householder vectors in A. */
     if (! wantz) {
-        lapackf77_ssterf(&n, &w[1], &rwork[inde], info);
+        lapackf77_ssterf(&n, w, &rwork[inde], info);
     } else {
-        lapackf77_cstedc("I", &n, &w[1], &rwork[inde], &work[indwrk], &n, &work[indwk2], 
-                &llwrk2, &rwork[indrwk], &llrwk, &iwork[1], &liwork, info);
-        /*
-        lapackf77_cunmtr("L", uplo_, "N", &n, &n, &a[a_offset], &lda, &work[indtau], 
-                &work[indwrk], &n, &work[indwk2], &llwrk2, &iinfo);
-        */
-        magma_cunmtr(MagmaLeft, uplo, MagmaNoTrans, n, n, &a[a_offset], lda, &work[indtau],
+        
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
+        
+        if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
+        
+        magma_cstedx('A', n, 0., 0., 0, 0, w, &rwork[inde],
+                     &work[indwrk], n, &rwork[indrwk],
+                     llrwk, iwork, liwork, dwork, info);
+        
+        magma_free( dwork );
+        
+#ifdef ENABLE_TIMER  
+        end = get_current_time();
+        
+        printf("time cstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
+        
+        start = get_current_time();
+#endif
+        
+        magma_cunmtr(MagmaLeft, uplo, MagmaNoTrans, n, n, a, lda, &work[indtau],
                      &work[indwrk], n, &work[indwk2], llwrk2, &iinfo);
         
-        lapackf77_clacpy("A", &n, &n, &work[indwrk], &n, &a[a_offset], &lda);
+        lapackf77_clacpy("A", &n, &n, &work[indwrk], &n, a, &lda);
+        
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time cunmtr + copy = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+        
     }
-
+    
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
     if (iscale == 1) {
         if (*info == 0) {
@@ -295,12 +332,12 @@ magma_cheevd(char jobz, char uplo,
             imax = *info - 1;
         }
         d__1 = 1. / sigma;
-        blasf77_sscal(&imax, &d__1, &w[1], &c__1);
+        blasf77_sscal(&imax, &d__1, w, &c__1);
     }
-
-    work[1]  = MAGMA_C_MAKE((float) lwmin, 0.);
-    rwork[1] = (float) lrwmin;
-    iwork[1] = liwmin;
-
-    return MAGMA_SUCCESS;
+    
+    work[0]  = MAGMA_C_MAKE((float) lwmin, 0.);
+    rwork[0] = (float) lrwmin;
+    iwork[0] = liwmin;
+    
+    return *info;
 } /* magma_cheevd */

@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     @author Stan Tomov
 
-    @generated c Sun Nov 13 20:48:55 2011
+    @generated c Tue May 15 18:18:25 2012
 
 */
 
@@ -106,6 +106,12 @@ int main( int argc, char** argv)
 
         /* Initialize the matrix */
         lapackf77_clarnv( &ione, ISEED, &n2, h_A );
+        {
+          magma_int_t i;
+          for(i=0; i<N; i++) {
+            MAGMA_C_SET2REAL( h_A[i*N+i], MAGMA_C_REAL(h_A[i*N+i]) );
+          }
+        }
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &N, h_A, &N, h_R, &N );
 
         magma_cheevd(jobz[0], uplo[0],

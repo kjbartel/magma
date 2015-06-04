@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Raffaele Solca
 
-       @generated d Sun Nov 13 20:48:30 2011
+       @generated d Tue May 15 18:17:47 2012
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
                  double *db, magma_int_t lddb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.1) --
+  -- MAGMA (version 1.2.0) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     November 2011
+     May 2012
  
    Purpose
    =======
@@ -88,14 +88,14 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
   char uplo_[2] = {uplo, 0};
   magma_int_t        nb;
   magma_int_t        k, kb, kb2;
-  double    zone  = MAGMA_D_ONE;
-  double    mzone  = MAGMA_D_NEG_ONE;
-  double    zhalf  = MAGMA_D_HALF;
-  double    mzhalf  = MAGMA_D_NEG_HALF;
+  double    c_one      = MAGMA_D_ONE;
+  double    c_neg_one  = MAGMA_D_NEG_ONE;
+  double    c_half     = MAGMA_D_HALF;
+  double    c_neg_half = MAGMA_D_NEG_HALF;
   double   *w;
   magma_int_t        lda;
   magma_int_t        ldb;
-  double             done  = (double) 1.0;
+  double             d_one = 1.0;
   long int           upper = lapackf77_lsame(uplo_, "U");
   
   /* Test the input parameters. */
@@ -113,27 +113,27 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
   }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
   
   /* Quick return */
   if ( n == 0 )
-    return MAGMA_SUCCESS;
+    return *info;
   
   nb = magma_get_dsygst_nb(n);
   
   lda = nb;
   ldb = nb;
   
-  if (cudaSuccess != cudaMallocHost( (void**)&w, 2*nb*nb*sizeof(double) ) ) {
-    *info = -6;
-    return MAGMA_ERR_CUBLASALLOC;
+  if (MAGMA_SUCCESS != magma_dmalloc_host( &w, 2*nb*nb )) {
+    *info = MAGMA_ERR_DEVICE_ALLOC;
+    return *info;
   }
   
   static cudaStream_t stream[3];
-  cudaStreamCreate(&stream[0]);
-  cudaStreamCreate(&stream[1]);
-  cudaStreamCreate(&stream[2]);
+  magma_queue_create( &stream[0] );
+  magma_queue_create( &stream[1] );
+  magma_queue_create( &stream[2] );
   
   /* Use hybrid blocked code */    
   if (itype==1) 
@@ -143,14 +143,12 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
           kb = min(n,nb);
         
           /* Compute inv(U')*A*inv(U) */
-          cudaMemcpy2DAsync(  B(0, 0), nb *sizeof(double),
-                              dB(0, 0), lddb*sizeof(double),
-                              sizeof(double)*kb, kb,
-                              cudaMemcpyDeviceToHost, stream[2]);
-          cudaMemcpy2DAsync(  A(0, 0), nb *sizeof(double),
-                              dA(0, 0), ldda*sizeof(double),
-                              sizeof(double)*kb, kb,
-                              cudaMemcpyDeviceToHost, stream[1]);
+          magma_dgetmatrix_async( kb, kb,
+                                  dB(0, 0), lddb,
+                                  B(0, 0),  nb, stream[2] );
+          magma_dgetmatrix_async( kb, kb,
+                                  dA(0, 0), ldda,
+                                  A(0, 0),  nb, stream[1] );
           
           for(k = 0; k<n; k+=nb){
             kb = min(n-k,nb);
@@ -158,64 +156,61 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
             
             /* Update the upper triangle of A(k:n,k:n) */
             
-            cudaStreamSynchronize(stream[2]);
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[2] );
+            magma_queue_sync( stream[1] );
             
             lapackf77_dhegs2( &itype, uplo_, &kb, A(0,0), &lda, B(0,0), &ldb, info);
             
-            cudaMemcpy2DAsync(dA(k, k), ldda * sizeof(double),
-                              A(0, 0), lda  * sizeof(double),
-                              sizeof(double)*kb, kb,
-                              cudaMemcpyHostToDevice, stream[0]);
+            magma_dsetmatrix_async( kb, kb,
+                                    A(0, 0),  lda,
+                                    dA(k, k), ldda, stream[0] );
             
             if(k+kb<n){
               
               // Start copying the new B block
-              cudaMemcpy2DAsync( B(0, 0), nb *sizeof(double),
-                                 dB(k+kb, k+kb), lddb*sizeof(double),
-                                 sizeof(double)*kb2, kb2,
-                                 cudaMemcpyDeviceToHost, stream[2]);
+              magma_dgetmatrix_async( kb2, kb2,
+                                      dB(k+kb, k+kb), lddb,
+                                      B(0, 0),        nb, stream[2] );
             
-              cublasDtrsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit,
+              magma_dtrsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit,
                           kb, n-k-kb,
-                          zone, dB(k,k), lddb, 
+                          c_one, dB(k,k), lddb, 
                           dA(k,k+kb), ldda); 
             
-              cudaStreamSynchronize(stream[0]);
+              magma_queue_sync( stream[0] );
             
-              cublasDsymm(MagmaLeft, MagmaUpper,
+              magma_dsymm(MagmaLeft, MagmaUpper,
                           kb, n-k-kb,
-                          mzhalf, dA(k,k), ldda,
+                          c_neg_half, dA(k,k), ldda,
                           dB(k,k+kb), lddb,
-                          zone, dA(k, k+kb), ldda);
+                          c_one, dA(k, k+kb), ldda);
               
-              cublasDsyr2k(MagmaUpper, MagmaTrans,
+              magma_dsyr2k(MagmaUpper, MagmaTrans,
                            n-k-kb, kb,
-                           mzone, dA(k,k+kb), ldda,
+                           c_neg_one, dA(k,k+kb), ldda,
                            dB(k,k+kb), lddb,
-                           done, dA(k+kb,k+kb), ldda);
+                           d_one, dA(k+kb,k+kb), ldda);
             
-              cudaMemcpy2DAsync( A(0, 0), lda*sizeof(double),
-                                 dA(k+kb, k+kb), ldda*sizeof(double),
-                                 sizeof(double)*kb2, kb2,
-                                 cudaMemcpyDeviceToHost, stream[1]);
+              magma_dgetmatrix_async( kb2, kb2,
+                                      dA(k+kb, k+kb), ldda,
+                                      A(0, 0),        lda, stream[1] );
             
-              cublasDsymm(MagmaLeft, MagmaUpper,
+              magma_dsymm(MagmaLeft, MagmaUpper,
                           kb, n-k-kb,
-                          mzhalf, dA(k,k), ldda,
+                          c_neg_half, dA(k,k), ldda,
                           dB(k,k+kb), lddb,
-                          zone, dA(k, k+kb), ldda);
+                          c_one, dA(k, k+kb), ldda);
               
-              cublasDtrsm(MagmaRight, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
+              magma_dtrsm(MagmaRight, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
                           kb, n-k-kb,
-                          zone ,dB(k+kb,k+kb), lddb,
+                          c_one ,dB(k+kb,k+kb), lddb,
                           dA(k,k+kb), ldda);
               
             }
             
           }
           
-          cudaStreamSynchronize(stream[0]);
+          magma_queue_sync( stream[0] );
           
         } else {
         
@@ -223,14 +218,12 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
         
         /* Compute inv(L)*A*inv(L') */
         
-        cudaMemcpy2DAsync( B(0, 0), nb *sizeof(double),
-                           dB(0, 0), lddb*sizeof(double),
-                           sizeof(double)*kb, kb,
-                           cudaMemcpyDeviceToHost, stream[2]);
-        cudaMemcpy2DAsync( A(0, 0), nb *sizeof(double),
-                           dA(0, 0), ldda*sizeof(double),
-                           sizeof(double)*kb, kb,
-                           cudaMemcpyDeviceToHost, stream[1]);
+        magma_dgetmatrix_async( kb, kb,
+                                dB(0, 0), lddb,
+                                B(0, 0),  nb, stream[2] );
+        magma_dgetmatrix_async( kb, kb,
+                                dA(0, 0), ldda,
+                                A(0, 0),  nb, stream[1] );
         
         for(k = 0; k<n; k+=nb){
           kb= min(n-k,nb);
@@ -238,57 +231,54 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
           
           /* Update the lower triangle of A(k:n,k:n) */
           
-          cudaStreamSynchronize(stream[2]);
-          cudaStreamSynchronize(stream[1]);
+          magma_queue_sync( stream[2] );
+          magma_queue_sync( stream[1] );
           
           lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
-          cudaMemcpy2DAsync(dA(k, k), ldda * sizeof(double),
-                            A(0, 0), lda  * sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyHostToDevice, stream[0]);
+          magma_dsetmatrix_async( kb, kb,
+                                  A(0, 0),  lda,
+                                  dA(k, k), ldda, stream[0] );
           
           if(k+kb<n){
             
             // Start copying the new B block
-            cudaMemcpy2DAsync( B(0, 0), nb *sizeof(double),
-                              dB(k+kb, k+kb), lddb*sizeof(double),
-                              sizeof(double)*kb2, kb2,
-                              cudaMemcpyDeviceToHost, stream[2]);
+            magma_dgetmatrix_async( kb2, kb2,
+                                    dB(k+kb, k+kb), lddb,
+                                    B(0, 0),        nb, stream[2] );
             
-            cublasDtrsm(MagmaRight, MagmaLower, MagmaTrans, MagmaNonUnit,
+            magma_dtrsm(MagmaRight, MagmaLower, MagmaTrans, MagmaNonUnit,
                         n-k-kb, kb,
-                        zone, dB(k,k), lddb, 
+                        c_one, dB(k,k), lddb, 
                         dA(k+kb,k), ldda);
             
-            cudaStreamSynchronize(stream[0]);
+            magma_queue_sync( stream[0] );
             
-            cublasDsymm(MagmaRight, MagmaLower,
+            magma_dsymm(MagmaRight, MagmaLower,
                         n-k-kb, kb,
-                        mzhalf, dA(k,k), ldda,
+                        c_neg_half, dA(k,k), ldda,
                         dB(k+kb,k), lddb,
-                        zone, dA(k+kb, k), ldda);
+                        c_one, dA(k+kb, k), ldda);
             
-            cublasDsyr2k(MagmaLower, MagmaNoTrans,
+            magma_dsyr2k(MagmaLower, MagmaNoTrans,
                          n-k-kb, kb,
-                         mzone, dA(k+kb,k), ldda,
+                         c_neg_one, dA(k+kb,k), ldda,
                          dB(k+kb,k), lddb,
-                         done, dA(k+kb,k+kb), ldda);
+                         d_one, dA(k+kb,k+kb), ldda);
             
-            cudaMemcpy2DAsync( A(0, 0), lda *sizeof(double),
-                              dA(k+kb, k+kb), ldda*sizeof(double),
-                              sizeof(double)*kb2, kb2,
-                              cudaMemcpyDeviceToHost, stream[1]);
+            magma_dgetmatrix_async( kb2, kb2,
+                                    dA(k+kb, k+kb), ldda,
+                                    A(0, 0),        lda, stream[1] );
             
-            cublasDsymm(MagmaRight, MagmaLower,
+            magma_dsymm(MagmaRight, MagmaLower,
                         n-k-kb, kb,
-                        mzhalf, dA(k,k), ldda,
+                        c_neg_half, dA(k,k), ldda,
                         dB(k+kb,k), lddb,
-                        zone, dA(k+kb, k), ldda);
+                        c_one, dA(k+kb, k), ldda);
             
-            cublasDtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaNonUnit,
+            magma_dtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaNonUnit,
                         n-k-kb, kb,
-                        zone, dB(k+kb,k+kb), lddb, 
+                        c_one, dB(k+kb,k+kb), lddb, 
                         dA(k+kb,k), ldda);            
           }
           
@@ -296,7 +286,7 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
         
       }
       
-      cudaStreamSynchronize(stream[0]);
+      magma_queue_sync( stream[0] );
       
     } else {
       
@@ -307,63 +297,65 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
         for(k = 0; k<n; k+=nb){
           kb= min(n-k,nb);
           
-          cudaMemcpy2DAsync( B(0, 0), nb *sizeof(double),
-                            dB(k, k), lddb*sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyDeviceToHost, stream[2]);
-          cudaMemcpy2DAsync( A(0, 0), lda *sizeof(double),
-                            dA(k, k), ldda*sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyDeviceToHost, stream[0]);
+          magma_dgetmatrix_async( kb, kb,
+                                  dB(k, k), lddb,
+                                  B(0, 0),  nb, stream[2] );
           
           /* Update the upper triangle of A(1:k+kb-1,1:k+kb-1) */
           if(k>0){
             
-            cublasDtrmm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
+            magma_dtrmm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
                         k, kb,
-                        zone ,dB(0,0), lddb,
+                        c_one ,dB(0,0), lddb,
                         dA(0,k), ldda);
             
-            cublasDsymm(MagmaRight, MagmaUpper,
+            magma_dsymm(MagmaRight, MagmaUpper,
                         k, kb,
-                        zhalf, dA(k,k), ldda,
+                        c_half, dA(k,k), ldda,
                         dB(0,k), lddb,
-                        zone, dA(0, k), ldda);
+                        c_one, dA(0, k), ldda);
             
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[1] );
             
-            cublasDsyr2k(MagmaUpper, MagmaNoTrans,
+          }
+          
+          magma_dgetmatrix_async( kb, kb,
+                                  dA(k, k), ldda,
+                                  A(0, 0),  lda, stream[0] );
+          
+          if(k>0){
+            
+            magma_dsyr2k(MagmaUpper, MagmaNoTrans,
                          k, kb,
-                         zone, dA(0,k), ldda,
+                         c_one, dA(0,k), ldda,
                          dB(0,k), lddb,
-                         done, dA(0,0), ldda);
+                         d_one, dA(0,0), ldda);
             
-            cublasDsymm(MagmaRight, MagmaUpper,
+            magma_dsymm(MagmaRight, MagmaUpper,
                         k, kb,
-                        zhalf, dA(k,k), ldda,
+                        c_half, dA(k,k), ldda,
                         dB(0,k), lddb,
-                        zone, dA(0, k), ldda);
+                        c_one, dA(0, k), ldda);
             
-            cublasDtrmm(MagmaRight, MagmaUpper, MagmaTrans, MagmaNonUnit,
+            magma_dtrmm(MagmaRight, MagmaUpper, MagmaTrans, MagmaNonUnit,
                         k, kb,
-                        zone, dB(k,k), lddb, 
+                        c_one, dB(k,k), lddb, 
                         dA(0,k), ldda);
             
           }
 
-          cudaStreamSynchronize(stream[2]);
-          cudaStreamSynchronize(stream[0]);
+          magma_queue_sync( stream[2] );
+          magma_queue_sync( stream[0] );
           
           lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
-          cudaMemcpy2DAsync(dA(k, k), ldda * sizeof(double),
-                             A(0, 0), lda  * sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyHostToDevice, stream[1]);
+          magma_dsetmatrix_async( kb, kb,
+                                  A(0, 0),  lda,
+                                  dA(k, k), ldda, stream[1] );
           
         }
         
-        cudaStreamSynchronize(stream[1]);
+        magma_queue_sync( stream[1] );
         
       } else {
         
@@ -372,69 +364,71 @@ magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
         for(k = 0; k<n; k+=nb){
           kb= min(n-k,nb);
           
-          cudaMemcpy2DAsync( B(0, 0), nb *sizeof(double),
-                            dB(k, k), lddb*sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyDeviceToHost, stream[2]);
-          cudaMemcpy2DAsync( A(0, 0), lda *sizeof(double),
-                            dA(k, k), ldda*sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyDeviceToHost, stream[0]);
+          magma_dgetmatrix_async( kb, kb,
+                                  dB(k, k), lddb,
+                                  B(0, 0),  nb, stream[2] );
           
           /* Update the lower triangle of A(1:k+kb-1,1:k+kb-1) */
           if(k>0){ 
             
-            cublasDtrmm(MagmaRight, MagmaLower, MagmaNoTrans, MagmaNonUnit,
+            magma_dtrmm(MagmaRight, MagmaLower, MagmaNoTrans, MagmaNonUnit,
                         kb, k,
-                        zone ,dB(0,0), lddb,
+                        c_one ,dB(0,0), lddb,
                         dA(k,0), ldda);
             
-            cublasDsymm(MagmaLeft, MagmaLower,
+            magma_dsymm(MagmaLeft, MagmaLower,
                         kb, k,
-                        zhalf, dA(k,k), ldda,
+                        c_half, dA(k,k), ldda,
                         dB(k,0), lddb,
-                        zone, dA(k, 0), ldda);
+                        c_one, dA(k, 0), ldda);
             
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[1] );
             
-            cublasDsyr2k(MagmaLower, MagmaTrans,
+          }
+          
+          magma_dgetmatrix_async( kb, kb,
+                                  dA(k, k), ldda,
+                                  A(0, 0),  lda, stream[0] );
+          
+          if(k>0){
+            
+            magma_dsyr2k(MagmaLower, MagmaTrans,
                          k, kb,
-                         zone, dA(k,0), ldda,
+                         c_one, dA(k,0), ldda,
                          dB(k,0), lddb,
-                         done, dA(0,0), ldda);
+                         d_one, dA(0,0), ldda);
             
-            cublasDsymm(MagmaLeft, MagmaLower,
+            magma_dsymm(MagmaLeft, MagmaLower,
                         kb, k,
-                        zhalf, dA(k,k), ldda,
+                        c_half, dA(k,k), ldda,
                         dB(k,0), lddb,
-                        zone, dA(k, 0), ldda);
+                        c_one, dA(k, 0), ldda);
             
-            cublasDtrmm(MagmaLeft, MagmaLower, MagmaTrans, MagmaNonUnit,
+            magma_dtrmm(MagmaLeft, MagmaLower, MagmaTrans, MagmaNonUnit,
                         kb, k,
-                        zone, dB(k,k), lddb, 
+                        c_one, dB(k,k), lddb, 
                         dA(k,0), ldda);
           }
           
-          cudaStreamSynchronize(stream[2]);
-          cudaStreamSynchronize(stream[0]);
+          magma_queue_sync( stream[2] );
+          magma_queue_sync( stream[0] );
           
           lapackf77_dhegs2( &itype, uplo_, &kb, A(0, 0), &lda, B(0, 0), &ldb, info);
           
-          cudaMemcpy2DAsync(dA(k, k), ldda * sizeof(double),
-                             A(0, 0), lda  * sizeof(double),
-                            sizeof(double)*kb, kb,
-                            cudaMemcpyHostToDevice, stream[1]);
+          magma_dsetmatrix_async( kb, kb,
+                                  A(0, 0),  lda,
+                                  dA(k, k), ldda, stream[1] );
         }
         
-        cudaStreamSynchronize(stream[1]);
+        magma_queue_sync( stream[1] );
         
       }
   }
-  cudaStreamDestroy(stream[0]);
-  cudaStreamDestroy(stream[1]); 
-  cudaStreamDestroy(stream[2]);
+  magma_queue_destroy( stream[0] );
+  magma_queue_destroy( stream[1] ); 
+  magma_queue_destroy( stream[2] );
   
-  cudaFreeHost(w);
+  magma_free_host( w );
   
-  return MAGMA_SUCCESS;
+  return *info;
 } /* magma_dsygst_gpu */

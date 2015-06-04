@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:19 2011
+       @generated s Tue May 15 18:17:32 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
              float *a,    magma_int_t lda, float *tau, 
              float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -47,7 +47,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
             (see Further Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -60,7 +60,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,N).
@@ -75,7 +75,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -9, the GPU memory allocation failed
+                  or another error occured, such as memory allocation failed.
 
     Further Details
     ===============
@@ -129,36 +129,35 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     /* Quick return if possible */
     if (k == 0)
-        return MAGMA_SUCCESS;
+        return *info;
 
     lddwork = ((n+31)/32)*32;
     ldda    = ((m+31)/32)*32;
 
-    if (CUBLAS_STATUS_SUCCESS != cublasAlloc((n)*ldda + nb*lddwork, sizeof(float), (void**)&da)) {
-        *info = -9;
-        return MAGMA_ERR_CUBLASALLOC;
+    if (MAGMA_SUCCESS != magma_smalloc( &da, (n)*ldda + nb*lddwork )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     dwork = da + ldda*(n);
 
     static cudaStream_t stream[2];
-    cudaStreamCreate(&stream[0]);
-    cudaStreamCreate(&stream[1]);
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
 
     if ( (nb > 1) && (nb < k) ) {
         /*  Use blocked code initially.
             The last kk columns are handled by the block method.
             First, copy the matrix on the GPU except the last kk columns */
-        cudaMemcpy2DAsync(da_ref(0, 0), ldda*sizeof(float),
-                          a_ref(0, 0),  lda *sizeof(float),
-                          sizeof(float)*(m), (n-nb),
-                          cudaMemcpyHostToDevice, stream[0]);
+        magma_ssetmatrix_async( (m), (n-nb),
+                                a_ref(0, 0),  lda,
+                                da_ref(0, 0), ldda, stream[0] );
 
         ki = ((k - nb - 1) / nb) * nb;
         kk = min(k, ki + nb);
@@ -170,15 +169,13 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
                    2. Copy asynchronously the submatrix below the panel
                    to the CPU)                                        */
                 rows = m - k + i + ib;
-                cudaMemcpy2DAsync( a_ref(0, n-k+i),  lda *sizeof(float),
-                                   da_ref(0, n-k+i), ldda*sizeof(float),
-                                   sizeof(float)*rows, ib,
-                                   cudaMemcpyDeviceToHost, stream[1]);
+                magma_sgetmatrix_async( rows, ib,
+                                        da_ref(0, n-k+i), ldda,
+                                        a_ref(0, n-k+i),  lda, stream[1] );
 
-                cudaMemcpy2DAsync( a_ref(rows, n-k+i),  lda *sizeof(float),
-                                   da_ref(rows, n-k+i), ldda*sizeof(float),
-                                   sizeof(float)*(m-rows), ib,
-                                   cudaMemcpyDeviceToHost, stream[0]);
+                magma_sgetmatrix_async( (m-rows), ib,
+                                        da_ref(rows, n-k+i), ldda,
+                                        a_ref(rows, n-k+i),  lda, stream[0] );
 
                 /* Apply H' to A(1:m-k+i+ib-1,1:n-k+i-1) from the left in
                    two steps - implementing the lookahead techniques.
@@ -191,7 +188,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
                                   da_ref(0, 0          ), ldda, dwork+old_ib, lddwork);
             }
 
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[1] );
             /* Compute the QL factorization of the current block
                A(1:m-k+i+ib-1,n-k+i:n-k+i+ib-1) */
             rows = m - k + i + ib;
@@ -206,12 +203,13 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
                                   a_ref(0, cols), &lda, tau + i, work, &ib);
 
                 spanel_to_q( MagmaLower, ib, a_ref(rows-ib,cols), lda, work+ib*ib);
-                cublasSetMatrix(rows, ib, sizeof(float),
-                                a_ref(0,cols), lda, da_ref(0,cols), ldda);
+                magma_ssetmatrix( rows, ib,
+                                  a_ref(0,cols),  lda,
+                                  da_ref(0,cols), ldda );
                 sq_to_panel( MagmaLower, ib, a_ref(rows-ib,cols), lda, work+ib*ib);
 
                 // Send the triangular part on the GPU
-                cublasSetMatrix(ib,ib,sizeof(float), work, ib, dwork, lddwork);
+                magma_ssetmatrix( ib, ib, work, ib, dwork, lddwork );
 
                 /* Apply H' to A(1:m-k+i+ib-1,1:n-k+i-1) from the left in
                    two steps - implementing the lookahead techniques.
@@ -235,8 +233,7 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
         mu = m - k + i + nb;
         nu = n - k + i + nb;
 
-        cublasGetMatrix(m, nu, sizeof(float),
-                        da_ref(0,0), ldda, a_ref(0,0), lda);
+        magma_sgetmatrix( m, nu, da_ref(0,0), ldda, a_ref(0,0), lda );
     } else {
         mu = m;
         nu = n;
@@ -246,10 +243,10 @@ magma_sgeqlf(magma_int_t m, magma_int_t n,
     if (mu > 0 && nu > 0)
       lapackf77_sgeqlf(&mu, &nu, a_ref(0,0), &lda, tau, work, &lwork, &iinfo);
 
-    cudaStreamDestroy( stream[0] );
-    cudaStreamDestroy( stream[1] );
-    cublasFree( da );
-    return MAGMA_SUCCESS;
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
+    magma_free( da );
+    return *info;
 } /* magma_sgeqlf */
 
 #undef  a_ref

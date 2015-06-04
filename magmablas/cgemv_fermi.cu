@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 #include "common_magma.h"
 
@@ -88,11 +88,11 @@ cgemvn_kernel2_fermi(int n, int m, int n1, cuFloatComplex alpha,  cuFloatComplex
 extern "C" void
 magmablas_cgemvn_fermi(int n, int m, cuFloatComplex alpha, cuFloatComplex *A, int lda, cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -214,11 +214,11 @@ extern "C" void
 magmablas_cgemvt_fermi(int m, int n, cuFloatComplex alpha, cuFloatComplex *A, int lda, 
                  cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -335,11 +335,11 @@ extern "C" void
 magmablas_cgemvc_fermi(int m, int n, cuFloatComplex alpha, cuFloatComplex *A, int lda, 
                  cuFloatComplex *x, cuFloatComplex *y)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======

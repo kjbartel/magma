@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions mixed zc -> ds
 
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasCtrsm magmablas_ctrsm
+  #define magma_ctrsm magmablas_ctrsm
 #endif
 // === End defining what BLAS to use ======================================
 
@@ -26,11 +26,11 @@ magma_zcgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                   cuFloatComplex  *dSX,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -112,12 +112,12 @@ magma_zcgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
     
     if (notran) {  
@@ -131,11 +131,11 @@ magma_zcgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
       magmablas_zclaswp(nrhs, dB, lddb, dSX, n, ipiv, inc);
 
       /* Solve L*X = B, overwriting B with SX. */
-      cublasCtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
+      magma_ctrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
                    n, nrhs, cone, dA, ldda, dSX, n);
     
       /* Solve U*X = B, overwriting B with X. */
-      cublasCtrsm( MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, 
+      magma_ctrsm( MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, 
                    n, nrhs, cone, dA, ldda, dSX, n);
 
       magmablas_clag2z(n, nrhs, dSX, n, dX, lddx, info );
@@ -146,15 +146,15 @@ magma_zcgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
       magmablas_zlag2c(n, nrhs, dB, lddb, dSX, n, info );
 
       /* Solve A' * X = B. */
-      cublasCtrsm(MagmaLeft, MagmaUpper, MagmaConjTrans, MagmaNonUnit,
+      magma_ctrsm(MagmaLeft, MagmaUpper, MagmaConjTrans, MagmaNonUnit,
                   n, nrhs, cone, dA, ldda, dSX, n);
-      cublasCtrsm(MagmaLeft, MagmaLower, MagmaConjTrans, MagmaUnit,
+      magma_ctrsm(MagmaLeft, MagmaLower, MagmaConjTrans, MagmaUnit,
                   n, nrhs, cone, dA, ldda, dSX, n);
       
       magmablas_zclaswp(nrhs, dX, lddx, dSX, n, ipiv, inc);
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
     /* End of MAGMA_ZCGETRS */
     
 } /* magma_zcgetrs */

@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- *  @generated c Sun Nov 13 20:48:48 2011
+ *  @generated c Tue May 15 18:18:15 2012
  *
  **/
 #include <stdlib.h>
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     float      flops, magma_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuFloatComplex mzone = MAGMA_C_NEG_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
 
     FILE        *fp ; 
     magma_int_t N, m, i, lda, LDA;
@@ -110,15 +110,15 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        cublasSetMatrix( m, m, sizeof( cuFloatComplex ), A, LDA,  dA, lda  );
-        cublasSetVector( m,    sizeof( cuFloatComplex ), X, incx, dX, incx );
-        cublasSetVector( m,    sizeof( cuFloatComplex ), Y, incx, dY, incx );
+        magma_csetmatrix( m, m, A, LDA, dA, lda );
+        magma_csetvector( m, X, incx, dX, incx );
+        magma_csetvector( m, Y, incx, dY, incx );
 
         start = get_current_time();
         magmablas_csymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
         end = get_current_time();
         
-        cublasGetVector( m, sizeof( cuFloatComplex ), dY, incx, Ymagma, incx );
+        magma_cgetvector( m, dY, incx, Ymagma, incx );
         
         magma_perf = flops /  GetTimerValue(start,end);
         printf(     "%11.2f", magma_perf );
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         blasf77_ccopy( &m, Y, &incx, Ycublas, &incx );
         lapackf77_csymv( MagmaLowerStr, &m, &alpha, A, &LDA, X, &incx, &beta, Ycublas, &incx );
 
-        blasf77_caxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_caxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_clange( "M", &m, &ione, Ycublas, &m, work );
 
         printf(      "\t\t %8.6e\n", error / m );

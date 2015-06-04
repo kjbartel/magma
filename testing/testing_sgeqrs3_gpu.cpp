@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:53 2011
+       @generated s Tue May 15 18:18:22 2012
 
 */
 
@@ -44,8 +44,8 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     float           flops, gpu_perf, cpu_perf;
     float           matnorm, work[1];
-    float  mzone = MAGMA_S_NEG_ONE;
-    float  zone  = MAGMA_S_ONE;
+    float  c_one     = MAGMA_S_ONE;
+    float  c_neg_one = MAGMA_S_NEG_ONE;
     float *h_A, *h_A2, *h_B, *h_X, *h_R, *tau, *hwork, tmp[1];
     float *d_A, *d_B;
 
@@ -144,8 +144,8 @@ int main( int argc, char** argv)
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        cublasSetMatrix( M, N,    sizeof(float), h_A, lda, d_A, ldda);
-        cublasSetMatrix( M, nrhs, sizeof(float), h_B, ldb, d_B, lddb);
+        magma_ssetmatrix( M, N,    h_A, lda, d_A, ldda );
+        magma_ssetmatrix( M, nrhs, h_B, ldb, d_B, lddb );
 
         start = get_current_time();
         magma_sgels3_gpu( MagmaNoTrans, M, N, nrhs, d_A, ldda,
@@ -157,13 +157,13 @@ int main( int argc, char** argv)
         gpu_perf = flops / GetTimerValue(start, end);
 
         // Get the solution in h_X
-        cublasGetMatrix(N, nrhs, sizeof(float), d_B, lddb, h_X, ldb);
+        magma_sgetmatrix( N, nrhs, d_B, lddb, h_X, ldb );
 
         // compute the residual
         blasf77_sgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N, 
-                       &mzone, h_A, &lda, 
-                               h_X, &ldb, 
-                       &zone,  h_R, &ldb);
+                       &c_neg_one, h_A, &lda, 
+                                   h_X, &ldb, 
+                       &c_one,     h_R, &ldb);
         matnorm = lapackf77_slange("f", &M, &N, h_A, &lda, work);
 
         /* =====================================================================
@@ -180,9 +180,9 @@ int main( int argc, char** argv)
           printf("Argument %d of lapackf77_sgels had an illegal value.\n", -info);
 
         blasf77_sgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N, 
-                       &mzone, h_A2, &lda, 
-                               h_X,  &ldb, 
-                       &zone,  h_B,  &ldb);
+                       &c_neg_one, h_A2, &lda, 
+                                   h_X,  &ldb, 
+                       &c_one,     h_B,  &ldb);
 
         printf("%5d %5d   %6.1f       %6.1f       %7.2e   %7.2e\n",
                M, N, cpu_perf, gpu_perf,

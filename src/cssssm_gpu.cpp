@@ -1,21 +1,21 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated c Sun Nov 13 20:48:31 2011
+       @generated c Tue May 15 18:17:51 2012
 
 */
 #include "common_magma.h"
 
-#define cublasCgemm magmablas_cgemm
-//#define cublasCtrsm magmablas_ctrsm
-//#define cublasCtrmm magmablas_ctrmm
+#define magma_cgemm magmablas_cgemm
+//#define magma_ctrsm magmablas_ctrsm
+//#define magma_ctrmm magmablas_ctrmm
 
 extern "C" magma_int_t
 magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1, 
@@ -26,11 +26,11 @@ magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
                  cuFloatComplex *dL2, magma_int_t lddl2,
                  magma_int_t *IPIV, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -70,7 +70,7 @@ magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -7, internal GPU memory allocation failed.
+                  or another error occured, such as memory allocation failed.
             > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
                   has been completed, but the factor U is exactly
                   singular, and division by zero will occur if it is used
@@ -126,12 +126,12 @@ magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return */
     if ((m1 == 0) || (n1 == 0) || (m2 == 0) || (n2 == 0) || (k == 0) || (ib == 0))
-        return MAGMA_SUCCESS;
+        return *info;
 
     if ( (storev == 'C') || (storev == 'c') ) {
         magmablas_cgetmo_in( dA1, dA1T, ldda1, m1, n1 );
@@ -174,20 +174,20 @@ magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
 
 #ifndef WITHOUTTRTRI
         /* Lower, Trans, because L1 is not transposed */
-        cublasCtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+        magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                      n1, sb, 
                      c_one, L1( ii),    lddl1,
                             A1T(ii, 0), ldda1);
 #else
         /* Lower, Trans, because L1 is not transposed */
-        cublasCtrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+        magma_ctrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                      n1, sb, 
                      c_one, L1( ii),    lddl1,
                             A1T(ii, 0), ldda1);
 #endif
 
         /* Second parameter is trans because L2 is not transposed */
-        cublasCgemm( MagmaNoTrans, transL, 
+        magma_cgemm( MagmaNoTrans, transL, 
                      n2, m2, sb, 
                      c_neg_one, A1T(ii, 0), ldda1,
                                 L2( 0, ii), lddl2, 
@@ -198,6 +198,6 @@ magma_cssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
         magmablas_cgetmo_out( dA1, dA1T, ldda1, m1, n1 );
         magmablas_cgetmo_out( dA2, dA2T, ldda2, m2, n2 );
     }
-    return MAGMA_SUCCESS;
+    return *info;
 }
 

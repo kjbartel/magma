@@ -1,33 +1,33 @@
 /*
-   -- MAGMA (version 1.1) --
+   -- MAGMA (version 1.2.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      November 2011
+      May 2012
  
       @author Raffaele Solca
 
-      @generated c Sun Nov 13 20:48:29 2011
+      @generated c Tue May 15 18:17:47 2012
  
  */
 #include "common_magma.h"
 
-void MycublasCtrmm(char side, char uplo, char trans, char unit, 
+void Mymagma_ctrmm(char side, char uplo, char trans, char unit, 
                    magma_int_t n, magma_int_t m,
                    cuFloatComplex alpha, cuFloatComplex *db, magma_int_t lddb, 
                    cuFloatComplex *dz, magma_int_t lddz)
 {
-    cublasCtrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    cudaThreadSynchronize();
+    magma_ctrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
+    magma_device_sync();
 }
 
-void MycublasCtrsm(char side, char uplo, char trans, char unit, 
+void Mymagma_ctrsm(char side, char uplo, char trans, char unit, 
                    magma_int_t n, magma_int_t m,
                    cuFloatComplex alpha, cuFloatComplex *db, magma_int_t lddb,
                    cuFloatComplex *dz, magma_int_t lddz)
 {
-    cublasCtrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    cudaThreadSynchronize();
+    magma_ctrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
+    magma_device_sync();
 }
 
 extern "C" magma_int_t
@@ -40,11 +40,11 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t liwork, magma_int_t *info)
 {
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    November 2011
+    May 2012
     
     Purpose   
     =======   
@@ -273,7 +273,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
     char jobz_[2] = {jobz, 0};
     char range_[2] = {range, 0};
   
-    static cuFloatComplex zone = MAGMA_C_ONE;
+    cuFloatComplex c_one = MAGMA_C_ONE;
   
     cuFloatComplex *da;
     cuFloatComplex *db;
@@ -291,7 +291,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
     static magma_int_t lwmin, lrwmin, liwmin;
     
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
     
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
@@ -351,43 +351,41 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
   
     if (*info != 0) {
         magma_xerbla( __func__, -(*info));
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     } else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
     
     /* Quick return if possible */
     if (n == 0) {
-        return 0;
+        return *info;
     }
     
-    if (cudaSuccess != cudaMalloc( (void**)&da, n*ldda*sizeof(cuFloatComplex) ) ||
-        cudaSuccess != cudaMalloc( (void**)&db, n*lddb*sizeof(cuFloatComplex) ) ||
-        cudaSuccess != cudaMalloc( (void**)&dz, n*lddz*sizeof(cuFloatComplex) ) ) {
-        *info = -27;
-        return MAGMA_ERR_CUBLASALLOC;
+    if (MAGMA_SUCCESS != magma_cmalloc( &da, n*ldda ) ||
+        MAGMA_SUCCESS != magma_cmalloc( &db, n*lddb ) ||
+        MAGMA_SUCCESS != magma_cmalloc( &dz, n*lddz )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     
     /* Form a Cholesky factorization of B. */
-    cublasSetMatrix(n, n, sizeof(cuFloatComplex), b, ldb, db, lddb);
+    magma_csetmatrix( n, n, b, ldb, db, lddb );
     
-    cudaMemcpy2DAsync(da, ldda*sizeof(cuFloatComplex),
-                      a,  lda*sizeof(cuFloatComplex),
-                      sizeof(cuFloatComplex)*n, n,
-                      cudaMemcpyHostToDevice, stream);  
+    magma_csetmatrix_async( n, n,
+                            a,  lda,
+                            da, ldda, stream );  
   
     magma_cpotrf_gpu(uplo_[0], n, db, lddb, info);
     if (*info != 0) {
         *info = n + *info;
-        return 0;
+        return *info;
     }
     
-    cudaStreamSynchronize(stream);
+    magma_queue_sync( stream );
     
-    cudaMemcpy2DAsync( b,  ldb*sizeof(cuFloatComplex),
-                       db, lddb*sizeof(cuFloatComplex),
-                       sizeof(cuFloatComplex)*n, n,
-                       cudaMemcpyDeviceToHost, stream);
+    magma_cgetmatrix_async( n, n,
+                            db, lddb,
+                            b,  ldb, stream );
     
     /* Transform problem to standard eigenvalue problem and solve. */
     magma_chegst_gpu(itype, uplo, n, da, ldda, db, lddb, info);
@@ -410,7 +408,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaNoTrans;
             }
             
-            MycublasCtrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, zone, 
+            Mymagma_ctrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
                           db, lddb, dz, lddz);
       
         } else if (itype == 3) {
@@ -423,21 +421,21 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaConjTrans;
             }
             
-            MycublasCtrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, zone, 
+            Mymagma_ctrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
                           db, lddb, dz, lddz);
         }
         
-        cublasGetMatrix(n, *m, sizeof(cuFloatComplex), dz, lddz, z, ldz);
+        magma_cgetmatrix( n, *m, dz, lddz, z, ldz );
         
     }
   
-    cudaStreamSynchronize(stream);
+    magma_queue_sync( stream );
     
-    cudaStreamDestroy(stream);
+    magma_queue_destroy( stream );
     
-    cublasFree(da);
-    cublasFree(db);
-    cublasFree(dz);
+    magma_free( da );
+    magma_free( db );
+    magma_free( dz );
     
-    return 0;
+    return *info;
 } /* chegvr */

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:18 2011
+       @generated s Tue May 15 18:17:30 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_sgesv(     magma_int_t n, magma_int_t nrhs,
                  float *B, magma_int_t ldb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -70,8 +70,6 @@ magma_sgesv(     magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
-    magma_int_t ret;
-
     *info = 0;
     if (n < 0) {
         *info = -1;
@@ -84,20 +82,18 @@ magma_sgesv(     magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
-    ret = magma_sgetrf( n, n, A, lda, ipiv, info );
-    if ( (ret != MAGMA_SUCCESS) || (*info != 0) ) {
-        return ret;
+    magma_sgetrf( n, n, A, lda, ipiv, info );
+    if ( *info == 0 ) {
+        lapackf77_sgetrs( MagmaNoTransStr, &n, &nrhs, A, &lda, ipiv, B, &ldb, info );
     }
     
-    lapackf77_sgetrs( MagmaNoTransStr, &n, &nrhs, A, &lda, ipiv, B, &ldb, info );
-
-    return MAGMA_SUCCESS;
+    return *info;
 }

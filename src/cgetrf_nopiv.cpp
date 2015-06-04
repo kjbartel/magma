@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:16 2011
+       @generated c Tue May 15 18:17:29 2012
 
 */
 #include "common_magma.h"
@@ -13,8 +13,8 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_c
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasCgemm magmablas_cgemm
-  #define cublasCtrsm magmablas_ctrsm
+  #define magma_cgemm magmablas_cgemm
+  #define magma_ctrsm magmablas_ctrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -27,11 +27,11 @@ extern "C" magma_int_t
 magma_cgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuFloatComplex *a, 
                    magma_int_t *lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -92,12 +92,12 @@ magma_cgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuFloatComplex *a,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (*m == 0 || *n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Determine the block size for this environment. */
@@ -153,5 +153,5 @@ magma_cgetrf_nopiv(magma_int_t *m, magma_int_t *n, cuFloatComplex *a,
           }
       }
     
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_cgetrf_nopiv */

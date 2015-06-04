@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  *  @precisions normal z -> c d s
  *
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     double      flops, magma_perf, cuda_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
 
     FILE        *fp ; 
     magma_int_t i, lda, Xm, Ym;
@@ -117,9 +117,9 @@ int main(int argc, char **argv)
     printf("\nUsage: \n");
     printf("  testing_zgemv [-N|T|C] [-m %d] [-n %d]\n\n", 1024, 1024);
 
-    printf( "   m    n   CUBLAS,Gflop/s   MAGMABLAS0.2,Gflop/s   \"error\"\n" 
+    printf( "   m    n   CUBLAS,Gflop/s   MAGMABLAS Gflop/s   \"error\"\n" 
             "==============================================================\n");
-    fprintf(fp, "   m    n   CUBLAS,Gflop/s   MAGMABLAS0.2,Gflop/s   \"error\"\n" 
+    fprintf(fp, "   m    n   CUBLAS,Gflop/s   MAGMABLAS Gflop/s   \"error\"\n" 
             "==============================================================\n");
     
     for( i=istart; i < iend; i = (int)((i+1)*1.1) )
@@ -145,9 +145,9 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using CUDA-BLAS
            =================================================================== */
-        cublasSetMatrix( M,  N, sizeof( cuDoubleComplex ), A, lda,  dA, lda  );
-        cublasSetVector( Xm,    sizeof( cuDoubleComplex ), X, incx, dX, incx );
-        cublasSetVector( Ym,    sizeof( cuDoubleComplex ), Y, incy, dY, incy );
+        magma_zsetmatrix( M, N, A, lda, dA, lda );
+        magma_zsetvector( Xm, X, incx, dX, incx );
+        magma_zsetvector( Ym, Y, incy, dY, incy );
 
         /*
          * Cublas Version
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
         cublasZgemv( trans, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
         end = get_current_time();
         
-        cublasGetVector( Ym, sizeof( cuDoubleComplex ), dY, incy, Ycublas, incy );
+        magma_zgetvector( Ym, dY, incy, Ycublas, incy );
         
         cuda_perf = flops / GetTimerValue(start, end);
         printf(     "%11.2f", cuda_perf );
@@ -165,13 +165,13 @@ int main(int argc, char **argv)
         /*
          * Magma Version
          */
-        cublasSetVector( Ym, sizeof( cuDoubleComplex ), Y, incy, dY, incy );
+        magma_zsetvector( Ym, Y, incy, dY, incy );
         
         start = get_current_time();
         magmablas_zgemv( trans, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
         end = get_current_time();
         
-        cublasGetVector( Ym, sizeof( cuDoubleComplex ), dY, incx, Ymagma, incx );
+        magma_zgetvector( Ym, dY, incx, Ymagma, incx );
         
         magma_perf = flops / GetTimerValue(start, end);
         printf(     "%11.2f", magma_perf );
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
            Computing the Difference Cublas VS Magma
            =================================================================== */
         
-        blasf77_zaxpy( &Ym, &mzone, Ymagma, &incy, Ycublas, &incy);
+        blasf77_zaxpy( &Ym, &c_neg_one, Ymagma, &incy, Ycublas, &incy);
         error = lapackf77_zlange( "M", &Ym, &ione, Ycublas, &Ym, work );
 
 #if 0
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
                                    X,       &incx, 
                            &beta,  Ycublas, &incy );
             
-            blasf77_zaxpy( &Ym, &mzone, Ymagma, &incy, Ycublas, &incy);
+            blasf77_zaxpy( &Ym, &c_neg_one, Ymagma, &incy, Ycublas, &incy);
             error = lapackf77_zlange( "M", &Ym, &ione, Ycublas, &Ym, work );
         }
 #endif

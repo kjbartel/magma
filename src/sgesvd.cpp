@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:30 2011
+       @generated s Tue May 15 18:17:48 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              float *work, magma_int_t lwork_,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -220,7 +220,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         /* Return optimal workspace in WORK(1) */
         nb = magma_get_sgebrd_nb(*n);
         minwrk = ((*m)+(*n))*nb+(*n);
-        work[1] = (float)minwrk;
+        work[0] = (float)minwrk;
 
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
@@ -229,15 +229,15 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
   
     /* Quick return if possible */
     if (*m == 0 || *n == 0) {
-          return MAGMA_SUCCESS;
+          return *info;
     }
     
     wrkbl  = maxwrk; /* Not optimal */
@@ -3447,5 +3447,5 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
          }
     }
  
-    return MAGMA_SUCCESS;
+    return *info;
  } /* sgesvd_ */

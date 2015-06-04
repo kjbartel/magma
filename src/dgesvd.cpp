@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal d -> s
 
@@ -18,11 +18,11 @@ magma_dgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              double *work, magma_int_t lwork_,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -220,7 +220,7 @@ magma_dgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         /* Return optimal workspace in WORK(1) */
         nb = magma_get_dgebrd_nb(*n);
         minwrk = ((*m)+(*n))*nb+(*n);
-        work[1] = (double)minwrk;
+        work[0] = (double)minwrk;
 
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
@@ -229,15 +229,15 @@ magma_dgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
   
     /* Quick return if possible */
     if (*m == 0 || *n == 0) {
-          return MAGMA_SUCCESS;
+          return *info;
     }
     
     wrkbl  = maxwrk; /* Not optimal */
@@ -3447,5 +3447,5 @@ magma_dgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
          }
     }
  
-    return MAGMA_SUCCESS;
+    return *info;
  } /* dgesvd_ */

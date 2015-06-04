@@ -262,7 +262,7 @@ xlintsts : $(ALINTST) $(SLINTST) $(SCLNTST) ../fortran.o
         ../matgen/$(TMGLIB) -o xlintsts \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas -lmagma \
+	-lcuda -lmagma -lmagmablas \
         $(LIBDIR) $(LIB) 
 
 xlintstc : $(ALINTST) $(CLINTST) $(SCLNTST) ../fortran.o
@@ -270,15 +270,15 @@ xlintstc : $(ALINTST) $(CLINTST) $(SCLNTST) ../fortran.o
         ../matgen/$(TMGLIB) -o xlintstc \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas -lmagma \
+	-lcuda -lmagma -lmagmablas \
         $(LIBDIR) $(LIB) 
  
 xlintstd : $(ALINTST) $(DLINTST) $(DZLNTST) ../fortran.o
 	$(FORT) $(OPTS) $(ALINTST) $(DLINTST) $(DZLNTST) \
-        ../matgen/$(TMGLIB) -o xlintstd -lmagma \
+        ../matgen/$(TMGLIB) -o xlintstd \
 	../fortran.o \
 	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas -lmagma \
+	-lcuda -lmagma -lmagmablas \
         $(LIBDIR) $(LIB) 
  
 xlintstz : $(ALINTST) $(ZLINTST) $(DZLNTST) ../fortran.o

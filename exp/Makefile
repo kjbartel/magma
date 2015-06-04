@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2011
+#      May 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = .
@@ -21,6 +21,7 @@ libquark:
 	( cd quark       && $(MAKE) )
 
 test:
+	cp ../lib/libmagmablas.a lib/libmagmablas.a
 	( cd testing     && $(MAKE) )
 
 clean:
@@ -40,6 +41,7 @@ cleanall:
 	$(MAKE) cleanall2
 
 # cleanall2 is a dummy rule to run cleangen at the *end* of make cleanall, so
+# .Makefile.gen files aren't deleted and immediately re-created. see Makefile.gen
 cleanall2:
 	@echo
 

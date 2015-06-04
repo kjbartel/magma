@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
        @author Stan Tomov
 
@@ -21,11 +21,11 @@ magma_zunmqr(const char side, const char trans,
              cuDoubleComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -33,7 +33,7 @@ magma_zunmqr(const char side, const char trans,
 
                     SIDE = 'L'     SIDE = 'R'   
     TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q\*\*H * C     C * Q\*\*H   
+    TRANS = 'T':      Q**H * C       C * Q**H   
 
     where Q is a complex orthogonal matrix defined as the product of k   
     elementary reflectors   
@@ -46,12 +46,12 @@ magma_zunmqr(const char side, const char trans,
     Arguments   
     =========   
     SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q\*\*H from the Left;   
-            = 'R': apply Q or Q\*\*H from the Right.   
+            = 'L': apply Q or Q**H from the Left;   
+            = 'R': apply Q or Q**H from the Right.   
 
     TRANS   (input) CHARACTER*1   
             = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q\*\*H.   
+            = 'T':  Transpose, apply Q**H.   
 
     M       (input) INTEGER   
             The number of rows of the matrix C. M >= 0.   
@@ -82,7 +82,7 @@ magma_zunmqr(const char side, const char trans,
 
     C       (input/output) COMPLEX_16 array, dimension (LDC,N)   
             On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q\*\*H*C or C*Q\*\*H or C*Q.   
+            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.   
 
     LDC     (input) INTEGER   
             The leading dimension of the array C. LDC >= max(1,M).   
@@ -115,14 +115,14 @@ magma_zunmqr(const char side, const char trans,
 
     /* Allocate work space on the GPU */
     cuDoubleComplex *dwork, *dc;
-    cublasAlloc((m)*(n), sizeof(cuDoubleComplex), (void**)&dc);
-    cublasAlloc(2*(m+64)*64, sizeof(cuDoubleComplex), (void**)&dwork);
+    magma_zmalloc( &dc, (m)*(n) );
+    magma_zmalloc( &dwork, (m + n + 64)*64 );
     
     /* Copy matrix C from the CPU to the GPU */
-    cublasSetMatrix( m, n, sizeof(cuDoubleComplex), c, ldc, dc, m);
+    magma_zsetmatrix( m, n, c, ldc, dc, m );
     dc -= (1 + m);
 
-    magma_int_t a_offset, c_offset, i__4;
+    magma_int_t a_offset, c_offset, i__4, lddwork;
     static magma_int_t i__;
     static cuDoubleComplex t[2*4160]        /* was [65][64] */;
     static magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
@@ -177,16 +177,16 @@ magma_zunmqr(const char side, const char trans,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
     }
 
     /* Quick return if possible */
     if (m == 0 || n == 0 || k == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if (nb >= k) 
@@ -230,9 +230,7 @@ magma_zunmqr(const char side, const char trans,
                2) copy the panel from A to the GPU, and
                3) restore A                                      */
             zpanel_to_q('U', ib, &a[i__ + i__ * lda], lda, t+ib*ib);
-            cublasSetMatrix(i__4, ib, sizeof(cuDoubleComplex),
-                            &a[i__ + i__ * lda], lda, 
-                            dwork, i__4);
+            magma_zsetmatrix( i__4, ib, &a[i__ + i__ * lda], lda, dwork, i__4 );
             zq_to_panel('U', ib, &a[i__ + i__ * lda], lda, t+ib*ib);
 
             if (left) 
@@ -248,24 +246,29 @@ magma_zunmqr(const char side, const char trans,
                 jc = i__;
               }
             
+            if (left)
+              lddwork = ni;
+            else
+              lddwork = mi;
+
             /* Apply H or H'; First copy T to the GPU */
-            cublasSetMatrix(ib, ib, sizeof(cuDoubleComplex), t, ib, dwork+i__4*ib, ib);
+            magma_zsetmatrix( ib, ib, t, ib, dwork+i__4*ib, ib );
             magma_zlarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
                               mi, ni, ib,
                               dwork, i__4, dwork+i__4*ib, ib,
                               &dc[ic + jc * m], m, 
-                              dwork+i__4*ib + ib*ib, ni);
+                              dwork+i__4*ib + ib*ib, lddwork);
           }
 
-        cublasGetMatrix(m, n, sizeof(cuDoubleComplex), &dc[1+m], m, &c[c_offset], ldc);
+        magma_zgetmatrix( m, n, &dc[1+m], m, &c[c_offset], ldc );
       }
     MAGMA_Z_SET2REAL( work[0], lwkopt );
 
     dc += (1 + m);
-    cublasFree(dc);
-    cublasFree(dwork);
+    magma_free( dc );
+    magma_free( dwork );
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_zunmqr */
 
 

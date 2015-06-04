@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 #include "common_magma.h"
 
@@ -64,11 +64,11 @@ magmablas_dgemv_tesla(char trans,
                       double beta,
                       double *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -338,11 +338,11 @@ extern "C" void
 magmablas_dgemvt1_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
                         double *x, double *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -384,11 +384,11 @@ extern "C" void
 magmablas_dgemvt2_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
                         double *x, double *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -430,11 +430,11 @@ extern "C" void
 magmablas_dgemvt_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
                        double *x, double *z)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======

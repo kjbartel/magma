@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:18 2011
+       @generated c Tue May 15 18:17:31 2012
 
 */
 #include "common_magma.h"
@@ -13,14 +13,14 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_c
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasCgemm magmablas_cgemm
-  #define cublasCtrsm magmablas_ctrsm
+  #define magma_cgemm magmablas_cgemm
+  #define magma_ctrsm magmablas_ctrsm
 #endif
 
 #if (GPUSHMEM >= 200)
 #if (defined(PRECISION_s))
-    #undef  cublasSgemm
-    #define cublasSgemm magmablas_sgemm_fermi80
+    #undef  magma_sgemm
+    #define magma_sgemm magmablas_sgemm_fermi80
 #endif
 #endif
 // === End defining what BLAS to use ======================================
@@ -30,16 +30,16 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
                   magma_int_t *ipiv, cuFloatComplex *dwork, magma_int_t lwork,
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
 
-        ZGETRI computes the inverse of a matrix using the LU factorization
+        CGETRI computes the inverse of a matrix using the LU factorization
         computed by CGETRF. This method inverts U and then computes inv(A) by
         solving the system inv(A)*L = inv(U) for inv(A).
         
@@ -84,8 +84,7 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
   ===================================================================== */
 
     /* Local variables */
-    magma_int_t ret;
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    cuFloatComplex c_one     = MAGMA_C_ONE;
     cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex *dL = dwork;
     magma_int_t     ldl = n;
@@ -102,17 +101,17 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if ( n == 0 )
-        return MAGMA_SUCCESS;
+        return *info;
     
     /* Invert the triangular factor U */
-    ret = magma_ctrtri_gpu( MagmaUpper, MagmaNonUnit, n, dA, lda, info );
+    magma_ctrtri_gpu( MagmaUpper, MagmaNonUnit, n, dA, lda, info );
     if ( *info != 0 )
-        return ret;
+        return *info;
     
     jmax = ((n-1) / nb)*nb;
     for( j = jmax; j >= 0; j -= nb ) {
@@ -131,12 +130,12 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
         //   * L(j:j+jb-1, j:j+jb-1)^{-1}
         // where L(:, j:j+jb-1) is stored in dL.
         if ( j+jb < n ) {
-            cublasCgemm( MagmaNoTrans, MagmaNoTrans, n, jb, n-j-jb,
+            magma_cgemm( MagmaNoTrans, MagmaNoTrans, n, jb, n-j-jb,
                          c_neg_one, &dA[(j+jb)*lda], lda,
                                     &dL[ j+jb     ], ldl,
                          c_one,     &dA[     j*lda], lda );
         }
-        cublasCtrsm( MagmaRight, MagmaLower, MagmaNoTrans, MagmaUnit,
+        magma_ctrsm( MagmaRight, MagmaLower, MagmaNoTrans, MagmaUnit,
                      n, jb, c_one,
                      &dL[j    ], ldl,
                      &dA[j*lda], lda );
@@ -150,5 +149,5 @@ magma_cgetri_gpu( magma_int_t n, cuFloatComplex *dA, magma_int_t lda,
         }
     }
     
-    return MAGMA_SUCCESS;
+    return *info;
 }

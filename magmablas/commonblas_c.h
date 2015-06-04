@@ -1,11 +1,11 @@
 /*
- *   -- MAGMA (version 1.1) --
+ *   -- MAGMA (version 1.2.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      November 2011
+ *      May 2012
  *
- * @generated c Sun Nov 13 20:48:42 2011
+ * @generated c Tue May 15 18:18:08 2012
  */
 
 #ifndef _COMMONBLAS_C_H_

@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Raffaele Solca
 
-       @generated d Sun Nov 13 20:48:28 2011
+       @generated d Tue May 15 18:17:44 2012
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_dormql2_gpu(const char side, const char trans,
                   double *wa, magma_int_t ldwa,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -112,7 +112,7 @@ magma_dormql2_gpu(const char side, const char trans,
 
     /* Allocate work space on the GPU */
     double *dwork;
-    cublasAlloc(2*(m+64)*64, sizeof(double), (void**)&dwork);
+    magma_dmalloc( &dwork, 2*(m + 64)*64 );
 
     magma_int_t wa_offset, dc_offset, i__4;
     
@@ -163,12 +163,12 @@ magma_dormql2_gpu(const char side, const char trans,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (m == 0 || n == 0) {
-      return MAGMA_SUCCESS;
+      return *info;
     }
 
     ldwork = nw;
@@ -214,7 +214,7 @@ magma_dormql2_gpu(const char side, const char trans,
             }
           
           /* Apply H or H'; First copy T to the GPU */
-          cublasSetMatrix(ib, ib, sizeof(double), t, ib, dwork+i__4*ib, ib);
+          magma_dsetmatrix( ib, ib, t, ib, dwork+i__4*ib, ib );
           magma_dlarfb_gpu(side, trans, MagmaBackward, MagmaColumnwise,
                            mi, ni, ib, 
                            &da[(i__-1) * ldda], ldda, dwork+i__4*ib, ib, 
@@ -223,7 +223,7 @@ magma_dormql2_gpu(const char side, const char trans,
 
     }
 
-    cublasFree(dwork);
+    magma_free( dwork );
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_dormql */

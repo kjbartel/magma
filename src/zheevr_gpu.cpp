@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
        @author Raffaele Solca
 
@@ -12,8 +12,9 @@
 */
 #include "common_magma.h"
 
+/* These interfaces are used for TAU profiling */
 extern "C" {
-    void Mylapackf77_zstemr(char *jobz, char *range, magma_int_t *n, double *d, double *e,
+    void Mylapackf77_zstemr(const char *jobz, const char *range, magma_int_t *n, double *d, double *e,
                             double *vl, double *vu, magma_int_t *il, magma_int_t *iu, 
                             magma_int_t *m, double *w, cuDoubleComplex *z, magma_int_t *ldz,
                             magma_int_t *nzc, magma_int_t *isuppz, magma_int_t *tryrac,
@@ -31,7 +32,7 @@ extern "C" {
         lapackf77_zstein(n, d, e, m, w, iblock, isplit, z, ldz, work, iwork, ifail, info);
     }
   
-    void Mylapackf77_dstebz(char *range, char *order, int *n, double *vl, 
+    void Mylapackf77_dstebz(const char *range, const char *order, int *n, double *vl, 
                             double *vu, int *il, int *iu, double *abstol,
                             double *d, double *e, int *m, int *nsplit, double *w, 
                             int *iblock, int *isplit, double *work, int *iwork, int *info)
@@ -61,11 +62,11 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
                  double *rwork, magma_int_t lrwork, magma_int_t *iwork, 
                  magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    November 2011
+    May 2012
    
     Purpose   
     =======
@@ -362,20 +363,20 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
   
   if (*info != 0) {
       magma_xerbla( __func__, -(*info));
-      return MAGMA_ERR_ILLEGAL_VALUE;
+      return *info;
   } else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
   }
   
   /* Quick return if possible */
   *m = 0;
   if (n == 0) {
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
   if (n == 1) {
     cuDoubleComplex tmp;
-    cublasGetVector(1, sizeof(cuDoubleComplex), da, 1, &tmp, 1);
+    magma_zgetvector( 1, da, 1, &tmp, 1 );
     w[0] = MAGMA_Z_REAL(tmp);
     if (alleig || indeig) {
       *m = 1;
@@ -386,14 +387,15 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
     }
     if (wantz) {
       tmp = MAGMA_Z_ONE;
-      cublasSetVector(1, sizeof(cuDoubleComplex), &tmp, 1, da, 1);
+      magma_zsetvector( 1, &tmp, 1, da, 1 );
     }
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
-  if (cudaSuccess != cudaMalloc((void**)&dwork, n*sizeof(double))) {
+  if (MAGMA_SUCCESS != magma_dmalloc( &dwork, n )) {
     fprintf (stderr, "!!!! device memory allocation error (magma_zheevr_gpu)\n");
-    return MAGMA_ERR_CUBLASALLOC;
+    *info = MAGMA_ERR_DEVICE_ALLOC;
+    return *info;
   }
   
   --w;
@@ -500,7 +502,7 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
                      &llrwork, &iwork[1], &liwork, info);
     
     if (*info == 0 && wantz) {
-      cublasSetMatrix(n, *m, sizeof(cuDoubleComplex), wz, ldwz, dz, lddz);
+      magma_zsetmatrix( n, *m, wz, ldwz, dz, lddz );
       magma_zunmtr_gpu(MagmaLeft, uplo, MagmaNoTrans, n, *m, da, ldda, &work[indtau],
                        dz, lddz, wa, ldwa, &iinfo);
     }
@@ -520,7 +522,7 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
       
       /*        Apply unitary matrix used in reduction to tridiagonal   
        form to eigenvectors returned by ZSTEIN. */
-    cublasSetMatrix(n, *m, sizeof(cuDoubleComplex), wz, ldwz, dz, lddz);
+    magma_zsetmatrix( n, *m, wz, ldwz, dz, lddz );
     magma_zunmtr_gpu(MagmaLeft, uplo, MagmaNoTrans, n, *m, da, ldda, &work[indtau],
                      dz, lddz, wa, ldwa, &iinfo);
   }
@@ -555,7 +557,7 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
         iwork[indibl + i - 1] = iwork[indibl + j - 1];
         w[j] = tmp1;
         iwork[indibl + j - 1] = itmp1;
-        cublasZswap(n, dz + (i-1)*lddz, ione, dz + (j-1)*lddz, ione);
+        magma_zswap(n, dz + (i-1)*lddz, ione, dz + (j-1)*lddz, ione);
       }
     }
   }
@@ -565,7 +567,7 @@ magma_zheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
   rwork[1] = (double) lrwmin;
   iwork[1] = liwmin;
   
-  return MAGMA_SUCCESS;
+  return *info;
   
 } /* magma_zheevr_gpu */
 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:17 2011
+       @generated d Tue May 15 18:17:30 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_d
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasDtrsm magmablas_dtrsm
+  #define magma_dtrsm magmablas_dtrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -24,11 +24,11 @@ magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  double *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -101,17 +101,18 @@ magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     work = (double*)malloc(n * nrhs * sizeof(double));
     if ( !work ) {
-        return MAGMA_ERR_ALLOCATION;
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
       
     i1 = 1;
@@ -120,35 +121,35 @@ magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         inc = 1;
 
         /* Solve A * X = B. */
-        cublasGetMatrix( n, nrhs, sizeof(double), dB, lddb, work, n);
+        magma_dgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_dlaswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(double), work, n, dB, lddb);
+        magma_dsetmatrix( n, nrhs, work, n, dB, lddb );
 
         if ( nrhs == 1) {
-            cublasDtrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
-            cublasDtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
         } else {
-            cublasDtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasDtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_dtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_dtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
         }
     } else {
         inc = -1;
 
         /* Solve A' * X = B. */
         if ( nrhs == 1) {
-            cublasDtrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
-            cublasDtrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
         } else {
-            cublasDtrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasDtrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_dtrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_dtrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
         }
 
-        cublasGetMatrix( n, nrhs, sizeof(double), dB, lddb, work, n );
+        magma_dgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_dlaswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(double), work, n, dB, lddb);
+        magma_dsetmatrix( n, nrhs, work, n, dB, lddb );
     }
     free(work);
 
-    return MAGMA_SUCCESS;
+    return *info;
 }
 

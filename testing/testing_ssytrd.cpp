@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
 
-       @generated s Sun Nov 13 20:48:54 2011
+       @generated s Tue May 15 18:18:24 2012
 
 */
 
@@ -134,7 +134,7 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_S_SET2REAL( h_A[i*lda+i], ( MAGMA_S_GET_X(h_A[i*lda+i]) ) );
+                MAGMA_S_SET2REAL( h_A[i*lda+i], ( MAGMA_S_REAL(h_A[i*lda+i]) ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = (h_A[j*lda+i]);
             }

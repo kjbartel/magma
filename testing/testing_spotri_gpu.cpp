@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated s Sun Nov 13 20:48:51 2011
+ * @generated s Tue May 15 18:18:19 2012
  *
  **/
 // includes, system
@@ -47,7 +47,7 @@ int main( int argc, char** argv)
     
     magma_int_t i, info;
     const char *uplo     = MagmaUpperStr;
-    float mzone= MAGMA_S_NEG_ONE;
+    float c_neg_one = MAGMA_S_NEG_ONE;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     float      work[1], matnorm;
@@ -89,7 +89,7 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_S_SET2REAL( h_A[i*lda+i], ( MAGMA_S_GET_X(h_A[i*lda+i]) + 1.*N ) );
+                MAGMA_S_SET2REAL( h_A[i*lda+i], ( MAGMA_S_REAL(h_A[i*lda+i]) + 1.*N ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = (h_A[j*lda+i]);
             }
@@ -102,7 +102,7 @@ int main( int argc, char** argv)
         //cublasSetMatrix( N, N, sizeof(float), h_A, lda, d_A, ldda);
         //magma_spotrf_gpu(uplo[0], N, d_A, ldda, &info);
 
-        cublasSetMatrix( N, N, sizeof(float), h_A, lda, d_A, ldda);
+        magma_ssetmatrix( N, N, h_A, lda, d_A, ldda );
               start = get_current_time();
         magma_spotrf_gpu(uplo[0], N, d_A, ldda, &info);
         magma_spotri_gpu(uplo[0], N, d_A, ldda, &info);
@@ -127,9 +127,9 @@ int main( int argc, char** argv)
         /* =====================================================================
            Check the result compared to LAPACK
            =================================================================== */
-        cublasGetMatrix( N, N, sizeof(float), d_A, ldda, h_R, lda);
+        magma_sgetmatrix( N, N, d_A, ldda, h_R, lda );
         matnorm = lapackf77_slange("f", &N, &N, h_A, &lda, work);
-        blasf77_saxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d    %6.2f         %6.2f        %e\n", 
                size[i], cpu_perf, gpu_perf,
                lapackf77_slange("f", &N, &N, h_R, &lda, work) / matnorm);

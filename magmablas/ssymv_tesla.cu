@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:41 2011
+       @generated s Tue May 15 18:18:07 2012
 
 */
 #include "common_magma.h"
@@ -15,7 +15,6 @@
 #if (GPUSHMEM < 200)
 
 #define magmablas_ssymv_130  magmablas_ssymv
-#define magmablasw_ssymv_130 magmablasw_ssymv
 
 #define ssymv_bs         64
 #define thread_x         64
@@ -742,6 +741,95 @@ void magmablas_ssymv_130_L(magma_int_t m, float alpha,
         m, alpha, A, lda, X, incx, beta, Y, incy, dC_work);
 }
 
+
+/*************************************************************************
+
+    Purpose
+    =======
+
+    magmablas_ssymv2  performs the matrix-vector operation on fermi:
+
+       y := alpha*A*x + beta*y,
+
+    where alpha and beta are scalars, x and y are n element vectors and
+    A is an n by n hermitian matrix.
+
+    the interface of magmablas_ssymv2 is different from magmablas_ssymv in
+    the last argument dC_work
+
+    As magma implements ssymv through two steps:
+    1) perform the multiplication in each thread blocks and put the intermediate value 
+       in a space of device memory which we call working space. dC_work is the working space
+    2) sum the intermediate values and store the final result in y.
+    
+    the size of dC_work is
+ 
+            lda * (n/thread_x + (n%thread_x !=0)  
+    where thread_x = 64 
+    
+    magamblasw_ssymv requires users to explicitly a working space, while magmablas_ssymv is 
+    a wrapper routine of magmabalsw_ssymv allocating the working space inside the routine 
+    and provides the same interface with cublas. 
+    
+    If users need to call ssymv frequently, we suggest to use magmablas_ssymv2 instead of magmablas_ssymv.
+    As the overhead of allocating and free in device memory in magmablas_ssymv would hurt performance.
+    Our tests show that this penalty is about 10Gflop/s when matrix size is around 10000.
+    
+*/
+
+extern "C"
+magma_int_t
+magmablas_ssymv2_130( char uplo, magma_int_t n,
+                      float alpha, 
+                      float *A, magma_int_t lda,
+                      float *X, magma_int_t incx,
+                      float beta,  
+                      float *Y, magma_int_t incy,
+                      float *dC_work,
+                      magma_int_t workspace)
+{
+
+    char      uplo_[2] = {uplo, 0};
+    long int  upper    = lapackf77_lsame(uplo_, "U");
+
+    /*
+     * Test the input parameters.
+     */
+    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
+        return -1;
+    } else if ( n < 0 ) {
+        return -2;
+    } else if ( lda < max(1,n) ) {
+        return -5;
+    } else if ( incx == 0 ) {
+        return -7;
+    } else if ( incy == 0 ) {
+        return -10;
+    }
+
+    /*
+     * Quick return if possible.
+     */
+    if ( (n == 0) || ( MAGMA_S_EQUAL(alpha, MAGMA_S_ZERO) && MAGMA_S_EQUAL(beta, MAGMA_S_ONE) ) )
+        return MAGMA_SUCCESS;
+
+    /* TODO: Upper case is not implemented in MAGMA */
+    if ( upper ) {
+#if defined(PRECISION_z) || defined(PRECISION_c)
+        fprintf(stderr, "%s: %s\n", __func__, "Upper case not implemented");
+#else
+        cublasSsymv(uplo, n, alpha, A, lda, X, incx, beta, Y, incy);
+#endif
+    }
+
+    else
+    {
+        magmablas_ssymv_130_L(n, alpha, A, lda, X, incx, beta, Y, incy, dC_work);
+    }
+    return MAGMA_SUCCESS;
+}
+
+
 /*************************************************************************
 
     Purpose
@@ -881,9 +969,9 @@ magmablas_ssymv_130( char uplo, magma_int_t n,
         cublasAlloc( workspace, sizeof(float), (void**)&dC_work ) ;
         cublasGetError( ) ;
 
-        magmablasw_ssymv_130( uplo, n, alpha, 
+        magmablas_ssymv2_130( uplo, n, alpha, 
                               A, lda, X, incx,
-                              beta, Y, incy, dC_work);
+                              beta, Y, incy, dC_work, workspace);
 
         cublasFree(dC_work);
         cublasGetError( ) ;
@@ -891,90 +979,5 @@ magmablas_ssymv_130( char uplo, magma_int_t n,
     return MAGMA_SUCCESS;
 }
 
-/*************************************************************************
-
-    Purpose
-    =======
-
-    magmablasw_ssymv  performs the matrix-vector operation on fermi:
-
-       y := alpha*A*x + beta*y,
-
-    where alpha and beta are scalars, x and y are n element vectors and
-    A is an n by n hermitian matrix.
-
-    the interface of magmablasw_ssymv is different from magmablas_ssymv in
-    the last argument dC_work
-
-    As magma implements ssymv through two steps:
-    1) perform the multiplication in each thread blocks and put the intermediate value 
-       in a space of device memory which we call working space. dC_work is the working space
-    2) sum the intermediate values and store the final result in y.
-    
-    the size of dC_work is
- 
-            lda * (n/thread_x + (n%thread_x !=0)  
-    where thread_x = 64 
-    
-    magamblasw_ssymv requires users to explicitly a working space, while magmablas_ssymv is 
-    a wrapper routine of magmabalsw_ssymv allocating the working space inside the routine 
-    and provides the same interface with cublas. 
-    
-    If users need to call ssymv frequently, we suggest to use magmablasw_ssymv instead of magmablas_ssymv.
-    As the overhead of allocating and free in device memory in magmablas_ssymv would hurt performance.
-    Our tests show that this penalty is about 10Gflop/s when matrix size is around 10000.
-    
-*/
-
-extern "C"
-magma_int_t
-magmablasw_ssymv_130( char uplo, magma_int_t n,
-                      float alpha, 
-                      float *A, magma_int_t lda,
-                      float *X, magma_int_t incx,
-                      float beta,  
-                      float *Y, magma_int_t incy,
-                      float *dC_work)
-{
-
-    char      uplo_[2] = {uplo, 0};
-    long int  upper    = lapackf77_lsame(uplo_, "U");
-
-    /*
-     * Test the input parameters.
-     */
-    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
-        return -1;
-    } else if ( n < 0 ) {
-        return -2;
-    } else if ( lda < max(1,n) ) {
-        return -5;
-    } else if ( incx == 0 ) {
-        return -7;
-    } else if ( incy == 0 ) {
-        return -10;
-    }
-
-    /*
-     * Quick return if possible.
-     */
-    if ( (n == 0) || ( MAGMA_S_EQUAL(alpha, MAGMA_S_ZERO) && MAGMA_S_EQUAL(beta, MAGMA_S_ONE) ) )
-        return MAGMA_SUCCESS;
-
-    /* TODO: Upper case is not implemented in MAGMA */
-    if ( upper ) {
-#if defined(PRECISION_z) || defined(PRECISION_c)
-        fprintf(stderr, "%s: %s\n", __func__, "Upper case not implemented");
-#else
-        cublasSsymv(uplo, n, alpha, A, lda, X, incx, beta, Y, incy);
-#endif
-    }
-
-    else
-    {
-        magmablas_ssymv_130_L(n, alpha, A, lda, X, incx, beta, Y, incy, dC_work);
-    }
-    return MAGMA_SUCCESS;
-}
 
 #endif /* (GPUSHMEM < 200) */

@@ -1,24 +1,24 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:36 2011
+       @generated d Tue May 15 18:18:00 2012
 
 */
 #include "common_magma.h"
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- This is an auxiliary routine called from dgehrd.  The routine is called
-      in 16 blocks, 32 thread per block and initializes to zero the 1st 
+      in 16 blocks, 32 thread per block and initializes to zero the 1st
       32x32 block of A.
 */
 
 __global__ void dset_to_zero(double *A, int lda){
     int ind = blockIdx.x*lda + threadIdx.x;
-    
+
     A += ind;
     A[0] = MAGMA_D_ZERO;
 //   A[16*lda] = 0.;
@@ -65,6 +65,41 @@ __global__ void dlaset(int m, int n, double *A, int lda){
         A[i*lda] = MAGMA_D_ZERO;
 }
 
+__global__ void dlaset_identity(int m, int n, double *A, int lda){
+   int ibx = blockIdx.x * dlaset_threads;
+   int iby = blockIdx.y * 32;
+
+   int ind = ibx + threadIdx.x;
+
+   A += ind + __mul24(iby, lda);
+
+   #pragma unroll
+   for(int i=0; i<32; i++)
+     if (iby+i < n && ind < m) {
+        if (ind != i+iby)
+           A[i*lda] = MAGMA_D_ZERO;
+        else
+           A[i*lda] = MAGMA_D_ONE;
+     }
+}
+
+__global__ void dlaset_identityonly(int m, int n, double *A, int lda){
+   int ibx = blockIdx.x * dlaset_threads;
+   int iby = blockIdx.y * 32;
+
+   int ind = ibx + threadIdx.x;
+
+   A += ind + __mul24(iby, lda);
+
+   #pragma unroll
+   for(int i=0; i<32; i++)
+     if (iby+i < n && ind < m) {
+        if (ind == i+iby)
+           A[i*lda] = MAGMA_D_ONE;
+     }
+}
+
+
 __global__ void dlasetlower(int m, int n, double *A, int lda){
    int ibx = blockIdx.x * dlaset_threads;
    int iby = blockIdx.y * 32;
@@ -98,7 +133,7 @@ __global__ void dlasetupper(int m, int n, double *A, int lda){
    -- Set the m x n matrix pointed by A to 0 on the GPU.
 */
 extern "C" void
-magmablas_dlaset(char uplo, magma_int_t m, magma_int_t n, 
+magmablas_dlaset(char uplo, magma_int_t m, magma_int_t n,
                  double *A, magma_int_t lda)
 {
    dim3 threads(dlaset_threads, 1, 1);
@@ -106,11 +141,39 @@ magmablas_dlaset(char uplo, magma_int_t m, magma_int_t n,
 
    if (m!=0 && n !=0)
      if (uplo == MagmaLower)
-        dlasetlower<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);        
+        dlasetlower<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);
      else if (uplo == MagmaUpper)
         dlasetupper<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);
      else
         dlaset<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);
+}
+
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Set the m x n matrix pointed by A to I on the GPU.
+*/
+extern "C" void
+magmablas_dlaset_identity(magma_int_t m, magma_int_t n,
+                          double *A, magma_int_t lda)
+{
+   dim3 threads(dlaset_threads, 1, 1);
+   dim3 grid(m/dlaset_threads+(m % dlaset_threads != 0), n/32+(n%32!=0));
+
+   if (m!=0 && n !=0)
+      dlaset_identity<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);
+}
+
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Set the m x n matrix pointed by A to I on the diag without touching the offdiag GPU.
+*/
+extern "C" void
+magmablas_dlaset_identityonly(magma_int_t m, magma_int_t n,
+                          double *A, magma_int_t lda)
+{
+   dim3 threads(dlaset_threads, 1, 1);
+   dim3 grid(m/dlaset_threads+(m % dlaset_threads != 0), n/32+(n%32!=0));
+
+   if (m!=0 && n !=0)
+      dlaset_identityonly<<< grid, threads, 0, magma_stream >>> (m, n, A, lda);
 }
 
 /* ////////////////////////////////////////////////////////////////////////////
@@ -140,24 +203,24 @@ double cpu_gpu_ddiff(int M, int N, double * a, int lda, double *da, int ldda)
     @author Raffaele Solca
  */
 __global__ void dsetdiag1subdiag0_L(int k, double *A, int lda){
-  
+
   int nb = blockDim.x;
   int ibx = blockIdx.x * nb;
-  
+
   int ind = ibx + threadIdx.x + 1;
-  
+
   A += ind - nb + __mul24((ibx), lda);
-  
+
   double tmp = MAGMA_D_ZERO;
   if(threadIdx.x == nb-1)
     tmp = MAGMA_D_ONE;
-  
+
 #pragma unroll
   for(int i=0; i<nb; i++)
     if (ibx+i < k && ind + i  >= nb){
       A[i*(lda+1)] = tmp;
     }
-  
+
 }
 
 /* ////////////////////////////////////////////////////////////////////////////
@@ -187,26 +250,34 @@ __global__ void dsetdiag1subdiag0_U(int k, double *A, int lda){
 }
 
 /* ////////////////////////////////////////////////////////////////////////////
- -- Set 1s in the diagonal and 0s in the nb-1 lower (UPLO='U') or 
-    upper (UPLO='L') subdiagonals 
+ -- Set 1s in the diagonal and 0s in the nb-1 lower (UPLO='U') or
+    upper (UPLO='L') subdiagonals.
+    stream and no stream interfaces
     @author Raffaele Solca
  */
 extern "C" void
-magmablas_dsetdiag1subdiag0(char uplo, magma_int_t k, magma_int_t nb,
-                 double *A, magma_int_t lda)
+magmablas_dsetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
+                 double *A, magma_int_t lda, cudaStream_t stream)
 {
-  
   dim3 threads(nb, 1, 1);
   dim3 grid((k-1)/nb+1);
-  if(k>lda)  
+  if(k>lda)
     fprintf(stderr,"wrong second argument of dsetdiag1subdiag0");
   if(uplo == MagmaLower)
-    dsetdiag1subdiag0_L<<< grid, threads, 0, magma_stream >>> (k, A, lda);
+    dsetdiag1subdiag0_L<<< grid, threads, 0, stream >>> (k, A, lda);
   else if(uplo == MagmaUpper){
-    dsetdiag1subdiag0_U<<< grid, threads, 0, magma_stream >>> (k, A, lda);
+    dsetdiag1subdiag0_U<<< grid, threads, 0, stream >>> (k, A, lda);
   }
-  else 
+  else
     fprintf(stderr,"wrong first argument of dsetdiag1subdiag0");
 
   return;
 }
+
+extern "C" void
+magmablas_dsetdiag1subdiag0(char uplo, magma_int_t k, magma_int_t nb,
+                 double *A, magma_int_t lda)
+{
+  magmablas_dsetdiag1subdiag0_stream(uplo, k, nb, A, lda, magma_stream);
+}
+

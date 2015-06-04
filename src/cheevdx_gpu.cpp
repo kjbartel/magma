@@ -1,40 +1,28 @@
 /*
-   -- MAGMA (version 1.1) --
+   -- MAGMA (version 1.2.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      November 2011
+      May 2012
 
       @author Raffaele Solca
- 
-      @generated c Sun Nov 13 20:48:29 2011
-       
+
+      @generated c Tue May 15 18:17:45 2012
+
 */
 #include "common_magma.h"
 
-extern"C"{
-    void Mylapackf77_cstedc(char *compz, magma_int_t *n, float *D, float *E, 
-                            cuFloatComplex *Z, magma_int_t *ldz,
-                            cuFloatComplex *work, magma_int_t *ldwork, 
-                            float* rwork, magma_int_t *lrwork, magma_int_t *iwork, 
-                            magma_int_t *liwork, magma_int_t *info)
-    {
-        lapackf77_cstedc(compz, n, D, E, Z, ldz, work, ldwork, rwork, lrwork, iwork, 
-                         liwork, info);
-    }  
-}
-
 extern"C"
-void dmove_eig(char range, magma_int_t n, float *w, magma_int_t *il, 
+void magma_cmove_eig(char range, magma_int_t n, float *w, magma_int_t *il,
                    magma_int_t *iu, float vl, float vu, magma_int_t *m)
 {
     char range_[2] = {range, 0};
-    
-    static magma_int_t valeig, indeig, i;
-    
+
+    magma_int_t valeig, indeig, i;
+
     valeig = lapackf77_lsame( range_, "V" );
     indeig = lapackf77_lsame( range_, "I" );
-    
+
     if (indeig){
       *m = *iu - *il + 1;
       if(*il > 1)
@@ -55,16 +43,19 @@ void dmove_eig(char range, magma_int_t n, float *w, magma_int_t *il,
                 w[i-*il+1]=w[i];
         }
         *m = *iu - *il + 1;
-    } 
-    else 
+    }
+    else{
+        *il = 1;
+        *iu = n;
         *m = n;
-    
+    }
+
     return;
 }
 
-extern "C" magma_int_t 
-magma_cheevdx_gpu(char jobz, char range, char uplo, 
-                  magma_int_t n, 
+extern "C" magma_int_t
+magma_cheevdx_gpu(char jobz, char range, char uplo,
+                  magma_int_t n,
                   cuFloatComplex *da, magma_int_t ldda,
                   float vl, float vu, magma_int_t il, magma_int_t iu,
                   magma_int_t *m, float *w,
@@ -74,190 +65,192 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
                   magma_int_t *iwork, magma_int_t liwork,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-    Purpose   
+    Purpose
     =======
-    CHEEVD computes all eigenvalues and, optionally, eigenvectors of a   
-    complex Hermitian matrix A.  If eigenvectors are desired, it uses a   
-    divide and conquer algorithm.   
+    CHEEVD computes all eigenvalues and, optionally, eigenvectors of a
+    complex Hermitian matrix A.  If eigenvectors are desired, it uses a
+    divide and conquer algorithm.
 
-    The divide and conquer algorithm makes very mild assumptions about   
-    floating point arithmetic. It will work on machines with a guard   
-    digit in add/subtract, or on those binary machines without guard   
-    digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or   
-    Cray-2. It could conceivably fail on hexadecimal or decimal machines   
-    without guard digits, but we know of none.   
+    The divide and conquer algorithm makes very mild assumptions about
+    floating point arithmetic. It will work on machines with a guard
+    digit in add/subtract, or on those binary machines without guard
+    digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or
+    Cray-2. It could conceivably fail on hexadecimal or decimal machines
+    without guard digits, but we know of none.
 
-    Arguments   
-    =========   
-    JOBZ    (input) CHARACTER*1   
-            = 'N':  Compute eigenvalues only;   
+    Arguments
+    =========
+    JOBZ    (input) CHARACTER*1
+            = 'N':  Compute eigenvalues only;
             = 'V':  Compute eigenvalues and eigenvectors.
- 
-    RANGE   (input) CHARACTER*1   
-            = 'A': all eigenvalues will be found.   
-            = 'V': all eigenvalues in the half-open interval (VL,VU]   
-                   will be found.   
-            = 'I': the IL-th through IU-th eigenvalues will be found. 
 
-    UPLO    (input) CHARACTER*1   
-            = 'U':  Upper triangle of A is stored;   
-            = 'L':  Lower triangle of A is stored.   
+    RANGE   (input) CHARACTER*1
+            = 'A': all eigenvalues will be found.
+            = 'V': all eigenvalues in the half-open interval (VL,VU]
+                   will be found.
+            = 'I': the IL-th through IU-th eigenvalues will be found.
 
-    N       (input) INTEGER   
-            The order of the matrix A.  N >= 0.   
+    UPLO    (input) CHARACTER*1
+            = 'U':  Upper triangle of A is stored;
+            = 'L':  Lower triangle of A is stored.
 
-    DA      (device input/output) COMPLEX array, dimension (LDDA, N)   
-            On entry, the Hermitian matrix A.  If UPLO = 'U', the   
-            leading N-by-N upper triangular part of A contains the   
-            upper triangular part of the matrix A.  If UPLO = 'L',   
-            the leading N-by-N lower triangular part of A contains   
-            the lower triangular part of the matrix A.   
-            On exit, if JOBZ = 'V', then if INFO = 0, A contains the   
-            orthonormal eigenvectors of the matrix A.   
-            If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')   
-            or the upper triangle (if UPLO='U') of A, including the   
-            diagonal, is destroyed.   
+    N       (input) INTEGER
+            The order of the matrix A.  N >= 0.
 
-    LDDA    (input) INTEGER   
-            The leading dimension of the array DA.  LDDA >= max(1,N).   
+    DA      (device input/output) COMPLEX array, dimension (LDDA, N)
+            On entry, the Hermitian matrix A.  If UPLO = 'U', the
+            leading N-by-N upper triangular part of A contains the
+            upper triangular part of the matrix A.  If UPLO = 'L',
+            the leading N-by-N lower triangular part of A contains
+            the lower triangular part of the matrix A.
+            On exit, if JOBZ = 'V', then if INFO = 0, A contains the
+            orthonormal eigenvectors of the matrix A.
+            If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')
+            or the upper triangle (if UPLO='U') of A, including the
+            diagonal, is destroyed.
 
-    VL      (input) DOUBLE PRECISION   
-    VU      (input) DOUBLE PRECISION   
-            If RANGE='V', the lower and upper bounds of the interval to   
-            be searched for eigenvalues. VL < VU.   
-            Not referenced if RANGE = 'A' or 'I'.   
+    LDDA    (input) INTEGER
+            The leading dimension of the array DA.  LDDA >= max(1,N).
 
-    IL      (input) INTEGER   
-    IU      (input) INTEGER   
-            If RANGE='I', the indices (in ascending order) of the   
-            smallest and largest eigenvalues to be returned.   
-            1 <= IL <= IU <= N, if N > 0; IL = 1 and IU = 0 if N = 0.   
-            Not referenced if RANGE = 'A' or 'V'. 
- 
-    M       (output) INTEGER   
-            The total number of eigenvalues found.  0 <= M <= N.   
+    VL      (input) DOUBLE PRECISION
+    VU      (input) DOUBLE PRECISION
+            If RANGE='V', the lower and upper bounds of the interval to
+            be searched for eigenvalues. VL < VU.
+            Not referenced if RANGE = 'A' or 'I'.
+
+    IL      (input) INTEGER
+    IU      (input) INTEGER
+            If RANGE='I', the indices (in ascending order) of the
+            smallest and largest eigenvalues to be returned.
+            1 <= IL <= IU <= N, if N > 0; IL = 1 and IU = 0 if N = 0.
+            Not referenced if RANGE = 'A' or 'V'.
+
+    M       (output) INTEGER
+            The total number of eigenvalues found.  0 <= M <= N.
             If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
- 
-    W       (output) DOUBLE PRECISION array, dimension (N)   
-            If INFO = 0, the eigenvalues in ascending order.   
 
-    WA      (workspace) COMPLEX array, dimension (LDWA, N)    
+    W       (output) DOUBLE PRECISION array, dimension (N)
+            If INFO = 0, the eigenvalues in ascending order.
 
-    LDWA    (input) INTEGER   
-            The leading dimension of the array WA.  LDWA >= max(1,N). 
- 
-    WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))   
-            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.   
+    WA      (workspace) COMPLEX array, dimension (LDWA, N)
 
-    LWORK   (input) INTEGER   
-            The length of the array WORK.   
-            If N <= 1,                LWORK must be at least 1.   
-            If JOBZ  = 'N' and N > 1, LWORK must be at least N + 1.   
-            If JOBZ  = 'V' and N > 1, LWORK must be at least 2*N + N**2.   
+    LDWA    (input) INTEGER
+            The leading dimension of the array WA.  LDWA >= max(1,N).
 
-            If LWORK = -1, then a workspace query is assumed; the routine   
-            only calculates the optimal sizes of the WORK, RWORK and   
-            IWORK arrays, returns these values as the first entries of   
-            the WORK, RWORK and IWORK arrays, and no error message   
-            related to LWORK or LRWORK or LIWORK is issued by XERBLA.    
+    WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
+            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
-    RWORK   (workspace/output) DOUBLE PRECISION array,   
-                                           dimension (LRWORK)   
-            On exit, if INFO = 0, RWORK(1) returns the optimal LRWORK.   
+    LWORK   (input) INTEGER
+            The length of the array WORK.
+            If N <= 1,                LWORK must be at least 1.
+            If JOBZ  = 'N' and N > 1, LWORK must be at least N + 1.
+            If JOBZ  = 'V' and N > 1, LWORK must be at least 2*N + N**2.
 
-    LRWORK  (input) INTEGER   
-            The dimension of the array RWORK.   
-            If N <= 1,                LRWORK must be at least 1.   
-            If JOBZ  = 'N' and N > 1, LRWORK must be at least N.   
-            If JOBZ  = 'V' and N > 1, LRWORK must be at least   
-                           1 + 5*N + 2*N**2.   
+            If LWORK = -1, then a workspace query is assumed; the routine
+            only calculates the optimal sizes of the WORK, RWORK and
+            IWORK arrays, returns these values as the first entries of
+            the WORK, RWORK and IWORK arrays, and no error message
+            related to LWORK or LRWORK or LIWORK is issued by XERBLA.
 
-            If LRWORK = -1, then a workspace query is assumed; the   
-            routine only calculates the optimal sizes of the WORK, RWORK   
-            and IWORK arrays, returns these values as the first entries   
-            of the WORK, RWORK and IWORK arrays, and no error message   
-            related to LWORK or LRWORK or LIWORK is issued by XERBLA.   
+    RWORK   (workspace/output) DOUBLE PRECISION array,
+                                           dimension (LRWORK)
+            On exit, if INFO = 0, RWORK(1) returns the optimal LRWORK.
 
-    IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))   
-            On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.   
+    LRWORK  (input) INTEGER
+            The dimension of the array RWORK.
+            If N <= 1,                LRWORK must be at least 1.
+            If JOBZ  = 'N' and N > 1, LRWORK must be at least N.
+            If JOBZ  = 'V' and N > 1, LRWORK must be at least
+                           1 + 5*N + 2*N**2.
 
-    LIWORK  (input) INTEGER   
-            The dimension of the array IWORK.   
-            If N <= 1,                LIWORK must be at least 1.   
-            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.   
-            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.   
+            If LRWORK = -1, then a workspace query is assumed; the
+            routine only calculates the optimal sizes of the WORK, RWORK
+            and IWORK arrays, returns these values as the first entries
+            of the WORK, RWORK and IWORK arrays, and no error message
+            related to LWORK or LRWORK or LIWORK is issued by XERBLA.
 
-            If LIWORK = -1, then a workspace query is assumed; the   
-            routine only calculates the optimal sizes of the WORK, RWORK   
-            and IWORK arrays, returns these values as the first entries   
-            of the WORK, RWORK and IWORK arrays, and no error message   
-            related to LWORK or LRWORK or LIWORK is issued by XERBLA.   
+    IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
+            On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
-            > 0:  if INFO = i and JOBZ = 'N', then the algorithm failed   
-                  to converge; i off-diagonal elements of an intermediate   
-                  tridiagonal form did not converge to zero;   
-                  if INFO = i and JOBZ = 'V', then the algorithm failed   
-                  to compute an eigenvalue while working on the submatrix   
-                  lying in rows and columns INFO/(N+1) through   
-                  mod(INFO,N+1).   
+    LIWORK  (input) INTEGER
+            The dimension of the array IWORK.
+            If N <= 1,                LIWORK must be at least 1.
+            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.
+            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.
 
-    Further Details   
-    ===============   
-    Based on contributions by   
-       Jeff Rutter, Computer Science Division, University of California   
-       at Berkeley, USA   
+            If LIWORK = -1, then a workspace query is assumed; the
+            routine only calculates the optimal sizes of the WORK, RWORK
+            and IWORK arrays, returns these values as the first entries
+            of the WORK, RWORK and IWORK arrays, and no error message
+            related to LWORK or LRWORK or LIWORK is issued by XERBLA.
 
-    Modified description of INFO. Sven, 16 Feb 05.   
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
+            > 0:  if INFO = i and JOBZ = 'N', then the algorithm failed
+                  to converge; i off-diagonal elements of an intermediate
+                  tridiagonal form did not converge to zero;
+                  if INFO = i and JOBZ = 'V', then the algorithm failed
+                  to compute an eigenvalue while working on the submatrix
+                  lying in rows and columns INFO/(N+1) through
+                  mod(INFO,N+1).
+
+    Further Details
+    ===============
+    Based on contributions by
+       Jeff Rutter, Computer Science Division, University of California
+       at Berkeley, USA
+
+    Modified description of INFO. Sven, 16 Feb 05.
     =====================================================================   */
 
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
     char range_[2] = {range, 0};
-    static magma_int_t c__1 = 1;
-  
+    magma_int_t c__1 = 1;
+
     float d__1;
 
-    static float eps;
-    static magma_int_t inde;
-    static float anrm;
-    static magma_int_t imax;
-    static float rmin, rmax;
-    static float sigma;
-    static magma_int_t iinfo, lwmin;
-    static magma_int_t lower;
-    static magma_int_t llrwk;
-    static magma_int_t wantz;
-    static magma_int_t indwk2, llwrk2;
-    static magma_int_t iscale;
-    static float safmin;
-    static float bignum;
-    static magma_int_t indtau;
-    static magma_int_t indrwk, indwrk, liwmin;
-    static magma_int_t lrwmin, llwork;
-    static float smlnum;
-    static magma_int_t lquery;
-    static magma_int_t alleig, valeig, indeig;
-  
+    float eps;
+    magma_int_t inde;
+    float anrm;
+    magma_int_t imax;
+    float rmin, rmax;
+    float sigma;
+    magma_int_t iinfo, lwmin;
+    magma_int_t lower;
+    magma_int_t llrwk;
+    magma_int_t wantz;
+    magma_int_t indwk2, llwrk2;
+    magma_int_t iscale;
+    float safmin;
+    float bignum;
+    magma_int_t indtau;
+    magma_int_t indrwk, indwrk, liwmin;
+    magma_int_t lrwmin, llwork;
+    float smlnum;
+    magma_int_t lquery;
+    magma_int_t alleig, valeig, indeig;
+
+    bool dc_freed = false;
+
     float *dwork;
     cuFloatComplex *dc;
     magma_int_t lddc = ldda;
-  
+
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
-    
+
     alleig = lapackf77_lsame( range_, "A" );
     valeig = lapackf77_lsame( range_, "V" );
     indeig = lapackf77_lsame( range_, "I" );
-  
+
     lquery = lwork == -1 || lrwork == -1 || liwork == -1;
 
     *info = 0;
@@ -286,9 +279,9 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
             }
         }
     }
-    
-    magma_int_t nb = magma_get_chetrd_nb(n); 
-    
+
+    magma_int_t nb = magma_get_chetrd_nb(n);
+
     if (wantz) {
         lwmin = 2 * n + n * n;
         lrwmin = 1 + 5 * n + 2 * n * n;
@@ -310,47 +303,44 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
     } else if ((liwork < liwmin) && ! lquery) {
         *info = -20;
     }
-  
+
     if (*info != 0) {
         magma_xerbla( __func__, -(*info));
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     } else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
-    
+
     /* Quick return if possible */
     if (n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if (n == 1) {
         cuFloatComplex tmp;
-        cublasGetVector(1, sizeof(cuFloatComplex), da, 1, &tmp, 1);
+        magma_cgetvector( 1, da, 1, &tmp, 1 );
         w[0] = MAGMA_C_REAL(tmp);
         if (wantz) {
             tmp = MAGMA_C_ONE;
-            cublasSetVector(1, sizeof(cuFloatComplex), &tmp, 1, da, 1);
+            magma_csetvector( 1, &tmp, 1, da, 1 );
         }
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
-    static cudaStream_t stream;
-    cudaStreamCreate(&stream);
-  
-    if (cudaSuccess != cudaMalloc((void**)&dc, n*lddc*sizeof(cuFloatComplex))) {
+    cudaStream_t stream;
+    magma_queue_create( &stream );
+
+    if (MAGMA_SUCCESS != magma_cmalloc( &dc, n*lddc )) {
         fprintf (stderr, "!!!! device memory allocation error (magma_cheevdx_gpu)\n");
-        return MAGMA_ERR_CUBLASALLOC;
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
-  
-    if (cudaSuccess != cudaMalloc((void**)&dwork, n*sizeof(float))) {
+
+    if (MAGMA_SUCCESS != magma_smalloc( &dwork, n )) {
         fprintf (stderr, "!!!! device memory allocation error (magma_cheevdx_gpu)\n");
-        return MAGMA_ERR_CUBLASALLOC;
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
-   
-    --w;
-    --work;
-    --rwork;
-    --iwork;
 
     /* Get machine constants. */
     safmin = lapackf77_slamch("Safe minimum");
@@ -371,51 +361,113 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
         sigma = rmax / anrm;
     }
     if (iscale == 1) {
-        magmablas_clascl(uplo, 0, 0, 1., sigma, n, n, da, 
+        magmablas_clascl(uplo, 0, 0, 1., sigma, n, n, da,
                          ldda, info);
     }
 
+    magma_free( dwork );
+
     /* Call CHETRD to reduce Hermitian matrix to tridiagonal form. */
-    inde = 1;
-    indtau = 1;
+    inde = 0;
+    indtau = 0;
     indwrk = indtau + n;
     indrwk = inde + n;
     indwk2 = indwrk + n * n;
-    llwork = lwork - indwrk + 1;
-    llwrk2 = lwork - indwk2 + 1;
-    llrwk = lrwork - indrwk + 1;
+    llwork = lwork - indwrk;
+    llwrk2 = lwork - indwk2;
+    llrwk = lrwork - indrwk;
+
+//#define ENABLE_TIMER
+#ifdef ENABLE_TIMER
+        magma_timestr_t start, end;
+
+        start = get_current_time();
+#endif
 
 #ifdef FAST_HEMV
-    magma_chetrd2_gpu(uplo, n, da, ldda, &w[1], &rwork[inde],
+    magma_chetrd2_gpu(uplo, n, da, ldda, w, &rwork[inde],
                       &work[indtau], wa, ldwa, &work[indwrk], llwork, dc, lddc*n, &iinfo);
 #else
-    magma_chetrd_gpu (uplo, n, da, ldda, &w[1], &rwork[inde],
+    magma_chetrd_gpu (uplo, n, da, ldda, w, &rwork[inde],
                       &work[indtau], wa, ldwa, &work[indwrk], llwork, &iinfo);
-#endif  
-  
-    /* For eigenvalues only, call DSTERF.  For eigenvectors, first call   
-       ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
-       tridiagonal matrix, then call CUNMTR to multiply it to the Householder 
+#endif
+
+#ifdef ENABLE_TIMER
+        end = get_current_time();
+
+        printf("time chetrd_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
+
+    /* For eigenvalues only, call DSTERF.  For eigenvectors, first call
+       ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the
+       tridiagonal matrix, then call CUNMTR to multiply it to the Householder
        transformations represented as Householder vectors in A. */
-  
+
     if (! wantz) {
-        lapackf77_ssterf(&n, &w[1], &rwork[inde], info);
-        
-        dmove_eig(range, n, &w[1], &il, &iu, vl, vu, m);
-        
+        lapackf77_ssterf(&n, w, &rwork[inde], info);
+
+        magma_cmove_eig(range, n, w, &il, &iu, vl, vu, m);
+
     } else {
-        Mylapackf77_cstedc("I", &n, &w[1], &rwork[inde], &work[indwrk], &n, &work[indwk2], 
-                           &llwrk2, &rwork[indrwk], &llrwk, &iwork[1], &liwork, info);
-        
-        dmove_eig(range, n, &w[1], &il, &iu, vl, vu, m);
-        
-        cublasSetMatrix(n, *m, sizeof(cuFloatComplex), &work[indwrk + n * (il-1) ], n, dc, lddc);
-        
+
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
+
+        if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+            magma_free( dc );  // if not enough memory is available free dc to be able do allocate dwork
+            dc_freed=true;
+#ifdef ENABLE_TIMER
+            printf("dc deallocated\n");
+#endif
+            if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+                fprintf (stderr, "!!!! device memory allocation error (magma_cheevd_gpu)\n");
+                *info = MAGMA_ERR_DEVICE_ALLOC;
+                return *info;
+            }
+        }
+
+        magma_cstedx(range, n, vl, vu, il, iu, w, &rwork[inde],
+                     &work[indwrk], n, &rwork[indrwk],
+                     llrwk, iwork, liwork, dwork, info);
+
+        magma_free( dwork );
+
+#ifdef ENABLE_TIMER
+        end = get_current_time();
+
+        printf("time cstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
+
+        if(dc_freed){
+            dc_freed = false;
+            if (MAGMA_SUCCESS != magma_cmalloc( &dc, n*lddc )) {
+                fprintf (stderr, "!!!! device memory allocation error (magma_cheevd_gpu)\n");
+                *info = MAGMA_ERR_DEVICE_ALLOC;
+                return *info;
+            }
+        }
+
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
+
+        magma_cmove_eig(range, n, w, &il, &iu, vl, vu, m);
+
+        magma_csetmatrix( n, *m, &work[indwrk + n * (il-1) ], n, dc, lddc );
+
         magma_cunmtr_gpu(MagmaLeft, uplo, MagmaNoTrans, n, *m, da, ldda, &work[indtau],
                          dc, lddc, wa, ldwa, &iinfo);
-        
-        cudaMemcpy2D(da, ldda * sizeof(cuFloatComplex), dc, lddc * sizeof(cuFloatComplex),
-                     sizeof(cuFloatComplex) * n, *m, cudaMemcpyDeviceToDevice);
+
+        magma_ccopymatrix( n, *m,
+                           dc, lddc,
+                           da, ldda );
+
+#ifdef ENABLE_TIMER
+        end = get_current_time();
+
+        printf("time cunmtr_gpu + copy = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
@@ -426,15 +478,16 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
             imax = *info - 1;
         }
         d__1 = 1. / sigma;
-        blasf77_sscal(&imax, &d__1, &w[1], &c__1);
+        blasf77_sscal(&imax, &d__1, w, &c__1);
     }
 
-    work[1]  = MAGMA_C_MAKE((float) lwmin, 0.);
-    rwork[1] = (float) lrwmin;
-    iwork[1] = liwmin;
-    
-    cudaStreamDestroy(stream);
-    cudaFree(dc);
-    
-    return MAGMA_SUCCESS;
+    work[0]  = MAGMA_C_MAKE((float) lwmin, 0.);
+    rwork[0] = (float) lrwmin;
+    iwork[0] = liwmin;
+
+    magma_queue_destroy( stream );
+    if (!dc_freed)
+        magma_free( dc );
+
+    return *info;
 } /* magma_cheevdx_gpu */

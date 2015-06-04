@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:41 2011
+       @generated s Tue May 15 18:18:08 2012
 
 */
 #include "common_magma.h"
@@ -15,7 +15,7 @@
 #if (GPUSHMEM >= 200)
 
 #define magmablas_ssymv_200 magmablas_ssymv
-#define magmablasw_ssymv_200 magmablasw_ssymv
+#define magmablas_ssymv2_200 magmablas_ssymv2
 
 #define ssymv_bs         64
 #define thread_x         64
@@ -46,6 +46,7 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
 
     __shared__ float la   [quarter_thread_x][thread_x+2];
     __shared__ float buff [thread_x];
+    __shared__ float buff2 [thread_x];
 
     float tr[4];
     float b[4];
@@ -209,7 +210,7 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
     A= A - lda * blkc * thread_x;
     x= x - blkc * thread_x  *incx  ;
 
-    x= x- tx*incx;
+    //x= x- tx*incx;
 
     A+=4 * ty* lda  ;
     A+=tx;
@@ -229,6 +230,11 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
         {
             MAGMA_S_SET2REAL(res_,0);
             count++;
+            
+            if( ty== 0 ) {
+                buff2[tx]  = x[i*incx];
+            }
+            __syncthreads();
 
             #pragma unroll
             for( magma_int_t k=0;k<4;k++)
@@ -241,7 +247,7 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
                 #pragma unroll
                 for(magma_int_t j=0; j < 4 ; j++)
                 {
-                    res += tr[j] * x[ quarter_thread_x * k + ty * 4 + j];
+                    res += tr[j] * buff2[ quarter_thread_x * k + ty * 4 + j];
                     la[( j + ty * 4)][tx] = tr[j] * buff[tx];
                 }
                 __syncthreads();
@@ -287,6 +293,10 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
     {
         MAGMA_S_SET2REAL(res_,0);
         count++;
+        if( ty== 0 ) {
+            buff2[tx]  = x[i*incx];
+        }
+        __syncthreads();
 
         #pragma unroll
         for( magma_int_t k=0;k<4;k++)
@@ -298,7 +308,7 @@ magmablas_ssymv_200_L_special( magma_int_t n, float alpha,
             #pragma unroll
             for(magma_int_t j=0; j < 4 ; j++)
             {
-                res += tr[j] * x[ i + quarter_thread_x*k + ty*4+(j)];
+                res += tr[j] * buff2[ quarter_thread_x*k + ty*4+(j)];
                 la[( j + ty * 4)][tx] = tr[j] * buff[tx];
             }
             __syncthreads();
@@ -992,14 +1002,14 @@ magmablas_ssymv_200( char uplo, magma_int_t n,
     Purpose
     =======
 
-    magmablasw_ssymv  performs the matrix-vector operation on fermi:
+    magmablas_ssymv2  performs the matrix-vector operation on fermi:
 
        y := alpha*A*x + beta*y,
 
     where alpha and beta are scalars, x and y are n element vectors and
     A is an n by n hermitian matrix.
 
-    the interface of magmablasw_ssymv is different from magmablas_ssymv in
+    the interface of magmablas_ssymv2 is different from magmablas_ssymv in
     the last argument dC_work
 
     As magma implements ssymv through two steps:
@@ -1016,7 +1026,7 @@ magmablas_ssymv_200( char uplo, magma_int_t n,
     a wrapper routine of magmabalsw_ssymv allocating the working space inside the routine 
     and provides the same interface with cublas. 
     
-    If users need to call ssymv frequently, we suggest to use magmablasw_ssymv instead of magmablas_ssymv.
+    If users need to call ssymv frequently, we suggest to use magmablas_ssymv2 instead of magmablas_ssymv.
     As the overhead of allocating and free in device memory in magmablas_ssymv would hurt performance.
     Our tests show that this penalty is about 10Gflop/s when matrix size is around 10000.
     
@@ -1025,13 +1035,14 @@ magmablas_ssymv_200( char uplo, magma_int_t n,
 
 extern "C"
 magma_int_t
-magmablasw_ssymv_200( char uplo, magma_int_t n,
+magmablas_ssymv2_200( char uplo, magma_int_t n,
                       float alpha, 
                       float *A, magma_int_t lda,
                       float *X, magma_int_t incx,
                       float beta,  
                       float *Y, magma_int_t incy,
-                      float *dC_work)
+                      float *dC_work,
+                      magma_int_t lwork)
 {
     char      uplo_[2] = {uplo, 0};
     long int  upper    = lapackf77_lsame(uplo_, "U");

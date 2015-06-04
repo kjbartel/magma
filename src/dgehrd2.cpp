@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:24 2011
+       @generated d Tue May 15 18:17:39 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
               double *tau, double *work, 
               magma_int_t *lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -145,23 +145,22 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-      return 0;
+      return *info;
 
     /* Quick return if possible */
     nh = ihi - ilo + 1;
     if (nh <= 1) {
       work[0] = c_one;
-      return 0;
+      return *info;
     }
 
     double *da;
-    cublasStatus status;
-    status = cublasAlloc(N*ldda+2*N*nb+nb*nb, sizeof(double), (void**)&da);
-    if (status != CUBLAS_STATUS_SUCCESS) {
-      fprintf (stderr, "!!!! device memory allocation error (d_A)\n");
+    if (MAGMA_SUCCESS != magma_dmalloc( &da, N*ldda + 2*N*nb + nb*nb )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     
     double *d_A    = da;
@@ -170,7 +169,12 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     magma_int_t i__;
 
     double *t, *d_t;
-    t   = (double *)malloc(nb*nb*sizeof(double));
+    t = (double*) malloc( nb*nb * sizeof(double));
+    if ( t == NULL ) {
+        magma_free( da );
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
+    }
     d_t = d_work + nb * ldda;
 
     dzero_nbxnb_block(nb, d_A+N*ldda, ldda);
@@ -218,7 +222,7 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
       /* Use blocked code */
 
       /* Copy the matrix to the GPU */
-      cublasSetMatrix(N, N-ilo+1, sizeof(double), a+(ilo-1)*(lda), lda, d_A, ldda);
+      magma_dsetmatrix( N, N-ilo+1, a+(ilo-1)*(lda), lda, d_A, ldda );
 
       for (i__ = ilo; i__ < ihi - nb; i__ += nb) {
         /* Computing MIN */
@@ -229,9 +233,9 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
              which performs the reduction, and also the matrix Y = A*V*T */
 
         /*   Get the current panel (no need for the 1st iteration) */
-        cublasGetMatrix(ihi-i__+1, ib, sizeof(double), 
-                        d_A + (i__ - ilo)*ldda + i__ - 1, ldda,
-                        a   + (i__ -  1 )*lda  + i__ - 1, lda);      
+        magma_dgetmatrix( ihi-i__+1, ib,
+                          d_A + (i__ - ilo)*ldda + i__ - 1, ldda,
+                          a   + (i__ -  1 )*lda  + i__ - 1, lda );      
         
         magma_dlahr2(ihi, i__, ib, 
                      d_A + (i__ - ilo)*ldda, 
@@ -240,7 +244,7 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
                      &tau[i__], t, nb, work, ldwork);
 
         /* Copy T from the CPU to D_T on the GPU */
-        cublasSetMatrix(nb, nb, sizeof(double), t, nb, d_t, nb);
+        magma_dsetmatrix( nb, nb, t, nb, d_t, nb );
 
         magma_dlahru(n, ihi, i__ - 1, ib, 
                      a   + (i__ -  1 )*(lda), lda,
@@ -252,15 +256,15 @@ magma_dgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
 
     /* Use unblocked code to reduce the rest of the matrix */
     if (!(nb < nbmin || nb >= nh))
-        cublasGetMatrix( n, n-i__+1, sizeof(double), 
-                         d_A+ (i__-ilo)*ldda, ldda, 
-                         a  + (i__-1)*(lda), lda);
+        magma_dgetmatrix( n, n-i__+1,
+                          d_A+ (i__-ilo)*ldda, ldda,
+                          a  + (i__-1)*(lda),  lda );
     lapackf77_dgehd2(&n, &i__, &ihi, a, &lda, &tau[1], work, &iinfo);
     MAGMA_D_SET2REAL( work[0], (double) iws );
     
-    cublasFree(da);
+    magma_free( da );
     free(t);
  
-    return 0;
+    return *info;
 } /* magma_dgehrd2 */
 

@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2011
+#      May 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -13,10 +13,10 @@ INC += -I$(MAGMA_DIR)/control
 
 ZSRC  = zpotrf.cpp	\
         zpotrf_gpu.cpp	\
-        zpotrf_ooc.cpp	\
         zpotrf_mgpu.cpp \
         zpotrf2_ooc.cpp \
-        zpotrf2_mgpu.cpp \
+        zpotrf3_mgpu.cpp \
+		\
         zpotrs_gpu.cpp	\
         zposv.cpp	\
         zposv_gpu.cpp	\
@@ -24,13 +24,13 @@ ZSRC  = zpotrf.cpp	\
         zpotri_gpu.cpp	\
 	\
         zgetrf.cpp	\
-        zgetrf-v2.cpp   \
-        zgetrf-v3.cpp   \
         zgetrf_gpu.cpp 	\
-        zgetrf_mgpu.cpp 	\
-        zgetrf_nopiv.cpp\
-        zgetrf2_ooc.cpp \
+        zgetrf_mgpu.cpp	\
+        zgetrf3_ooc.cpp \
+        zgetrf1_mgpu.cpp \
+		\
 	zgetf2_nopiv.cpp\
+        zgetrf_nopiv.cpp\
         zgetrf_nopiv_gpu.cpp\
         zgetrs_gpu.cpp 	\
         zgesv.cpp       \
@@ -67,6 +67,7 @@ ZSRC  = zpotrf.cpp	\
         zhetrd.cpp 	\
         zhetrd_gpu.cpp  \
         zhetrd2_gpu.cpp \
+        zhebbd.cpp      \
         zlatrd.cpp 	\
         zlatrd2.cpp     \
         zunmtr.cpp 	\
@@ -75,10 +76,13 @@ ZSRC  = zpotrf.cpp	\
         zunmqr2_gpu.cpp \
 	zunmql.cpp      \
         zunmql2_gpu.cpp \
+        zunmtr_m.cpp 	\
+        zunmqr_m.cpp 	\
         \
         zgeev.cpp       \
         dgeev.cpp       \
         zheevd.cpp      \
+        zheevdx.cpp     \
         zheevd_gpu.cpp  \
 	zheevdx_gpu.cpp \
 	zheevr.cpp      \
@@ -86,6 +90,7 @@ ZSRC  = zpotrf.cpp	\
 	zheevx.cpp      \
 	zheevx_gpu.cpp  \
         dsyevd.cpp      \
+        dsyevdx.cpp     \
         dsyevd_gpu.cpp  \
         zhegvd.cpp      \
 	zhegvdx.cpp     \
@@ -96,6 +101,20 @@ ZSRC  = zpotrf.cpp	\
         zhegst_gpu.cpp  \
         zgesvd.cpp	\
 	dgesvd.cpp	\
+	dstedx.cpp	\
+	zstedx.cpp	\
+	dlaex0.cpp	\
+	dlaex1.cpp	\
+	dlaex3.cpp	\
+        zheevd_m.cpp    \
+        zhegvd_m.cpp    \
+        zhegst_m.cpp    \
+        ztrsm_m.cpp     \
+	dstedx_m.cpp	\
+	zstedx_m.cpp	\
+	dlaex0_m.cpp	\
+	dlaex1_m.cpp	\
+	dlaex3_m.cpp	\
 	\
 	zcposv_gpu.cpp	\
 	zcgesv_gpu.cpp	\
@@ -110,13 +129,23 @@ ZSRC  = zpotrf.cpp	\
 	ztrtri.cpp	\
 	ztrtri_gpu.cpp	\
 	zlauum.cpp	\
-	zlauum_gpu.cpp
+	zlauum_gpu.cpp \
+        zungqr_2stage_gpu.cpp	\
+	zbulge_kernel.cpp \
+	zbulge_applyQ.cpp \
+	dbulge_aux.cpp \
+	zbulge_aux.cpp \
+	zhetrd_bhe2trc_v3.cpp
 
 
+-include Makefile.local
 -include Makefile.src
 
-ALLSRC= $(ZSRC) $(CSRC) $(DSRC) $(SSRC)
-ALLOBJ  = $(ALLSRC:.cpp=.o)
+ALLSRC_F = dlaed2.f \
+           slaed2.f
+
+ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC) #dsbtrd.cpp
+ALLOBJ := $(ALLSRC:.cpp=.o) $(ALLSRC_F:.f=.o)
 
 all: $(LIBMAGMA)
 
@@ -126,6 +155,9 @@ $(LIBMAGMA): $(ALLOBJ)
 
 .cpp.o:
 	$(CC) $(OPTS) $(INC) -c $< -o $@
+
+.f.o: 
+	$(FORT) $(OPTS) $(INC) -c $< -o $@
 
 clean:
 	rm -f *.o *~ *.linkinfo

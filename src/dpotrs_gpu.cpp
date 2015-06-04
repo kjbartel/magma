@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:14 2011
+       @generated d Tue May 15 18:17:25 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_d
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasDtrsm magmablas_dtrsm
+  #define magma_dtrsm magmablas_dtrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -26,7 +26,7 @@ magma_dpotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
     Purpose
     =======
@@ -83,32 +83,32 @@ magma_dpotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         *info = -7;
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if ( (n == 0) || (nrhs == 0) ) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if( (uplo=='U') || (uplo=='u') ){
         if ( nrhs == 1) {
-            cublasDtrsv(MagmaUpper, MagmaTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
-            cublasDtrsv(MagmaUpper, MagmaNoTrans,   MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaUpper, MagmaTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaUpper, MagmaNoTrans,   MagmaNonUnit, n, dA, ldda, dB, 1 );
         } else {
-            cublasDtrsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
-            cublasDtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans,   MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
+            magma_dtrsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
+            magma_dtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans,   MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
         }
     }
     else{
         if ( nrhs == 1) {
-            cublasDtrsv(MagmaLower, MagmaNoTrans,   MagmaNonUnit, n, dA, ldda, dB, 1 );
-            cublasDtrsv(MagmaLower, MagmaTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaLower, MagmaNoTrans,   MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_dtrsv(MagmaLower, MagmaTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
         } else {
-            cublasDtrsm(MagmaLeft, MagmaLower, MagmaNoTrans,   MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
-            cublasDtrsm(MagmaLeft, MagmaLower, MagmaTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
+            magma_dtrsm(MagmaLeft, MagmaLower, MagmaNoTrans,   MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
+            magma_dtrsm(MagmaLeft, MagmaLower, MagmaTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb);
         }
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
 }

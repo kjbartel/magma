@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:20 2011
+       @generated s Tue May 15 18:17:33 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
                   float *dA,    magma_int_t lda,   float *tau, 
                   float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -54,7 +54,7 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,M).
@@ -111,16 +111,16 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /*  Quick return if possible */
     if (min(m, n) == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     maxm = ((m + 31)/32)*32;
@@ -131,26 +131,30 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
 
     dAT = dA;
     
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0))
-      magmablas_sinplace_transpose( dAT, lda, ldat );
+    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
+        ldat = lda;
+        magmablas_sinplace_transpose( dAT, lda, maxm );
+    }
     else {
-      if ( CUBLAS_STATUS_SUCCESS != 
-           cublasAlloc(maxm*maxn, sizeof(float), (void**)&dAT) )
-        return MAGMA_ERR_CUBLASALLOC;
+      if (MAGMA_SUCCESS != magma_smalloc( &dAT, maxm*maxn ) ){
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
+      }
       
       magmablas_stranspose2( dAT, ldat, dA, lda, m, n );
     }
     
-    magma_sgeqrf2_gpu(n, m, dAT, lda, tau, &iinfo);
+    magma_sgeqrf2_gpu(n, m, dAT, ldat, tau, &iinfo);
 
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0))
-      magmablas_sinplace_transpose( dAT, ldat, lda );
+    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
+      magmablas_sinplace_transpose( dAT, ldat, maxm );
+    }
     else {
       magmablas_stranspose2( dA, lda, dAT, ldat, n, m );
-      cublasFree(dAT);
+      magma_free( dAT );
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_sgelqf_gpu */
 
 #undef  a_ref

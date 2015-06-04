@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:25 2011
+       @generated s Tue May 15 18:17:40 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_sorghr(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
              float *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -87,12 +87,12 @@ magma_sorghr(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0) 
-      return MAGMA_SUCCESS;
+      return *info;
 
     /* Shift the vectors which define the elementary reflectors one   
        column to the right, and set the first ilo and the last n-ihi   
@@ -126,7 +126,7 @@ magma_sorghr(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
                    a_ref(ilo, ilo), lda,
                    tau+ilo-1, dT, nb, &iinfo);
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_sorghr */
 
 #undef a_ref

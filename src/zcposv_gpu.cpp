@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions mixed zc -> ds
 
@@ -14,7 +14,7 @@
 #define BWDMAX 1.0
 
 // === Define what BLAS to use ============================================
-#define cublasZhemv magmablas_zhemv
+#define magma_zhemv magmablas_zhemv
 // === End defining what BLAS to use ======================================
 
 extern "C" magma_int_t
@@ -25,11 +25,11 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *dworkd, cuFloatComplex *dworks,
                  magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -141,13 +141,13 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
     =====================================================================    */
 
 
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex zone  = MAGMA_Z_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_one     = MAGMA_Z_ONE;
     magma_int_t     ione  = 1;
     cuFloatComplex *dSA, *dSX;
     cuDoubleComplex Xnrmv, Rnrmv; 
     double          Xnrm, Rnrm, Anrm, cte, eps;
-    magma_int_t     i, j, iiter, ret;
+    magma_int_t     i, j, iiter;
 
     *iter = 0 ;
     *info = 0 ; 
@@ -165,11 +165,11 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
    
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     if( n == 0 || nrhs == 0 ) 
-        return MAGMA_SUCCESS;
+        return *info;
 
     eps = lapackf77_dlamch("Epsilon");
 
@@ -205,17 +205,17 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
     magmablas_zlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dworkd, n);
     
     if( nrhs == 1 )
-        cublasZhemv(uplo, n, mzone, dA, ldda, dX, 1, zone, dworkd, 1);
+        magma_zhemv(uplo, n, c_neg_one, dA, ldda, dX, 1, c_one, dworkd, 1);
     else
-        cublasZhemm(MagmaLeft, uplo, n, nrhs, mzone, dA, ldda, dX, lddx, zone, dworkd, n);
+        magma_zhemm(MagmaLeft, uplo, n, nrhs, c_neg_one, dA, ldda, dX, lddx, c_one, dworkd, n);
   
     for(i=0; i<nrhs; i++){
-        j = cublasIzamax( n, dX+i*n, 1) ;
-        cublasGetMatrix( 1, 1, sizeof(cuDoubleComplex), dX+i*n+j-1, 1, &Xnrmv, 1);
+        j = magma_izamax( n, dX+i*n, 1) ;
+        magma_zgetmatrix( 1, 1, dX+i*n+j-1, 1, &Xnrmv, 1 );
         Xnrm = lapackf77_zlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
       
-        j = cublasIzamax ( n, dworkd+i*n, 1 );
-        cublasGetMatrix( 1, 1, sizeof(cuDoubleComplex), dworkd+i*n+j-1, 1, &Rnrmv, 1 );
+        j = magma_izamax ( n, dworkd+i*n, 1 );
+        magma_zgetmatrix( 1, 1, dworkd+i*n+j-1, 1, &Rnrmv, 1 );
         Rnrm = lapackf77_zlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
       
         if( Rnrm >  Xnrm *cte ){
@@ -223,7 +223,7 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }
     }
     *iter =0; 
-    return MAGMA_SUCCESS;
+    return *info;
   
   L10:
     ;
@@ -242,17 +242,17 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }
       
         if( nrhs == 1 )
-            cublasZhemv(uplo, n, mzone, dA, ldda, dX, 1, zone, dworkd, 1);
+            magma_zhemv(uplo, n, c_neg_one, dA, ldda, dX, 1, c_one, dworkd, 1);
         else 
-            cublasZhemm(MagmaLeft, uplo, n, nrhs, mzone, dA, ldda, dX, lddx, zone, dworkd, n);
+            magma_zhemm(MagmaLeft, uplo, n, nrhs, c_neg_one, dA, ldda, dX, lddx, c_one, dworkd, n);
       
         for(i=0; i<nrhs; i++){
-            j = cublasIzamax( n, dX+i*n, 1) ;
-            cublasGetMatrix( 1, 1, sizeof(cuDoubleComplex), dX+i*n+j-1, 1, &Xnrmv, 1);
+            j = magma_izamax( n, dX+i*n, 1) ;
+            magma_zgetmatrix( 1, 1, dX+i*n+j-1, 1, &Xnrmv, 1 );
             Xnrm = lapackf77_zlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
           
-            j = cublasIzamax ( n, dworkd+i*n, 1 );
-            cublasGetMatrix( 1, 1, sizeof(cuDoubleComplex), dworkd+i*n+j-1, 1, &Rnrmv, 1 );
+            j = magma_izamax ( n, dworkd+i*n, 1 );
+            magma_zgetmatrix( 1, 1, dworkd+i*n+j-1, 1, &Rnrmv, 1 );
             Rnrm = lapackf77_zlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
           
             if( Rnrm >  Xnrm *cte ){
@@ -261,19 +261,17 @@ magma_zcposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }  
 
         *iter = iiter;
-        return MAGMA_SUCCESS;
+        return *info;
       L20:
         iiter++ ;
     }
     *iter = -ITERMAX - 1; 
   
   L40:
-    ret = magma_zpotrf_gpu(uplo, n, dA, ldda, info);
-    if( (ret != MAGMA_SUCCESS) || (*info != 0) ){
-        return ret;
+    magma_zpotrf_gpu( uplo, n, dA, ldda, info );
+    if( *info == 0 ){
+        magmablas_zlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dX, lddx );
+        magma_zpotrs_gpu( uplo, n, nrhs, dA, ldda, dX, lddx, info );
     }
-    magmablas_zlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dX, lddx);
-    ret = magma_zpotrs_gpu(uplo, n, nrhs, dA, ldda, dX, lddx, info);
-    return ret;
+    return *info;
 }
-

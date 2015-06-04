@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:22 2011
+       @generated d Tue May 15 18:17:35 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
                   double *hwork, magma_int_t lwork, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -90,7 +90,7 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
    #define d_ref(a_1)     (dT+(lddwork+(a_1))*nb)
 
     double c_one     = MAGMA_D_ONE;
-    magma_int_t k, lddwork, ret;
+    magma_int_t k, lddwork;
 
     magma_int_t nb     = magma_get_dgeqrf_nb(m);
     magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
@@ -114,25 +114,25 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     k = min(m,n);
     if (k == 0) {
         hwork[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
     lddwork= k;
 
     /* B := Q' * B */
-    ret = magma_dormqr_gpu( MagmaLeft, MagmaTrans, 
-                            m, nrhs, n,
-                            a_ref(0,0), ldda, tau, 
-                            dB, lddb, hwork, lwork, dT, nb, info);
-    if ( (ret != MAGMA_SUCCESS) || ( *info != 0 ) ) {
-        return ret;
+    magma_dormqr_gpu( MagmaLeft, MagmaTrans, 
+                      m, nrhs, n,
+                      a_ref(0,0), ldda, tau, 
+                      dB, lddb, hwork, lwork, dT, nb, info );
+    if ( *info != 0 ) {
+        return *info;
     }
 
     /* Solve R*X = B(1:n,:) 
@@ -142,15 +142,15 @@ magma_dgeqrs3_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     */
     magmablas_dswapdblk(k, nb, a_ref(0,0), ldda, 1, d_ref(0), nb, 0);
     if ( nrhs == 1 ) {
-        cublasDtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit,
+        magma_dtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit,
                     n, a_ref(0,0), ldda, dB, 1);
     } else {
-        cublasDtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
+        magma_dtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit,
                     n, nrhs, c_one, a_ref(0,0), ldda, dB, lddb);
     }
     magmablas_dswapdblk(k, nb, d_ref(0), nb, 0, a_ref(0,0), ldda, 1);
 
-    return MAGMA_SUCCESS;
+    return *info;
 }
 
 #undef a_ref

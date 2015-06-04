@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -17,11 +17,11 @@ magma_zgels3_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
                   cuDoubleComplex *hwork, magma_int_t lwork, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -81,7 +81,7 @@ magma_zgels3_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
    #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
 
     cuDoubleComplex *dT, *tau;
-    magma_int_t k, ret;
+    magma_int_t k;
 
     magma_int_t nb     = magma_get_zgeqrf_nb(m);
     magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
@@ -108,15 +108,15 @@ magma_zgels3_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     k = min(m,n);
     if (k == 0) {
         hwork[0] = MAGMA_Z_ONE;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /*
@@ -124,37 +124,29 @@ magma_zgels3_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
      */
     int ldtwork = ( 2*k + ((n+31)/32)*32 )*nb;
     if (nb < nrhs)
-      ldtwork = ( 2*k + ((n+31)/32)*32 )*nrhs;
-    if( CUBLAS_STATUS_SUCCESS != cublasAlloc(ldtwork, 
-                                             sizeof(cuDoubleComplex), (void**)&dT) ) {
-        return MAGMA_ERR_CUBLASALLOC;
+        ldtwork = ( 2*k + ((n+31)/32)*32 )*nrhs;
+    if (MAGMA_SUCCESS != magma_zmalloc( &dT, ldtwork )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     
     tau = (cuDoubleComplex*) malloc( k * sizeof(cuDoubleComplex) );
     if( tau == NULL ) {
-        cublasFree(dT);
-        return MAGMA_ERR_ALLOCATION;
+        magma_free( dT );
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
 
-    ret = magma_zgeqrf3_gpu( m, n, dA, ldda, tau, dT, info );
-    if ( (ret != MAGMA_SUCCESS) || (*info != 0) ) {
-        cublasFree(dT);
-        free(tau);
-        return ret;
-    }
-
-    ret = magma_zgeqrs3_gpu(m, n, nrhs,
+    magma_zgeqrf3_gpu( m, n, dA, ldda, tau, dT, info );
+    if ( *info == 0 ) {
+        magma_zgeqrs3_gpu( m, n, nrhs,
                            dA, ldda, tau, dT, 
-                           dB, lddb, hwork, lwork, info);
-    if ( (ret != MAGMA_SUCCESS) || (*info != 0) ) {
-        cublasFree(dT);
-        free(tau);
-        return ret;
+                           dB, lddb, hwork, lwork, info );
     }
 
-    cublasFree(dT);
+    magma_free( dT );
     free(tau);
-    return MAGMA_SUCCESS;
+    return *info;
 }
 
 #undef a_ref

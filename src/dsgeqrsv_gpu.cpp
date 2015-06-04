@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated ds Sun Nov 13 20:48:31 2011
+       @generated ds Tue May 15 18:17:50 2012
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
                    double *dX,  magma_int_t lddx, 
                    magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -129,7 +129,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
 
     H_WORK  (workspace/output) REAL array, dimension (MAX(1,LWORK))   
             Higher performance is achieved if H_WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     D_WORK  (workspace/output)  REAL array on the GPU, dimension 2*N*NB,
             where NB can be obtained through magma_get_sgeqrf_nb(M).
@@ -150,7 +150,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
             This memory is unattached if the iterative refinement worked, 
             otherwise it is used as workspace to factor the matrix in
             double precision. Higher performance is achieved if H_WORK_D is 
-            in pinned memory, e.g. allocated using cudaMallocHost. 
+            in pinned memory, e.g. allocated using magma_malloc_host. 
 
     D_WORK_D (workspace/output) DOUBLE REAL array on the GPU, dimension 2*N*NB,
             where NB can be obtained through magma_get_dgeqrf_nb(M).
@@ -162,8 +162,8 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
 
     =====================================================================    */
 
-    double mzone = MAGMA_D_NEG_ONE;
-    double zone  = MAGMA_D_ONE;
+    double c_neg_one = MAGMA_D_NEG_ONE;
+    double c_one     = MAGMA_D_ONE;
     magma_int_t     ione  = 1;
     double *dworkd, *hworkd;
     float  *dworks, *hworks;
@@ -171,7 +171,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     float  *dSA, *dSX, *dST, *stau;
     double Xnrmv, Rnrmv; 
     double          Anrm, Xnrm, Rnrm, cte, eps; 
-    magma_int_t     i, j, iiter, nb, lhwork, minmn, size, ret;
+    magma_int_t     i, j, iiter, nb, lhwork, minmn, size;
     
     /*
       Check The Parameters. 
@@ -191,11 +191,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     if( N == 0 || NRHS == 0 )
-        return MAGMA_SUCCESS;
+        return *info;
 
     nb   = magma_get_sgeqrf_nb(M);
     minmn= min(M, N);
@@ -204,11 +204,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
      * Allocate temporary buffers
      */
     /* dworks(dSA + dSX + dST) */
-    size = ldda*N +  N*NRHS 
-        +  ( 2*minmn + ((N+31)/32)*32 )*nb;
-    if( CUBLAS_STATUS_SUCCESS != cublasAlloc(size, sizeof(float), (void**)&dworks) ) {
+    size = ldda*N + N*NRHS + ( 2*minmn + ((N+31)/32)*32 )*nb;
+    if (MAGMA_SUCCESS != magma_smalloc( &dworks, size )) {
         fprintf(stderr, "Allocation of dworks failed (%d)\n", size);
-        return MAGMA_ERR_CUBLASALLOC;
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     dSA = dworks;
     dSX = dSA + ldda*N;
@@ -216,10 +216,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     
     /* dworkd(dR) = N*NRHS */
     size = N*NRHS;
-    if( CUBLAS_STATUS_SUCCESS != cublasAlloc(size, sizeof(double), (void**)&dworkd) ) {
-        cublasFree(dworks);
+    if (MAGMA_SUCCESS != magma_dmalloc( &dworkd, size )) {
+        magma_free( dworks );
         fprintf(stderr, "Allocation of dworkd failed\n");
-        return MAGMA_ERR_CUBLASALLOC;
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
     dR = dworkd;
 
@@ -229,10 +230,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     size = minmn + lhwork;
     hworks = (float*) malloc( size * sizeof(float) );
     if( hworks == NULL ) {
-        cublasFree(dworks);
-        cublasFree(dworkd);
+        magma_free( dworks );
+        magma_free( dworkd );
         fprintf(stderr, "Allocation of hworks failed\n");
-        return MAGMA_ERR_ALLOCATION;
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
     stau = hworks;
     hworks += minmn;
@@ -270,23 +272,23 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
 
     // dR = dB - dA * dX
     if( NRHS == 1 )
-        cublasDgemv( MagmaNoTrans, N, N, 
-                     mzone, dA, ldda, 
-                            dX, 1, 
-                     zone,  dR, 1);
+        magma_dgemv( MagmaNoTrans, N, N, 
+                     c_neg_one, dA, ldda, 
+                                dX, 1, 
+                     c_one,     dR, 1);
     else
-        cublasDgemm( MagmaNoTrans, MagmaNoTrans, N, NRHS, N, 
-                     mzone, dA, ldda, 
-                            dX, lddx, 
-                     zone,  dR, N );
+        magma_dgemm( MagmaNoTrans, MagmaNoTrans, N, NRHS, N, 
+                     c_neg_one, dA, ldda, 
+                                dX, lddx, 
+                     c_one,     dR, N );
 
     for(i=0; i<NRHS; i++){
-        j = cublasIdamax( N, dX+i*N, 1);
-        cublasGetMatrix( 1, 1, sizeof(double), dX+i*N+j-1, 1, &Xnrmv, 1);
+        j = magma_idamax( N, dX+i*N, 1);
+        magma_dgetmatrix( 1, 1, dX+i*N+j-1, 1, &Xnrmv, 1 );
         Xnrm = lapackf77_dlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
       
-        j = cublasIdamax ( N, dR+i*N, 1 );
-        cublasGetMatrix( 1, 1, sizeof(double), dR+i*N+j-1, 1, &Rnrmv, 1);
+        j = magma_idamax ( N, dR+i*N, 1 );
+        magma_dgetmatrix( 1, 1, dR+i*N+j-1, 1, &Rnrmv, 1 );
         Rnrm = lapackf77_dlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
       
         if( Rnrm >  Xnrm *cte ) goto L10;
@@ -295,10 +297,10 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     *iter = 0;
 
     /* Free workspaces */
-    cublasFree(dworks);
-    cublasFree(dworkd);
+    magma_free( dworks );
+    magma_free( dworkd );
     free(stau);
-    return MAGMA_SUCCESS;
+    return *info;
 
   L10:
     for(iiter=1; iiter<ITERMAX; ) {
@@ -322,26 +324,26 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         /* unnecessary may be */
         magmablas_dlacpy(MagmaUpperLower, N, NRHS, dB, lddb, dR, N);
         if( NRHS == 1 )
-            cublasDgemv( MagmaNoTrans, N, N, 
-                         mzone, dA, ldda,
-                                dX, 1,
-                         zone,  dR, 1);
+            magma_dgemv( MagmaNoTrans, N, N, 
+                         c_neg_one, dA, ldda,
+                                    dX, 1,
+                         c_one,     dR, 1);
         else
-            cublasDgemm( MagmaNoTrans, MagmaNoTrans, N, NRHS, N, 
-                         mzone, dA, ldda,
-                                dX, lddx,
-                         zone,  dR, N);
+            magma_dgemm( MagmaNoTrans, MagmaNoTrans, N, NRHS, N, 
+                         c_neg_one, dA, ldda,
+                                    dX, lddx,
+                         c_one,     dR, N);
 
         /*  Check whether the NRHS normwise backward errors satisfy the
             stopping criterion. If yes, set ITER=IITER>0 and return.     */
         for(i=0;i<NRHS;i++)
         {
-            j = cublasIdamax( N, dX+i*N, 1);
-            cublasGetMatrix( 1, 1, sizeof(double), dX+i*N+j-1, 1, &Xnrmv, 1);
+            j = magma_idamax( N, dX+i*N, 1);
+            magma_dgetmatrix( 1, 1, dX+i*N+j-1, 1, &Xnrmv, 1 );
             Xnrm = lapackf77_dlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
             
-            j = cublasIdamax ( N, dR+i*N, 1 );
-            cublasGetMatrix( 1, 1, sizeof(double), dR+i*N+j-1, 1, &Rnrmv, 1);
+            j = magma_idamax ( N, dR+i*N, 1 );
+            magma_dgetmatrix( 1, 1, dR+i*N+j-1, 1, &Rnrmv, 1 );
             Rnrm = lapackf77_dlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
             
             if( Rnrm >  Xnrm *cte ) goto L20;
@@ -352,10 +354,10 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         *iter = iiter ;
 
         /* Free workspaces */
-        cublasFree(dworks);
-        cublasFree(dworkd);
+        magma_free( dworks );
+        magma_free( dworkd );
         free(stau);
-        return MAGMA_SUCCESS;
+        return *info;
       L20:
         iiter++;
     }
@@ -367,7 +369,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     *iter = -ITERMAX - 1 ;
 
   L40:
-    cublasFree(dworks);
+    magma_free( dworks );
 
     /*
      * Allocate temporary buffers
@@ -376,10 +378,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     nb   = magma_get_dgeqrf_nb(M);
     size = minmn * (3 * nb + 1);
     if ( size > (N*NRHS) ) {
-        cublasFree(dworkd);
-        if( CUBLAS_STATUS_SUCCESS != cublasAlloc(size, sizeof(double), (void**)&dworkd) ) {
+        magma_free( dworkd );
+        if (MAGMA_SUCCESS != magma_dmalloc( &dworkd, size )) {
             fprintf(stderr, "Allocation of dworkd2 failed\n");
-            return MAGMA_ERR_CUBLASALLOC;
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
         }
     }
     tau = dworkd;
@@ -390,25 +393,24 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         free(stau);
         hworks = (float*) malloc( lhwork * sizeof(double) );
         if( hworks == NULL ) {
-            cublasFree(dworkd);
+            magma_free( dworkd );
             fprintf(stderr, "Allocation of hworkd2 failed\n");
-            return MAGMA_ERR_ALLOCATION;
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
         }
     }
     hworkd = (double*) hworks;
 
     /* Single-precision iterative refinement failed to converge to a
        satisfactory solution, so we resort to double precision.           */
-    ret = magma_dgeqrf_gpu(M, N, dA, ldda, tau, dT, info);
-    if( (ret != MAGMA_SUCCESS) || (*info != 0) ){
-        cublasFree(dworkd);
-        free(hworkd);
-        return ret;
+    magma_dgeqrf_gpu(M, N, dA, ldda, tau, dT, info);
+    if ( *info == 0 ) {
+        magmablas_dlacpy(MagmaUpperLower, N, NRHS, dB, lddb, dX, lddx);
+        magma_dgeqrs_gpu(M, N, NRHS, dA, ldda, tau, dT, dX, lddx, hworkd, lhwork, info);
     }
-    magmablas_dlacpy(MagmaUpperLower, N, NRHS, dB, lddb, dX, lddx);
-    ret = magma_dgeqrs_gpu(M, N, NRHS, dA, ldda, tau, dT, dX, lddx, hworkd, lhwork, info);
-    cublasFree(dworkd);
+    
+    magma_free( dworkd );
     free(hworkd);
-    return ret;
+    return *info;
 }
 

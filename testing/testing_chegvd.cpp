@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     @author Raffaele Solca
 
-    @generated c Sun Nov 13 20:48:55 2011
+    @generated c Tue May 15 18:18:25 2012
 
 */
 
@@ -49,13 +49,13 @@ int main( int argc, char** argv)
     magma_int_t ione = 1, izero = 0;
     magma_int_t five = 5;
 
-    cuFloatComplex czero = MAGMA_C_ZERO;
-    cuFloatComplex zone  = MAGMA_C_ONE;
-    cuFloatComplex mzone  = MAGMA_C_NEG_ONE;
+    cuFloatComplex c_zero    = MAGMA_C_ZERO;
+    cuFloatComplex c_one     = MAGMA_C_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
 
-    float done = 1.;
-    float mdone = -1.;
-    float dten = 10.;
+    float d_one     =  1.;
+    float d_neg_one = -1.;
+    float d_ten     = 10.;
     magma_int_t ISEED[4] = {0,0,0,1};
 
     //const char *uplo = MagmaLowerStr;
@@ -144,16 +144,16 @@ int main( int argc, char** argv)
 
         /* Initialize the matrix */
         lapackf77_clarnv( &ione, ISEED, &n2, h_A );
-        //lapackf77_clatms( &N, &N, "U", ISEED, "P", w1, &five, &dten,
-        //                 &done, &N, &N, uplo, h_B, &N, h_work, &info);
-        //lapackf77_claset( "A", &N, &N, &czero, &zone, h_B, &N);
+        //lapackf77_clatms( &N, &N, "U", ISEED, "P", w1, &five, &d_ten,
+        //                 &d_one, &N, &N, uplo, h_B, &N, h_work, &info);
+        //lapackf77_claset( "A", &N, &N, &c_zero, &c_one, h_B, &N);
         lapackf77_clarnv( &ione, ISEED, &n2, h_B );
         /* increase the diagonal */
         {
           magma_int_t i, j;
           for(i=0; i<N; i++) {
-            MAGMA_C_SET2REAL( h_B[i*N+i], ( MAGMA_C_GET_X(h_B[i*N+i]) + 1.*N ) );
-            MAGMA_C_SET2REAL( h_A[i*N+i], MAGMA_C_GET_X(h_A[i*N+i]) );
+            MAGMA_C_SET2REAL( h_B[i*N+i], MAGMA_C_REAL(h_B[i*N+i]) + 1.*N );
+            MAGMA_C_SET2REAL( h_A[i*N+i], MAGMA_C_REAL(h_A[i*N+i]) );
           }
         }
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &N, h_A, &N, h_R, &N );
@@ -200,14 +200,14 @@ int main( int argc, char** argv)
           cuFloatComplex *tau;
 
           if (itype == 1 || itype == 2){
-            lapackf77_claset( "A", &N, &N, &czero, &zone, h_S, &N);
-            blasf77_cgemm("N", "C", &N, &N, &N, &zone, h_R, &N, h_R, &N, &czero, h_work, &N);
-            blasf77_chemm("R", uplo, &N, &N, &mzone, h_B, &N, h_work, &N, &zone, h_S, &N);
+            lapackf77_claset( "A", &N, &N, &c_zero, &c_one, h_S, &N);
+            blasf77_cgemm("N", "C", &N, &N, &N, &c_one, h_R, &N, h_R, &N, &c_zero, h_work, &N);
+            blasf77_chemm("R", uplo, &N, &N, &c_neg_one, h_B, &N, h_work, &N, &c_one, h_S, &N);
             result[1]= lapackf77_clange("1", &N, &N, h_S, &N, rwork) / N;
           }
           else if (itype == 3){
             lapackf77_clacpy( MagmaUpperLowerStr, &N, &N, h_B, &N, h_S, &N);
-            blasf77_cherk(uplo, "N", &N, &N, &mdone, h_R, &N, &done, h_S, &N); 
+            blasf77_cherk(uplo, "N", &N, &N, &d_neg_one, h_R, &N, &d_one, h_S, &N); 
             result[1]= lapackf77_clanhe("1",uplo, &N, h_S, &N, rwork) / N / lapackf77_clanhe("1",uplo, &N, h_B, &N, rwork);
           }
 
@@ -216,24 +216,24 @@ int main( int argc, char** argv)
           result[0] /= lapackf77_clange("1",&N , &N, h_R, &N, rwork);
 
           if (itype == 1){
-            blasf77_chemm("L", uplo, &N, &N, &zone, h_A, &N, h_R, &N, &czero, h_work, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_one, h_A, &N, h_R, &N, &c_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_csscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_chemm("L", uplo, &N, &N, &mzone, h_B, &N, h_R, &N, &zone, h_work, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_neg_one, h_B, &N, h_R, &N, &c_one, h_work, &N);
             result[0] *= lapackf77_clange("1", &N, &N, h_work, &N, rwork)/N;
           }
           else if (itype == 2){
-            blasf77_chemm("L", uplo, &N, &N, &zone, h_B, &N, h_R, &N, &czero, h_work, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_one, h_B, &N, h_R, &N, &c_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_csscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_chemm("L", uplo, &N, &N, &zone, h_A, &N, h_work, &N, &mzone, h_R, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_one, h_A, &N, h_work, &N, &c_neg_one, h_R, &N);
             result[0] *= lapackf77_clange("1", &N, &N, h_R, &N, rwork)/N;
           }
           else if (itype == 3){
-            blasf77_chemm("L", uplo, &N, &N, &zone, h_A, &N, h_R, &N, &czero, h_work, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_one, h_A, &N, h_R, &N, &c_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_csscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_chemm("L", uplo, &N, &N, &zone, h_B, &N, h_work, &N, &mzone, h_R, &N);
+            blasf77_chemm("L", uplo, &N, &N, &c_one, h_B, &N, h_work, &N, &c_neg_one, h_R, &N);
             result[0] *= lapackf77_clange("1", &N, &N, h_R, &N, rwork)/N;
           }
 

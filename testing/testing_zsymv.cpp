@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  *  @precisions normal z -> c
  *
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     double      flops, magma_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
 
     FILE        *fp ; 
     magma_int_t N, m, i, lda, LDA;
@@ -110,15 +110,15 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        cublasSetMatrix( m, m, sizeof( cuDoubleComplex ), A, LDA,  dA, lda  );
-        cublasSetVector( m,    sizeof( cuDoubleComplex ), X, incx, dX, incx );
-        cublasSetVector( m,    sizeof( cuDoubleComplex ), Y, incx, dY, incx );
+        magma_zsetmatrix( m, m, A, LDA, dA, lda );
+        magma_zsetvector( m, X, incx, dX, incx );
+        magma_zsetvector( m, Y, incx, dY, incx );
 
         start = get_current_time();
         magmablas_zsymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
         end = get_current_time();
         
-        cublasGetVector( m, sizeof( cuDoubleComplex ), dY, incx, Ymagma, incx );
+        magma_zgetvector( m, dY, incx, Ymagma, incx );
         
         magma_perf = flops /  GetTimerValue(start,end);
         printf(     "%11.2f", magma_perf );
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         blasf77_zcopy( &m, Y, &incx, Ycublas, &incx );
         lapackf77_zsymv( MagmaLowerStr, &m, &alpha, A, &LDA, X, &incx, &beta, Ycublas, &incx );
 
-        blasf77_zaxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_zaxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_zlange( "M", &m, &ione, Ycublas, &m, work );
 
         printf(      "\t\t %8.6e\n", error / m );

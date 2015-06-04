@@ -1,17 +1,18 @@
 /*
- *   -- MAGMA (version 1.1) --
+ *   -- MAGMA (version 1.2.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      November 2011
+ *      May 2012
  *
- * @generated d Sun Nov 13 20:47:58 2011
+ * @generated d Tue May 15 18:17:05 2012
  */
 
 #ifndef _MAGMABLAS_D_H_
 #define _MAGMABLAS_D_H_
 
 #define PRECISION_d
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -217,15 +218,154 @@ void magmablas_dtrsm(char s, char u, char t, char d,
 
 
   /*
-   * Workspace interface (alphabetical order)
+   * Wrappers for platform independence.
+   * These wrap CUBLAS or AMD OpenCL BLAS functions.
    */
-magma_int_t magmablasw_dsymv(char u, magma_int_t N, 
-                 double alpha, 
-                 double *A, magma_int_t lda, 
-                 double *X, magma_int_t incX, 
-                 double beta, 
-                 double *Y, magma_int_t incY,
-                 double *dWork);
+
+// ========================================
+// copying vectors
+// set copies host to device
+// get copies device to host
+
+void magma_dsetvector(
+    magma_int_t n,
+    double const *hx_src, magma_int_t incx,
+    double       *dy_dst, magma_int_t incy );
+
+void magma_dgetvector(
+    magma_int_t n,
+    double const *dx_src, magma_int_t incx,
+    double       *hy_dst, magma_int_t incy );
+
+void magma_dsetvector_async(
+    magma_int_t n,
+    double const *hx_src, magma_int_t incx,
+    double       *dy_dst, magma_int_t incy,
+    magma_stream_t stream );
+
+void magma_dgetvector_async(
+    magma_int_t n,
+    double const *dx_src, magma_int_t incx,
+    double       *hy_dst, magma_int_t incy,
+    magma_stream_t stream );
+
+
+// ========================================
+// copying sub-matrices (contiguous columns)
+// set copies host to device
+// get copies device to host
+// cpy copies device to device (with CUDA unified addressing, can be same or different devices)
+
+void magma_dsetmatrix(
+    magma_int_t m, magma_int_t n,
+    double const *hA_src, magma_int_t lda,
+    double       *dB_dst, magma_int_t ldb );
+
+void magma_dgetmatrix(
+    magma_int_t m, magma_int_t n,
+    double const *dA_src, magma_int_t lda,
+    double       *hB_dst, magma_int_t ldb );
+
+void magma_dsetmatrix_async(
+    magma_int_t m, magma_int_t n,
+    double const *hA_src, magma_int_t lda,
+    double       *dB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+void magma_dgetmatrix_async(
+    magma_int_t m, magma_int_t n,
+    double const *dA_src, magma_int_t lda,
+    double       *hB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+void magma_dcopymatrix(
+    magma_int_t m, magma_int_t n,
+    double const *dA_src, magma_int_t lda,
+    double       *dB_dst, magma_int_t ldb );
+
+void magma_dcopymatrix_async(
+    magma_int_t m, magma_int_t n,
+    double const *dA_src, magma_int_t lda,
+    double       *dB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+
+// ========================================
+// Level 1 BLAS
+
+void magma_dswap(
+    magma_int_t n,
+    double *dx, magma_int_t incx,
+    double *dy, magma_int_t incy );
+
+magma_int_t magma_idamax(
+    magma_int_t n,
+    double *dx, magma_int_t incx );
+
+// ========================================
+// Level 2 BLAS
+
+void magma_dgemv(
+    magma_trans_t transA,
+    magma_int_t m, magma_int_t n,
+    double alpha, double const *dA, magma_int_t lda,
+                           double const *dx, magma_int_t incx,
+    double beta,  double       *dy, magma_int_t incy );
+
+void magma_dsymv(
+    magma_uplo_t uplo,
+    magma_int_t n,
+    double alpha, double const *dA, magma_int_t lda,
+                           double const *dx, magma_int_t incx,
+    double beta,  double       *dy, magma_int_t incy );
+
+void magma_dtrsv(
+    magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag, 
+    magma_int_t n, 
+    double const *dA, magma_int_t lda, 
+    double       *dx, magma_int_t incx );
+
+// ========================================
+// Level 3 BLAS
+
+void magma_dgemm(
+    magma_trans_t transA, magma_trans_t transB,
+    magma_int_t m, magma_int_t n, magma_int_t k,
+    double alpha, double const *dA, magma_int_t lda,
+                           double const *dB, magma_int_t ldb,
+    double beta,  double       *dC, magma_int_t ldc );
+
+void magma_dsymm(
+    magma_side_t side, magma_uplo_t uplo,
+    magma_int_t m, magma_int_t n,
+    double alpha, double const *dA, magma_int_t lda,
+                           double const *dB, magma_int_t ldb,
+    double beta,  double       *dC, magma_int_t ldc );
+
+void magma_dsyrk(
+    magma_uplo_t uplo, magma_trans_t trans,
+    magma_int_t n, magma_int_t k,
+    double alpha, double const *dA, magma_int_t lda,
+    double beta,  double       *dC, magma_int_t ldc );
+
+void magma_dsyr2k(
+    magma_uplo_t uplo, magma_trans_t trans,
+    magma_int_t n, magma_int_t k,
+    double alpha, double const *dA, magma_int_t lda,
+                           double const *dB, magma_int_t ldb,
+    double beta,           double       *dC, magma_int_t ldc );
+
+void magma_dtrmm(
+    magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag,
+    magma_int_t m, magma_int_t n,
+    double alpha, double const *dA, magma_int_t lda,
+                           double       *dB, magma_int_t ldb );
+
+void magma_dtrsm(
+    magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag,
+    magma_int_t m, magma_int_t n,
+    double alpha, double const *dA, magma_int_t lda,
+                           double       *dB, magma_int_t ldb );
 
 #ifdef __cplusplus
 }

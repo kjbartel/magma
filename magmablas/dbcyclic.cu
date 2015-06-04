@@ -1,76 +1,66 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:41 2011
-
+       @author Stan Tomov
+       @generated d Tue May 15 18:18:06 2012
 */
 #include "common_magma.h"
 #define PRECISION_d
 #include "commonblas.h"
 
 //===========================================================================
-//  Set a matrix from CPU to multi-GPUs is 1D block cyclic distribution. 
-//  The da arrays are pointers to the matrix data for the corresponding GPUs. 
+//  Set a matrix from CPU to multi-GPUs is 1D block cyclic distribution.
+//  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
-extern "C" void 
+extern "C" void
 magmablas_dsetmatrix_1D_bcyclic( int m, int n,
-                                 double  *ha, int lda, 
-                                 double  *da[], int ldda, 
+                                 double  *hA,   int lda,
+                                 double  *dA[], int ldda,
                                  int num_gpus, int nb )
 {
-    int i, k, nk, cdevice;
+    int i, d, nk, cdevice;
 
-    cudaGetDevice(&cdevice);
+    magma_getdevice( &cdevice );
 
-    for(i=0; i<n; i+=nb){
-       k = (i/nb)%num_gpus;
-       cudaSetDevice(k);
-         
-       nk = min(nb, n-i);
-       //cublasSetMatrix( m, nk, sizeof(double), ha+i*lda, lda,
-       //                 da[k]+i/(nb*num_gpus)*nb*ldda, ldda);
-       cudaMemcpy2DAsync(da[k]+i/(nb*num_gpus)*nb*ldda, ldda*sizeof(double),
-                         ha + i*lda, lda*sizeof(double),
-                         sizeof(double)*m, nk,
-                         cudaMemcpyHostToDevice, NULL);
+    for( i = 0; i < n; i += nb ) {
+        d = (i/nb) % num_gpus;
+        magma_setdevice( d );
+        nk = min(nb, n-i);
+        magma_dsetmatrix_async( m, nk,
+                                hA + i*lda, lda,
+                                dA[d] + i/(nb*num_gpus)*nb*ldda, ldda, NULL );
     }
 
-    cudaSetDevice(cdevice);
+    magma_setdevice( cdevice );
 }
 
 
 //===========================================================================
 //  Get a matrix with 1D block cyclic distribution on multiGPUs to the CPU.
-//  The da arrays are pointers to the matrix data for the corresponding GPUs.
+//  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
 magmablas_dgetmatrix_1D_bcyclic( int m, int n,
-                                 double  *da[], int ldda,
-                                 double  *ha, int lda,
+                                 double  *dA[], int ldda,
+                                 double  *hA,   int lda,
                                  int num_gpus, int nb )
 {
-    int i, k, nk, cdevice;
+    int i, d, nk, cdevice;
 
-    cudaGetDevice(&cdevice);
+    magma_getdevice( &cdevice );
 
-    for(i=0; i<n; i+=nb){
-       k = (i/nb)%num_gpus;
-       cudaSetDevice(k);
-
-       nk = min(nb, n-i);
-       //cublasGetMatrix( m, nk, sizeof(double),
-       //                 da[k]+i/(nb*num_gpus)*nb*ldda, ldda,
-       //                 ha+i*lda, lda);
-       cudaMemcpy2DAsync(ha + i*lda, lda*sizeof(double),
-                         da[k]+i/(nb*num_gpus)*nb*ldda, ldda*sizeof(double),
-                         sizeof(double)*m, nk,
-                         cudaMemcpyDeviceToHost, NULL);
+    for( i = 0; i < n; i += nb ) {
+        d = (i/nb) % num_gpus;
+        magma_setdevice( d );
+        nk = min(nb, n-i);
+        magma_dgetmatrix_async( m, nk,
+                                dA[d] + i/(nb*num_gpus)*nb*ldda, ldda,
+                                hA + i*lda, lda, NULL );
     }
-        
-    cudaSetDevice(cdevice);
-}
 
+    magma_setdevice( cdevice );
+}

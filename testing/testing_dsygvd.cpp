@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
+
+    @precisions normal d -> s
 
     @author Stan Tomov
     @author Raffaele Solca
-
-    @precision normal d -> s
 
 */
 
@@ -50,13 +50,13 @@ int main( int argc, char** argv)
     magma_int_t ione = 1, izero = 0;
     magma_int_t five = 5;
 
-    double dzero = MAGMA_D_ZERO;
-    double zone  = MAGMA_D_ONE;
-    double mzone  = MAGMA_D_NEG_ONE;
+    double c_one     = MAGMA_D_ONE;
+    double c_neg_one = MAGMA_D_NEG_ONE;
 
-    double done = 1.;
-    double mdone = -1.;
-    double dten = 10.;
+    double d_zero    =  0.;
+    double d_one     =  1.;
+    double d_neg_one = -1.;
+    double dten      = 10.;
     magma_int_t ISEED[4] = {0,0,0,1};
 
     //const char *uplo = MagmaLowerStr;
@@ -149,7 +149,7 @@ int main( int argc, char** argv)
         {
           magma_int_t i, j;
           for(i=0; i<N; i++) {
-            MAGMA_D_SET2REAL( h_B[i*N+i], ( MAGMA_D_GET_X(h_B[i*N+i]) + 1.*N ) );
+            MAGMA_D_SET2REAL( h_B[i*N+i], ( MAGMA_D_REAL(h_B[i*N+i]) + 1.*N ) );
           }
         }
         lapackf77_dlacpy( MagmaUpperLowerStr, &N, &N, h_A, &N, h_R, &N );
@@ -194,14 +194,14 @@ int main( int argc, char** argv)
           double *tau;
 
           if (itype == 1 || itype == 2){
-            lapackf77_dlaset( "A", &N, &N, &dzero, &zone, h_S, &N);
-            blasf77_dgemm("N", "C", &N, &N, &N, &zone, h_R, &N, h_R, &N, &dzero, h_work, &N);
-            blasf77_dsymm("R", uplo, &N, &N, &mzone, h_B, &N, h_work, &N, &zone, h_S, &N);
+            lapackf77_dlaset( "A", &N, &N, &d_zero, &c_one, h_S, &N);
+            blasf77_dgemm("N", "C", &N, &N, &N, &c_one, h_R, &N, h_R, &N, &d_zero, h_work, &N);
+            blasf77_dsymm("R", uplo, &N, &N, &c_neg_one, h_B, &N, h_work, &N, &c_one, h_S, &N);
             result[1]= lapackf77_dlange("1", &N, &N, h_S, &N, h_work) / N;
           }
           else if (itype == 3){
             lapackf77_dlacpy( MagmaUpperLowerStr, &N, &N, h_B, &N, h_S, &N);
-            blasf77_dsyrk(uplo, "N", &N, &N, &mdone, h_R, &N, &done, h_S, &N); 
+            blasf77_dsyrk(uplo, "N", &N, &N, &d_neg_one, h_R, &N, &d_one, h_S, &N); 
             result[1]= lapackf77_dlansy("1",uplo, &N, h_S, &N, h_work) / N / 
               lapackf77_dlansy("1",uplo, &N, h_B, &N, h_work);
           }
@@ -211,24 +211,24 @@ int main( int argc, char** argv)
           result[0] /= lapackf77_dlange("1",&N , &N, h_R, &N, h_work);
 
           if (itype == 1){
-            blasf77_dsymm("L", uplo, &N, &N, &zone, h_A, &N, h_R, &N, &dzero, h_work, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_one, h_A, &N, h_R, &N, &d_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_ddscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_dsymm("L", uplo, &N, &N, &mzone, h_B, &N, h_R, &N, &zone, h_work, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_neg_one, h_B, &N, h_R, &N, &c_one, h_work, &N);
             result[0] *= lapackf77_dlange("1", &N, &N, h_work, &N, &temp1)/N;
           }
           else if (itype == 2){
-            blasf77_dsymm("L", uplo, &N, &N, &zone, h_B, &N, h_R, &N, &dzero, h_work, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_one, h_B, &N, h_R, &N, &d_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_ddscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_dsymm("L", uplo, &N, &N, &zone, h_A, &N, h_work, &N, &mzone, h_R, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_one, h_A, &N, h_work, &N, &c_neg_one, h_R, &N);
             result[0] *= lapackf77_dlange("1", &N, &N, h_R, &N, &temp1)/N;
           }
           else if (itype == 3){
-            blasf77_dsymm("L", uplo, &N, &N, &zone, h_A, &N, h_R, &N, &dzero, h_work, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_one, h_A, &N, h_R, &N, &d_zero, h_work, &N);
             for(int i=0; i<N; ++i)
               blasf77_ddscal(&N, &w1[i], &h_R[i*N], &ione);
-            blasf77_dsymm("L", uplo, &N, &N, &zone, h_B, &N, h_work, &N, &mzone, h_R, &N);
+            blasf77_dsymm("L", uplo, &N, &N, &c_one, h_B, &N, h_work, &N, &c_neg_one, h_R, &N);
             result[0] *= lapackf77_dlange("1", &N, &N, h_R, &N, &temp1)/N;
           }
 

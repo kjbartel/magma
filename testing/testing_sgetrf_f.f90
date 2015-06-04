@@ -1,11 +1,11 @@
 !
-!   -- MAGMA (version 1.1) --
+!   -- MAGMA (version 1.2.0) --
 !      Univ. of Tennessee, Knoxville
 !      Univ. of California, Berkeley
 !      Univ. of Colorado, Denver
-!      November 2011
+!      May 2012
 !
-!  @generated s Sun Nov 13 20:48:56 2011
+!  @generated s Tue May 15 18:18:28 2012
 !
       program testing_sgetrf_f
 
@@ -24,8 +24,7 @@
       real                    :: zone, mzone
       integer                       :: i, n, info, lda
       integer                       :: nrhs
-      real(kind=8)                  :: flops, t
-      integer                       :: tstart(2), tend(2)
+      real(kind=8)                  :: flops, t, tstart, tend
 
       PARAMETER          ( nrhs = 1, zone = 1., mzone = -1. )
       
@@ -56,9 +55,9 @@
       X(:) = B(:)
 
 !---- Call magma LU ----------------
-      call magma_gettime_f(tstart)
+      call magma_wtime_f(tstart)
       call magmaf_sgetrf(n, n, A, lda, ipiv, info)
-      call magma_gettime_f(tend)
+      call magma_wtime_f(tend)
 
       if ( info .ne. 0 )  then
          write(*,*) "Info : ", info
@@ -86,10 +85,10 @@
       write(*,105) '  || x || = ', Xnorm
       write(*,105) '  || b - A x || = ', Rnorm
       
-      flops = 2. * n * n * n / 3.  
-      call magma_gettimervalue_f(tstart, tend, t)
+      flops = 2. * n * n * n / 3.
+      t = tend - tstart
 
-      write(*,*)   '  Gflops  = ',  flops / t / 1e6
+      write(*,*)   '  Gflops  = ',  flops / t / 1e9
       write(*,*)
 
       Rnorm = Rnorm / ( (Anorm*Xnorm+Bnorm) * n * slamch('E') )

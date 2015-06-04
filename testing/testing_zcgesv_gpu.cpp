@@ -1,9 +1,9 @@
 /*
-  -- MAGMA (version 1.1) --
+  -- MAGMA (version 1.2.0) --
   Univ. of Tennessee, Knoxville
   Univ. of California, Berkeley
   Univ. of Colorado, Denver
-  November 2011
+  May 2012
 
   @precisions mixed zc -> ds
 
@@ -40,8 +40,8 @@ int main(int argc , char **argv)
     double      gpu_perfdf, gpu_perfds;
     double      gpu_perfsf, gpu_perfss;
     double      Rnorm, Anorm;
-    cuDoubleComplex zone  = MAGMA_Z_ONE;
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_one     = MAGMA_Z_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
     cuDoubleComplex *h_A, *h_B, *h_X;
     cuDoubleComplex *d_A, *d_B, *d_X, *d_WORKD;
     cuFloatComplex  *d_As, *d_Bs, *d_WORKS;
@@ -117,8 +117,8 @@ int main(int argc , char **argv)
 
         printf("%5d  ",N);
 
-        cublasSetMatrix( N, N,    sizeof( cuDoubleComplex ), h_A, lda, d_A, ldda );
-        cublasSetMatrix( N, NRHS, sizeof( cuDoubleComplex ), h_B, ldb, d_B, lddb );
+        magma_zsetmatrix( N, N,    h_A, lda, d_A, ldda );
+        magma_zsetmatrix( N, NRHS, h_B, ldb, d_B, lddb );
 
         //=====================================================================
         //              MIXED - GPU
@@ -136,20 +136,20 @@ int main(int argc , char **argv)
         //=====================================================================
         //              ERROR DP vs MIXED  - GPU
         //=====================================================================
-        cublasGetMatrix( N, NRHS, sizeof( cuDoubleComplex ), d_X, lddx, h_X, ldx );
+        magma_zgetmatrix( N, NRHS, d_X, lddx, h_X, ldx );
 
         Anorm = lapackf77_zlange("I", &N, &N, h_A, &lda, h_workd);
         blasf77_zgemm( trans_str, MagmaNoTransStr, 
                        &N, &NRHS, &N, 
-                       &zone,  h_A, &lda,
-                               h_X, &ldx,
-                       &mzone, h_B, &ldb);
+                       &c_one,     h_A, &lda,
+                                   h_X, &ldx,
+                       &c_neg_one, h_B, &ldb);
         Rnorm = lapackf77_zlange("I", &N, &NRHS, h_B, &ldb, h_workd);
 
         //=====================================================================
         //                 Double Precision Factor 
         //=====================================================================
-        cublasSetMatrix( N, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
+        magma_zsetmatrix( N, N, h_A, lda, d_A, ldda );
         
         start = get_current_time();
         magma_zgetrf_gpu(N, N, d_A, ldda, h_ipiv, &info);
@@ -163,8 +163,8 @@ int main(int argc , char **argv)
         //=====================================================================
         //                 Double Precision Solve 
         //=====================================================================
-        cublasSetMatrix( N, N,    sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
-        cublasSetMatrix( N, NRHS, sizeof(cuDoubleComplex), h_B, ldb, d_B, lddb );
+        magma_zsetmatrix( N, N,    h_A, lda, d_A, ldda );
+        magma_zsetmatrix( N, NRHS, h_B, ldb, d_B, lddb );
 
         start = get_current_time();
         magma_zgetrf_gpu(N, N, d_A, ldda, h_ipiv, &info);
@@ -182,10 +182,10 @@ int main(int argc , char **argv)
         //=====================================================================
         d_As = d_WORKS;
         d_Bs = d_WORKS + ldda*N;
-        cublasSetMatrix( N, N,    sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
-        cublasSetMatrix( N, NRHS, sizeof(cuDoubleComplex), h_B, ldb, d_B, lddb );
-        magmablas_zlag2c(N, N,    d_A, ldda, d_As, ldda, &info ); 
-        magmablas_zlag2c(N, NRHS, d_B, lddb, d_Bs, lddb, &info );
+        magma_zsetmatrix( N, N,    h_A, lda,  d_A,  ldda );
+        magma_zsetmatrix( N, NRHS, h_B, ldb,  d_B,  lddb );
+        magmablas_zlag2c( N, N,    d_A, ldda, d_As, ldda, &info ); 
+        magmablas_zlag2c( N, NRHS, d_B, lddb, d_Bs, lddb, &info );
 
         start = get_current_time();
         magma_cgetrf_gpu(N, N, d_As, ldda, h_ipiv, &info);

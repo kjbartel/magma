@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions mixed zc -> ds
 
@@ -56,11 +56,11 @@ zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m
 extern "C" void
 magmablas_zclaswp(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, int *ipiv, int incx)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======

@@ -1,9 +1,9 @@
 /*
-  -- MAGMA (version 1.1) --
+  -- MAGMA (version 1.2.0) --
   Univ. of Tennessee, Knoxville
   Univ. of California, Berkeley
   Univ. of Colorado, Denver
-  November 2011
+  May 2012
 
   @precisions mixed zc -> ds
 
@@ -51,8 +51,8 @@ int main( int argc, char** argv)
     double      flops, gpu_perf, cpu_perf;
     double      gpu_perfd, gpu_perfs;
     double      Rnorm, Anorm, work[1];
-    cuDoubleComplex zone  = MAGMA_Z_ONE;
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_one     = MAGMA_Z_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
     cuDoubleComplex *h_A, *h_B, *h_X, *h_R;
     cuDoubleComplex *d_A, *d_B, *d_X, *d_T;
     cuFloatComplex  *d_SA, *d_SB, *d_ST;
@@ -142,8 +142,8 @@ int main( int argc, char** argv)
         lapackf77_zlarnv( &ione, ISEED, &size, h_B );
         lapackf77_zlacpy( MagmaUpperLowerStr, &M, &NRHS, h_B, &ldb, h_R, &ldb );
 
-        cublasSetMatrix( M, N,    sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
-        cublasSetMatrix( M, NRHS, sizeof(cuDoubleComplex), h_B, ldb, d_B, lddb );
+        magma_zsetmatrix( M, N,    h_A, lda, d_A, ldda );
+        magma_zsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
 
         //=====================================================================
         //              Mixed Precision Iterative Refinement - GPU
@@ -160,20 +160,20 @@ int main( int argc, char** argv)
         //=====================================================================
         //                 Error Computation
         //=====================================================================
-        cublasGetMatrix(N, NRHS, sizeof(cuDoubleComplex), d_X, lddx, h_X, ldx);
+        magma_zgetmatrix( N, NRHS, d_X, lddx, h_X, ldx );
         blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr,
                        &M, &NRHS, &N,
-                       &mzone, h_A, &lda, 
-                               h_X, &ldx, 
-                       &zone,  h_R, &ldb);
+                       &c_neg_one, h_A, &lda, 
+                                   h_X, &ldx, 
+                       &c_one,     h_R, &ldb);
         Anorm = lapackf77_zlange("f", &M, &N,    h_A, &lda, work);
         Rnorm = lapackf77_zlange("f", &N, &NRHS, h_R, &ldb, work);
 
         //=====================================================================
         //                 Double Precision Solve
         //=====================================================================
-        cublasSetMatrix( M, N,    sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
-        cublasSetMatrix( M, NRHS, sizeof(cuDoubleComplex), h_B, ldb, d_B, lddb );
+        magma_zsetmatrix( M, N,    h_A, lda, d_A, ldda );
+        magma_zsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
 
         start = get_current_time();
         magma_zgels_gpu( MagmaNoTrans, M, N, NRHS, d_A, ldda, 
@@ -185,8 +185,8 @@ int main( int argc, char** argv)
         //=====================================================================
         //                 Single Precision Solve
         //=====================================================================
-        cublasSetMatrix( M, N,    sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
-        cublasSetMatrix( M, NRHS, sizeof(cuDoubleComplex), h_B, ldb, d_B, lddb );
+        magma_zsetmatrix( M, N,    h_A, lda, d_A, ldda );
+        magma_zsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
 
         /* The allocation of d_SA and d_SB is done here to avoid 
            to double the memory used on GPU with zcgeqrsv */

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:18 2011
+       @generated c Tue May 15 18:17:31 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
              cuFloatComplex *work, magma_int_t lwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -46,7 +46,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -59,7 +59,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= N*NB,
@@ -73,7 +73,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -8, the GPU memory allocation failed
+                  or another error occured, such as memory allocation failed.
 
     Further Details
     ===============
@@ -117,15 +117,15 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     k = min(m,n);
     if (k == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     lddwork = ((n+31)/32)*32;
@@ -139,39 +139,34 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
         return magma_cgeqrf4(num_gpus, m, n, a, lda, tau, work, lwork, info);
     }
 
-    if (CUBLAS_STATUS_SUCCESS != cublasAlloc((n)*ldda + nb*lddwork,
-                                             sizeof(cuFloatComplex), (void**)&da) ) 
-      {
+    if (MAGMA_SUCCESS != magma_cmalloc( &da, (n)*ldda + nb*lddwork )) {
         /* Switch to the "out-of-core" (out of GPU-memory) version */
         return magma_cgeqrf_ooc(m, n, a, lda, tau, work, lwork, info);
-      }
+    }
 
     static cudaStream_t stream[2];
-    cudaStreamCreate(&stream[0]);
-    cudaStreamCreate(&stream[1]);
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
 
     dwork = da + ldda*(n);
 
     if ( (nb > 1) && (nb < k) ) {
         /* Use blocked code initially */
-        cudaMemcpy2DAsync(da_ref(0,nb), ldda*sizeof(cuFloatComplex),
-                           a_ref(0,nb), lda *sizeof(cuFloatComplex),
-                          sizeof(cuFloatComplex)*(m), (n-nb),
-                          cudaMemcpyHostToDevice,stream[0]);
+        magma_csetmatrix_async( (m), (n-nb),
+                                a_ref(0,nb),  lda,
+                                da_ref(0,nb), ldda, stream[0] );
 
         old_i = 0; old_ib = nb;
         for (i = 0; i < k-nb; i += nb) {
             ib = min(k-i, nb);
             if (i>0){
-                cudaMemcpy2DAsync( a_ref(i,i),  lda *sizeof(cuFloatComplex),
-                                   da_ref(i,i), ldda*sizeof(cuFloatComplex),
-                                   sizeof(cuFloatComplex)*(m-i), ib,
-                                   cudaMemcpyDeviceToHost,stream[1]);
+                magma_cgetmatrix_async( (m-i), ib,
+                                        da_ref(i,i), ldda,
+                                        a_ref(i,i),  lda, stream[1] );
 
-                cudaMemcpy2DAsync( a_ref(0,i),  lda *sizeof(cuFloatComplex),
-                                   da_ref(0,i), ldda*sizeof(cuFloatComplex),
-                                   sizeof(cuFloatComplex)*i, ib,
-                                   cudaMemcpyDeviceToHost,stream[0]);
+                magma_cgetmatrix_async( i, ib,
+                                        da_ref(0,i), ldda,
+                                        a_ref(0,i),  lda, stream[0] );
 
                 /* Apply H' to A(i:m,i+2*ib:n) from the left */
                 magma_clarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise, 
@@ -180,7 +175,7 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
                                   da_ref(old_i, old_i+2*old_ib), ldda, dwork+old_ib, lddwork);
             }
 
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[1] );
             int rows = m-i;
             lapackf77_cgeqrf(&rows, &ib, a_ref(i,i), &lda, tau+i, work, &lwork, info);
             /* Form the triangular factor of the block reflector
@@ -188,12 +183,11 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
             lapackf77_clarft( MagmaForwardStr, MagmaColumnwiseStr, 
                               &rows, &ib, a_ref(i,i), &lda, tau+i, work, &ib);
             cpanel_to_q(MagmaUpper, ib, a_ref(i,i), lda, work+ib*ib);
-            cublasSetMatrix(rows, ib, sizeof(cuFloatComplex),
-                            a_ref(i,i), lda, da_ref(i,i), ldda);
+            magma_csetmatrix( rows, ib, a_ref(i,i), lda, da_ref(i,i), ldda );
             cq_to_panel(MagmaUpper, ib, a_ref(i,i), lda, work+ib*ib);
 
             if (i + ib < n) {
-                cublasSetMatrix(ib, ib, sizeof(cuFloatComplex), work, ib, dwork, lddwork);
+                magma_csetmatrix( ib, ib, work, ib, dwork, lddwork );
 
                 if (i+ib < k-nb)
                     /* Apply H' to A(i:m,i+ib:i+2*ib) from the left */
@@ -219,15 +213,14 @@ magma_cgeqrf(magma_int_t m, magma_int_t n,
     if (i < k) {
         ib = n-i;
         if (i!=0)
-            cublasGetMatrix(m, ib, sizeof(cuFloatComplex),
-                            da_ref(0,i), ldda, a_ref(0,i), lda);
+            magma_cgetmatrix( m, ib, da_ref(0,i), ldda, a_ref(0,i), lda );
         int rows = m-i;
         lapackf77_cgeqrf(&rows, &ib, a_ref(i,i), &lda, tau+i, work, &lwork, info);
     }
 
-    cudaStreamDestroy( stream[0] );
-    cudaStreamDestroy( stream[1] );
-    cublasFree( da );
-    return MAGMA_SUCCESS;
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
+    magma_free( da );
+    return *info;
 } /* magma_cgeqrf */
 

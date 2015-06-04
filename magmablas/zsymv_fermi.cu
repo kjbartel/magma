@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> c d s
 
@@ -15,7 +15,7 @@
 #if (GPUSHMEM >= 200)
 
 #define magmablas_zsymv_200 magmablas_zsymv
-#define magmablasw_zsymv_200 magmablasw_zsymv
+#define magmablas_zsymv2_200 magmablas_zsymv2
 
 #define zsymv_bs         64
 #define thread_x         64
@@ -46,6 +46,7 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
 
     __shared__ cuDoubleComplex la   [quarter_thread_x][thread_x+2];
     __shared__ cuDoubleComplex buff [thread_x];
+    __shared__ cuDoubleComplex buff2 [thread_x];
 
     cuDoubleComplex tr[4];
     cuDoubleComplex b[4];
@@ -209,7 +210,7 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
     A= A - lda * blkc * thread_x;
     x= x - blkc * thread_x  *incx  ;
 
-    x= x- tx*incx;
+    //x= x- tx*incx;
 
     A+=4 * ty* lda  ;
     A+=tx;
@@ -229,6 +230,11 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
         {
             MAGMA_Z_SET2REAL(res_,0);
             count++;
+            
+            if( ty== 0 ) {
+                buff2[tx]  = x[i*incx];
+            }
+            __syncthreads();
 
             #pragma unroll
             for( magma_int_t k=0;k<4;k++)
@@ -241,7 +247,7 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
                 #pragma unroll
                 for(magma_int_t j=0; j < 4 ; j++)
                 {
-                    res += tr[j] * x[ quarter_thread_x * k + ty * 4 + j];
+                    res += tr[j] * buff2[ quarter_thread_x * k + ty * 4 + j];
                     la[( j + ty * 4)][tx] = tr[j] * buff[tx];
                 }
                 __syncthreads();
@@ -287,6 +293,10 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
     {
         MAGMA_Z_SET2REAL(res_,0);
         count++;
+        if( ty== 0 ) {
+            buff2[tx]  = x[i*incx];
+        }
+        __syncthreads();
 
         #pragma unroll
         for( magma_int_t k=0;k<4;k++)
@@ -298,7 +308,7 @@ magmablas_zsymv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
             #pragma unroll
             for(magma_int_t j=0; j < 4 ; j++)
             {
-                res += tr[j] * x[ i + quarter_thread_x*k + ty*4+(j)];
+                res += tr[j] * buff2[ quarter_thread_x*k + ty*4+(j)];
                 la[( j + ty * 4)][tx] = tr[j] * buff[tx];
             }
             __syncthreads();
@@ -992,14 +1002,14 @@ magmablas_zsymv_200( char uplo, magma_int_t n,
     Purpose
     =======
 
-    magmablasw_zsymv  performs the matrix-vector operation on fermi:
+    magmablas_zsymv2  performs the matrix-vector operation on fermi:
 
        y := alpha*A*x + beta*y,
 
     where alpha and beta are scalars, x and y are n element vectors and
     A is an n by n hermitian matrix.
 
-    the interface of magmablasw_zsymv is different from magmablas_zsymv in
+    the interface of magmablas_zsymv2 is different from magmablas_zsymv in
     the last argument dC_work
 
     As magma implements zsymv through two steps:
@@ -1016,7 +1026,7 @@ magmablas_zsymv_200( char uplo, magma_int_t n,
     a wrapper routine of magmabalsw_zsymv allocating the working space inside the routine 
     and provides the same interface with cublas. 
     
-    If users need to call zsymv frequently, we suggest to use magmablasw_zsymv instead of magmablas_zsymv.
+    If users need to call zsymv frequently, we suggest to use magmablas_zsymv2 instead of magmablas_zsymv.
     As the overhead of allocating and free in device memory in magmablas_zsymv would hurt performance.
     Our tests show that this penalty is about 10Gflop/s when matrix size is around 10000.
     
@@ -1025,13 +1035,14 @@ magmablas_zsymv_200( char uplo, magma_int_t n,
 
 extern "C"
 magma_int_t
-magmablasw_zsymv_200( char uplo, magma_int_t n,
+magmablas_zsymv2_200( char uplo, magma_int_t n,
                       cuDoubleComplex alpha, 
                       cuDoubleComplex *A, magma_int_t lda,
                       cuDoubleComplex *X, magma_int_t incx,
                       cuDoubleComplex beta,  
                       cuDoubleComplex *Y, magma_int_t incy,
-                      cuDoubleComplex *dC_work)
+                      cuDoubleComplex *dC_work,
+                      magma_int_t lwork)
 {
     char      uplo_[2] = {uplo, 0};
     long int  upper    = lapackf77_lsame(uplo_, "U");

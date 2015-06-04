@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:24 2011
+       @generated s Tue May 15 18:17:38 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_s
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-//  #define cublasSgemv magmablas_sgemv
+//  #define magma_sgemv magmablas_sgemv
 #endif
 // === End defining what BLAS to use ======================================
 
@@ -24,11 +24,11 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                   float *x, magma_int_t ldx, float *dx, magma_int_t lddx,
                   float *y, magma_int_t ldy, float *dy, magma_int_t lddy)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -188,7 +188,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
 
     float *f = (float *)malloc(max(n,m)*sizeof(float ));
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
 
     if (m >= n) {
 
@@ -217,7 +217,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
             i__3 = i__ + 1;
             lapackf77_slarfg(&i__2, &alpha, 
                     &a[min(i__3,m) + i__ * a_dim1], &c__1, &tauq[i__]);
-            d[i__] = MAGMA_S_GET_X( alpha );
+            d[i__] = MAGMA_S_REAL( alpha );
             if (i__ < n) {
                 a[i__ + i__ * a_dim1] = c_one;
 
@@ -226,20 +226,19 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                 i__3 = n - i__;
 
                 // 1. Send the block reflector  A(i+1:m,i) to the GPU ------
-                cublasSetVector(i__2, sizeof(float),
-                                a + i__   + i__   * a_dim1, 1,
-                                da+(i__-1)+(i__-1)* (ldda), 1);
+                magma_ssetvector( i__2,
+                                  a + i__   + i__   * a_dim1, 1,
+                                  da+(i__-1)+(i__-1)* (ldda), 1 );
                 // 2. Multiply ---------------------------------------------
-                cublasSgemv(MagmaTrans, i__2, i__3, c_one, 
+                magma_sgemv(MagmaTrans, i__2, i__3, c_one, 
                             da + (i__-1) + ((i__-1) + 1) * (ldda), ldda, 
                             da + (i__-1) + (i__-1) * (ldda), c__1, c_zero, 
                             dy + i__ + 1 + i__ * y_dim1, c__1);
                 
                 // 3. Put the result back ----------------------------------
-                cudaMemcpy2DAsync(y+i__+1+i__*y_dim1, y_dim1*sizeof(float),
-                                  dy+i__+1+i__*y_dim1, y_dim1*sizeof(float),
-                                  sizeof(float)*i__3, 1,
-                                  cudaMemcpyDeviceToHost,stream);
+                magma_sgetmatrix_async( i__3, 1,
+                                        dy+i__+1+i__*y_dim1, y_dim1,
+                                        y+i__+1+i__*y_dim1,  y_dim1, stream );
                 i__2 = m - i__ + 1;
                 i__3 = i__ - 1;
                 blasf77_sgemv(MagmaTransStr, &i__2, &i__3, &c_one, &a[i__ + a_dim1], 
@@ -258,7 +257,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                        &y[i__ * y_dim1 + 1], &c__1);
                 
                 // 4. Synch to make sure the result is back ----------------
-                cudaStreamSynchronize(stream);
+                magma_queue_sync( stream );
 
                 if (i__3!=0){
                   i__2 = n - i__;
@@ -302,30 +301,29 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                 alpha = a[i__ + (i__ + 1) * a_dim1];
                 lapackf77_slarfg(&i__2, &alpha, &a[i__ + min(
                         i__3,n) * a_dim1], &lda, &taup[i__]);
-                e[i__] = MAGMA_S_GET_X ( alpha );
+                e[i__] = MAGMA_S_REAL( alpha );
                 a[i__ + (i__ + 1) * a_dim1] = c_one;
 
                 /* Compute X(i+1:m,i) */
                 i__2 = m - i__;
                 i__3 = n - i__;
                 // 1. Send the block reflector  A(i+1:m,i) to the GPU ------
-                cublasSetVector(i__3, sizeof(float),
-                                a + i__   + (i__   +1)* a_dim1, lda,
-                                da+(i__-1)+((i__-1)+1)*(ldda), ldda);
+                magma_ssetvector( i__3,
+                                  a + i__   + (i__   +1)* a_dim1, lda,
+                                  da+(i__-1)+((i__-1)+1)*(ldda),  ldda );
                 // 2. Multiply ---------------------------------------------
-                //cublasScopy(i__3, da+(i__-1)+((i__-1)+1)*(ldda), ldda,
+                //magma_scopy(i__3, da+(i__-1)+((i__-1)+1)*(ldda), ldda,
                 //            dy + 1 + lddy, 1);
-                cublasSgemv('N', i__2, i__3, c_one,
+                magma_sgemv(MagmaNoTrans, i__2, i__3, c_one,
                             da + (i__-1)+1+ ((i__-1)+1) * (ldda), ldda,
                             da + (i__-1) +  ((i__-1)+1) * (ldda), ldda,
                             //dy + 1 + lddy, 1,
                             c_zero, dx + i__ + 1 + i__ * x_dim1, c__1);
 
                 // 3. Put the result back ----------------------------------
-                cudaMemcpy2DAsync(x+i__+1+i__*x_dim1, x_dim1*sizeof(float),
-                                  dx+i__+1+i__*x_dim1, x_dim1*sizeof(float),
-                                  sizeof(float)*i__2, 1,
-                                  cudaMemcpyDeviceToHost,stream);
+                magma_sgetmatrix_async( i__2, 1,
+                                        dx+i__+1+i__*x_dim1, x_dim1,
+                                        x+i__+1+i__*x_dim1,  x_dim1, stream );
 
                 i__2 = n - i__;
                 blasf77_sgemv(MagmaTransStr, &i__2, &i__, &c_one, &y[i__ + 1 + y_dim1],
@@ -342,7 +340,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                        &c_zero, &x[i__ * x_dim1 + 1], &c__1);
 
                 // 4. Synch to make sure the result is back ----------------
-                cudaStreamSynchronize(stream);
+                magma_queue_sync( stream );
                 if (i__!=0){
                   i__2 = m - i__;
                   blasf77_saxpy(&i__2, &c_one, f,&c__1, &x[i__+1+i__*x_dim1],&c__1);
@@ -361,9 +359,9 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                 i__2 = n - i__;
                 lapackf77_slacgv( &i__2,  &a[i__+(i__+1)*a_dim1], &lda );
                 // 4. Send the block reflector  A(i+1:m,i) to the GPU after ZLACGV()
-                cublasSetVector(i__2, sizeof(float),
-                                a + i__   + (i__   +1)* a_dim1, lda,
-                                da+(i__-1)+((i__-1)+1)*(ldda), ldda);
+                magma_ssetvector( i__2,
+                                  a + i__   + (i__   +1)* a_dim1, lda,
+                                  da+(i__-1)+((i__-1)+1)*(ldda),  ldda );
 #endif
             }
         }
@@ -401,7 +399,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
         alpha = a[i__ + i__ * a_dim1];
         lapackf77_slarfg(&i__2, &alpha, 
                 &a[i__ + min(i__3,n) * a_dim1], &lda, &taup[i__]);
-        d[i__] = MAGMA_S_GET_X( alpha );
+        d[i__] = MAGMA_S_REAL( alpha );
         if (i__ < m) {
           a[i__ + i__ * a_dim1] = c_one;
           
@@ -410,14 +408,14 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
           i__3 = n - i__ + 1;
 
           // 1. Send the block reflector  A(i,i+1:n) to the GPU ------
-          cublasSetVector(i__3, sizeof(float),
-                          a + i__   + i__   * a_dim1, lda,
-                          da+(i__-1)+(i__-1)* (ldda), ldda);
+          magma_ssetvector( i__3,
+                            a + i__   + i__   * a_dim1, lda,
+                            da+(i__-1)+(i__-1)* (ldda), ldda );
 
           // 2. Multiply ---------------------------------------------
-          //cublasScopy(i__3, da+(i__-1)+(i__-1)*(ldda), ldda,
+          //magma_scopy(i__3, da+(i__-1)+(i__-1)*(ldda), ldda,
           //            dy + 1 + lddy, 1);
-          cublasSgemv(MagmaNoTrans, i__2, i__3, c_one,
+          magma_sgemv(MagmaNoTrans, i__2, i__3, c_one,
                       da + (i__-1)+1 + (i__-1) * ldda, ldda,
                       da + (i__-1)   + (i__-1) * ldda, ldda,
                       // dy + 1 + lddy, 1,
@@ -425,10 +423,9 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                       dx + i__ + 1 + i__ * x_dim1, c__1);
 
           // 3. Put the result back ----------------------------------
-          cudaMemcpy2DAsync( x+i__+1+i__*x_dim1, x_dim1*sizeof(float),
-                            dx+i__+1+i__*x_dim1, x_dim1*sizeof(float),
-                            sizeof(float)*i__2, 1,
-                            cudaMemcpyDeviceToHost,stream);
+          magma_sgetmatrix_async( i__2, 1,
+                                  dx+i__+1+i__*x_dim1, x_dim1,
+                                  x+i__+1+i__*x_dim1,  x_dim1, stream );
 
           i__2 = n - i__ + 1;
           i__3 = i__ - 1;
@@ -448,7 +445,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                  &x[i__ * x_dim1 + 1], &c__1);
 
           // 4. Synch to make sure the result is back ----------------
-          cudaStreamSynchronize(stream);
+          magma_queue_sync( stream );
           if (i__2!=0){
             i__3 = m - i__;
             blasf77_saxpy(&i__3, &c_one, f,&c__1, &x[i__+1+i__*x_dim1],&c__1);
@@ -464,9 +461,9 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
           i__2 = n - i__ + 1;
 #if defined(PRECISION_z) || defined(PRECISION_c)
           lapackf77_slacgv(&i__2, &a[i__ + i__ * a_dim1], &lda);
-          cublasSetVector(i__2, sizeof(float),
-                          a + i__   + (i__  )* a_dim1, lda,
-                          da+(i__-1)+ (i__-1)*(ldda), ldda);
+          magma_ssetvector( i__2,
+                            a + i__   + (i__  )* a_dim1, lda,
+                            da+(i__-1)+ (i__-1)*(ldda),  ldda );
 #endif
           
           /* Update A(i+1:m,i) */
@@ -492,7 +489,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
           alpha = a[i__ + 1 + i__ * a_dim1];
           lapackf77_slarfg(&i__2, &alpha,
                   &a[min(i__3,m) + i__ * a_dim1], &c__1, &tauq[i__]);
-          e[i__] = MAGMA_S_GET_X( alpha );
+          e[i__] = MAGMA_S_REAL( alpha );
           a[i__ + 1 + i__ * a_dim1] = c_one;
           
           /* Compute Y(i+1:n,i) */
@@ -500,20 +497,19 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
           i__3 = n - i__;
 
           // 1. Send the block reflector  A(i+1:m,i) to the GPU ------
-          cublasSetVector(i__2, sizeof(float),
-                          a + i__   +1+  i__   * a_dim1, 1,
-                          da+(i__-1)+1+ (i__-1)*(ldda), 1);
+          magma_ssetvector( i__2,
+                            a + i__   +1+  i__   * a_dim1, 1,
+                            da+(i__-1)+1+ (i__-1)*(ldda),  1 );
           // 2. Multiply ---------------------------------------------
-          cublasSgemv(MagmaTrans, i__2, i__3, c_one,
+          magma_sgemv(MagmaTrans, i__2, i__3, c_one,
                       da + (i__-1)+1+ ((i__-1)+1) * ldda, ldda,
                       da + (i__-1)+1+  (i__-1)    * ldda, c__1,
                       c_zero, dy + i__ + 1 + i__ * y_dim1, c__1);
 
           // 3. Put the result back ----------------------------------
-          cudaMemcpy2DAsync( y+i__+1+i__*y_dim1, y_dim1*sizeof(float),
-                            dy+i__+1+i__*y_dim1, y_dim1*sizeof(float),
-                            sizeof(float)*i__3, 1,
-                            cudaMemcpyDeviceToHost,stream);
+          magma_sgetmatrix_async( i__3, 1,
+                                  dy+i__+1+i__*y_dim1, y_dim1,
+                                  y+i__+1+i__*y_dim1,  y_dim1, stream );
 
           i__2 = m - i__;
           i__3 = i__ - 1;
@@ -532,7 +528,7 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                  &y[i__ * y_dim1 + 1], &c__1);
 
           // 4. Synch to make sure the result is back ----------------
-          cudaStreamSynchronize(stream);
+          magma_queue_sync( stream );
           if (i__3!=0){
             i__2 = n - i__;
             blasf77_saxpy(&i__2, &c_one, f,&c__1, &y[i__+1+i__*y_dim1],&c__1);
@@ -548,15 +544,15 @@ magma_slabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
         } else {
           i__2 = n - i__ + 1;
           lapackf77_slacgv(&i__2, &a[i__ + i__ * a_dim1], &lda);
-          cublasSetVector(i__2, sizeof(float),
-                          a + i__   + (i__  )* a_dim1, lda,
-                          da+(i__-1)+ (i__-1)*(ldda), ldda);
+          magma_ssetvector( i__2,
+                            a + i__   + (i__  )* a_dim1, lda,
+                            da+(i__-1)+ (i__-1)*(ldda),  ldda );
 #endif
         }
       }
     }
     
-    cudaStreamDestroy(stream);
+    magma_queue_destroy( stream );
     free(f);
     
     return MAGMA_SUCCESS;

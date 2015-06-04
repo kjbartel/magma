@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:30 2011
+       @generated c Tue May 15 18:17:48 2012
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
              cuFloatComplex *work, magma_int_t lwork_,
              float *rwork, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -223,7 +223,7 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         nb = magma_get_cgebrd_nb(*n);
 
         minwrk = ((*m)+(*n))*nb+(*n);
-        MAGMA_C_SET2REAL(work[1], (float) minwrk);
+        MAGMA_C_SET2REAL(work[0], (float) minwrk);
 
         if ( !lquery && (lwork_ < minwrk) ) {
             *info = -13;
@@ -233,15 +233,15 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
     
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (*m == 0 || *n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     mnthr  = (magma_int_t)( (float)(min( m_, n_ )) * 1.6 );
@@ -3586,6 +3586,6 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m_, magma_int_t n_,
         }
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_cgesvd */
 

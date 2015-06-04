@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated ds Sun Nov 13 20:48:31 2011
+       @generated ds Tue May 15 18:17:50 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_d
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasStrsm magmablas_strsm
+  #define magma_strsm magmablas_strsm
 #endif
 // === End defining what BLAS to use ======================================
 
@@ -26,11 +26,11 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                   float  *dSX,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -112,12 +112,12 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
     
     if (notran) {  
@@ -131,11 +131,11 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
       magmablas_dslaswp(nrhs, dB, lddb, dSX, n, ipiv, inc);
 
       /* Solve L*X = B, overwriting B with SX. */
-      cublasStrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
+      magma_strsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
                    n, nrhs, cone, dA, ldda, dSX, n);
     
       /* Solve U*X = B, overwriting B with X. */
-      cublasStrsm( MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, 
+      magma_strsm( MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, 
                    n, nrhs, cone, dA, ldda, dSX, n);
 
       magmablas_slag2d(n, nrhs, dSX, n, dX, lddx, info );
@@ -146,15 +146,15 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
       magmablas_dlag2s(n, nrhs, dB, lddb, dSX, n, info );
 
       /* Solve A' * X = B. */
-      cublasStrsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit,
+      magma_strsm(MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit,
                   n, nrhs, cone, dA, ldda, dSX, n);
-      cublasStrsm(MagmaLeft, MagmaLower, MagmaTrans, MagmaUnit,
+      magma_strsm(MagmaLeft, MagmaLower, MagmaTrans, MagmaUnit,
                   n, nrhs, cone, dA, ldda, dSX, n);
       
       magmablas_dslaswp(nrhs, dX, lddx, dSX, n, ipiv, inc);
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
     /* End of MAGMA_DSGETRS */
     
 } /* magma_dsgetrs */

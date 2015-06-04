@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 #include "common_magma.h"
 
@@ -87,11 +87,11 @@ sgemvn_kernel2_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, float alpha, 
 extern "C" void
 magmablas_sgemvn_fermi(magma_int_t n, magma_int_t m, float alpha, float *A, magma_int_t lda, float *x, float *y)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -345,11 +345,11 @@ extern "C" void
 magmablas_sgemvt_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda, 
                  float *x, float *y)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -389,11 +389,11 @@ magmablas_sgemv_fermi(char trans,
                       float beta,
                       float *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======

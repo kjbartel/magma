@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated c Sun Nov 13 20:48:27 2011
+       @generated c Tue May 15 18:17:43 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
                  cuFloatComplex *wa,    magma_int_t ldwa,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -34,7 +34,7 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
 
                     SIDE = 'L'     SIDE = 'R'   
     TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q\*\*H * C       C * Q\*\*H   
+    TRANS = 'T':      Q**H * C       C * Q**H   
 
     where Q is a complex orthogonal matrix of order nq, with nq = m if   
     SIDE = 'L' and nq = n if SIDE = 'R'. Q is defined as the product of   
@@ -47,8 +47,8 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
     Arguments   
     =========   
     SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q\*\*H from the Left;   
-            = 'R': apply Q or Q\*\*H from the Right.   
+            = 'L': apply Q or Q**H from the Left;   
+            = 'R': apply Q or Q**H from the Right.   
 
     UPLO    (input) CHARACTER*1   
             = 'U': Upper triangle of A contains elementary reflectors   
@@ -58,7 +58,7 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
 
     TRANS   (input) CHARACTER*1   
             = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q\*\*H.   
+            = 'T':  Transpose, apply Q**H.   
 
     M       (input) INTEGER   
             The number of rows of the matrix C. M >= 0.   
@@ -85,7 +85,7 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
 
     DC      (device input/output) COMPLEX array, dimension (LDDC,N)   
             On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q\*\*H*C or C*Q\*\*H or C*Q.   
+            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.   
 
     LDDC    (input) INTEGER   
             The leading dimension of the array C. LDDC >= max(1,M).
@@ -164,12 +164,12 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
   
     /* Quick return if possible */
     if (m == 0 || n == 0 || nq == 1) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if (left) {
@@ -201,6 +201,6 @@ magma_cunmtr_gpu(char side, char uplo, char trans,
                           &dc[i1 + i2 * lddc], lddc, &wa[1], ldwa, &iinfo);
       }
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* cunmtr_ */
 

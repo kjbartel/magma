@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -13,8 +13,8 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasZgemm magmablas_zgemm
-  #define cublasZtrsm magmablas_ztrsm
+  #define magma_zgemm magmablas_zgemm
+  #define magma_ztrsm magmablas_ztrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -22,11 +22,11 @@ extern "C" magma_int_t
 magma_zgetf2_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a, 
                    magma_int_t *lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -89,12 +89,12 @@ magma_zgetf2_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (*m == 0 || *n == 0)
-        return MAGMA_SUCCESS;
+        return *info;
 
     /* Compute machine safe minimum */
     sfmin = lapackf77_dlamch("S");
@@ -111,7 +111,7 @@ magma_zgetf2_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
             if (MAGMA_Z_ABS(a[j + j * a_dim1]) >= sfmin) 
               {
                 i__2 = *m - j;
-                MAGMA_Z_ASSIGN(z__1, MAGMA_Z_DIV(c_one, a[j + j * a_dim1]));
+                z__1 = MAGMA_Z_DIV(c_one, a[j + j * a_dim1]);
                 blasf77_zscal(&i__2, &z__1, &a[j + 1 + j * a_dim1], &c__1);
               } 
             else 
@@ -119,7 +119,7 @@ magma_zgetf2_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
                 i__2 = *m - j;
                 for (i__ = 1; i__ <= i__2; ++i__) {
                   i__3 = j + i__ + j * a_dim1;
-                  MAGMA_Z_ASSIGN(a[i__3], MAGMA_Z_DIV(a[j + i__ + j * a_dim1], a[j + j*a_dim1]));
+                  a[i__3] = MAGMA_Z_DIV(a[j + i__ + j * a_dim1], a[j + j*a_dim1]);
                 }
               }
           }
@@ -137,5 +137,5 @@ magma_zgetf2_nopiv(magma_int_t *m, magma_int_t *n, cuDoubleComplex *a,
         }
       }
     
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_zgetf2_nopiv */

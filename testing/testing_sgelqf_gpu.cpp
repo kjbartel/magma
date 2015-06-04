@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:53 2011
+       @generated s Tue May 15 18:18:22 2012
 
 */
 
@@ -42,7 +42,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     float           flops, gpu_perf, cpu_perf;
     float           matnorm, work[1];
-    float  mzone= MAGMA_S_NEG_ONE;
+    float  c_neg_one = MAGMA_S_NEG_ONE;
     float *h_A, *h_R, *tau, *h_work, tmp[1];
     float *d_A;
 
@@ -119,7 +119,7 @@ int main( int argc, char** argv)
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        cublasSetMatrix( M, N, sizeof(float), h_R, lda, d_A, lda);
+        magma_ssetmatrix( M, N, h_R, lda, d_A, lda );
         start = get_current_time();
         magma_sgelqf_gpu( M, N, d_A, lda, tau, h_work, lwork, &info);
         end = get_current_time();
@@ -142,9 +142,9 @@ int main( int argc, char** argv)
         /* =====================================================================
            Check the result compared to LAPACK
            =================================================================== */
-        cublasGetMatrix( M, N, sizeof(float), d_A, lda, h_R, lda);
+        magma_sgetmatrix( M, N, d_A, lda, h_R, lda );
         matnorm = lapackf77_slange("f", &M, &N, h_A, &lda, work);
-        blasf77_saxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
 
         printf("%5d %5d  %6.2f         %6.2f        %e\n",
                M, N, cpu_perf, gpu_perf,

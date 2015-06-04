@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:25 2011
+       @generated s Tue May 15 18:17:39 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_s
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-// #define cublasSgemv magmablas_sgemv
+// #define magma_sgemv magmablas_sgemv
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -28,7 +28,7 @@ magma_slahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -227,10 +227,11 @@ magma_slahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
         /* Compute  Y(K+1:N,I) */
         i__2 = n - k;
         i__3 = n - k - i__ + 1;
-        cublasSetVector(i__3, sizeof(float), 
-                        &a[k + i__ + i__*a_dim1], 1, dv+(i__-1)*(ldda+1), 1);
+        magma_ssetvector( i__3,
+                          &a[k + i__ + i__*a_dim1], 1,
+                          dv+(i__-1)*(ldda+1),      1 );
 
-        cublasSgemv('N', i__2+1, i__3, c_one, 
+        magma_sgemv(MagmaNoTrans, i__2+1, i__3, c_one, 
                     da -1 + k + i__ * ldda, ldda, 
                     dv+(i__-1)*(ldda+1), c__1, c_zero, 
                     da-1 + k + (i__-1)*ldda, c__1);     
@@ -243,13 +244,14 @@ magma_slahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
 
         /* Compute T(1:I,I) */
         i__2 = i__ - 1;
-        MAGMA_S_OP_NEG_ASGN( d__1, tau[i__] );
+        d__1 = MAGMA_S_NEGATE( tau[i__] );
         blasf77_sscal(&i__2, &d__1, &t[i__ * t_dim1 + 1], &c__1);
         blasf77_strmv("U","N","N", &i__2, &t[t_offset], &ldt, &t[i__*t_dim1+1], &c__1);
         t[i__ + i__ * t_dim1] = tau[i__];
 
-        cublasGetVector(n - k + 1, sizeof(float),
-                        da-1+ k+(i__-1)*ldda, 1, y+ k + i__*y_dim1, 1);
+        magma_sgetvector( n - k + 1,
+                          da-1+ k+(i__-1)*ldda, 1,
+                          y+ k + i__*y_dim1,    1 );
     }
     a[k + nb + nb * a_dim1] = ei;
 

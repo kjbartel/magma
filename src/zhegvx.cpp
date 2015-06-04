@@ -1,9 +1,9 @@
 /*
-   -- MAGMA (version 1.1) --
+   -- MAGMA (version 1.2.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      November 2011
+      May 2012
  
       @author Raffaele Solca
 
@@ -12,20 +12,20 @@
  */
 #include "common_magma.h"
 
-void MycublasZtrmm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
+void Mymagma_ztrmm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
                    cuDoubleComplex alpha, cuDoubleComplex *db, magma_int_t lddb,
                    cuDoubleComplex *dz, magma_int_t lddz)
 {
-    cublasZtrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    cudaThreadSynchronize();
+    magma_ztrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
+    magma_device_sync();
 }
 
-void MycublasZtrsm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
+void Mymagma_ztrsm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
                    cuDoubleComplex alpha, cuDoubleComplex *db, magma_int_t lddb, 
                    cuDoubleComplex *dz, magma_int_t lddz)
 {
-    cublasZtrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    cudaThreadSynchronize();
+    magma_ztrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
+    magma_device_sync();
 }
 
 extern "C" magma_int_t
@@ -37,11 +37,11 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 { 
 /*  
-   -- MAGMA (version 1.1) --
+   -- MAGMA (version 1.2.0) --
    Univ. of Tennessee, Knoxville
    Univ. of California, Berkeley
    Univ. of Colorado, Denver
-   November 2011
+   May 2012
    
    ITYPE   (input) INTEGER
            Specifies the problem type to be solved:
@@ -201,7 +201,7 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
   char jobz_[2] = {jobz, 0};
   char range_[2] = {range, 0};
   
-  static cuDoubleComplex zone = MAGMA_Z_ONE;
+  cuDoubleComplex c_one = MAGMA_Z_ONE;
   
   cuDoubleComplex *da;
   cuDoubleComplex *db;
@@ -219,7 +219,7 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
   static magma_int_t lwmin;
   
   static cudaStream_t stream;
-  cudaStreamCreate(&stream);
+  magma_queue_create( &stream );
   
   wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
   lower = lapackf77_lsame(uplo_, MagmaLowerStr);
@@ -272,44 +272,42 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
   
   if (*info != 0) {
       magma_xerbla( __func__, -(*info));
-      return MAGMA_ERR_ILLEGAL_VALUE;
+      return *info;
   } else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
   }
   
   /* Quick return if possible */
   if (n == 0) {
-    return 0;
+    return *info;
   }
   
-  if (cudaSuccess != cudaMalloc( (void**)&da, n*ldda*sizeof(cuDoubleComplex) ) ||
-      cudaSuccess != cudaMalloc( (void**)&db, n*lddb*sizeof(cuDoubleComplex) ) ||
-      cudaSuccess != cudaMalloc( (void**)&dz, n*lddz*sizeof(cuDoubleComplex) ) ) {
-    *info = -25;
-    return MAGMA_ERR_CUBLASALLOC;
+  if (MAGMA_SUCCESS != magma_zmalloc( &da, n*ldda ) ||
+      MAGMA_SUCCESS != magma_zmalloc( &db, n*lddb ) ||
+      MAGMA_SUCCESS != magma_zmalloc( &dz, n*lddz )) {
+    *info = MAGMA_ERR_DEVICE_ALLOC;
+    return *info;
   }
   
   /*     Form a Cholesky factorization of B. */
   
-  cublasSetMatrix(n, n, sizeof(cuDoubleComplex), b, ldb, db, lddb);
+  magma_zsetmatrix( n, n, b, ldb, db, lddb );
   
-  cudaMemcpy2DAsync(da, ldda*sizeof(cuDoubleComplex),
-                    a,  lda*sizeof(cuDoubleComplex),
-                    sizeof(cuDoubleComplex)*n, n,
-                    cudaMemcpyHostToDevice, stream);  
+  magma_zsetmatrix_async( n, n,
+                          a,  lda,
+                          da, ldda, stream );  
   
   magma_zpotrf_gpu(uplo_[0], n, db, lddb, info);
   if (*info != 0) {
     *info = n + *info;
-    return 0;
+    return *info;
   }
   
-  cudaStreamSynchronize(stream);
+  magma_queue_sync( stream );
   
-  cudaMemcpy2DAsync( b,  ldb*sizeof(cuDoubleComplex),
-                    db, lddb*sizeof(cuDoubleComplex),
-                    sizeof(cuDoubleComplex)*n, n,
-                    cudaMemcpyDeviceToHost, stream);
+  magma_zgetmatrix_async( n, n,
+                          db, lddb,
+                          b,  ldb, stream );
   
   /*     Transform problem to standard eigenvalue problem and solve. */
   
@@ -332,7 +330,7 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
         *(unsigned char *)trans = MagmaNoTrans;
       }
       
-      MycublasZtrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, zone, db, lddb, dz, lddz);
+      Mymagma_ztrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, dz, lddz);
       
     } else if (itype == 3) {
       
@@ -345,22 +343,22 @@ magma_zhegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
         *(unsigned char *)trans = MagmaConjTrans;
       }
       
-      MycublasZtrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, zone, db, lddb, dz, lddz);
+      Mymagma_ztrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, dz, lddz);
       
     }
     
-    cublasGetMatrix(n, *m, sizeof(cuDoubleComplex), dz, lddz, z, ldz);
+    magma_zgetmatrix( n, *m, dz, lddz, z, ldz );
     
   }
   
-  cudaStreamSynchronize(stream);
+  magma_queue_sync( stream );
   
-  cudaStreamDestroy(stream);
+  magma_queue_destroy( stream );
   
-  cublasFree(da);
-  cublasFree(db);
-  cublasFree(dz);
+  magma_free( da );
+  magma_free( db );
+  magma_free( dz );
   
-  return 0;
+  return *info;
   
 } /* zhegvx */

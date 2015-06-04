@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated c Sun Nov 13 20:48:52 2011
+ * @generated c Tue May 15 18:18:20 2012
  *
  **/
 // includes, system
@@ -109,9 +109,9 @@ int main( int argc, char** argv)
         A_norm = lapackf77_clange( "f", &N, &N, h_A, &lda, rwork );
 
         /* Factor the matrix. Both MAGMA and LAPACK will use this factor. */
-        cublasSetMatrix( N, N, sizeof(cuFloatComplex), h_A, lda, d_A, ldda );
+        magma_csetmatrix( N, N, h_A, lda, d_A, ldda );
         magma_cgetrf_gpu( N, N, d_A, ldda, ipiv, &info );
-        cublasGetMatrix( N, N, sizeof(cuFloatComplex), d_A, ldda, h_A, lda );
+        magma_cgetmatrix( N, N, d_A, ldda, h_A, lda );
 
         /* ====================================================================
            Performs operation using MAGMA
@@ -124,7 +124,7 @@ int main( int argc, char** argv)
 
         gpu_perf = flops / GetTimerValue(start, end);
         
-        cublasGetMatrix( N, N, sizeof(cuFloatComplex), d_A, ldda, h_R, lda );
+        magma_cgetmatrix( N, N, d_A, ldda, h_R, lda );
          
         /* =====================================================================
            Performs operation using LAPACK

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal d -> s
 
@@ -55,8 +55,8 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     double *h_A, *h_R, *VL, *VR, *h_work, *w1, *w2;
     double *w1i, *w2i;
-    double  mzone = MAGMA_D_NEG_ONE;
-    double           gpu_time, cpu_time, matnorm, tnrm, result[8];
+    double c_neg_one = MAGMA_D_NEG_ONE;
+    double gpu_time, cpu_time, matnorm, tnrm, result[8];
 
     /* Matrix size */
     magma_int_t N=0, n2, lda, nb, lwork;
@@ -180,9 +180,9 @@ int main( int argc, char** argv)
                *       Here VR is the matrix of unit right eigenvectors.
                *       W is a diagonal matrix with diagonal entries W(j).
                *
-               *     (2)     | A\*\*T * VL - VL * W\*\*T | / ( n |A| )
+               *     (2)     | A**T * VL - VL * W**T | / ( n |A| )
                *
-               *       Here VL is the matrix of unit left eigenvectors, A\*\*T is the
+               *       Here VL is the matrix of unit left eigenvectors, A**T is the
                *       ugate-transpose of A, and W is as above.
                *
                *     (3)     | |VR(i)| - 1 |   and whether largest component real
@@ -396,7 +396,7 @@ int main( int argc, char** argv)
             //====================================================================
 
             matnorm = lapackf77_dlange("f", &N, &ione, w1, &N, h_work);
-            blasf77_daxpy(&N, &mzone, w1, &ione, w2, &ione);
+            blasf77_daxpy(&N, &c_neg_one, w1, &ione, w2, &ione);
 
             result[7] = lapackf77_dlange("f", &N, &ione, w2, &N, h_work) / matnorm;
 

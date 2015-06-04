@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:54 2011
+       @generated d Tue May 15 18:18:23 2012
 
 */
 
@@ -43,7 +43,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     double           flops, gpu_perf, cpu_perf;
     double           matnorm, work[1];
-    double  mzone= MAGMA_D_NEG_ONE;
+    double  c_neg_one = MAGMA_D_NEG_ONE;
     double *h_A, *h_R, *tau, *h_work;
     double *d_A, *d_T;
 
@@ -113,9 +113,9 @@ int main( int argc, char** argv)
         lapackf77_dlarnv( &ione, ISEED, &n2, h_A );
         lapackf77_dlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
         
-        cublasSetMatrix( M, N, sizeof(double), h_A, lda, d_A, ldda);
+        magma_dsetmatrix( M, N, h_A, lda, d_A, ldda );
         magma_dgeqrf2_gpu(M, N, d_A, ldda, tau, &info);
-        cublasSetMatrix( M, N, sizeof(double), h_A, lda, d_A, ldda);
+        magma_dsetmatrix( M, N, h_A, lda, d_A, ldda );
         
         /* ====================================================================
            Performs operation using MAGMA
@@ -131,7 +131,7 @@ int main( int argc, char** argv)
             printf("Argument %d of magma_dorgqr_gpu had an illegal value.\n", -info);
         
         // Get d_A back to the CPU to compare with the CPU result.
-        cublasGetMatrix(M, N, sizeof(double), d_A, ldda, h_R, lda);
+        magma_dgetmatrix( M, N, d_A, ldda, h_R, lda );
         
         gpu_perf = flops / GetTimerValue(start,end);
         matnorm = lapackf77_dlange("f", &M, &N, h_A, &lda, work);
@@ -152,7 +152,7 @@ int main( int argc, char** argv)
         
         cpu_perf = flops / GetTimerValue(start,end);
 
-        blasf77_daxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_daxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d %5d   %6.1f       %6.1f         %7.2e \n",
                M, N, cpu_perf, gpu_perf,
                lapackf77_dlange("f", &M, &N, h_R, &lda, work) / matnorm );

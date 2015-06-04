@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Sun Nov 13 20:48:30 2011
+       @generated s Tue May 15 18:17:47 2012
 
 */ 
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
              float *w, float *work, magma_int_t lwork, 
              magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -69,8 +69,8 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
             On exit, if JOBZ = 'V', then if INFO = 0, A contains the   
             matrix Z of eigenvectors.  The eigenvectors are normalized   
             as follows:   
-            if ITYPE = 1 or 2, Z\*\*T*B*Z = I;   
-            if ITYPE = 3, Z\*\*T*inv(B)*Z = I.   
+            if ITYPE = 1 or 2, Z**T *   B    * Z = I;   
+            if ITYPE = 3,      Z**T * inv(B) * Z = I.   
             If JOBZ = 'N', then on exit the upper triangle (if UPLO='U')   
             or the lower triangle (if UPLO='L') of A, including the   
             diagonal, is destroyed.   
@@ -87,7 +87,7 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
 
             On exit, if INFO <= N, the part of B containing the matrix is   
             overwritten by the triangular factor U or L from the Cholesky   
-            factorization B = U\*\*T*U or B = L*L\*\*T.   
+            factorization B = U**T * U or B = L * L**T.   
 
     LDB     (input) INTEGER   
             The leading dimension of the array B.  LDB >= max(1,N).   
@@ -157,7 +157,7 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
 
-    static float zone = MAGMA_S_ONE;
+    float d_one = MAGMA_S_ONE;
     
     float *da;
     float *db;
@@ -171,7 +171,7 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
     static magma_int_t lopt, lwmin, liopt, liwmin;
   
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
 
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
@@ -230,19 +230,18 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
         return 0;
     }
 
-    if (cudaSuccess != cudaMalloc( (void**)&da, n*ldda*sizeof(float) ) ||
-        cudaSuccess != cudaMalloc( (void**)&db, n*lddb*sizeof(float) ) ) {
+    if (MAGMA_SUCCESS != magma_smalloc( &da, n*ldda ) ||
+        MAGMA_SUCCESS != magma_smalloc( &db, n*lddb )) {
       *info = -17;
-      return MAGMA_ERR_CUBLASALLOC;
+      return MAGMA_ERR_DEVICE_ALLOC;
     }
   
     /* Form a Cholesky factorization of B. */
-    cublasSetMatrix(n, n, sizeof(float), b, ldb, db, lddb);
+    magma_ssetmatrix( n, n, b, ldb, db, lddb );
 
-    cudaMemcpy2DAsync(da, ldda*sizeof(float),
-                       a,  lda*sizeof(float),
-                      sizeof(float)*n, n,
-                      cudaMemcpyHostToDevice, stream);  
+    magma_ssetmatrix_async( n, n,
+                            a,  lda,
+                            da, ldda, stream );  
   
     magma_spotrf_gpu(uplo_[0], n, db, lddb, info);
     if (*info != 0) {
@@ -250,12 +249,11 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
         return 0;
     }
 
-    cudaStreamSynchronize(stream);
+    magma_queue_sync( stream );
   
-    cudaMemcpy2DAsync( b,  ldb*sizeof(float),
-                      db, lddb*sizeof(float),
-                      sizeof(float)*n, n,
-                      cudaMemcpyDeviceToHost, stream);
+    magma_sgetmatrix_async( n, n,
+                            db, lddb,
+                            b,  ldb, stream );
 
     /*  Transform problem to standard eigenvalue problem and solve. */
     magma_ssygst_gpu(itype, uplo_[0], n, da, ldda, db, lddb, info);
@@ -279,8 +277,8 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaNoTrans;
             }
 
-            cublasStrsm(MagmaLeft, uplo_[0], *trans, MagmaNonUnit,
-                        n, n, zone, db, lddb, da, ldda);
+            magma_strsm(MagmaLeft, uplo_[0], *trans, MagmaNonUnit,
+                        n, n, d_one, db, lddb, da, ldda);
 
         } else if (itype == 3) 
           {
@@ -292,22 +290,22 @@ magma_ssygvd(magma_int_t itype, char jobz, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaTrans;
             }
 
-            cublasStrmm(MagmaLeft, uplo_[0], *trans, MagmaNonUnit, 
-                        n, n, zone, db, lddb, da, ldda);
+            magma_strmm(MagmaLeft, uplo_[0], *trans, MagmaNonUnit, 
+                        n, n, d_one, db, lddb, da, ldda);
         }
 
-        cublasGetMatrix(n, n, sizeof(float), da, ldda, a, lda);
+        magma_sgetmatrix( n, n, da, ldda, a, lda );
 
     }
 
-    cudaStreamSynchronize(stream);
-    cudaStreamDestroy(stream);
+    magma_queue_sync( stream );
+    magma_queue_destroy( stream );
   
     work[0] = (float) lopt;
     iwork[0] = liopt;
 
-    cublasFree(da);
-    cublasFree(db);
+    magma_free( da );
+    magma_free( db );
   
     return MAGMA_SUCCESS;
 } /* magma_ssygvd */

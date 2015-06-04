@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
        @author Raffaele Solca
 
-       @generated c Sun Nov 13 20:48:29 2011
+       @generated c Tue May 15 18:17:46 2012
        
  */
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
              float *w, cuFloatComplex *z, magma_int_t ldz, cuFloatComplex *work, magma_int_t lwork,
              float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    November 2011
+    May 2012
    
     Purpose   
     =======   
@@ -236,15 +236,15 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
   
   if (*info != 0) {
       magma_xerbla( __func__, -(*info));
-      return MAGMA_ERR_ILLEGAL_VALUE;
+      return *info;
   } else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
   }
   
   /* Quick return if possible */
   *m = 0;
   if (n == 0) {
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
   if (n == 1) {
@@ -259,7 +259,7 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
     if (wantz) {
       z[0]=MAGMA_C_ONE;
     }
-    return MAGMA_SUCCESS;
+    return *info;
   }
 
   --w;
@@ -413,7 +413,7 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
   
   work[1] = MAGMA_C_MAKE((float) lopt, 0.);
   
-  return MAGMA_SUCCESS;
+  return *info;
   
 } /* magma_cheevx_ */
 

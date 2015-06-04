@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:24 2011
+       @generated c Tue May 15 18:17:38 2012
 
 */
 #include "common_magma.h"
@@ -16,7 +16,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_c
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasCgemm magmablas_cgemm
+  #define magma_cgemm magmablas_cgemm
 #endif
 // === End defining what BLAS to use ======================================
 
@@ -27,16 +27,16 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
              cuFloatComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
     CGEBRD reduces a general complex M-by-N matrix A to upper or lower
-    bidiagonal form B by an orthogonal transformation: Q\*\*H * A * P = B.
+    bidiagonal form B by an orthogonal transformation: Q**H * A * P = B.
 
     If m >= n, B is upper bidiagonal; if m < n, B is lower bidiagonal.
 
@@ -70,11 +70,11 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
 
-    D       (output) COMPLEX array, dimension (min(M,N))
+    D       (output) real array, dimension (min(M,N))
             The diagonal elements of the bidiagonal matrix B:
             D(i) = A(i,i).
 
-    E       (output) COMPLEX array, dimension (min(M,N)-1)
+    E       (output) real array, dimension (min(M,N)-1)
             The off-diagonal elements of the bidiagonal matrix B:
             if m >= n, E(i) = A(i,i+1) for i = 1,2,...,n-1;
             if m < n, E(i) = A(i+1,i) for i = 1,2,...,m-1.
@@ -177,22 +177,22 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
     }
     if (*info < 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     /* Quick return if possible */
     minmn = min(m,n);
     if (minmn == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
-    if ( CUBLAS_STATUS_SUCCESS 
-         != cublasAlloc(n*ldda+(m+n)*nb, sizeof(cuFloatComplex), (void**)&da) ) {
+    if (MAGMA_SUCCESS != magma_cmalloc( &da, n*ldda + (m + n)*nb )) {
         fprintf (stderr, "!!!! device memory allocation error in cgebrd\n" );
-        return MAGMA_ERR_CUBLASALLOC; 
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info; 
     }
     dwork = da + (n)*ldda;
 
@@ -205,7 +205,7 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
 
     /* Copy the matrix to the GPU */
     if (minmn-nx>=1)
-        cublasSetMatrix(m, n, sizeof(cuFloatComplex), a, lda, da, ldda);
+        magma_csetmatrix( m, n, a, lda, da, ldda );
 
     for (i=0; i< (minmn - nx); i += nb) {
 
@@ -217,12 +217,10 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
 
         /*   Get the current panel (no need for the 1st iteration) */
         if ( i > 0 ) {
-            cublasGetMatrix(nrow, nb, sizeof(cuFloatComplex),
-                            dA(i, i), ldda, 
-                            A( i, i), lda );
-            cublasGetMatrix(nb, ncol - nb, sizeof(cuFloatComplex),
-                            dA(i, i+nb), ldda,
-                            A( i, i+nb), lda);
+            magma_cgetmatrix( nrow, nb, dA(i, i), ldda, A( i, i), lda );
+            magma_cgetmatrix( nb, ncol - nb,
+                              dA(i, i+nb), ldda,
+                              A( i, i+nb), lda );
         }
 
         magma_clabrd_gpu(nrow, ncol, nb,
@@ -237,20 +235,18 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
         ncol = n - i - nb;
 
         // Send Y back to the GPU
-        cublasSetMatrix(nrow, nb, sizeof(cuFloatComplex),
-                        work  + nb, ldwrkx,
-                        dwork + nb, ldwrkx);
-        cublasSetMatrix(ncol, nb, sizeof(cuFloatComplex),
-                        work  + (ldwrkx+1)*nb, ldwrky,
-                        dwork + (ldwrkx+1)*nb, ldwrky);
+        magma_csetmatrix( nrow, nb, work  + nb, ldwrkx, dwork + nb, ldwrkx );
+        magma_csetmatrix( ncol, nb,
+                          work  + (ldwrkx+1)*nb, ldwrky,
+                          dwork + (ldwrkx+1)*nb, ldwrky );
 
-        cublasCgemm( MagmaNoTrans, MagmaConjTrans, 
+        magma_cgemm( MagmaNoTrans, MagmaConjTrans, 
                      nrow, ncol, nb, 
                      c_neg_one, dA(i+nb, i   ),      ldda,
                                 dwork+(ldwrkx+1)*nb, ldwrky,
                      c_one,     dA(i+nb, i+nb),      ldda);
 
-        cublasCgemm( MagmaNoTrans, MagmaNoTrans, 
+        magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
                      nrow, ncol, nb, 
                      c_neg_one, dwork+nb,         ldwrkx,
                                 dA( i,    i+nb ), ldda,
@@ -278,16 +274,14 @@ magma_cgebrd(magma_int_t m, magma_int_t n,
     ncol = n - i;
 
     if ( 0 < (minmn-nx) )
-        cublasGetMatrix(nrow, ncol, sizeof(cuFloatComplex),
-                        dA(i, i), ldda,
-                        A( i, i), lda);
+        magma_cgetmatrix( nrow, ncol, dA(i, i), ldda, A( i, i), lda );
 
     lapackf77_cgebrd( &nrow, &ncol, 
                       A(i, i), &lda, d+i, e+i,
                       tauq+i, taup+i, work, &lwork, &iinfo);
     work[0] = ws;
 
-    cublasFree(da);
-    return MAGMA_SUCCESS;
+    magma_free( da );
+    return *info;
 } /* cgebrd_ */
 

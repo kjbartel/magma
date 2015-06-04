@@ -1,19 +1,21 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2011
+#      May 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 include $(MAGMA_DIR)/make.inc
 -include $(MAGMA_DIR)/make.inc.${MACHINE}
 
+OPTS += -DHAVE_CUBLAS
+
 #
 # Set default values if they are not set in make.inc
 #
 PGIFORTRAN   ?= 0
-GPU_TARGET   ?= 1
+GPU_TARGET   ?= Fermi
 LIBMAGMA     ?= $(MAGMA_DIR)/lib/libmagma.a
 LIBMAGMABLAS ?= $(MAGMA_DIR)/lib/libmagmablas.a
 
@@ -23,9 +25,9 @@ prefix ?= ./install
 #
 # Quark
 #
-QUARKDIR ?= $(MAGMA_DIR)/quark
-INCQUARK  = -I$(QUARKDIR)/include
-#LIBQUARK  = -L$(QUARKDIR)/lib -lquark
+#QUARKDIR ?= $(MAGMA_DIR)/quark
+#INC += -I$(QUARKDIR)/include
+#LIB += -L$(QUARKDIR)/lib -lquark
 
 #
 # NVCC options for the different cards
@@ -33,20 +35,19 @@ INCQUARK  = -I$(QUARKDIR)/include
 TESLAOPT = -arch sm_13 -DGPUSHMEM=130 -gencode arch=compute_13,code=compute_13 -gencode arch=compute_10,code=compute_10 
 FERMIOPT = -arch sm_20 -DGPUSHMEM=200
 
-ifeq (${GPU_TARGET}, 0)
+ifeq (${GPU_TARGET}, Tesla)
 	GPUOPT = ${TESLAOPT}
 	OPTS   += -DGPUSHMEM=130
 	LDOPTS += -DGPUSHMEM=130
-endif
-
-ifeq (${GPU_TARGET}, 1)
+else ifeq (${GPU_TARGET}, Fermi)
 	GPUOPT = ${FERMIOPT}
 	OPTS   += -DGPUSHMEM=200
 	LDOPTS += -DGPUSHMEM=200
+else
+$(error GPU_TARGET, currently ${GPU_TARGET}, must be one of Tesla or Fermi. Please edit your make.inc file)
 endif
 
-LIB := $(LIBQUARK) $(LIB)
-INC += -I../include $(INCQUARK)
+INC += -I$(MAGMA_DIR)/include
 
 LIBEXT = $(LIBDIR) $(LIB)
 
@@ -60,10 +61,10 @@ ifeq (1, $(words $(findstring plasma, $(PLASMA))))
 endif
 
 # Define the pointer size for fortran compilation
-PTRFILE=$(MAGMA_DIR)/control/sizeptr.c
-PTREXEC=$(MAGMA_DIR)/sizeptr
-PTRSIZE=$(shell ($(CC) -o $(PTREXEC) $(PTRFILE) 2>&1 > /dev/null && $(PTREXEC) && rm -f $(PTREXEC)))
-PTROPT=-Dmagma_devptr_t="integer(kind=$(PTRSIZE))"
+PTRFILE = $(MAGMA_DIR)/control/sizeptr.c
+PTREXEC = $(MAGMA_DIR)/control/sizeptr
+PTRSIZE = $(shell $(PTREXEC))
+PTROPT  = -Dmagma_devptr_t="integer(kind=$(PTRSIZE))"
 
 FOPTS += $(PTROPT)
 

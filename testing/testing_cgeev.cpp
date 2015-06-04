@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:55 2011
+       @generated c Tue May 15 18:18:24 2012
 
 */
 
@@ -39,7 +39,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     cuFloatComplex *h_A, *h_R, *VL, *VR, *h_work, *w1, *w2;
     cuFloatComplex *w1i, *w2i;
-    cuFloatComplex  mzone = MAGMA_C_NEG_ONE;
+    cuFloatComplex  c_neg_one = MAGMA_C_NEG_ONE;
     float          *rwork;
     float           gpu_time, cpu_time, matnorm, tnrm, result[8];
 
@@ -368,7 +368,7 @@ int main( int argc, char** argv)
             //====================================================================
 
             matnorm = lapackf77_clange("f", &N, &ione, w1, &N, rwork);
-            blasf77_caxpy(&N, &mzone, w1, &ione, w2, &ione);
+            blasf77_caxpy(&N, &c_neg_one, w1, &ione, w2, &ione);
 
             result[7] = lapackf77_clange("f", &N, &ione, w2, &N, rwork) / matnorm;
 

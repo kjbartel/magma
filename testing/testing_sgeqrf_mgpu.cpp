@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:53 2011
+       @generated s Tue May 15 18:18:21 2012
 
 */
 
@@ -46,7 +46,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     float           flops, gpu_perf, cpu_perf;
     float           matnorm, work[1];
-    float  mzone= MAGMA_S_NEG_ONE;
+    float  c_neg_one = MAGMA_S_NEG_ONE;
     float *h_A, *h_R, *tau, *hwork, tmp[1];
     float *d_lA[4];
 
@@ -176,7 +176,7 @@ int main( int argc, char** argv)
         magmablas_sgetmatrix_1D_bcyclic(M, N, d_lA, ldda, h_R, lda, num_gpus, nb);
         
         matnorm = lapackf77_slange("f", &M, &N, h_A, &M, work);
-        blasf77_saxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_saxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         
         printf("%5d %5d  %6.2f         %6.2f        %e\n",
                M, N, cpu_perf, gpu_perf,

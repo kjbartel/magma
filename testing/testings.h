@@ -30,6 +30,32 @@
   cuCtxDetach( context );                        \
   cublasShutdown();
      
+#define TESTING_CUDA_INIT_MGPU()                                                \
+if( CUDA_SUCCESS != cuInit( 0 ) ) {                                        \
+fprintf(stderr, "CUDA: Not initialized\n" ); exit(-1);                \
+}                                                                        \
+{                                                                        \
+int ndevices;                                                            \
+cuDeviceGetCount( &ndevices );                                           \
+for(int idevice = 0; idevice < ndevices; ++idevice ){                  \
+cudaSetDevice(idevice);                                                \
+if( CUBLAS_STATUS_SUCCESS != cublasInit( ) ) {                        \
+fprintf(stderr, "CUBLAS: Not initialized\n"); exit(-1);                \
+}                                                                        \
+}                                                                        \
+}                                                                        \
+cudaSetDevice(0);                                                       \
+printout_devices( );
+
+
+#define TESTING_CUDA_FINALIZE_MGPU()                        \
+{                                                                        \
+int ndevices;                                                            \
+cuDeviceGetCount( &ndevices );                                           \
+for(int idevice = 0; idevice < ndevices; ++idevice ){                  \
+cudaSetDevice(idevice);                                                \
+  cublasShutdown();                                      \
+}}
 
 #define TESTING_MALLOC(__ptr, __type, __size)                           \
   __ptr = (__type*)malloc((__size) * sizeof(__type));                   \

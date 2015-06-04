@@ -1,40 +1,39 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
-#      Univ. of	Colorado, Denver
-#      November 2011
+#      Univ. of Colorado, Denver
+#      May 2012
 #
 #      Contributed by: Massimiliano Fatica (NVIDIA)
 #//////////////////////////////////////////////////////////////////////////////
 
 #
-# GPU_TARGET specifies for which GPU you want to compile MAGMA
-#      0: Tesla family
-#      1: Fermi Family
-#
-	GPU_TARGET = 0
+# GPU_TARGET specifies for which GPU you want to compile MAGMA:
+#     "Tesla" (NVIDIA compute capability 1.x cards)
+#     "Fermi" (NVIDIA compute capability 2.x cards)
+# See http://developer.nvidia.com/cuda-gpus
 
-	CC        = gcc
-	NVCC      = nvcc
-	FORT      = g95
+GPU_TARGET = Tesla
 
-	ARCH      = ar
-	ARCHFLAGS = cr
-	RANLIB    = ranlib
+CC        = gcc
+NVCC      = nvcc
+FORT      = gfortran
 
-	# may need to add -m32 or -m64 to OPTS, FOPTS, NVOPTS to compile 32-bit or 64-bit.
-	OPTS      = -O3 -DADD_
-	FOPTS     = -O3 -DADD_ -x f95-cpp-input
-	NVOPTS    = -DADD_ --compiler-options -fno-strict-aliasing -DUNIX -O3 
-    LDOPTS    = -fPIC
+ARCH      = ar
+ARCHFLAGS = cr
+RANLIB    = ranlib
 
-	LIB       = -framework Accelerate -lcublas -lcudart -lm -lstdc++.6
+# add -m32 to compile 32-bit.
+# add -DNDEBUG to disable asserts and certain error checks.
+OPTS      = -m32 -O3 -DADD_
+FOPTS     = -m32 -O3 -DADD_ -x f95-cpp-input
+NVOPTS    = -m32 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX -O3 
+LDOPTS    = -m32 -fPIC
 
-	CUDADIR   = /usr/local/cuda
+LIB       = -framework Accelerate -lcublas -lcudart -lm -lstdc++.6
 
-	LIBDIR    = -L/usr/local/cuda/lib 
-	INC       = -I../include -I$(CUDADIR)/include
+CUDADIR   = /usr/local/cuda
 
-#	LIBMAGMA     = $(MAGMA_DIR)/lib/magma.a
-#	LIBMAGMABLAS = $(MAGMA_DIR)/lib/magmablas.a
+LIBDIR    = -L$(CUDADIR)/lib 
+INC       = -I$(CUDADIR)/include

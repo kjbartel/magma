@@ -1,14 +1,14 @@
 /*    
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Sun Nov 13 20:48:29 2011
+       @generated s Tue May 15 18:17:46 2012
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_ssyevd_gpu(char jobz, char uplo,
                  magma_int_t *iwork, magma_int_t liwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======
@@ -154,6 +154,8 @@ magma_ssyevd_gpu(char jobz, char uplo,
     static float smlnum;
     static magma_int_t lquery;
 
+    bool dc_freed = false;
+
     float *dwork;
     float *dc;
     magma_int_t lddc = ldda;
@@ -209,25 +211,25 @@ magma_ssyevd_gpu(char jobz, char uplo,
 
     if (n == 1) {
         float tmp;
-        cublasGetVector(1, sizeof(float), da, 1, &tmp, 1);
+        magma_sgetvector( 1, da, 1, &tmp, 1 );
         w[0] = tmp;
         if (wantz) {
             tmp = 1.;
-            cublasSetVector(1, sizeof(float), &tmp, 1, da, 1);
+            magma_ssetvector( 1, &tmp, 1, da, 1 );
         }
         return MAGMA_SUCCESS;
     }
 
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
 
-    if (cudaSuccess != cudaMalloc((void**)&dc, n*lddc*sizeof(float))) {
+    if (MAGMA_SUCCESS != magma_smalloc( &dc, n*lddc )) {
       fprintf(stderr, "!!!! device memory allocation error (magma_ssyevd_gpu)\n");
-      return MAGMA_ERR_CUBLASALLOC;
+      return MAGMA_ERR_DEVICE_ALLOC;
     }
-    if (cudaSuccess != cudaMalloc((void**)&dwork, n*sizeof(float))) {
+    if (MAGMA_SUCCESS != magma_smalloc( &dwork, n )) {
       fprintf(stderr, "!!!! device memory allocation error (magma_ssyevd_gpu)\n");
-      return MAGMA_ERR_CUBLASALLOC;
+      return MAGMA_ERR_DEVICE_ALLOC;
     }
 
     --w;
@@ -244,6 +246,7 @@ magma_ssyevd_gpu(char jobz, char uplo,
 
     /* Scale matrix to allowable range, if necessary. */
     anrm = magmablas_slansy('M', uplo, n, da, ldda, dwork);
+    magma_free( dwork );
     iscale = 0;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
@@ -263,8 +266,15 @@ magma_ssyevd_gpu(char jobz, char uplo,
     indwk2 = indwrk + n * n;
     llwrk2 = lwork - indwk2 + 1;
   
+//#define ENABLE_TIMER
+#ifdef ENABLE_TIMER 
+    magma_timestr_t start, end;
+    
+    start = get_current_time();
+#endif
+
 #ifdef FAST_SYMV
-    magma_ssytrd2_gpu(uplo, n, da, lda, &w[1], &work[inde],
+    magma_ssytrd2_gpu(uplo, n, da, ldda, &w[1], &work[inde],
                       &work[indtau], wa, ldwa, &work[indwrk], llwork, 
                       dc, lddc*n, &iinfo);
 #else
@@ -273,6 +283,12 @@ magma_ssyevd_gpu(char jobz, char uplo,
                      &iinfo);
 #endif
 
+#ifdef ENABLE_TIMER    
+    end = get_current_time();
+    
+    printf("time ssytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call   
        ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
        tridiagonal matrix, then call SORMTR to multiply it to the Householder 
@@ -280,16 +296,62 @@ magma_ssyevd_gpu(char jobz, char uplo,
     if (! wantz) {
         lapackf77_ssterf(&n, &w[1], &work[inde], info);
     } else {
-        lapackf77_sstedc("I", &n, &w[1], &work[inde], &work[indwrk], &n, &work[indwk2], 
-                &llwrk2, &iwork[1], &liwork, info);
 
-        cublasSetMatrix(n, n, sizeof(float), &work[indwrk], n, dc, lddc);
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
         
+        if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+            magma_free( dc );  // if not enough memory is available free dc to be able do allocate dwork
+            dc_freed=true;
+#ifdef ENABLE_TIMER
+            printf("dc deallocated\n");
+#endif
+            if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+                fprintf (stderr, "!!!! device memory allocation error (magma_ssyevd_gpu)\n");
+                return MAGMA_ERR_DEVICE_ALLOC;
+            }
+        }
+        
+        magma_sstedx('A', n, 0., 0., 0, 0, &w[1], &work[inde],
+                     &work[indwrk], n, &work[indwk2],
+                     llwrk2, &iwork[1], liwork, dwork, info);
+        
+        magma_free( dwork );
+
+#ifdef ENABLE_TIMER  
+        end = get_current_time();
+        
+        printf("time sstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
+
+        if(dc_freed){
+            dc_freed = false;
+            if (MAGMA_SUCCESS != magma_smalloc( &dc, n*lddc )) {
+                fprintf (stderr, "!!!! device memory allocation error (magma_ssyevd_gpu)\n");
+                return MAGMA_ERR_DEVICE_ALLOC;
+            }
+        }
+
+        magma_ssetmatrix( n, n, &work[indwrk], n, dc, lddc );
+        
+#ifdef ENABLE_TIMER  
+        start = get_current_time();
+#endif
+
         magma_sormtr_gpu(MagmaLeft, uplo, MagmaNoTrans, n, n, da, ldda, &work[indtau],
                          dc, lddc, wa, ldwa, &iinfo);
         
-        cudaMemcpy2D(da, ldda * sizeof(float), dc, lddc * sizeof(float),
-                     sizeof(float)*n, n, cudaMemcpyDeviceToDevice);
+        magma_scopymatrix( n, n,
+                           dc, lddc,
+                           da, ldda );
+
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time sormtr + copy = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
@@ -301,9 +363,9 @@ magma_ssyevd_gpu(char jobz, char uplo,
     MAGMA_S_SET2REAL(work[1], (float) lopt);
     iwork[1] = liopt;
 
-    cudaStreamDestroy(stream);
-    cudaFree(dc);
-    cudaFree(dwork);
+    magma_queue_destroy( stream );
+    if (!dc_freed)
+        magma_free( dc );
 
     return MAGMA_SUCCESS;
 } /* magma_ssyevd_gpu */

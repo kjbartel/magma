@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:19 2011
+       @generated d Tue May 15 18:17:31 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
               double *work, magma_int_t lwork,
               magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -50,7 +50,7 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
             Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -63,7 +63,7 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= N*NB,
@@ -77,7 +77,7 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -9, the GPU memory allocation failed
+                  or another error occured, such as memory allocation failed.
 
     Further Details
     ===============
@@ -118,15 +118,15 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-        return MAGMA_SUCCESS;
+        return *info;
 
     k = min(m,n);
     if (k == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     ldda    = ((m+31)/32)*32;
@@ -139,27 +139,39 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
         else if (i == (n/nb)%num_gpus)
             n_local[i] += n%nb;
 
-        cudaSetDevice(i);
+        magma_setdevice(i);
         
-        if( cudaSuccess != cudaMalloc( (void**)&da[i], ldda*n_local[i]*sizeof(double)))
-            fprintf (stderr, "!!!! cudaMallocHost failed for: d_lA[%d]\n", i);
+        // TODO on failure, free previously allocated memory
+        if (MAGMA_SUCCESS != magma_dmalloc( &da[i], ldda*n_local[i] )) {
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
     }
 
-    /* Copy the matrix to the GPUs in 1D block cyclic distribution */
-    magmablas_dsetmatrix_1D_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
+    if (m > nb && n > nb) {
 
-    /* Factor using the GPU interface */
-    magma_dgeqrf2_mgpu( num_gpus, m, n, da, ldda, tau, info);
+        /* Copy the matrix to the GPUs in 1D block cyclic distribution */
+        magmablas_dsetmatrix_1D_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
 
-    /* Copy the matrix back from the GPUs to the CPU */
-    magmablas_dgetmatrix_1D_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
+        /* Factor using the GPU interface */
+        magma_dgeqrf2_mgpu( num_gpus, m, n, da, ldda, tau, info);
+
+        /* Copy the matrix back from the GPUs to the CPU */
+        magmablas_dgetmatrix_1D_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
+
+    } else {
+
+      lapackf77_dgeqrf(&m, &n, a, &lda, tau, work, &lwork, info);
+
+    }
+
 
     /* Free the allocated GPU memory */
     for(i=0; i<num_gpus; i++){
-        cudaSetDevice(i);
-        cudaFree( da[i] );
+        magma_setdevice(i);
+        magma_free( da[i] );
     }
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_dgeqrf4 */
 

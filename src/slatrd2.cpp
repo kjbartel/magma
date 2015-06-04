@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated s Sun Nov 13 20:48:26 2011
+       @generated s Tue May 15 18:17:42 2012
 
 */
 #include "common_magma.h"
@@ -23,13 +23,13 @@
 
 extern "C"
 magma_int_t
-magmablas_ssymv2_200( char uplo, magma_int_t n,
+magmablas_ssymv2( char uplo, magma_int_t n,
                       float alpha,
                       float *A, magma_int_t lda,
                       float *X, magma_int_t incx,
                       float beta,
                       float *Y, magma_int_t incy,
-                      float *work, int lwork);
+                      float *work, magma_int_t lwork);
 
 extern "C" magma_int_t 
 magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb, 
@@ -40,11 +40,11 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
               float *dw, magma_int_t lddw,
               float *dwork, magma_int_t ldwork)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -191,7 +191,7 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
     }
 
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
   
     if (lapackf77_lsame(uplo_, "U")) {
 
@@ -221,31 +221,30 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
         if (i > 0) {
           /* Generate elementary reflector H(i) to annihilate A(1:i-2,i) */
           
-          MAGMA_S_ASSIGN(alpha, *A(i-1, i));
+          alpha = *A(i-1, i);
           
           lapackf77_slarfg(&i, &alpha, A(0, i), &ione, &tau[i - 1]);
           
-          e[i-1] = MAGMA_S_GET_X( alpha );
+          e[i-1] = MAGMA_S_REAL( alpha );
           MAGMA_S_SET2REAL(*A(i-1, i), 1.);
           
           /* Compute W(1:i-1,i) */
           // 1. Send the block reflector  A(0:n-i-1,i) to the GPU
-          cublasSetVector(i, sizeof(float), A(0, i), 1, dA(0, i), 1);
+          magma_ssetvector( i, A(0, i), 1, dA(0, i), 1 );
 
 #if (GPUSHMEM < 200)
-          cublasSsymv(MagmaUpper, i, c_one, dA(0, 0), ldda,
+          magma_ssymv(MagmaUpper, i, c_one, dA(0, 0), ldda,
                       dA(0, i), ione, c_zero, dW(0, iw), ione);
 #else
-          magmablas_ssymv2_200(MagmaUpper, i, c_one, dA(0, 0), ldda,
+          magmablas_ssymv2(MagmaUpper, i, c_one, dA(0, 0), ldda,
                                dA(0, i), ione, c_zero, dW(0, iw), ione,
                                dwork, ldwork);
 #endif
      
           // 2. Start putting the result back (asynchronously)
-          cudaMemcpy2DAsync(W(0, iw) /*test*/, ldw*sizeof(float),
-                            dW(0, iw), lddw*sizeof(float),
-                            sizeof(float)*i, 1,
-                            cudaMemcpyDeviceToHost,stream);
+          magma_sgetmatrix_async( i, 1,
+                                  dW(0, iw),         lddw,
+                                  W(0, iw) /*test*/, ldw, stream );
           
           if (i < n-1) {
 
@@ -254,7 +253,7 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
           }
           
             // 3. Here is where we need it // TODO find the right place
-            cudaStreamSynchronize(stream);
+            magma_queue_sync( stream );
 
           if (i < n-1) {
           
@@ -308,29 +307,28 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
             {
               /* Generate elementary reflector H(i) to annihilate A(i+2:n,i) */
               i_n = n - i - 1;
-              MAGMA_S_ASSIGN(alpha, *A(i+1, i));
+              alpha = *A(i+1, i);
               lapackf77_slarfg(&i_n, &alpha, A(min(i+2,n-1), i), &ione, &tau[i]);
-              e[i] = MAGMA_S_GET_X( alpha );
+              e[i] = MAGMA_S_REAL( alpha );
               MAGMA_S_SET2REAL(*A(i+1, i), 1.);
 
               /* Compute W(i+1:n,i) */ 
               // 1. Send the block reflector  A(i+1:n,i) to the GPU
-              cublasSetVector(i_n, sizeof(float), A(i+1, i), 1, dA(i+1, i), 1);          
+              magma_ssetvector( i_n, A(i+1, i), 1, dA(i+1, i), 1 );          
           
 #if (GPUSHMEM < 200)
-              cublasSsymv('L', i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
+              magma_ssymv(MagmaLower, i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
                           dW(i+1, i), ione);
 #else
-              magmablas_ssymv2_200('L', i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
+              magmablas_ssymv2('L', i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
                                    dW(i+1, i), ione,
                                    dwork, ldwork);
 #endif
 
               // 2. Start putting the result back (asynchronously)
-              cudaMemcpy2DAsync(W(i+1, i), ldw*sizeof(float),
-                                dW(i+1, i), lddw*sizeof(float),
-                                sizeof(float)*i_n, 1,
-                                cudaMemcpyDeviceToHost,stream);
+              magma_sgetmatrix_async( i_n, 1,
+                                      dW(i+1, i), lddw,
+                                      W(i+1, i),  ldw, stream );
 
               blasf77_sgemv(MagmaTransStr, &i_n, &i, &c_one, W(i+1, 0), &ldw, 
                             A(i+1, i), &ione, &c_zero, W(0, i), &ione);
@@ -342,7 +340,7 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
                             A(i+1, i), &ione, &c_zero, W(0, i), &ione);
 
               // 3. Here is where we need it
-              cudaStreamSynchronize(stream);
+              magma_queue_sync( stream );
 
               if (i!=0)
                 blasf77_saxpy(&i_n, &c_one, f, &ione, W(i+1, i), &ione);
@@ -362,7 +360,7 @@ magma_slatrd2(char uplo, magma_int_t n, magma_int_t nb,
     }
 
     free(f);
-    cudaStreamDestroy(stream);
+    magma_queue_destroy( stream );
 
     return 0;
 } /* slatrd_ */

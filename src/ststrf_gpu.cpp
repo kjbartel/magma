@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated s Sun Nov 13 20:48:32 2011
+       @generated s Tue May 15 18:17:52 2012
 
 */
 #ifdef MAGMA_WITH_PLASMA
@@ -17,9 +17,9 @@
 #include <core_blas.h>
 #include "common_magma.h"
 
-#define cublasSgemm magmablas_sgemm
-//#define cublasStrsm magmablas_strsm
-//#define cublasStrmm magmablas_strmm
+#define magma_sgemm magmablas_sgemm
+//#define magma_strsm magmablas_strsm
+//#define magma_strmm magmablas_strmm
 
 extern "C" magma_int_t
 magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, magma_int_t nb,
@@ -30,11 +30,11 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
                   float *hwork, magma_int_t ldhwork, float *dwork, magma_int_t lddwork,
                   magma_int_t *info) 
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -74,7 +74,7 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -7, internal GPU memory allocation failed.
+                  or another error occured, such as memory allocation failed.
             > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
                   has been completed, but the factor U is exactly
                   singular, and division by zero will occur if it is used
@@ -128,12 +128,12 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* quick return */
     if ((m == 0) || (n == 0) || (ib == 0))
-        return MAGMA_SUCCESS;
+        return *info;
 
     ip = 0;
 
@@ -163,16 +163,16 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
 #endif
 
         if ( (storev == 'R') || (storev == 'r') ) {
-            cublasSetMatrix(m, n, sizeof(float), hU, ldhu, dwork, lddwork);
+            magma_ssetmatrix( m, n, hU, ldhu, dwork, lddwork );
             magmablas_stranspose( dU, lddu, dwork, lddwork, m, n );
 
-            cublasSetMatrix(m, n, sizeof(float), hA, ldha, dwork, lddwork);
+            magma_ssetmatrix( m, n, hA, ldha, dwork, lddwork );
             magmablas_stranspose( dA, ldda, dwork, lddwork, m, n );
         } else {
-            cublasSetMatrix(m, n, sizeof(float), hU, ldhu, dU, lddu);
-            cublasSetMatrix(m, n, sizeof(float), hA, ldha, dA, ldda);
+            magma_ssetmatrix( m, n, hU, ldhu, dU, lddu );
+            magma_ssetmatrix( m, n, hA, ldha, dA, ldda );
         }
-        cublasSetMatrix(p*ib, n, sizeof(float), hL, ldhl, dL, lddl);
+        magma_ssetmatrix( p*ib, n, hL, ldhl, dL, lddl );
             
     }
     else {
@@ -199,24 +199,24 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
                 magmablas_stranspose( dUp, lddu, UT(0, i), lddu, sb, ii );
                 magmablas_stranspose( dAp, ldda, AT(0, i), ldda, sb, m  );
                 
-                cublasGetMatrix( ii, sb, sizeof(float), dUp, lddu, hU(0, i), ldhu);
-                cublasGetMatrix( m,  sb, sizeof(float), dAp, ldda, hA(0, i), ldha);
+                magma_sgetmatrix( ii, sb, dUp, lddu, hU(0, i), ldhu );
+                magma_sgetmatrix( m, sb, dAp, ldda, hA(0, i), ldha );
                 
                 // make sure that gpu queue is empty
-                //cuCtxSynchronize();
+                //magma_device_sync();
                 
 #ifndef WITHOUTTRTRI
-                cublasStrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_strmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n-(ii+sb), ib, 
                              c_one, L2(i-1),      lddl,
                                     UT(i-1, i+1), lddu);
 #else
-                cublasStrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_strsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n-(ii+sb), ib, 
                              c_one, L(i-1),       lddl,
                                     UT(i-1, i+1), lddu);
 #endif
-                cublasSgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
                              n-(ii+sb), m, ib,
                              c_neg_one, UT(i-1, i+1), lddu, 
                                         AT(0,   i-1), ldda,
@@ -274,29 +274,29 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
             }   
 #endif
             // upload i-th panel
-            cublasSetMatrix( sb,   sb, sizeof(float), hU(i, i), ldhu, dUp,  lddu);
-            cublasSetMatrix( m,    sb, sizeof(float), hA(0, i), ldha, dAp,  ldda);
-            cublasSetMatrix( p*ib, sb, sizeof(float), hL(i),    ldhl, L(i), lddl);
+            magma_ssetmatrix( sb, sb, hU(i, i), ldhu, dUp, lddu );
+            magma_ssetmatrix( m, sb, hA(0, i), ldha, dAp, ldda );
+            magma_ssetmatrix( p*ib, sb, hL(i), ldhl, L(i), lddl );
             magmablas_stranspose( UT(i, i), lddu, dUp, lddu, sb, sb);
             magmablas_stranspose( AT(0, i), ldda, dAp, ldda, m,  sb);
             
             // make sure that gpu queue is empty
-            //cuCtxSynchronize();
+            //magma_device_sync();
             
             // do the small non-parallel computations
             if ( s > (i+1) ) {
 #ifndef WITHOUTTRTRI
-                 cublasStrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                 magma_strmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                               sb, sb, 
                               c_one, L2(i),      lddl,
                                      UT(i, i+1), lddu);
 #else
-                 cublasStrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                 magma_strsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                               sb, sb, 
                               c_one, L(i),      lddl,
                                      UT(i, i+1), lddu);
 #endif
-                cublasSgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
                              sb, m, sb,
                              c_neg_one, UT(i, i+1), lddu, 
                                         AT(0, i  ), ldda,
@@ -304,17 +304,17 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
             }
             else {
 #ifndef WITHOUTTRTRI
-                cublasStrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_strmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n-mindim, sb, 
                              c_one, L2(i),      lddl,
                                     UT(i, i+1), lddu);
 #else
-                cublasStrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_strsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n-mindim, sb, 
                              c_one, L(i),      lddl,
                                     UT(i, i+1), lddu);
 #endif
-                cublasSgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
                              n-mindim, m, sb,
                              c_neg_one, UT(i, i+1), lddu, 
                                         AT(0, i  ), ldda,
@@ -327,7 +327,7 @@ magma_ststrf_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib, mag
             magmablas_sgetmo_out( dA, dAT, ldda, m,  n );
         }
     }
-    return MAGMA_SUCCESS;
+    return *info;
 }
 
 #endif

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:25 2011
+       @generated d Tue May 15 18:17:39 2012
 
 */
 #include "common_magma.h"
@@ -14,7 +14,7 @@
 #define PRECISION_d
 //#if (defined(PRECISION_s) || defined(PRECISION_d))
 #if (defined(PRECISION_d))
- #define cublasDgemm magmablas_dgemm
+ #define magma_dgemm magmablas_dgemm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -29,7 +29,7 @@ magma_dlahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -110,7 +110,7 @@ magma_dlahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
     double *v0 = v + ihi - k;
 
     /* V0 = M V */
-    cublasDgemm( MagmaNoTrans, MagmaNoTrans, k, nb, ihi-k,
+    magma_dgemm( MagmaNoTrans, MagmaNoTrans, k, nb, ihi-k,
                  c_one,  d_a, ldda,
                          v,   ldda,
                  c_zero, v0,  ldda);
@@ -118,19 +118,19 @@ magma_dlahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
     /* Update matrix M -= V0 T V' through
        1. d_work = T V'
        2. M -= V0 d_work                  */
-    cublasDgemm( MagmaNoTrans, MagmaTrans, nb, ihi-k, nb,
+    magma_dgemm( MagmaNoTrans, MagmaTrans, nb, ihi-k, nb,
                  c_one,  d_t,    nb,
                          v,      ldda,
                  c_zero, d_work, nb);
 
-    cublasDgemm( MagmaNoTrans, MagmaNoTrans, k, ihi-k, nb,
+    magma_dgemm( MagmaNoTrans, MagmaNoTrans, k, ihi-k, nb,
                  c_neg_one, v0,     ldda,
                             d_work, nb,
                  c_one,     d_a,    ldda);
-    cublasGetMatrix(k, nb, sizeof(double), d_a, ldda, a, lda);
+    magma_dgetmatrix( k, nb, d_a, ldda, a, lda );
 
     /* Update G -= Y T -= Y d_work */
-    cublasDgemm( MagmaNoTrans, MagmaNoTrans, ihi-k, ihi-k-nb, nb,
+    magma_dgemm( MagmaNoTrans, MagmaNoTrans, ihi-k, ihi-k-nb, nb,
                  c_neg_one, y,                ldda,
                             d_work+nb*nb,     nb,
                  c_one,     d_a   +nb*ldda+k, ldda);
@@ -140,11 +140,11 @@ magma_dlahru(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb,
        2. G2 -= work' Y
        Note that G is A(k:ihi, nb+1:ihi-k)
        while    G2 is A(k:ihi, nb+1: n -k)   */
-    cublasDgemm( MagmaTrans, MagmaNoTrans, nb, n-k-nb, ihi-k,
+    magma_dgemm( MagmaTrans, MagmaNoTrans, nb, n-k-nb, ihi-k,
                  c_one,  v,               ldda,
                          d_a + nb*ldda+k, ldda,
                  c_zero, y,               nb);
-    cublasDgemm( MagmaTrans, MagmaNoTrans, ihi-k, n-k-nb, nb,
+    magma_dgemm( MagmaTrans, MagmaNoTrans, ihi-k, n-k-nb, nb,
                  c_neg_one, d_work,        nb,
                             y,             nb,
                  c_one,     d_a+nb*ldda+k, ldda);

@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  * @precisions normal z -> c d s
  *
@@ -109,9 +109,9 @@ int main( int argc, char** argv)
         A_norm = lapackf77_zlange( "f", &N, &N, h_A, &lda, rwork );
 
         /* Factor the matrix. Both MAGMA and LAPACK will use this factor. */
-        cublasSetMatrix( N, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda );
+        magma_zsetmatrix( N, N, h_A, lda, d_A, ldda );
         magma_zgetrf_gpu( N, N, d_A, ldda, ipiv, &info );
-        cublasGetMatrix( N, N, sizeof(cuDoubleComplex), d_A, ldda, h_A, lda );
+        magma_zgetmatrix( N, N, d_A, ldda, h_A, lda );
 
         /* ====================================================================
            Performs operation using MAGMA
@@ -124,7 +124,7 @@ int main( int argc, char** argv)
 
         gpu_perf = flops / GetTimerValue(start, end);
         
-        cublasGetMatrix( N, N, sizeof(cuDoubleComplex), d_A, ldda, h_R, lda );
+        magma_zgetmatrix( N, N, d_A, ldda, h_R, lda );
          
         /* =====================================================================
            Performs operation using LAPACK

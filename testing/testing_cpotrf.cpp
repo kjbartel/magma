@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated c Sun Nov 13 20:48:48 2011
+ * @generated c Tue May 15 18:18:16 2012
  *
  **/
 // includes, system
@@ -47,7 +47,7 @@ int main( int argc, char** argv)
 
     magma_int_t  i, info, flag = 0;
     const char  *uplo     = MagmaLowerStr;
-    cuFloatComplex mzone = MAGMA_C_NEG_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magma_int_t  ione     = 1;
     magma_int_t  ISEED[4] = {0,0,0,1};
     float       work[1];  // not referenced for lange norm 'f'
@@ -96,7 +96,7 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_GET_X(h_A[i*lda+i]) + 1.*N ) );
+                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_REAL(h_A[i*lda+i]) + 1.*N ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = cuConjf(h_A[j*lda+i]);
             }
@@ -132,7 +132,7 @@ int main( int argc, char** argv)
            Check the result compared to LAPACK
            =================================================================== */
         matnorm = lapackf77_clange("f", &N, &N, h_A, &N, work);
-        blasf77_caxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d    %6.2f         %6.2f        %e\n",
                size[i], cpu_perf, gpu_perf,
                lapackf77_clange("f", &N, &N, h_R, &N, work) / matnorm );

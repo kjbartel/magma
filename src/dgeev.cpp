@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal d -> s
 
@@ -30,11 +30,11 @@ magma_dgeev(char jobvl, char jobvr, magma_int_t n,
             double *work, magma_int_t lwork,
             magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -172,9 +172,9 @@ magma_dgeev(char jobvl, char jobvr, magma_int_t n,
     /*  Compute workspace   */
     if (*info == 0) {
 
-        nb = magma_get_zgehrd_nb(n);
-        minwrk = (1+nb)*n;
-        work[1] = (double) minwrk;
+        nb = magma_get_dgehrd_nb(n);
+        minwrk = (2+nb)*n;
+        work[0] = (double) minwrk;
         
         if (lwork < minwrk && ! lquery) {
             *info = -13;
@@ -184,23 +184,22 @@ magma_dgeev(char jobvl, char jobvr, magma_int_t n,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
    
     // if eigenvectors are needed
 #if defined(VERSION3)
-    if (CUBLAS_STATUS_SUCCESS != 
-        cublasAlloc( nb*n, sizeof(double), (void**)&dT)) {
-        *info = -6;
-        return MAGMA_ERR_CUBLASALLOC;
+    if (MAGMA_SUCCESS != magma_dmalloc( &dT, nb*n )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
 #endif
 
@@ -490,7 +489,7 @@ L50:
     }
 
 #if defined(VERSION3)
-    cublasFree( dT );
+    magma_free( dT );
 #endif
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_dgeev */

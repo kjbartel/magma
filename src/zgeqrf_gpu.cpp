@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -43,11 +43,11 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
                   cuDoubleComplex *tau, cuDoubleComplex *dT, 
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -93,7 +93,7 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -9, internal GPU memory allocation failed.
+                  or another error occured, such as memory allocation failed.
 
     Further Details
     ===============
@@ -133,29 +133,29 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     k = minmn = min(m,n);
     if (k == 0)
-        return MAGMA_SUCCESS;
+        return *info;
 
     nb = magma_get_zgeqrf_nb(m);
 
     lwork  = (m + n + nb)*nb;
     lhwork = lwork - m*nb;
 
-    if ( cudaSuccess != cudaMallocHost((void**)&work, lwork*sizeof(cuDoubleComplex)) ) {
-        *info = -9;
-        return MAGMA_ERR_HOSTALLOC;
+    if (MAGMA_SUCCESS != magma_zmalloc_host( &work, lwork )) {
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
     
     ut = hwork+nb*(n);
     memset( ut, 0, nb*nb*sizeof(cuDoubleComplex));
 
     static cudaStream_t stream[2];
-    cudaStreamCreate(&stream[0]);
-    cudaStreamCreate(&stream[1]);
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
 
     ldwork = m;
     lddwork= n;
@@ -166,10 +166,9 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
         for (i = 0; i < k-nb; i += nb) {
             ib = min(k-i, nb);
             rows = m -i;
-            cudaMemcpy2DAsync( work_ref(i), ldwork*sizeof(cuDoubleComplex),
-                               a_ref(i,i),  ldda   *sizeof(cuDoubleComplex),
-                               sizeof(cuDoubleComplex)*rows, ib,
-                               cudaMemcpyDeviceToHost, stream[1]);
+            magma_zgetmatrix_async( rows, ib,
+                                    a_ref(i,i),  ldda,
+                                    work_ref(i), ldwork, stream[1] );
             if (i>0){
                 /* Apply H' to A(i:m,i+2*ib:n) from the left */
                 cols = n-old_i-2*old_ib;
@@ -179,13 +178,12 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
                                   a_ref(old_i, old_i+2*old_ib), ldda, dd_ref(0),    lddwork);
                 
                 /* store the diagonal */
-                cudaMemcpy2DAsync(d_ref(old_i), old_ib * sizeof(cuDoubleComplex),
-                                  ut,           old_ib * sizeof(cuDoubleComplex),
-                                  sizeof(cuDoubleComplex)*old_ib, old_ib,
-                                  cudaMemcpyHostToDevice, stream[0]);
+                magma_zsetmatrix_async( old_ib, old_ib,
+                                        ut,           old_ib,
+                                        d_ref(old_i), old_ib, stream[0] );
             }
 
-            cudaStreamSynchronize(stream[1]);
+            magma_queue_sync( stream[1] );
             lapackf77_zgeqrf(&rows, &ib, work_ref(i), &ldwork, tau+i, hwork, &lhwork, info);
             /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
@@ -195,14 +193,13 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
 
             /* Put 0s in the upper triangular part of a panel (and 1s on the
                diagonal); copy the upper triangular in ut and invert it     */
-            cudaStreamSynchronize(stream[0]);
+            magma_queue_sync( stream[0] );
             zsplit_diag_block(ib, work_ref(i), ldwork, ut);
-            cublasSetMatrix(rows, ib, sizeof(cuDoubleComplex),
-                            work_ref(i), ldwork, a_ref(i,i), ldda);
+            magma_zsetmatrix( rows, ib, work_ref(i), ldwork, a_ref(i,i), ldda );
 
             if (i + ib < n) {
                 /* Send the triangular factor T to the GPU */
-                cublasSetMatrix(ib, ib, sizeof(cuDoubleComplex), hwork, ib, t_ref(i), nb);
+                magma_zsetmatrix( ib, ib, hwork, ib, t_ref(i), nb );
 
                 if (i+nb < k-nb){
                     /* Apply H' to A(i:m,i+ib:i+2*ib) from the left */
@@ -218,7 +215,7 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
                                       a_ref(i, i   ), ldda, t_ref(i),  nb, 
                                       a_ref(i, i+ib), ldda, dd_ref(0), lddwork);
                     /* Fix the diagonal block */
-                    cublasSetMatrix(ib, ib, sizeof(cuDoubleComplex), ut, ib, d_ref(i), ib);
+                    magma_zsetmatrix( ib, ib, ut, ib, d_ref(i), ib );
                 }
                 old_i  = i;
                 old_ib = ib;
@@ -232,21 +229,17 @@ magma_zgeqrf_gpu( magma_int_t m, magma_int_t n,
     if (i < k) {
         ib   = n-i;
         rows = m-i;
-        cublasGetMatrix(rows, ib, sizeof(cuDoubleComplex),
-                        a_ref(i, i), ldda, 
-                        work,        rows);
+        magma_zgetmatrix( rows, ib, a_ref(i, i), ldda, work, rows );
         lhwork = lwork - rows*ib;
         lapackf77_zgeqrf(&rows, &ib, work, &rows, tau+i, work+ib*rows, &lhwork, info);
         
-        cublasSetMatrix(rows, ib, sizeof(cuDoubleComplex),
-                        work,        rows, 
-                        a_ref(i, i), ldda);
+        magma_zsetmatrix( rows, ib, work, rows, a_ref(i, i), ldda );
     }
 
-    cudaStreamDestroy(stream[0]);
-    cudaStreamDestroy(stream[1]);
-    cudaFreeHost(work);
-    return MAGMA_SUCCESS;
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
+    magma_free_host( work );
+    return *info;
 
 /*     End of MAGMA_ZGEQRF */
 

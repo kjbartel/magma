@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:32 2011
+       @generated d Tue May 15 18:17:52 2012
 
 */
 #include "common_magma.h"
@@ -13,14 +13,14 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_d
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-        #define cublasDgemm magmablas_dgemm
-        #define cublasDtrsm magmablas_dtrsm
+        #define magma_dgemm magmablas_dgemm
+        #define magma_dtrsm magmablas_dtrsm
 #endif
 
 #if (GPUSHMEM >= 200)
         #if (defined(PRECISION_s))
-                #undef  cublasSgemm
-                #define cublasSgemm magmablas_sgemm_fermi80
+                #undef  magma_sgemm
+                #define magma_sgemm magmablas_sgemm_fermi80
         #endif
 #endif
 // === End defining what BLAS to use ======================================
@@ -31,11 +31,11 @@ extern "C" magma_int_t
 magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
              double *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -87,8 +87,8 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
         char uplo_[2] = {uplo, 0};
         char diag_[2] = {diag, 0};
         magma_int_t         nb, nn, j, jb;
-        double     zone   = MAGMA_D_ONE;
-        double     mzone  = MAGMA_D_NEG_ONE;
+        double     c_one      = MAGMA_D_ONE;
+        double     c_neg_one  = MAGMA_D_NEG_ONE;
         double     *work;
 
         long int        upper  = lapackf77_lsame(uplo_, "U");
@@ -107,7 +107,7 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
 
         if (*info != 0) {
                 magma_xerbla( __func__, -(*info) );
-                return MAGMA_ERR_ILLEGAL_VALUE;
+                return *info;
         }
 
 
@@ -117,29 +117,28 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
                 for (*info=0; *info < n; *info=*info+1)
                 {
                         if(dA(*info,*info)==0)
-                                return MAGMA_ERR_ILLEGAL_VALUE;
+                                return *info;
                 }
                 *info=0;
         }
 
         nb = magma_get_dpotrf_nb(n);
         
-        if (cudaSuccess != cudaMallocHost( (void**)&work, nb*nb*sizeof(double) ) ) 
-        {
-                *info = -6;
-                return MAGMA_ERR_HOSTALLOC;
+        if (MAGMA_SUCCESS != magma_dmalloc_host( &work, nb*nb )) {
+                *info = MAGMA_ERR_HOST_ALLOC;
+                return *info;
         }
         
         static cudaStream_t stream[2];
-        cudaStreamCreate(&stream[0]);
-        cudaStreamCreate(&stream[1]);
+        magma_queue_create( &stream[0] );
+        magma_queue_create( &stream[1] );
 
         
         if (nb <= 1 || nb >= n)
         {
-                cublasGetMatrix(n, n, sizeof(double), dA, ldda, work, n);
+                magma_dgetmatrix( n, n, dA, ldda, work, n );
                 lapackf77_dtrtri(uplo_, diag_, &n, work, &n, info);
-                cublasSetMatrix(n, n, sizeof(double), work, n, dA, ldda);
+                magma_dsetmatrix( n, n, work, n, dA, ldda );
         }
         else
         {
@@ -151,24 +150,23 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
                                 jb = min(nb, (n-j));
 
                                 /* Compute rows 1:j-1 of current block column */
-                                cublasDtrmm(MagmaLeft, MagmaUpper,
+                                magma_dtrmm(MagmaLeft, MagmaUpper,
                                                         MagmaNoTrans, MagmaNonUnit, j, jb,
-                                                        zone, dA(0,0), ldda, dA(0, j),ldda);
+                                                        c_one, dA(0,0), ldda, dA(0, j),ldda);
 
-                                cublasDtrsm(MagmaRight, MagmaUpper,
+                                magma_dtrsm(MagmaRight, MagmaUpper,
                                                         MagmaNoTrans, MagmaNonUnit, j, jb,
-                                                        mzone, dA(j,j), ldda, dA(0, j),ldda);
+                                                        c_neg_one, dA(j,j), ldda, dA(0, j),ldda);
 
                         
                                 //cublasGetMatrix(jb ,jb, sizeof(double),
                                 //                dA(j, j), ldda, work, jb);
 
-                                cudaMemcpy2DAsync( work,     jb  *sizeof(double),
-                                                   dA(j, j), ldda*sizeof(double),
-                                                   jb*sizeof(double), jb,
-                                                   cudaMemcpyDeviceToHost,stream[1]);
+                                magma_dgetmatrix_async( jb, jb,
+                                                        dA(j, j), ldda,
+                                                        work,     jb, stream[1] );
 
-                                cudaStreamSynchronize(stream[1]);
+                                magma_queue_sync( stream[1] );
 
                                 /* Compute inverse of current diagonal block */
                                 lapackf77_dtrtri(MagmaUpperStr, diag_, &jb, work, &jb, info);
@@ -176,10 +174,9 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
                                 //cublasSetMatrix(jb, jb, sizeof(double),
                                 //                work, jb, dA(j, j), ldda);
 
-                                cudaMemcpy2DAsync( dA(j, j), ldda*sizeof(double),
-                                                   work,     jb  *sizeof(double),
-                                                   sizeof(double)*jb, jb,
-                                                   cudaMemcpyHostToDevice,stream[0]);
+                                magma_dsetmatrix_async( jb, jb,
+                                                        work,     jb,
+                                                        dA(j, j), ldda, stream[0] );
                         }
 
                 }
@@ -196,24 +193,23 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
                                 {
 
                                         /* Compute rows j+jb:n of current block column */
-                                        cublasDtrmm(MagmaLeft, MagmaLower,
+                                        magma_dtrmm(MagmaLeft, MagmaLower,
                                                         MagmaNoTrans, MagmaNonUnit, (n-j-jb), jb,
-                                                        zone, dA(j+jb,j+jb), ldda, dA(j+jb, j), ldda);
+                                                        c_one, dA(j+jb,j+jb), ldda, dA(j+jb, j), ldda);
 
-                                        cublasDtrsm(MagmaRight, MagmaLower,
+                                        magma_dtrsm(MagmaRight, MagmaLower,
                                                         MagmaNoTrans, MagmaNonUnit, (n-j-jb), jb,
-                                                        mzone, dA(j,j), ldda, dA(j+jb, j), ldda);
+                                                        c_neg_one, dA(j,j), ldda, dA(j+jb, j), ldda);
                                 }
 
                                 //cublasGetMatrix(jb, jb, sizeof(double),
                                 //               dA(j, j), ldda, work, jb);
                                 
-                                cudaMemcpy2DAsync( work,     jb  *sizeof(double),
-                                                   dA(j, j), ldda*sizeof(double),
-                                                   jb*sizeof(double), jb,
-                                                   cudaMemcpyDeviceToHost,stream[1]);
+                                magma_dgetmatrix_async( jb, jb,
+                                                        dA(j, j), ldda,
+                                                        work,     jb, stream[1] );
 
-                                cudaStreamSynchronize(stream[1]);
+                                magma_queue_sync( stream[1] );
 
                                 /* Compute inverse of current diagonal block */
                                 lapackf77_dtrtri(MagmaLowerStr, diag_, &jb, work, &jb, info);
@@ -221,18 +217,17 @@ magma_dtrtri_gpu(char uplo, char diag, magma_int_t n,
                                 //cublasSetMatrix(jb, jb, sizeof(double),
                                 //                work, jb, dA(j, j), ldda);
 
-                                cudaMemcpy2DAsync( dA(j, j), ldda*sizeof(double),
-                                                   work,     jb  *sizeof(double),
-                                                   sizeof(double)*jb, jb,
-                                                   cudaMemcpyHostToDevice,stream[0]);
+                                magma_dsetmatrix_async( jb, jb,
+                                                        work,     jb,
+                                                        dA(j, j), ldda, stream[0] );
                         }
                 }
         }
 
-        cudaStreamDestroy(stream[0]);
-        cudaStreamDestroy(stream[1]);
+        magma_queue_destroy( stream[0] );
+        magma_queue_destroy( stream[1] );
 
-        cudaFreeHost(work);
+        magma_free_host( work );
 
-        return MAGMA_SUCCESS;
+        return *info;
 }

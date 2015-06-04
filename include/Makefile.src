@@ -1,11 +1,11 @@
 CHDR = \
-magma_c.h magmablas_c.h magma_clapack.h
+magma_c.h magmablas_c.h magma_clapack.h magma_cbulgeinc.h
 
 DHDR = \
-magma_d.h magma_ds.h magmablas_d.h magmablas_ds.h magma_dlapack.h
+magma_d.h magma_ds.h magmablas_d.h magmablas_ds.h magma_dlapack.h magma_dbulgeinc.h
 
 SHDR = \
-magma_s.h magmablas_s.h magma_slapack.h
+magma_s.h magmablas_s.h magma_slapack.h magma_sbulgeinc.h
 
 CSRC = \
 

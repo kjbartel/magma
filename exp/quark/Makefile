@@ -1,4 +1,4 @@
-include ../make.inc
+include ../../make.inc
 
 
 LIBQUARK = lib/libquark.so

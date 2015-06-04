@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated d Sun Nov 13 20:48:55 2011
+       @generated d Tue May 15 18:18:26 2012
 
 */
 
@@ -35,6 +35,9 @@
 #define FLOPS(n) (      FMULS_HETRD(n) +      FADDS_HETRD(n))
 #endif
 
+// This version uses much faster DSYMV (from MAGMA BLAS) but requires extra space 
+#define USE_DSYTRD2
+
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dsytrd_gpu
 */
@@ -44,7 +47,7 @@ int main( int argc, char** argv)
 
     magma_timestr_t       start, end;
     double           eps, flops, gpu_perf, cpu_perf;
-    double *h_A, *h_R, *d_R, *h_Q, *h_work, *work;
+    double *h_A, *h_R, *d_R, *h_Q, *h_work, *work, *dwork;
     double *tau;
     double          *diag, *offdiag, *rwork;
     double           result[2] = {0., 0.};
@@ -95,9 +98,14 @@ int main( int argc, char** argv)
     /* We suppose the magma nb is bigger than lapack nb */
     lwork = N*nb; 
 
+    magma_int_t ldwork = lda*N/16+32;
+
     /* Allocate host memory for the matrix */
     TESTING_MALLOC(    h_A,    double, lda*N );
     TESTING_DEVALLOC(  d_R,    double, lda*N );
+#ifdef USE_DSYTRD2
+    TESTING_DEVALLOC(dwork,    double, lda*N );
+#endif
     TESTING_HOSTALLOC( h_R,    double, lda*N );
     TESTING_HOSTALLOC( h_work, double, lwork );
     TESTING_MALLOC(    tau,    double, N     );
@@ -118,8 +126,8 @@ int main( int argc, char** argv)
     }
 
     printf("\n\n");
-    printf("  N    CPU GFlop/s    GPU GFlop/s   |A-QHQ'|/N|A|  |I-QQ'|/N \n");
-    printf("=============================================================\n");
+    printf("  N    CPU GFlop/s    GPU GFlop/s (sec)  |A-QHQ'|/N|A|  |I-QQ'|/N \n");
+    printf("===================================================================\n");
     for(i=0; i<10; i++){
         if ( !once ) {
             N = size[i];
@@ -136,19 +144,24 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_D_SET2REAL( h_A[i*lda+i], ( MAGMA_D_GET_X(h_A[i*lda+i]) ) );
+                MAGMA_D_SET2REAL( h_A[i*lda+i], ( MAGMA_D_REAL(h_A[i*lda+i]) ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = (h_A[j*lda+i]);
             }
         }
-        cublasSetMatrix(N, N, sizeof(double), h_A, lda, d_R, lda);
+        magma_dsetmatrix( N, N, h_A, lda, d_R, lda );
 
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
         start = get_current_time();
-        magma_dsytrd_gpu(uplo[0], N, d_R, lda, diag, offdiag, 
+#ifdef USE_DSYTRD2
+        magma_dsytrd2_gpu(uplo[0], N, d_R, lda, diag, offdiag,
+                         tau, h_R, lda, h_work, lwork, dwork , ldwork, &info);
+#else
+        magma_dsytrd_gpu(uplo[0], N, d_R, lda, diag, offdiag,
                          tau, h_R, lda, h_work, lwork, &info);
+#endif
         end = get_current_time();
         if ( info < 0 )
             printf("Argument %d of magma_dsytrd_gpu had an illegal value\n", -info);
@@ -160,8 +173,8 @@ int main( int argc, char** argv)
            =================================================================== */
         if ( checkres ) {
 
-            cublasGetMatrix(N, N, sizeof(double), d_R, lda, h_R, lda);
-            cublasGetMatrix(N, N, sizeof(double), d_R, lda, h_Q, lda);
+            magma_dgetmatrix( N, N, d_R, lda, h_R, lda );
+            magma_dgetmatrix( N, N, d_R, lda, h_Q, lda );
             lapackf77_dorgtr(uplo, &N, h_Q, &lda, tau, h_work, &lwork, &info);
 
 #if defined(PRECISION_z) || defined(PRECISION_c) 
@@ -207,14 +220,14 @@ int main( int argc, char** argv)
            Print performance and error.
            =================================================================== */
         if ( checkres ) {
-            printf("%5d   %6.2f        %6.2f       %e %e\n",
-                   N, cpu_perf, gpu_perf,
+            printf("%5d   %6.2f        %6.2f (%6.2f)     %e %e\n",
+                   N, cpu_perf, gpu_perf, flops/(1e3*gpu_perf),
                    result[0]*eps, result[1]*eps );
         } else {
-            printf("%5d   %6.2f        %6.2f\n",
-                   N, cpu_perf, gpu_perf );
+            printf("%5d   %6.2f        %6.2f (%6.2f)\n",
+                   N, cpu_perf, gpu_perf, flops/(1e3*gpu_perf));
         }
-
+ 
         if ( once )
             break;
     }
@@ -226,8 +239,11 @@ int main( int argc, char** argv)
     TESTING_FREE( offdiag );
     TESTING_HOSTFREE( h_R );
     TESTING_HOSTFREE( h_work );
-    TESTING_DEVFREE ( d_R );  
-  
+    TESTING_DEVFREE ( d_R ); 
+#ifdef USE_DSYTRD2 
+    TESTING_DEVFREE ( dwork );
+#endif
+
     if ( checkres ) {
         TESTING_FREE( h_Q );
         TESTING_FREE( work );

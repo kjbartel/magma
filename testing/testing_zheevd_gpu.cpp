@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     @author Raffaele Solca
     @author Stan Tomov 
@@ -111,9 +111,9 @@ int main( int argc, char** argv)
         lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
         for(int k=0;k<N;k++)
         {
-            MAGMA_Z_SET2REAL(h_A[k*N+k],  MAGMA_Z_GET_X(h_A[k*N+k]));
+            MAGMA_Z_SET2REAL(h_A[k*N+k],  MAGMA_Z_REAL(h_A[k*N+k]));
         }
-        cublasSetMatrix(N, N, sizeof(cuDoubleComplex), h_A, N, d_R, N);
+        magma_zsetmatrix( N, N, h_A, N, d_R, N );
 
         magma_zheevd_gpu(jobz[0], uplo[0],
                      N, d_R, N, w1,
@@ -123,7 +123,7 @@ int main( int argc, char** argv)
                      iwork, liwork, 
                      &info);
         
-        cublasSetMatrix(N, N, sizeof(cuDoubleComplex), h_A, N, d_R, N);
+        magma_zsetmatrix( N, N, h_A, N, d_R, N );
 
         /* ====================================================================
            Performs operation using MAGMA
@@ -142,7 +142,7 @@ int main( int argc, char** argv)
         gpu_time = GetTimerValue(start,end)/1000.;
 
         if ( checkres ) {
-          cublasGetMatrix(N, N, sizeof(cuDoubleComplex), d_R, N, h_R, N);
+          magma_zgetmatrix( N, N, d_R, N, h_R, N );
           /* =====================================================================
              Check the results following the LAPACK's [zcds]drvst routine.
              A is factored as A = U S U' and the following 3 tests computed:
@@ -160,7 +160,7 @@ int main( int argc, char** argv)
                            h_R, &N,
                            tau, h_work, rwork, &result[0]);
           
-          cublasSetMatrix(N, N, sizeof(cuDoubleComplex), h_A, N, d_R, N);
+          magma_zsetmatrix( N, N, h_A, N, d_R, N );
           magma_zheevd_gpu('N', uplo[0],
                        N, d_R, N, w2,
                        h_R, N,

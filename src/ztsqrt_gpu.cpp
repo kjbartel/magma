@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -16,11 +16,11 @@ magma_ztsqrt_gpu(int *m, int *n,
                  cuDoubleComplex  *tau, cuDoubleComplex *work, 
                  int *lwork, cuDoubleComplex *dwork, int *info )
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -57,7 +57,7 @@ magma_ztsqrt_gpu(int *m, int *n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.   
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER   
             The dimension of the array WORK.  LWORK >= (M+N+NB)*NB,   
@@ -124,22 +124,22 @@ magma_ztsqrt_gpu(int *m, int *n,
    }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
    else if (lquery)
-     return 0;
+     return *info;
 
    k = min(*m,*n);
    if (k == 0) {
      work[0] = 1.f;
-     return 0;
+     return *info;
    }
 
    int lhwork = *lwork - (*m)*nb;
 
    static cudaStream_t stream[2];
-   cudaStreamCreate(&stream[0]);
-   cudaStreamCreate(&stream[1]);
+   magma_queue_create( &stream[0] );
+   magma_queue_create( &stream[1] );
 
    ldda = *m;
    nbmin = 2;
@@ -153,17 +153,16 @@ magma_ztsqrt_gpu(int *m, int *n,
      rows = *m;
      // Send the next panel (diagonal block of A1 & block column of A2) 
      // to the CPU (in work_a1 and work_a2)
-     cudaMemcpy2DAsync(  work_a2, ldwork*sizeof(cuDoubleComplex),
-                         a2_ref(0,i), (*lda)*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*rows, ib,
-                         cudaMemcpyDeviceToHost,stream[1]);
-     cudaMemcpy2DAsync(  work_a1, ldwork*sizeof(cuDoubleComplex),
+     magma_zgetmatrix_async( rows, ib,
+                             a2_ref(0,i), (*lda),
+                             work_a2,     ldwork, stream[1] );
+
                          // a1_ref(i,i), (*lda)*sizeof(cuDoubleComplex),
                          // the diagonal of a1 is in d_ref generated and
                          // passed from magma_zgeqrf_gpu
-                         d_ref(i), ib*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*ib, ib,
-                         cudaMemcpyDeviceToHost,stream[1]);
+     magma_zgetmatrix_async( ib, ib,
+                             d_ref(i), ib,
+                             work_a1,  ldwork, stream[1] );
      
         if (i>0) {
           /* Apply H' to A(i:m,i+2*ib:n) from the left */
@@ -176,7 +175,7 @@ magma_ztsqrt_gpu(int *m, int *n,
                        dd_ref(0), &lddwork);
         }
 
-        cudaStreamSynchronize(stream[1]);
+        magma_queue_sync( stream[1] );
 
         // TTT - here goes the CPU PLASMA code
         //       Matrix T has to be put in hwork with lda = ib and 0s
@@ -184,17 +183,15 @@ magma_ztsqrt_gpu(int *m, int *n,
         
         // Now diag of A1 is updated, send it back asynchronously to the GPU.
         // We have to play interchaning these copies to see which is faster
-        cudaMemcpy2DAsync(d_ref(i), ib * sizeof(cuDoubleComplex),
-                          work_a1 , ib * sizeof(cuDoubleComplex),
-                          sizeof(cuDoubleComplex)*ib, ib,
-                          cudaMemcpyHostToDevice,stream[0]);
+        magma_zsetmatrix_async( ib, ib,
+                                work_a1,  ib,
+                                d_ref(i), ib, stream[0] );
         // Send the panel from A2 back to the GPU
-        cublasSetMatrix(*m, ib, sizeof(cuDoubleComplex),
-                        work_a2, ldwork, a2_ref(0,i), *lda);
+        magma_zsetmatrix( *m, ib, work_a2, ldwork, a2_ref(0,i), *lda );
 
         if (i + ib < *n) {
           // Send the triangular factor T from hwork to the GPU in t_ref(i)
-          cublasSetMatrix(ib, ib, sizeof(cuDoubleComplex), hwork, ib, t_ref(i), lddwork);
+          magma_zsetmatrix( ib, ib, hwork, ib, t_ref(i), lddwork );
 
           if (i+nb < k){
             /* Apply H' to A(i:m,i+ib:i+2*ib) from the left */
@@ -219,7 +216,7 @@ magma_ztsqrt_gpu(int *m, int *n,
         }
    }  
    
-   return 0; 
+   return *info; 
    
    /* End of MAGMA_ZTSQRT_GPU */
 

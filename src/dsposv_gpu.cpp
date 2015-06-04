@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated ds Sun Nov 13 20:48:31 2011
+       @generated ds Tue May 15 18:17:50 2012
 
 */
 #include "common_magma.h"
@@ -14,7 +14,7 @@
 #define BWDMAX 1.0
 
 // === Define what BLAS to use ============================================
-#define cublasDsymv magmablas_dsymv
+#define magma_dsymv magmablas_dsymv
 // === End defining what BLAS to use ======================================
 
 extern "C" magma_int_t
@@ -25,11 +25,11 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
                  double *dworkd, float *dworks,
                  magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -141,13 +141,13 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
     =====================================================================    */
 
 
-    double mzone = MAGMA_D_NEG_ONE;
-    double zone  = MAGMA_D_ONE;
+    double c_neg_one = MAGMA_D_NEG_ONE;
+    double c_one     = MAGMA_D_ONE;
     magma_int_t     ione  = 1;
     float *dSA, *dSX;
     double Xnrmv, Rnrmv; 
     double          Xnrm, Rnrm, Anrm, cte, eps;
-    magma_int_t     i, j, iiter, ret;
+    magma_int_t     i, j, iiter;
 
     *iter = 0 ;
     *info = 0 ; 
@@ -165,11 +165,11 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
    
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     if( n == 0 || nrhs == 0 ) 
-        return MAGMA_SUCCESS;
+        return *info;
 
     eps = lapackf77_dlamch("Epsilon");
 
@@ -205,17 +205,17 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
     magmablas_dlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dworkd, n);
     
     if( nrhs == 1 )
-        cublasDsymv(uplo, n, mzone, dA, ldda, dX, 1, zone, dworkd, 1);
+        magma_dsymv(uplo, n, c_neg_one, dA, ldda, dX, 1, c_one, dworkd, 1);
     else
-        cublasDsymm(MagmaLeft, uplo, n, nrhs, mzone, dA, ldda, dX, lddx, zone, dworkd, n);
+        magma_dsymm(MagmaLeft, uplo, n, nrhs, c_neg_one, dA, ldda, dX, lddx, c_one, dworkd, n);
   
     for(i=0; i<nrhs; i++){
-        j = cublasIdamax( n, dX+i*n, 1) ;
-        cublasGetMatrix( 1, 1, sizeof(double), dX+i*n+j-1, 1, &Xnrmv, 1);
+        j = magma_idamax( n, dX+i*n, 1) ;
+        magma_dgetmatrix( 1, 1, dX+i*n+j-1, 1, &Xnrmv, 1 );
         Xnrm = lapackf77_dlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
       
-        j = cublasIdamax ( n, dworkd+i*n, 1 );
-        cublasGetMatrix( 1, 1, sizeof(double), dworkd+i*n+j-1, 1, &Rnrmv, 1 );
+        j = magma_idamax ( n, dworkd+i*n, 1 );
+        magma_dgetmatrix( 1, 1, dworkd+i*n+j-1, 1, &Rnrmv, 1 );
         Rnrm = lapackf77_dlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
       
         if( Rnrm >  Xnrm *cte ){
@@ -223,7 +223,7 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }
     }
     *iter =0; 
-    return MAGMA_SUCCESS;
+    return *info;
   
   L10:
     ;
@@ -242,17 +242,17 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }
       
         if( nrhs == 1 )
-            cublasDsymv(uplo, n, mzone, dA, ldda, dX, 1, zone, dworkd, 1);
+            magma_dsymv(uplo, n, c_neg_one, dA, ldda, dX, 1, c_one, dworkd, 1);
         else 
-            cublasDsymm(MagmaLeft, uplo, n, nrhs, mzone, dA, ldda, dX, lddx, zone, dworkd, n);
+            magma_dsymm(MagmaLeft, uplo, n, nrhs, c_neg_one, dA, ldda, dX, lddx, c_one, dworkd, n);
       
         for(i=0; i<nrhs; i++){
-            j = cublasIdamax( n, dX+i*n, 1) ;
-            cublasGetMatrix( 1, 1, sizeof(double), dX+i*n+j-1, 1, &Xnrmv, 1);
+            j = magma_idamax( n, dX+i*n, 1) ;
+            magma_dgetmatrix( 1, 1, dX+i*n+j-1, 1, &Xnrmv, 1 );
             Xnrm = lapackf77_dlange( "F", &ione, &ione, &Xnrmv, &ione, NULL );
           
-            j = cublasIdamax ( n, dworkd+i*n, 1 );
-            cublasGetMatrix( 1, 1, sizeof(double), dworkd+i*n+j-1, 1, &Rnrmv, 1 );
+            j = magma_idamax ( n, dworkd+i*n, 1 );
+            magma_dgetmatrix( 1, 1, dworkd+i*n+j-1, 1, &Rnrmv, 1 );
             Rnrm = lapackf77_dlange( "F", &ione, &ione, &Rnrmv, &ione, NULL );
           
             if( Rnrm >  Xnrm *cte ){
@@ -261,19 +261,17 @@ magma_dsposv_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
         }  
 
         *iter = iiter;
-        return MAGMA_SUCCESS;
+        return *info;
       L20:
         iiter++ ;
     }
     *iter = -ITERMAX - 1; 
   
   L40:
-    ret = magma_dpotrf_gpu(uplo, n, dA, ldda, info);
-    if( (ret != MAGMA_SUCCESS) || (*info != 0) ){
-        return ret;
+    magma_dpotrf_gpu( uplo, n, dA, ldda, info );
+    if( *info == 0 ){
+        magmablas_dlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dX, lddx );
+        magma_dpotrs_gpu( uplo, n, nrhs, dA, ldda, dX, lddx, info );
     }
-    magmablas_dlacpy( MagmaUpperLower, n, nrhs, dB, lddb, dX, lddx);
-    ret = magma_dpotrs_gpu(uplo, n, nrhs, dA, ldda, dX, lddx, info);
-    return ret;
+    return *info;
 }
-

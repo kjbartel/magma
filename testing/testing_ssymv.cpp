@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- *  @generated s Sun Nov 13 20:48:48 2011
+ *  @generated s Tue May 15 18:18:15 2012
  *
  **/
 #include <stdlib.h>
@@ -19,6 +19,7 @@
 
 #include "flops.h"
 #include "magma.h"
+#include "magmablas.h"
 #include "magma_lapack.h"
 #include "testings.h"
 
@@ -29,6 +30,17 @@
 #define FLOPS(n) (      FMULS_SYMV(n) +      FADDS_SYMV(n))
 #endif
 
+#if (GPUSHMEM == 200)
+extern "C" magma_int_t
+magmablas_ssymv2( char uplo, magma_int_t n,
+                      float alpha,
+                      float *A, magma_int_t lda,
+                      float *X, magma_int_t incx,
+                      float beta,
+                      float *Y, magma_int_t incy,
+                      float *work, magma_int_t lwork);
+#endif
+
 int main(int argc, char **argv)
 {        
     TESTING_CUDA_INIT();
@@ -37,7 +49,7 @@ int main(int argc, char **argv)
     float      flops, magma_perf, cuda_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    float mzone = MAGMA_S_NEG_ONE;
+    float c_neg_one = MAGMA_S_NEG_ONE;
 
     FILE        *fp ; 
     magma_int_t N, m, i, lda, LDA;
@@ -50,12 +62,10 @@ int main(int argc, char **argv)
     float beta  = MAGMA_S_MAKE(0., 0.); // MAGMA_S_MAKE( -0.6,  0.8 );
     float *A, *X, *Y, *Ycublas, *Ymagma;
     float *dA, *dX, *dY;
-#if defined(PRECISION_z) || defined(PRECISION_c)
+    int nb = 64;
 
-#else
      float *C_work;
      float *dC_work;
-#endif
     
     fp = fopen ("results_ssymv.txt", "w") ;
     if( fp == NULL ){ printf("Couldn't open output file\n"); exit(1);}
@@ -63,7 +73,12 @@ int main(int argc, char **argv)
     printf("HEMV float Precision\n\n"
            "Usage\n\t\t testing_ssymv U|L N\n\n");
 
+#ifdef PRECISION_z
     N = 8*1024+64;
+#else
+    N = 15*1024+64;
+#endif 
+
     if( argc > 1 ) {
       uplo = argv[1][0];
     }
@@ -84,14 +99,11 @@ int main(int argc, char **argv)
     TESTING_DEVALLOC( dX, float, vecsize );
     TESTING_DEVALLOC( dY, float, vecsize );
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
 
-#else
-    int blocks    = N / 64 + (N % 64 != 0);
+    int blocks    = N / nb + (N % nb != 0);
     int workspace = LDA * (blocks + 1);
     TESTING_MALLOC(    C_work, float, workspace );
     TESTING_DEVALLOC( dC_work, float, workspace );
-#endif        
 
     /* Initialize the matrix */
     lapackf77_slarnv( &ione, ISEED, &matsize, A );
@@ -126,37 +138,38 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using CUDA-BLAS
            =================================================================== */
-        cublasSetMatrix( m, m, sizeof( float ), A, LDA ,  dA, lda  );
-        cublasSetVector( m,    sizeof( float ), X, incx, dX, incx );
-        cublasSetVector( m,    sizeof( float ), Y, incx, dY, incx );
+        magma_ssetmatrix( m, m, A, LDA, dA, lda );
+        magma_ssetvector( m, X, incx, dX, incx );
+        magma_ssetvector( m, Y, incx, dY, incx );
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
 
-#else
-            blocks    = m / 64 + (m % 64 != 0);
-            cublasSetMatrix(lda,blocks, sizeof( float ), C_work, LDA , dC_work, lda);
-#endif        
+            blocks    = m / nb + (m % nb != 0);
+            magma_ssetmatrix( lda, blocks, C_work, LDA, dC_work, lda );
         start = get_current_time();
         cublasSsymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
         end = get_current_time();
 
-        cublasGetVector( m, sizeof( float ), dY, incx, Ycublas, incx );
+        magma_sgetvector( m, dY, incx, Ycublas, incx );
         
         
         cuda_perf = flops / GetTimerValue(start,end);
         printf(     "%11.2f", cuda_perf );
         fprintf(fp, "%11.2f", cuda_perf );
         
-        cublasSetVector( m, sizeof( float ), Y, incx, dY, incx );
+        magma_ssetvector( m, Y, incx, dY, incx );
         magmablas_ssymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
-        cublasSetVector( m, sizeof( float ), Y, incx, dY, incx );
+        magma_ssetvector( m, Y, incx, dY, incx );
         
         
         start = get_current_time();
+#if (GPUSHMEM == 200)
+        magmablas_ssymv2( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx, dC_work, lda * (blocks + 1));
+#else
         magmablas_ssymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
+#endif
         end = get_current_time();
         
-        cublasGetVector( m, sizeof( float ), dY, incx, Ymagma, incx );
+        magma_sgetvector( m, dY, incx, Ymagma, incx );
 
         magma_perf = flops / GetTimerValue(start,end);
         printf(     "%11.2f", magma_perf );
@@ -166,7 +179,7 @@ int main(int argc, char **argv)
            Computing the Difference Cublas VS Magma
            =================================================================== */
         
-        blasf77_saxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_saxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_slange( "M", &m, &ione, Ycublas, &m, work );
             
 #if 0
@@ -181,7 +194,7 @@ int main(int argc, char **argv)
                      (alpha), A, LDA, X, incx, 
                      (beta), Ycublas, incx );
  
-        blasf77_saxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_saxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_slange( "M", &m, &ione, Ycublas, &m, work );
 #endif
 
@@ -201,12 +214,8 @@ int main(int argc, char **argv)
     TESTING_DEVFREE( dA );
     TESTING_DEVFREE( dX );
     TESTING_DEVFREE( dY );
-#if defined(PRECISION_z) || defined(PRECISION_c)
-        
-#else 
     TESTING_FREE( C_work );
     TESTING_DEVFREE( dC_work );
-#endif        
 
     /* Free device */
     TESTING_CUDA_FINALIZE();

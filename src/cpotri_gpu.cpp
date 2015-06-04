@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:15 2011
+       @generated c Tue May 15 18:17:27 2012
 
 */
 #include "common_magma.h"
@@ -13,14 +13,14 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_c
 #if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define cublasCgemm magmablas_cgemm
-  #define cublasCtrsm magmablas_ctrsm
+  #define magma_cgemm magmablas_cgemm
+  #define magma_ctrsm magmablas_ctrsm
 #endif
 
 #if (GPUSHMEM >= 200)
 #if (defined(PRECISION_s))
-     #undef  cublasSgemm
-     #define cublasSgemm magmablas_sgemm_fermi80
+     #undef  magma_sgemm
+     #define magma_sgemm magmablas_sgemm_fermi80
   #endif
 #endif
 // === End defining what BLAS to use ======================================
@@ -31,11 +31,11 @@ extern "C" magma_int_t
 magma_cpotri_gpu(char uplo, magma_int_t n,
               cuFloatComplex *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -71,43 +71,32 @@ magma_cpotri_gpu(char uplo, magma_int_t n,
 
   ===================================================================== */
 
-        /* Local variables */
-        char uplo_[2] = {uplo, 0};
-        magma_int_t ret;
+    /* Local variables */
+    char uplo_[2] = {uplo, 0};
 
-        *info = 0;
-        if ((! lapackf77_lsame(uplo_, "U")) && (! lapackf77_lsame(uplo_, "L")))
-                *info = -1;
-        else if (n < 0)
-                *info = -2;
-        else if (lda < max(1,n))
-                *info = -4;
+    *info = 0;
+    if ((! lapackf77_lsame(uplo_, "U")) && (! lapackf77_lsame(uplo_, "L")))
+        *info = -1;
+    else if (n < 0)
+        *info = -2;
+    else if (lda < max(1,n))
+        *info = -4;
 
-        if (*info != 0) {
-                magma_xerbla( __func__, -(*info) );
-                return MAGMA_ERR_ILLEGAL_VALUE;
-        }
+    if (*info != 0) {
+        magma_xerbla( __func__, -(*info) );
+        return *info;
+    }
 
-        /* Quick return if possible */
-        if ( n == 0 )
-                return MAGMA_SUCCESS;
-        
-        /* Invert the triangular Cholesky factor U or L */
-        ret = magma_ctrtri_gpu( uplo, MagmaNonUnit, n, a, lda, info );
-
-        if ( (ret != MAGMA_SUCCESS) || ( *info < 0 ) ) 
-                return ret;
-
-        if (*info > 0)
-                return MAGMA_ERR_ILLEGAL_VALUE;
-
+    /* Quick return if possible */
+    if ( n == 0 )
+        return *info;
+    
+    /* Invert the triangular Cholesky factor U or L */
+    magma_ctrtri_gpu( uplo, MagmaNonUnit, n, a, lda, info );
+    if ( *info == 0 ) {
         /* Form inv(U) * inv(U)**T or inv(L)**T * inv(L) */
-        ret = magma_clauum_gpu( uplo, n, a, lda, info );
-
-
-        if ( (ret != MAGMA_SUCCESS) || ( *info != 0 ) ) 
-                return ret;
-
-        return MAGMA_SUCCESS;
-
-}/* magma_cpotri */
+        magma_clauum_gpu( uplo, n, a, lda, info );
+    }
+    
+    return *info;
+} /* magma_cpotri */

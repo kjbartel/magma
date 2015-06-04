@@ -1,11 +1,11 @@
 /*
- *   -- MAGMA (version 1.1) --
+ *   -- MAGMA (version 1.2.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      November 2011
+ *      May 2012
  *
- * @generated d Sun Nov 13 20:47:58 2011
+ * @generated d Tue May 15 18:17:05 2012
  */
 
 #ifndef _MAGMA_D_H_
@@ -136,6 +136,11 @@ magma_int_t  magma_dgeev( char jobvl, char jobvr, magma_int_t n,
                           double *vr, magma_int_t ldvr,
                           double *work, magma_int_t lwork,
                           double *rwork, magma_int_t *info);
+magma_int_t magma_dgeqp3( magma_int_t *m, magma_int_t *n,
+                          double *a, magma_int_t *lda, 
+                          magma_int_t *jpvt, double *tau,
+                          double *work, magma_int_t *lwork, 
+                          double *rwork, magma_int_t *info);
 magma_int_t magma_dgesvd( char jobu, char jobvt, magma_int_t m, magma_int_t n,
                           double *a,    magma_int_t lda, double *s, 
                           double *u,    magma_int_t ldu, 
@@ -186,6 +191,11 @@ magma_int_t magma_dsygvr( magma_int_t itype, char jobz, char range, char uplo,
                           magma_int_t *isuppz, double *work, magma_int_t lwork,
                           double *rwork, magma_int_t lrwork, magma_int_t *iwork,
                           magma_int_t liwork, magma_int_t *info);
+magma_int_t magma_dstedx( char range, magma_int_t n, double vl, double vu,
+                          magma_int_t il, magma_int_t iu, double *D, double *E,
+                          double *Z, magma_int_t ldz,
+                          double *rwork, magma_int_t ldrwork, magma_int_t *iwork,
+                          magma_int_t liwork, double* dwork, magma_int_t *info);
 #else
 magma_int_t  magma_dgeev( char jobvl, char jobvr, magma_int_t n,
                           double *a,    magma_int_t lda,
@@ -193,6 +203,11 @@ magma_int_t  magma_dgeev( char jobvl, char jobvr, magma_int_t n,
                           double *vl,   magma_int_t ldvl,
                           double *vr,   magma_int_t ldvr,
                           double *work, magma_int_t lwork,
+                          magma_int_t *info);
+magma_int_t magma_dgeqp3( magma_int_t *m, magma_int_t *n,
+                          double *a, magma_int_t *lda, 
+                          magma_int_t *jpvt, double *tau,
+                          double *work, magma_int_t *lwork, 
                           magma_int_t *info);
 magma_int_t magma_dgesvd( char jobu, char jobvt, magma_int_t m, magma_int_t n,
                           double *a,    magma_int_t lda, double *s, 
@@ -209,6 +224,28 @@ magma_int_t magma_dsygvd( magma_int_t itype, char jobz, char uplo, magma_int_t n
                           double *b, magma_int_t ldb,
                           double *w, double *work, magma_int_t lwork,
                           magma_int_t *iwork, magma_int_t liwork, magma_int_t *info);
+magma_int_t magma_dstedx( char range, magma_int_t n, double vl, double vu,
+                          magma_int_t il, magma_int_t iu, double* d, double* e,
+                          double* z, magma_int_t ldz,
+                          double* work, magma_int_t lwork,
+                          magma_int_t* iwork, magma_int_t liwork,
+                          double* dwork, magma_int_t* info);
+magma_int_t magma_dlaex0( magma_int_t n, double* d, double* e, double* q, magma_int_t ldq,
+                          double* work, magma_int_t* iwork, double* dwork,
+                          char range, double vl, double vu,
+                          magma_int_t il, magma_int_t iu, magma_int_t* info);
+magma_int_t magma_dlaex1( magma_int_t n, double* d, double* q, magma_int_t ldq,
+                          magma_int_t* indxq, double rho, magma_int_t cutpnt,
+                          double* work, magma_int_t* iwork, double* dwork,
+                          char range, double vl, double vu,
+                          magma_int_t il, magma_int_t iu, magma_int_t* info);
+magma_int_t magma_dlaex3( magma_int_t k, magma_int_t n, magma_int_t n1, double* d,
+                          double* q, magma_int_t ldq, double rho,
+                          double* dlamda, double* q2, magma_int_t* indx,
+                          magma_int_t* ctot, double* w, double* s, magma_int_t* indxq,
+                          double* dwork,
+                          char range, double vl, double vu, magma_int_t il, magma_int_t iu,
+                          magma_int_t* info );
 #endif
 
 magma_int_t magma_dsygst( magma_int_t itype, char uplo, magma_int_t n,
@@ -424,10 +461,19 @@ magma_int_t magma_dsygst_gpu(magma_int_t itype, char uplo, magma_int_t n,
                              double *db, magma_int_t lddb, magma_int_t *info);
 
 
+/* //////////////////////////////////////////////////////////////////////////// 
+ -- MAGMA utility function definitions
+*/
+
+void magma_dprint    ( int m, int n, double  *A, int lda  );
+void magma_dprint_gpu( int m, int n, double *dA, int ldda );
+
+void dpanel_to_q(char uplo, int ib, double *A, int lda, double *work);
+void dq_to_panel(char uplo, int ib, double *A, int lda, double *work);
+
 #ifdef __cplusplus
 }
 #endif
 
 #undef PRECISION_d
 #endif /* _MAGMA_D_H_ */
-

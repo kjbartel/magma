@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -43,7 +43,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     double           flops, gpu_perf, cpu_perf;
     double           matnorm, work[1];
-    cuDoubleComplex  mzone= MAGMA_Z_NEG_ONE;
+    cuDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
     cuDoubleComplex *h_A, *h_R, *tau, *h_work;
     cuDoubleComplex *d_A, *d_T;
 
@@ -113,9 +113,9 @@ int main( int argc, char** argv)
         lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
         lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
         
-        cublasSetMatrix( M, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda);
+        magma_zsetmatrix( M, N, h_A, lda, d_A, ldda );
         magma_zgeqrf2_gpu(M, N, d_A, ldda, tau, &info);
-        cublasSetMatrix( M, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda);
+        magma_zsetmatrix( M, N, h_A, lda, d_A, ldda );
         
         /* ====================================================================
            Performs operation using MAGMA
@@ -131,7 +131,7 @@ int main( int argc, char** argv)
             printf("Argument %d of magma_zungqr_gpu had an illegal value.\n", -info);
         
         // Get d_A back to the CPU to compare with the CPU result.
-        cublasGetMatrix(M, N, sizeof(cuDoubleComplex), d_A, ldda, h_R, lda);
+        magma_zgetmatrix( M, N, d_A, ldda, h_R, lda );
         
         gpu_perf = flops / GetTimerValue(start,end);
         matnorm = lapackf77_zlange("f", &M, &N, h_A, &lda, work);
@@ -152,7 +152,7 @@ int main( int argc, char** argv)
         
         cpu_perf = flops / GetTimerValue(start,end);
 
-        blasf77_zaxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_zaxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d %5d   %6.1f       %6.1f         %7.2e \n",
                M, N, cpu_perf, gpu_perf,
                lapackf77_zlange("f", &M, &N, h_R, &lda, work) / matnorm );

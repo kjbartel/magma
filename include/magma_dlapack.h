@@ -1,11 +1,11 @@
 /*
- *   -- MAGMA (version 1.1) --
+ *   -- MAGMA (version 1.2.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      November 2011
+ *      May 2012
  *
- * @generated d Sun Nov 13 20:47:59 2011
+ * @generated d Tue May 15 18:17:06 2012
  */
 
 #ifndef MAGMA_DLAPACK_H
@@ -35,6 +35,7 @@ extern "C" {
 #define blasf77_dsymm      FORTRAN_NAME( dsymm,  DSYMM  )
 #define blasf77_dsymv      FORTRAN_NAME( dsymv,  DSYMV  )
 #define blasf77_dsyr2k     FORTRAN_NAME( dsyr2k, DSYR2K )
+#define blasf77_dher2      FORTRAN_NAME( dsyr2,  DSYR2  )
 #define blasf77_dsyrk      FORTRAN_NAME( dsyrk,  DSYRK  )
 #define blasf77_dscal      FORTRAN_NAME( dscal,  ZSCAL  )
 #define blasf77_ddscal     FORTRAN_NAME( dscal, ZDSCAL ) 
@@ -59,10 +60,11 @@ extern "C" {
 #define lapackf77_dgelqf   FORTRAN_NAME( dgelqf, DGELQF )
 #define lapackf77_dgels    FORTRAN_NAME( dgels,  DGELS  )
 #define lapackf77_dgeqlf   FORTRAN_NAME( dgeqlf, ZGEQLF )
+#define lapackf77_dgeqp3   FORTRAN_NAME( dgeqp3, DGEQP3 )
 #define lapackf77_dgeqrf   FORTRAN_NAME( dgeqrf, DGEQRF )
 #define lapackf77_dgesvd   FORTRAN_NAME( dgesvd, DGESVD )
 #define lapackf77_dgetrf   FORTRAN_NAME( dgetrf, DGETRF )
-#define lapackf77_dgetri   FORTRAN_NAME( dgetri, ZGETRI )
+#define lapackf77_dgetri   FORTRAN_NAME( dgetri, DGETRI )
 #define lapackf77_dgetrs   FORTRAN_NAME( dgetrs, DGETRS )
 #define lapackf77_dsyev    FORTRAN_NAME( dsyev,  DSYEV  )
 #define lapackf77_dsyevd   FORTRAN_NAME( dsyevd, DSYEVD )
@@ -70,6 +72,7 @@ extern "C" {
 #define lapackf77_dhegvd   FORTRAN_NAME( dsygvd, DSYGVD )
 #define lapackf77_dsytd2   FORTRAN_NAME( dsytd2, ZHETD2 )
 #define lapackf77_dsytrd   FORTRAN_NAME( dsytrd, DSYTRD )
+#define lapackf77_dsbtrd   FORTRAN_NAME( dsbtrd, DSBTRD )
 #define lapackf77_dhseqr   FORTRAN_NAME( dhseqr, ZHSEQR )
 #define lapackf77_dlacpy   FORTRAN_NAME( dlacpy, ZLACPY )
 #define lapackf77_dlacgv   FORTRAN_NAME( dlacgv, ZLACGV )
@@ -92,6 +95,9 @@ extern "C" {
 #define lapackf77_dpotri   FORTRAN_NAME( dpotri, ZPOTRI )
 #define lapackf77_dtrevc   FORTRAN_NAME( dtrevc, ZTREVC )
 #define lapackf77_dstebz   FORTRAN_NAME( dstebz, DSTEBZ )
+#define lapackf77_dlamc3   FORTRAN_NAME( dlamc3, DLAMC3 )
+#define lapackf77_dlaed4   FORTRAN_NAME( dlaed4, DLAED4 )
+#define lapackf77_dlamrg   FORTRAN_NAME( dlamrg, DLAMRG )
 #define lapackf77_dtrtri   FORTRAN_NAME( dtrtri, ZTRTRI )
 #define lapackf77_dsteqr   FORTRAN_NAME( dsteqr, ZSTEQR )
 #define lapackf77_dstedc   FORTRAN_NAME( dstedc, ZSTEDC )
@@ -115,11 +121,13 @@ extern "C" {
 /* testing functions */
 #define lapackf77_dbdt01   FORTRAN_NAME( dbdt01, ZBDT01 )
 #define lapackf77_dget22   FORTRAN_NAME( dget22, ZGET22 )
+#define lapackf77_dqpt01   FORTRAN_NAME( dqpt01, ZQPT01 )
 #define lapackf77_dsyt21   FORTRAN_NAME( dsyt21, ZHET21 )
 #define lapackf77_dhst01   FORTRAN_NAME( dhst01, ZHST01 )
 #define lapackf77_dqrt02   FORTRAN_NAME( dqrt02, ZQRT02 )
 #define lapackf77_dort01   FORTRAN_NAME( dort01, ZUNT01 )
 #define lapackf77_dlarfy   FORTRAN_NAME( dlarfy, ZLARFY )
+#define lapackf77_dlarfx   FORTRAN_NAME( dlarfx, ZLARFX )
 #define lapackf77_dstt21   FORTRAN_NAME( dstt21, ZSTT21 )
 
 
@@ -164,6 +172,9 @@ void    blasf77_dsyr2k(const char *, const char *, const int *, const int *,
                        double *, double *, const int *, 
                        double *, const int *, double *, 
                        double *, const int *);
+void     blasf77_dher2(const char *, int *, double *, 
+                       double *, int *, double *, int *, 
+                       double *, int *);
 void    blasf77_dsyrk( const char *, const char *, const int *, const int *, double *, 
                        double *, const int *, double *, double *, 
                        const int *);
@@ -240,6 +251,10 @@ void     lapackf77_dgels(const char *trans,
 void    lapackf77_dgeqlf(magma_int_t *m, magma_int_t *n,
                          double *a, magma_int_t *lda, double *tau, 
                          double *work, magma_int_t *lwork, magma_int_t *info);
+void    lapackf77_dgeqp3(magma_int_t *m, magma_int_t *n, double *a, magma_int_t *lda,
+                         magma_int_t *jpvt, double *tau,
+                         double *work, magma_int_t *lwork, 
+                         DWORKFORZ magma_int_t *info);
 void    lapackf77_dgeqrf(magma_int_t *m, magma_int_t *n,
                          double *a, magma_int_t *lda, double *tau,
                          double *work, magma_int_t *lwork, magma_int_t *info);
@@ -263,7 +278,7 @@ void    lapackf77_dgesvd(const char *jobu, const char *jobvt,
 void    lapackf77_dsyev(const char *jobz, const char *uplo, magma_int_t *n, 
                          double *a, magma_int_t *lda, double *w, 
                          double *work, magma_int_t *lwork,
-                         DWORKFORZ_AND_LD magma_int_t *info);
+                         DWORKFORZ magma_int_t *info);
 void    lapackf77_dsyevd(const char *jobz, const char *uplo, magma_int_t *n, 
                          double *a, magma_int_t *lda, double *w, 
                          double *work, magma_int_t *lwork,
@@ -285,6 +300,10 @@ void    lapackf77_dsytrd(const char *uplo, magma_int_t *n,
                          double *a, magma_int_t *lda, 
                          double *d, double *e, double *tau, 
                          double *work, magma_int_t *lwork, magma_int_t *info);
+void    lapackf77_dsbtrd(const char *vect, const char *uplo, magma_int_t *n, magma_int_t *kd, 
+                         double *ab, magma_int_t *ldab, double *d__, double *e, 
+                         double *q, magma_int_t *ldq, double *work, 
+                         magma_int_t *info);
 void    lapackf77_dhseqr(const char *job, const char *compz, magma_int_t *n, 
                          magma_int_t *ilo, magma_int_t *ihi, 
                          double *H, magma_int_t *ldh, WSPLIT, 
@@ -346,11 +365,16 @@ void    lapackf77_dtrevc(const char *side, const char *howmny, magma_int_t *sele
                          double *T,  magma_int_t *ldt,  double *VL, magma_int_t *ldvl,
                          double *VR, magma_int_t *ldvr, magma_int_t *MM, magma_int_t *M, 
                          double *work, DWORKFORZ magma_int_t *info);
-void    lapackf77_dstebz(char *range, char *order, magma_int_t *n, double *vl, double *vu,
+void    lapackf77_dstebz(const char *range, const char *order, magma_int_t *n, double *vl, double *vu,
                          magma_int_t *il, magma_int_t *iu, double *abstol,
                          double *d__, double *e, magma_int_t *m, magma_int_t *nsplit,
                          double *w, magma_int_t *iblock, magma_int_t *isplit, double *work,
                          magma_int_t *iwork, magma_int_t *info);
+double  lapackf77_dlamc3(double* a, double* b);
+void    lapackf77_dlamrg(magma_int_t* n1, magma_int_t* n2, double* a, 
+                         magma_int_t* dtrd1, magma_int_t* dtrd2, magma_int_t* index);
+void    lapackf77_dlaed4(magma_int_t* n, magma_int_t* i, double* d, double* z,
+                         double* delta, double* rho, double* dlam, magma_int_t* info);
 void    lapackf77_dsteqr(const char *compz, magma_int_t *n, double *D, double *E, 
                          double *Z, magma_int_t *ldz, 
                          double *work, magma_int_t *info);
@@ -363,7 +387,7 @@ void    lapackf77_dstein(magma_int_t *n, double *d__, double *e,
                          magma_int_t *m, double *w, magma_int_t *iblock, magma_int_t *isplit, 
                          double *z__, magma_int_t *ldz, double *work, magma_int_t *iwork, 
                          magma_int_t *ifail, magma_int_t *info);
-void    lapackf77_dstemr(char *jobz, char *range, magma_int_t *n, double *d__, double *e, 
+void    lapackf77_dstemr(const char *jobz, const char *range, magma_int_t *n, double *d__, double *e, 
                          double *vl, double *vu, magma_int_t *il, magma_int_t *iu, magma_int_t *m,
                          double *w, double *z__, magma_int_t *ldz, magma_int_t *nzc, 
                          magma_int_t *isuppz, magma_int_t *tryrac, double *work, magma_int_t *lwork, 
@@ -486,6 +510,12 @@ void    lapackf77_dort01(const char *rowcol, int *m, int *n, double *U, int *ldu
 void    lapackf77_dlarfy(const char *uplo, int *N, double *V, int *incv, 
                          double *tau, double *C, int *ldc, 
                          double *work);
+void    lapackf77_dlarfx(const char *, int *, int *, 
+                         double *, double *, 
+                         double *, int *, double *);
+double  lapackf77_dqpt01(int *m, int *n, int *k, double *a,
+                         double *af, int *lda, double *tau, int *jpvt,
+                         double *work, int *lwork);
 void    lapackf77_dqrt02(int *m, int *n, int *k, double *A, double *AF,
                          double *Q, double *R, int *lda, 
                          double *TAU, double *work, int *lwork,

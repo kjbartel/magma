@@ -1,17 +1,18 @@
 /*
- *   -- MAGMA (version 1.1) --
+ *   -- MAGMA (version 1.2.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      November 2011
+ *      May 2012
  *
- * @generated c Sun Nov 13 20:47:58 2011
+ * @generated c Tue May 15 18:17:05 2012
  */
 
 #ifndef _MAGMABLAS_C_H_
 #define _MAGMABLAS_C_H_
 
 #define PRECISION_c
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -217,15 +218,154 @@ void magmablas_ctrsm(char s, char u, char t, char d,
 
 
   /*
-   * Workspace interface (alphabetical order)
+   * Wrappers for platform independence.
+   * These wrap CUBLAS or AMD OpenCL BLAS functions.
    */
-magma_int_t magmablasw_csymv(char u, magma_int_t N, 
-                 cuFloatComplex alpha, 
-                 cuFloatComplex *A, magma_int_t lda, 
-                 cuFloatComplex *X, magma_int_t incX, 
-                 cuFloatComplex beta, 
-                 cuFloatComplex *Y, magma_int_t incY,
-                 cuFloatComplex *dWork);
+
+// ========================================
+// copying vectors
+// set copies host to device
+// get copies device to host
+
+void magma_csetvector(
+    magma_int_t n,
+    cuFloatComplex const *hx_src, magma_int_t incx,
+    cuFloatComplex       *dy_dst, magma_int_t incy );
+
+void magma_cgetvector(
+    magma_int_t n,
+    cuFloatComplex const *dx_src, magma_int_t incx,
+    cuFloatComplex       *hy_dst, magma_int_t incy );
+
+void magma_csetvector_async(
+    magma_int_t n,
+    cuFloatComplex const *hx_src, magma_int_t incx,
+    cuFloatComplex       *dy_dst, magma_int_t incy,
+    magma_stream_t stream );
+
+void magma_cgetvector_async(
+    magma_int_t n,
+    cuFloatComplex const *dx_src, magma_int_t incx,
+    cuFloatComplex       *hy_dst, magma_int_t incy,
+    magma_stream_t stream );
+
+
+// ========================================
+// copying sub-matrices (contiguous columns)
+// set copies host to device
+// get copies device to host
+// cpy copies device to device (with CUDA unified addressing, can be same or different devices)
+
+void magma_csetmatrix(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *hA_src, magma_int_t lda,
+    cuFloatComplex       *dB_dst, magma_int_t ldb );
+
+void magma_cgetmatrix(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *dA_src, magma_int_t lda,
+    cuFloatComplex       *hB_dst, magma_int_t ldb );
+
+void magma_csetmatrix_async(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *hA_src, magma_int_t lda,
+    cuFloatComplex       *dB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+void magma_cgetmatrix_async(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *dA_src, magma_int_t lda,
+    cuFloatComplex       *hB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+void magma_ccopymatrix(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *dA_src, magma_int_t lda,
+    cuFloatComplex       *dB_dst, magma_int_t ldb );
+
+void magma_ccopymatrix_async(
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex const *dA_src, magma_int_t lda,
+    cuFloatComplex       *dB_dst, magma_int_t ldb,
+    magma_stream_t stream );
+
+
+// ========================================
+// Level 1 BLAS
+
+void magma_cswap(
+    magma_int_t n,
+    cuFloatComplex *dx, magma_int_t incx,
+    cuFloatComplex *dy, magma_int_t incy );
+
+magma_int_t magma_icamax(
+    magma_int_t n,
+    cuFloatComplex *dx, magma_int_t incx );
+
+// ========================================
+// Level 2 BLAS
+
+void magma_cgemv(
+    magma_trans_t transA,
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex const *dx, magma_int_t incx,
+    cuFloatComplex beta,  cuFloatComplex       *dy, magma_int_t incy );
+
+void magma_chemv(
+    magma_uplo_t uplo,
+    magma_int_t n,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex const *dx, magma_int_t incx,
+    cuFloatComplex beta,  cuFloatComplex       *dy, magma_int_t incy );
+
+void magma_ctrsv(
+    magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag, 
+    magma_int_t n, 
+    cuFloatComplex const *dA, magma_int_t lda, 
+    cuFloatComplex       *dx, magma_int_t incx );
+
+// ========================================
+// Level 3 BLAS
+
+void magma_cgemm(
+    magma_trans_t transA, magma_trans_t transB,
+    magma_int_t m, magma_int_t n, magma_int_t k,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex const *dB, magma_int_t ldb,
+    cuFloatComplex beta,  cuFloatComplex       *dC, magma_int_t ldc );
+
+void magma_chemm(
+    magma_side_t side, magma_uplo_t uplo,
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex const *dB, magma_int_t ldb,
+    cuFloatComplex beta,  cuFloatComplex       *dC, magma_int_t ldc );
+
+void magma_cherk(
+    magma_uplo_t uplo, magma_trans_t trans,
+    magma_int_t n, magma_int_t k,
+    float alpha, cuFloatComplex const *dA, magma_int_t lda,
+    float beta,  cuFloatComplex       *dC, magma_int_t ldc );
+
+void magma_cher2k(
+    magma_uplo_t uplo, magma_trans_t trans,
+    magma_int_t n, magma_int_t k,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex const *dB, magma_int_t ldb,
+    float beta,           cuFloatComplex       *dC, magma_int_t ldc );
+
+void magma_ctrmm(
+    magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag,
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex       *dB, magma_int_t ldb );
+
+void magma_ctrsm(
+    magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag,
+    magma_int_t m, magma_int_t n,
+    cuFloatComplex alpha, cuFloatComplex const *dA, magma_int_t lda,
+                           cuFloatComplex       *dB, magma_int_t ldb );
 
 #ifdef __cplusplus
 }

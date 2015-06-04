@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:20 2011
+       @generated d Tue May 15 18:17:33 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
              double *dT, magma_int_t nb, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======
@@ -115,15 +115,15 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info));
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     } else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0) {
         work[0] = MAGMA_D_ONE;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if (upper) {
@@ -170,7 +170,7 @@ magma_dorgtr(char uplo, magma_int_t n, double *a,
     
     MAGMA_D_SET2REAL( work[0], lwkopt);
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_dorgtr */
 
 #undef a_ref

@@ -1,23 +1,27 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Sun Nov 13 20:48:25 2011
+       @generated c Tue May 15 18:17:40 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
+
+//#define FAST_HEMV
+
+// === End defining what BLAS to use ======================================
 #define PRECISION_c
 
 #if (defined(PRECISION_s))
-//  #define cublasSsyr2k magmablas_ssyr2k
+//  #define magma_ssyr2k magmablas_ssyr2k
 #endif
 // === End defining what BLAS to use ======================================
 
@@ -31,17 +35,17 @@ magma_chetrd(char uplo, magma_int_t n,
              cuFloatComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
     CHETRD reduces a complex Hermitian matrix A to real symmetric   
     tridiagonal form T by an orthogonal similarity transformation:   
-    Q\*\*H * A * Q = T.   
+    Q**H * A * Q = T.   
 
     Arguments   
     =========   
@@ -151,9 +155,9 @@ magma_chetrd(char uplo, magma_int_t n,
     magma_int_t ldda = lda;
     magma_int_t nb = magma_get_chetrd_nb(n); 
 
-    cuFloatComplex z_neg_one = MAGMA_C_NEG_ONE;
-    cuFloatComplex z_one = MAGMA_C_ONE;
-    float  d_one = MAGMA_D_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    cuFloatComplex c_one     = MAGMA_C_ONE;
+    float          d_one     = MAGMA_D_ONE;
     
     static magma_int_t kk, nx;
     static magma_int_t i, j, i_n;
@@ -183,23 +187,21 @@ magma_chetrd(char uplo, magma_int_t n,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery)
-      return 0;
+      return *info;
 
     /* Quick return if possible */
     if (n == 0) {
-        work[0] = z_one;
-        return 0;
+        work[0] = c_one;
+        return *info;
     }
 
     cuFloatComplex *da;
-    cublasStatus status;
-    status = cublasAlloc(n*ldda+2*n*nb, sizeof(cuFloatComplex), (void**)&da);
-    if (status != CUBLAS_STATUS_SUCCESS) {
-      fprintf (stderr, "!!!! device memory allocation error (magma_chetrd)\n");
-      return 0;
+    if (MAGMA_SUCCESS != magma_cmalloc( &da, n*ldda + 2*n*nb )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
 
     cuFloatComplex *dwork = da + (n)*ldda;
@@ -212,7 +214,7 @@ magma_chetrd(char uplo, magma_int_t n,
     if (upper) {
 
         /* Copy the matrix to the GPU */ 
-        cublasSetMatrix(n, n, sizeof(cuFloatComplex), A(0, 0), lda, dA(0, 0), ldda);
+        magma_csetmatrix( n, n, A(0, 0), lda, dA(0, 0), ldda );
 
         /*  Reduce the upper triangle of A.   
             Columns 1:kk are handled by the unblocked method. */
@@ -226,19 +228,16 @@ magma_chetrd(char uplo, magma_int_t n,
             
             /*   Get the current panel (no need for the 1st iteration) */
             if (i!=n-nb)
-              cublasGetMatrix(i+nb, nb, sizeof(cuFloatComplex), 
-                              dA(0, i), ldda, A(0, i), lda);
+              magma_cgetmatrix( i+nb, nb, dA(0, i), ldda, A(0, i), lda );
             
             magma_clatrd(uplo, i+nb, nb, A(0, 0), lda, e, tau, 
                          work, ldwork, dA(0, 0), ldda, dwork, lddwork);
 
             /* Update the unreduced submatrix A(0:i-2,0:i-2), using an   
                update of the form:  A := A - V*W' - W*V' */
-            cublasSetMatrix(i + nb, nb, sizeof(cuFloatComplex),
-                            work, ldwork,
-                            dwork, lddwork);
+            magma_csetmatrix( i + nb, nb, work, ldwork, dwork, lddwork );
 
-            cublasCher2k(uplo, MagmaNoTrans, i, nb, z_neg_one, 
+            magma_cher2k(uplo, MagmaNoTrans, i, nb, c_neg_one, 
                          dA(0, i), ldda, dwork, 
                          lddwork, d_one, dA(0, 0), ldda);
             
@@ -246,13 +245,12 @@ magma_chetrd(char uplo, magma_int_t n,
                elements into D */
             for (j = i; j < i+nb; ++j) {
                 MAGMA_C_SET2REAL( *A(j-1, j), e[j - 1] );
-                d[j] = MAGMA_C_GET_X( *A(j, j) );
+                d[j] = MAGMA_C_REAL( *A(j, j) );
             }
 
           }
       
-        cublasGetMatrix(kk, kk, sizeof(cuFloatComplex), dA(0, 0), ldda,
-                        A(0, 0), lda);
+        magma_cgetmatrix( kk, kk, dA(0, 0), ldda, A(0, 0), lda );
       
         /*  Use unblocked code to reduce the last or only block */
         lapackf77_chetd2(uplo_, &kk, A(0, 0), &lda, d, e, tau, &iinfo);
@@ -261,8 +259,16 @@ magma_chetrd(char uplo, magma_int_t n,
       {
         /* Copy the matrix to the GPU */
         if (1<=n-nx)
-          cublasSetMatrix(n, n, sizeof(cuFloatComplex), A(0,0), lda, dA(0,0), ldda);
+          magma_csetmatrix( n, n, A(0,0), lda, dA(0,0), ldda );
 
+        #ifdef FAST_HEMV
+        // TODO this leaks memory from da, above
+        cuFloatComplex *dwork2;
+        if (MAGMA_SUCCESS != magma_cmalloc( &dwork2, n*n )) {
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
+        #endif
         /* Reduce the lower triangle of A */
         for (i = 0; i < n-nx; i += nb) 
           {
@@ -272,22 +278,23 @@ magma_chetrd(char uplo, magma_int_t n,
 
             /*   Get the current panel (no need for the 1st iteration) */
             if (i!=0)
-              cublasGetMatrix(n-i, nb, sizeof(cuFloatComplex),
-                              dA(i, i), ldda,
-                              A(i, i), lda);
-            
+              magma_cgetmatrix( n-i, nb, dA(i, i), ldda, A(i, i), lda );
+            #ifdef FAST_HEMV
+            magma_clatrd2(uplo, n-i, nb, A(i, i), lda, &e[i], 
+                         &tau[i], work, ldwork, 
+                         dA(i, i), ldda,
+                         dwork, lddwork, dwork2, n*n);
+            #else
             magma_clatrd(uplo, n-i, nb, A(i, i), lda, &e[i], 
                          &tau[i], work, ldwork, 
                          dA(i, i), ldda,
                          dwork, lddwork);
-            
+            #endif
             /* Update the unreduced submatrix A(i+ib:n,i+ib:n), using   
                an update of the form:  A := A - V*W' - W*V' */
-            cublasSetMatrix(n-i, nb, sizeof(cuFloatComplex),
-                            work, ldwork,
-                            dwork, lddwork);
+            magma_csetmatrix( n-i, nb, work, ldwork, dwork, lddwork );
 
-            cublasCher2k('L', 'N', n-i-nb, nb, z_neg_one, 
+            magma_cher2k(MagmaLower, MagmaNoTrans, n-i-nb, nb, c_neg_one, 
                          dA(i+nb, i), ldda, 
                          &dwork[nb], lddwork, d_one, 
                          dA(i+nb, i+nb), ldda);
@@ -296,23 +303,25 @@ magma_chetrd(char uplo, magma_int_t n,
                elements into D */
             for (j = i; j < i+nb; ++j) {
                 MAGMA_C_SET2REAL( *A(j+1, j), e[j] );
-                d[j] = MAGMA_C_GET_X( *A(j, j) );
+                d[j] = MAGMA_C_REAL( *A(j, j) );
             }
           }
 
+        #ifdef FAST_HEMV
+        magma_free( dwork2 );
+        #endif
+
         /* Use unblocked code to reduce the last or only block */
         if (1<=n-nx)
-          cublasGetMatrix(n-i, n-i, sizeof(cuFloatComplex),
-                          dA(i, i), ldda,
-                          A(i, i), lda);
+          magma_cgetmatrix( n-i, n-i, dA(i, i), ldda, A(i, i), lda );
         i_n = n-i;
         lapackf77_chetrd(uplo_, &i_n, A(i, i), &lda, &d[i], &e[i],
                          &tau[i], work, &lwork, &iinfo);
         
       }
     
-    cublasFree(da);
+    magma_free( da );
     MAGMA_C_SET2REAL( work[0], lwkopt );
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_chetrd */

@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  * @precisions normal z -> c d s
  *
@@ -47,7 +47,7 @@ int main( int argc, char** argv)
     
     magma_int_t i, info;
     const char *uplo     = MagmaUpperStr;
-    cuDoubleComplex mzone= MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     double      work[1], matnorm;
@@ -89,7 +89,7 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_Z_SET2REAL( h_A[i*lda+i], ( MAGMA_Z_GET_X(h_A[i*lda+i]) + 1.*N ) );
+                MAGMA_Z_SET2REAL( h_A[i*lda+i], ( MAGMA_Z_REAL(h_A[i*lda+i]) + 1.*N ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = cuConj(h_A[j*lda+i]);
             }
@@ -102,7 +102,7 @@ int main( int argc, char** argv)
         //cublasSetMatrix( N, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda);
         //magma_zpotrf_gpu(uplo[0], N, d_A, ldda, &info);
 
-        cublasSetMatrix( N, N, sizeof(cuDoubleComplex), h_A, lda, d_A, ldda);
+        magma_zsetmatrix( N, N, h_A, lda, d_A, ldda );
               start = get_current_time();
         magma_zpotrf_gpu(uplo[0], N, d_A, ldda, &info);
         magma_zpotri_gpu(uplo[0], N, d_A, ldda, &info);
@@ -127,9 +127,9 @@ int main( int argc, char** argv)
         /* =====================================================================
            Check the result compared to LAPACK
            =================================================================== */
-        cublasGetMatrix( N, N, sizeof(cuDoubleComplex), d_A, ldda, h_R, lda);
+        magma_zgetmatrix( N, N, d_A, ldda, h_R, lda );
         matnorm = lapackf77_zlange("f", &N, &N, h_A, &lda, work);
-        blasf77_zaxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_zaxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
         printf("%5d    %6.2f         %6.2f        %e\n", 
                size[i], cpu_perf, gpu_perf,
                lapackf77_zlange("f", &N, &N, h_R, &lda, work) / matnorm);

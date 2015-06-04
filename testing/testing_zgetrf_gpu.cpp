@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  * @precisions normal z -> c d s
  *
@@ -159,7 +159,7 @@ int main( int argc, char** argv)
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        cublasSetMatrix( M, N, sizeof(cuDoubleComplex), h_R, lda, d_A, ldda);
+        magma_zsetmatrix( M, N, h_R, lda, d_A, ldda );
         start = get_current_time();
         ret = magma_zgetrf_gpu( M, N, d_A, ldda, ipiv, &info);
         end = get_current_time();
@@ -173,7 +173,7 @@ int main( int argc, char** argv)
         /* =====================================================================
            Check the factorization
            =================================================================== */
-        cublasGetMatrix( M, N, sizeof(cuDoubleComplex), d_A, ldda, h_A, lda);
+        magma_zgetmatrix( M, N, d_A, ldda, h_A, lda );
         error = get_LU_error(M, N, h_R, lda, h_A, ipiv);
         
         printf("%5d %5d  %6.2f         %6.2f         %e\n",

@@ -1,0 +1,59 @@
+#//////////////////////////////////////////////////////////////////////////////
+#   -- MAGMA (version 1.2.0) --
+#      Univ. of Tennessee, Knoxville
+#      Univ. of California, Berkeley
+#      Univ. of Colorado, Denver
+#      November 2010
+#//////////////////////////////////////////////////////////////////////////////
+
+#
+# GPU_TARGET specifies for which GPU you want to compile MAGMA:
+#     "Tesla" (NVIDIA compute capability 1.x cards)
+#     "Fermi" (NVIDIA compute capability 2.x cards)
+# See http://developer.nvidia.com/cuda-gpus
+
+GPU_TARGET = Fermi
+
+CC        = gcc        -DSETAFFINITY  -DUSEMAGMA  -DUSEMKL -DCHECKEIG # -g #-DUSESTREAM # -fopenmp    #-g      # -DUSEMAGMA   -DLIBMKL  
+FC        = gcc        -DSETAFFINITY  -DUSEMAGMA  # -fopenmp   #-g      # -DUSEMAGMA   -DLIBMKL  
+FL        = gfortran   -DSETAFFINITY  -DUSEMAGMA  # -fopenmp  #-g      # -DUSEMAGMA   -DLIBMKL  
+NVCC      = nvcc       -DSETAFFINITY  -DUSEMAGMA  #           #-g -G  # -DUSEMAGMA   -DLIBMKL  
+FORT      = gfortran   -DSETAFFINITY  -DUSEMAGMA  #-fopenmp   #-g      # -DUSEMAGMA   -DLIBMKL  
+
+ARCH      = ar
+ARCHFLAGS = cr
+RANLIB    = ranlib
+
+
+
+OPTS      = -O3 -DADD_ 
+FOPTS     = -O3 -DADD_  -Wall -x f95-cpp-input
+NVOPTS    = --compiler-options -fno-strict-aliasing -DUNIX -O3 -DADD_
+LDOPTS    = -fPIC -Xlinker -zmuldefs
+
+
+ # mkl multithreads il faut ajouter -openmp ou -fopenmp au linkage
+ LIB       = -fopenmp -lcublas -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lpthread -lm # -lcheck 
+ #LIB       = -lmkl_gf_lp64 -lmkl_sequential -lmkl_core  -lpthread -lcublas -lm  # -lcheck
+
+##LIB       = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lguide -lpthread -lcublas -lm
+#LIB       = -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lguide -lpthread -lcublas -lm -fopenmp
+#LIB       = -lmkl_gf_lp64 -lmkl_intel_thread -lmkl_core -lguide -lpthread -lcublas -lm
+#LIB       = -lmkl_em64t -lguide -lpthread -lcublas -lcudart -lm
+
+CUDADIR    = /mnt/scratch/cuda-4.0.17
+LIBDIR    = -L/mnt/scratch/sw/intel/11.1.069/mkl/lib/em64t \
+            -L$(CUDADIR)/lib64 \
+            -L/home/haidar/magma/trunk/testing/checkdiag/lib/
+
+
+INC       =  -I$(CUDADIR)/include -I/mnt/scratch/sw/intel/11.1.069/mkl/include 
+#INC       =  -I$(CUDADIR)/include -I/mnt/scratch/sw/intel/11.1.069/mkl/include -I/home/haidar/magma/trunk/testing/checkdiag/include
+
+
+LIBMAGMA     = ../lib/libmagma.a
+LIBMAGMABLAS = ../lib/libmagmablas.a
+
+
+
+

@@ -8,6 +8,8 @@
 #define FORTRAN_NAME(lcname, UCNAME)  lcname
 #elif defined(UPCASE)                 
 #define FORTRAN_NAME(lcname, UCNAME)  UCNAME
+#else
+#error Define one of ADD_, NOCHANGE, or UPCASE for how Fortran functions are name mangled.
 #endif
 #endif
 

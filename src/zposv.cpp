@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasZtrsm magmablas_ztrsm
+  #define magma_ztrsm magmablas_ztrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -26,7 +26,7 @@ magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
     Purpose
     =======
@@ -83,8 +83,6 @@ magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
-    magma_int_t ret;
-    
     *info = 0 ; 
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
         *info = -1; 
@@ -98,20 +96,18 @@ magma_zposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
         *info = -7;
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if ( (n==0) || (nrhs == 0) ) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
-    ret = magma_zpotrf( uplo, n, A, lda, info );
-    if ( (ret != MAGMA_SUCCESS) || ( *info != 0 ) ) {
-        return ret;
+    magma_zpotrf( uplo, n, A, lda, info );
+    if ( *info == 0 ) {
+        lapackf77_zpotrs( &uplo, &n, &nrhs, A, &lda, B, &ldb, info );
     }
-
-    lapackf77_zpotrs( &uplo, &n, &nrhs, A, &lda, B, &ldb, info );
-
-    return MAGMA_SUCCESS;
+    
+    return *info;
 }

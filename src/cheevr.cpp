@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
  
        @author Raffaele Solca
 
-       @generated c Sun Nov 13 20:48:29 2011
+       @generated c Tue May 15 18:17:45 2012
  
 */
 #include "common_magma.h"
@@ -30,11 +30,11 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
              float *rwork, magma_int_t lrwork, magma_int_t *iwork, 
              magma_int_t liwork, magma_int_t *info)
 {
-    /*  -- MAGMA (version 1.1) --
+    /*  -- MAGMA (version 1.2.0) --
         Univ. of Tennessee, Knoxville
         Univ. of California, Berkeley
         Univ. of Colorado, Denver
-        November 2011
+        May 2012
    
     Purpose   
     =======   
@@ -318,16 +318,16 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
   
   if (*info != 0) {
       magma_xerbla(__func__, -(*info));
-      return MAGMA_ERR_ILLEGAL_VALUE;
+      return *info;
   } else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
   }
   
   /*     Quick return if possible */
   
   *m = 0;
   if (n == 0) {
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
   if (n == 1) {
@@ -342,7 +342,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
     if (wantz) {
       z[0]=MAGMA_C_ONE;
     }
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
   --w;
@@ -510,7 +510,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
   rwork[1] = (float) lrwmin;
   iwork[1] = liwmin;
   
-  return MAGMA_SUCCESS;
+  return *info;
   
 } /* magma_cheevr */
 

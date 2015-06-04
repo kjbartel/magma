@@ -1,13 +1,14 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated d Sun Nov 13 20:48:50 2011
+ * @generated d Tue May 15 18:18:17 2012
  *
  **/
+// includes, system
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,20 +18,11 @@
 #include <cublas.h>
 #include <unistd.h>
 
+// includes, project
 #include "flops.h"
 #include "magma.h"
 #include "magma_lapack.h"
 #include "testings.h"
-
-#define PRECISION_d
-// Flops formula
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS_GETRF(m, n   ) ( 6.*FMULS_GETRF(m, n   ) + 2.*FADDS_GETRF(m, n   ) )
-#define FLOPS_GETRS(m, nrhs) ( 6.*FMULS_GETRS(m, nrhs) + 2.*FADDS_GETRS(m, nrhs) )
-#else
-#define FLOPS_GETRF(m, n   ) (    FMULS_GETRF(m, n   ) +    FADDS_GETRF(m, n   ) )
-#define FLOPS_GETRS(m, nrhs) (    FMULS_GETRS(m, nrhs) +    FADDS_GETRS(m, nrhs) )
-#endif
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dgesv
@@ -39,11 +31,10 @@ int main(int argc , char **argv)
 {
     TESTING_CUDA_INIT();
 
-    magma_timestr_t start, end;
-    double          flops, gpu_perf;
-    double          Rnorm, Anorm, Bnorm, *work;
-    double zone  = MAGMA_D_ONE;
-    double mzone = MAGMA_D_NEG_ONE;
+    real_Double_t   gflops, gpu_perf, gpu_time;
+    double          Rnorm, Anorm, Xnorm, *work;
+    double c_one     = MAGMA_D_ONE;
+    double c_neg_one = MAGMA_D_NEG_ONE;
     double *h_A, *h_LU, *h_B, *h_X;
     magma_int_t *ipiv;
     magma_int_t lda, ldb, N;
@@ -104,15 +95,15 @@ int main(int argc , char **argv)
     TESTING_MALLOC( work, double,          N        );
     TESTING_MALLOC( ipiv, magma_int_t,     N        );
 
-    printf("\n\n");
-    printf("  N     NRHS       GPU GFlop/s      || b-Ax || / ||A||*||B||\n");
-    printf("========================================================\n");
+    printf("\n");
+    printf("    N   NRHS   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
+    printf("===========================================================\n");
 
     for( i = 0; i < ntest; ++i ) {
         N   = size[i];
         lda = ldb = N;
-        flops = ( FLOPS_GETRF( (double)N, (double)N ) +
-                  FLOPS_GETRS( (double)N, (double)NRHS ) ) / 1e6;
+        gflops = ( FLOPS_DGETRF( (double)N, (double)N ) +
+                   FLOPS_DGETRS( (double)N, (double)NRHS ) ) / 1e9;
 
         /* Initialize the matrices */
         szeA = lda*N;
@@ -127,30 +118,29 @@ int main(int argc , char **argv)
         //=====================================================================
         // Solve Ax = b through an LU factorization
         //=====================================================================
-        start = get_current_time();
+        gpu_time = magma_wtime();
         magma_dgesv( N, NRHS, h_LU, lda, ipiv, h_X, ldb, &info );
-        end = get_current_time();
+        gpu_time = magma_wtime() - gpu_time;
         if (info != 0)
-            printf("Argument %d of magma_dgesv had an illegal value.\n", -info);
+            printf("magma_dgesv returned error %d.\n", info);
 
-        gpu_perf = flops / GetTimerValue(start, end);
+        gpu_perf = gflops / gpu_time;
 
         //=====================================================================
-        // ERROR
+        // Residual
         //=====================================================================
-
         Anorm = lapackf77_dlange("I", &N, &N,    h_A, &lda, work);
-        Bnorm = lapackf77_dlange("I", &N, &NRHS, h_B, &ldb, work);
+        Xnorm = lapackf77_dlange("I", &N, &NRHS, h_X, &ldb, work);
 
         blasf77_dgemm( MagmaNoTransStr, MagmaNoTransStr, &N, &NRHS, &N, 
-                       &zone,  h_A, &lda, 
-                               h_X, &ldb, 
-                       &mzone, h_B, &ldb);
+                       &c_one,     h_A, &lda, 
+                                   h_X, &ldb, 
+                       &c_neg_one, h_B, &ldb);
         
         Rnorm = lapackf77_dlange("I", &N, &NRHS, h_B, &ldb, work);
 
-        printf("%5d  %4d             %6.2f        %e\n",
-               N, NRHS, gpu_perf, Rnorm/(Anorm*Bnorm) );
+        printf( "%5d  %5d   %7.2f (%7.2f)   %8.2e\n",
+                N, NRHS, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
     }
 
     /* Memory clean up */

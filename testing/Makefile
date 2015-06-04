@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2011
+#      May 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -37,6 +37,7 @@ ZSRC  = testing_zgemm.cpp	\
         testing_zgeqrs_gpu.cpp 	\
         testing_zgeqrs3_gpu.cpp \
 	testing_zungqr_gpu.cpp	\
+	testing_zlarfb_gpu.cpp	\
 	\
 	testing_zgebrd.cpp	\
         testing_zgehrd.cpp 	\
@@ -48,33 +49,44 @@ ZSRC  = testing_zgemm.cpp	\
         testing_dsyevd.cpp	\
         testing_zhegvd.cpp      \
         testing_dsygvd.cpp      \
+        testing_zhegvdx.cpp     \
+        testing_zhebbd.cpp      \
 	\
         testing_zhetrd_gpu.cpp  \
         testing_zheevd_gpu.cpp  \
         \
 	testing_zcposv_gpu.cpp	\
 	testing_zcgesv_gpu.cpp	\
-	testing_zcgeqrsv_gpu.cpp
+	testing_zcgeqrsv_gpu.cpp \
+	\
+	testing_zlacpy.cpp \
+	testing_auxiliary.cpp	\
+	testing_zblas.cpp	\
+
 
 #testing_zswap.cpp
 
 ifeq ($(FORT), pgfortran)
-	FOBJ := fortran_thunking.o
+	FOBJ  = fortran_thunking.o
 	ZSRCF = testing_zgetrf_gpu_f.cuf
 else
-	FOBJ := fortran.o
+	FOBJ  = fortran.o
 	ZSRCF = testing_zgetrf_gpu_f.f90	\
 		testing_zgetrf_f.f90
 endif
 
 ZSRC += $(ZSRCF)
+-include Makefile.local
 -include Makefile.src
 
-ALLSRC  = $(ZSRC) $(CSRC) $(DSRC) $(SSRC)
-ALLOBJF  = $(ALLSRC:.f90=.o)
-ALLOBJF := $(ALLOBJF:.cuf=.o)
-ALLOBJ   = $(ALLOBJF:.cpp=.o)
-EXE      = $(ALLOBJ:.o=)
+ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)
+ALLOBJ := $(ALLSRC:.f90=.o)
+ALLOBJ := $(ALLOBJ:.cuf=.o)
+ALLOBJ := $(ALLOBJ:.cpp=.o)
+EXE    := $(ALLOBJ:.o=)
+
+# only testing_auxiliary needs control
+INC += -I../control
 
 all: $(EXE)
 
@@ -108,11 +120,11 @@ endif
 #
 testing_%_f : testing_%_f.o $(FOBJ)
 	$(FORT) $(OPTS) $(LDOPTS) $< $(FOBJ) -o $@ lin/liblapacktest.a -L../lib \
-          -lcuda -lmagma -lmagmablas -lmagma $(LIBDIR) $(LIB) 
+          -lcuda -lmagma -lmagmablas $(LIBDIR) $(LIB) 
 
 testing_% : testing_%.o
 	$(CC) $(OPTS) $(LDOPTS) $(NOMAIN) $< $(OBJ) -o $@ lin/liblapacktest.a -L../lib \
-          -lcuda -lmagma -lmagmablas -lmagma $(LIBDIR) $(LIB) 
+          -lcuda -lmagma -lmagmablas $(LIBDIR) $(LIB) 
 
 #
 # These two files are provided by cuda
@@ -122,3 +134,6 @@ fortran.o : $(CUDADIR)/src/fortran.c
 
 fortran_thunking.o : $(CUDADIR)/src/fortran_thunking.c
 	$(CC) $(OPTS) $(INC) -c $< -o $@
+
+# keep intermediate object files, to speed up re-compiling when library changes
+.SECONDARY: $(ALLOBJ)

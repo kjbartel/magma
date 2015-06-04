@@ -1,6 +1,6 @@
 
              MAGMA Release Notes
-	
+
 -----------------------------------------------------
 
 MAGMA is intended for a single CUDA enabled NVIDIA GPU.  It supports
@@ -22,6 +22,30 @@ Included are routines for the following algorithms:
       and Cholesky in both real and complex arithmetic;
     * MAGMA BLAS in real arithmetic (single and double), including
       gemm, gemv, symv, and trsm.
+
+ 1.2.0
+    * Fix bugs in [zcsd]hegst[_gpu].cpp
+    * Fix a bug in [zcsd]latrd.cpp
+    * Fix a bug in [zcsd]gelqf_gpu.cpp
+    * Added application of a block reflector H or its transpose from the Right.
+      Routines changed -- [zcsd]larfb_gpu.cpp, [zc]unmqr2_gpu.cpp, and
+      [ds]ormqr2_gpu.cpp
+    * Fix *larfb_gpu for reflector vectors stored row-wise.
+    * Fix memory allocation bugs in [zc]unmqr2_gpu.cpp, [ds]ormqr2_gpu.cpp,
+      [zc]unmqr.cpp, and [ds]ormqr.cpp (thanks to Azzam Haidar).
+    * Fix bug in *lacpy that overwrote memory.
+    * Fix residual formula in testing_*gesv* and testing_*posv*.
+    * Fix sizeptr.cpp compile warning that caused make to fail.
+    * Fix warning in *getrf.cpp when nb0 is zero.
+    * Add reduction to band-diagonal for symmetric/Hermitian definite matrices
+      in [zc]hebbd.cpp and [ds]sybbd.cpp
+    * Add wrappers around CUDA and CUBLAS functions,
+      for portability and error checking.
+    * Add tracing functions.
+    * Add matrix print functions.
+    * Make info and return codes consistent.
+    * Change GPU_TARGET in make.inc to descriptive name (e.g., Fermi).
+    * Move magma_stream to -lmagmablas to eliminate dependency on -lmagma.
 
  1.1.0 - 11-11-11
     * Fix a bug in [zcsd]geqrf_gpu.cpp and [zcsd]geqrf3_gpu.cpp for n>m

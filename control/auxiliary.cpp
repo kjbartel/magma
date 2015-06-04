@@ -1,406 +1,67 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 */
 
 #include "common_magma.h"
-
-#if defined( _WIN32 ) || defined( _WIN64 )
-
-#  include <time.h>
-#  include <sys/timeb.h>
-#  if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
-#    define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
-#  else
-#    define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
-#  endif
-
-#else
-
-#  include <sys/time.h>
-
-#endif
-
-#if defined(ADD_)
-#    define magma_gettime_f        magma_gettime_f_
-#    define magma_gettimervalue_f  magma_gettimervalue_f_
-#elif defined(NOCHANGE)
-#endif
+#include <assert.h>
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Get current time
-*/ 
-#if defined( _WIN32 ) || defined( _WIN64 )
-struct timezone
-{
-    int  tz_minuteswest; /* minutes W of Greenwich */
-    int  tz_dsttime;     /* type of dst correction */
-};
-
+   -- Get number of GPUs to use from $MAGMA_NUM_GPUS environment variable.
+   @author Mark Gates
+*/
 extern "C"
-int gettimeofday(struct timeval* tv, struct timezone* tz)
+int magma_num_gpus( void )
 {
-    FILETIME         ft;
-    unsigned __int64 tmpres = 0;
-    static int       tzflag;
-
-    if (NULL != tv)
-        {
-            GetSystemTimeAsFileTime(&ft);
-            tmpres |=  ft.dwHighDateTime;
-            tmpres <<= 32;
-            tmpres |=  ft.dwLowDateTime;
-
-            /*converting file time to unix epoch*/
-            tmpres /= 10;  /*convert into microseconds*/
-            tmpres -= DELTA_EPOCH_IN_MICROSECS;
-
-            tv->tv_sec  = (long)(tmpres / 1000000UL);
-            tv->tv_usec = (long)(tmpres % 1000000UL);
+    const char *ngpu_str = getenv("MAGMA_NUM_GPUS");
+    int ngpu = 1;
+    if ( ngpu_str != NULL ) {
+        char* endptr;
+        ngpu = strtol( ngpu_str, &endptr, 10 );
+        int ndevices;
+        cudaGetDeviceCount( &ndevices );
+        // if *endptr == '\0' then entire string was valid number (or empty)
+        if ( ngpu < 1 or *endptr != '\0' ) {
+            ngpu = 1;
+            fprintf( stderr, "$MAGMA_NUM_GPUS=%s is an invalid number; using %d GPU.\n",
+                     ngpu_str, ngpu );
         }
-    if (NULL != tz)
-        {
-            if (!tzflag)
-                {
-                    _tzset();
-                    tzflag++;
-                }
-            tz->tz_minuteswest = _timezone / 60;
-            tz->tz_dsttime     = _daylight;
+        else if ( ngpu > MagmaMaxGPUs or ngpu > ndevices ) {
+            ngpu = min( ndevices, MagmaMaxGPUs );
+            fprintf( stderr, "$MAGMA_NUM_GPUS=%s exceeds MagmaMaxGPUs=%d or available GPUs=%d; using %d GPUs.\n",
+                     ngpu_str, MagmaMaxGPUs, ndevices, ngpu );
         }
-    return 0;
-}
-#endif
-
-extern "C"
-magma_timestr_t get_current_time(void)
-{
-  static struct timeval  time_val;
-
-  magma_timestr_t time;
-
-  cudaThreadSynchronize();
-  gettimeofday(&time_val, NULL);
-
-  time.sec  = time_val.tv_sec;
-  time.usec = time_val.tv_usec;
-  return (time);
+        assert( 1 <= ngpu and ngpu <= ndevices );
+    }
+    return ngpu;
 }
 
-extern "C"
-void magma_gettime_f(unsigned int *time) {
-  magma_timestr_t tmp = get_current_time();
-  time[0] = tmp.sec;
-  time[1] = tmp.usec;
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- End elapsed time
-*/ 
-extern "C"
-double GetTimerValue(magma_timestr_t time_1, magma_timestr_t time_2)
-{
-  int sec, usec;
-
-  sec  = time_2.sec  - time_1.sec;
-  usec = time_2.usec - time_1.usec;
-
-  return (1000.*(double)(sec) + (double)(usec) * 0.001);
-}
-
-extern "C"
-void magma_gettimervalue_f(unsigned int *start, unsigned int *end, double *result) {
-  magma_timestr_t time1, time2;
-  time1.sec  = start[0];
-  time1.usec = start[1];
-  time2.sec  = end[0];
-  time2.usec = end[1];
-  *result = GetTimerValue(time1, time2);
-}
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Print the available GPU devices
+   @author Mark Gates
 */
 extern "C"
 void printout_devices( )
 {
-  int ndevices;
-  cuDeviceGetCount( &ndevices );
-  for( int idevice = 0; idevice < ndevices; idevice++ )
-    {
-      char name[200];
-#if CUDA_VERSION > 3010 
-      size_t totalMem;
-#else
-      unsigned int totalMem;
-#endif
-
-      int clock;
-      int major, minor;
-      CUdevice dev;
-
-      cuDeviceGet( &dev, idevice );
-      cuDeviceGetName( name, sizeof(name), dev );
-      cuDeviceComputeCapability( &major, &minor, dev );
-      cuDeviceTotalMem( &totalMem, dev );
-      cuDeviceGetAttribute( &clock,
-                            CU_DEVICE_ATTRIBUTE_CLOCK_RATE, dev );
-      printf( "device %d: %s, %.1f MHz clock, %.1f MB memory, capability %d.%d\n",
-              idevice, name, clock/1000.f, totalMem/1024.f/1024.f, major, minor );
+    int ndevices;
+    cudaGetDeviceCount( &ndevices );
+    for( int idevice = 0; idevice < ndevices; idevice++ ) {
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties( &prop, idevice );
+        printf( "device %d: %s, %.1f MHz clock, %.1f MB memory, capability %d.%d\n",
+                idevice,
+                prop.name,
+                prop.clockRate / 1000.,
+                prop.totalGlobalMem / (1024.*1024.),
+                prop.major,
+                prop.minor );
     }
 }
 
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Put 0s in the upper triangular part of a panel (and 1s on the diagonal)
-      if uplo is 'U'/'u', or 0s in the lower triangular part of a panel (and 
-      1s on the diagonal) if uplo is 'L'/'l'.
-      This is auxiliary function used in geqrf and geqlf.  
-*/
-extern "C"
-void spanel_to_q(char uplo, int ib, float *a, int lda, float *work){
-  int i, j, k = 0;
-  float *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<i; j++){
-        work[k++] = col[j];
-        col[j] = 0.;
-      }
-      work[k++] = col[i];
-      col[j] = 1.;
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      work[k++] = col[i];
-      col[i] = 1.;
-      for(j=i+1; j<ib; j++){
-        work[k++] = col[j];
-        col[j] = 0.;
-      }
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Restores a panel (after call to "panel_to_q").
-      This isauxiliary function usedin geqrf and geqlf.
-*/
-extern "C"
-void sq_to_panel(char uplo, int ib, float *a, int lda, float *work){
-  int i, j, k = 0;
-  float *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<=i; j++)
-        col[j] = work[k++];
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=i; j<ib; j++)
-        col[j] = work[k++];
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Put 0s in the upper triangular part of a panel (and 1s on the diagonal)
-*/
-extern "C"
-void cpanel_to_q(char uplo, int ib, float2 *a, int lda, float2 *work){
-  int i, j, k = 0;
-  float2 *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<i; j++){
-        work[k  ].x = col[j].x;
-        work[k++].y = col[j].y;
-        col[j].x = col[j].y = 0.;
-      }
-      work[k  ].x = col[i].x;
-      work[k++].y = col[i].y;
-      col[j].x = 1.;
-      col[j].y = 0.;
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      work[k  ].x = col[i].x;
-      work[k++].y = col[i].y;
-      col[i].x = 1.;
-      col[i].y = 0.;
-      for(j=i+1; j<ib; j++){
-        work[k  ].x = col[j].x;
-        work[k++].y = col[j].y;
-        col[j].x = col[j].y = 0.;
-      }
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Restores a panel (after call to "panel_to_q")
-*/
-extern "C"
-void cq_to_panel(char uplo, int ib, float2 *a, int lda, float2 *work){
-  int i, j, k = 0;
-  float2 *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<=i; j++){
-        col[j].x = work[k  ].x;
-        col[j].y = work[k++].y;
-      }
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=i; j<ib; j++){
-        col[j].x = work[k  ].x;
-        col[j].y = work[k++].y;
-      }
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Put 0s in the upper triangular part of a panel (and 1s on the diagonal)
-*/
-extern "C"
-void dpanel_to_q(char uplo, int ib, double *a, int lda, double *work){
-  int i, j, k = 0;
-  double *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<i; j++){
-        work[k++] = col[j];
-        col[j] = 0.;
-      }
-      work[k++] = col[i];
-      col[j] = 1.;
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      work[k++] = col[i];
-      col[i] = 1.;
-      for(j=i+1; j<ib; j++){
-        work[k++] = col[j];
-        col[j] = 0.;
-      }
-    }
-  } 
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Restores a panel (after call to "panel_to_q")
-*/
-extern "C"
-void dq_to_panel(char uplo, int ib, double *a, int lda, double *work){
-  int i, j, k = 0;
-  double *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<=i; j++)
-        col[j] = work[k++];
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=i; j<ib; j++)
-        col[j] = work[k++];
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Put 0s in the upper triangular part of a panel (and 1s on the diagonal)
-*/
-extern "C"
-void zpanel_to_q(char uplo, int ib, cuDoubleComplex *a, int lda, cuDoubleComplex *work){
-  int i, j, k = 0;
-  cuDoubleComplex *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<i; j++){
-        work[k  ].x = col[j].x;
-        work[k++].y = col[j].y;
-        col[j].x = col[j].y = 0.;
-      }
-      work[k  ].x = col[i].x;
-      work[k++].y = col[i].y;
-      col[j].x = 1.;
-      col[j].y = 0.;
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      work[k  ].x = col[i].x;
-      work[k++].y = col[i].y;
-      col[i].x = 1.;
-      col[i].y = 0.;
-      for(j=i+1; j<ib; j++){
-        work[k  ].x = col[j].x;
-        work[k++].y = col[j].y;
-        col[j].x = col[j].y = 0.;
-      }
-    }
-  }
-}
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Restores a panel (after call to "panel_to_q")
-*/
-extern "C"
-void zq_to_panel(char uplo, int ib, cuDoubleComplex *a, int lda, cuDoubleComplex *work){
-  int i, j, k = 0;
-  cuDoubleComplex *col;
-
-  if (uplo == 'U' || uplo == 'u'){
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=0; j<=i; j++){
-        col[j].x = work[k  ].x;
-        col[j].y = work[k++].y;
-      }
-    }
-  }
-  else {
-    for(i=0; i<ib; i++){
-      col = a + i*lda;
-      for(j=i; j<ib; j++){
-        col[j].x = work[k  ].x;
-        col[j].y = work[k++].y;
-      }
-    }
-  }
-}
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Auxiliary function: ipiv(i) indicates that row i has been swapped with 

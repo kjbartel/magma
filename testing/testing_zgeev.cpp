@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> c
 
@@ -39,7 +39,7 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     cuDoubleComplex *h_A, *h_R, *VL, *VR, *h_work, *w1, *w2;
     cuDoubleComplex *w1i, *w2i;
-    cuDoubleComplex  mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
     double          *rwork;
     double           gpu_time, cpu_time, matnorm, tnrm, result[8];
 
@@ -368,7 +368,7 @@ int main( int argc, char** argv)
             //====================================================================
 
             matnorm = lapackf77_zlange("f", &N, &ione, w1, &N, rwork);
-            blasf77_zaxpy(&N, &mzone, w1, &ione, w2, &ione);
+            blasf77_zaxpy(&N, &c_neg_one, w1, &ione, w2, &ione);
 
             result[7] = lapackf77_zlange("f", &N, &ione, w2, &N, rwork) / matnorm;
 

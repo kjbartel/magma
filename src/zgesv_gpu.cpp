@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasZtrsm magmablas_ztrsm
+  #define magma_ztrsm magmablas_ztrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -24,11 +24,11 @@ magma_zgesv_gpu( magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -77,8 +77,6 @@ magma_zgesv_gpu( magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
-    magma_int_t ret;
-
     *info = 0;
     if (n < 0) {
         *info = -1;
@@ -91,20 +89,18 @@ magma_zgesv_gpu( magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
-    ret = magma_zgetrf_gpu( n, n, dA, ldda, ipiv, info);
-    if ( (ret != MAGMA_SUCCESS) || (*info != 0) ) {
-        return ret;
+    magma_zgetrf_gpu( n, n, dA, ldda, ipiv, info );
+    if ( *info == 0 ) {
+        magma_zgetrs_gpu( MagmaNoTrans, n, nrhs, dA, ldda, ipiv, dB, lddb, info );
     }
-
-    ret = magma_zgetrs_gpu( MagmaNoTrans, n, nrhs, dA, ldda, ipiv, dB, lddb, info );
     
-    return ret;
+    return *info;
 }

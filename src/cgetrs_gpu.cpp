@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:17 2011
+       @generated c Tue May 15 18:17:30 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_c
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasCtrsm magmablas_ctrsm
+  #define magma_ctrsm magmablas_ctrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -24,11 +24,11 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -101,17 +101,18 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     work = (cuFloatComplex*)malloc(n * nrhs * sizeof(cuFloatComplex));
     if ( !work ) {
-        return MAGMA_ERR_ALLOCATION;
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
       
     i1 = 1;
@@ -120,35 +121,35 @@ magma_cgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         inc = 1;
 
         /* Solve A * X = B. */
-        cublasGetMatrix( n, nrhs, sizeof(cuFloatComplex), dB, lddb, work, n);
+        magma_cgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_claswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(cuFloatComplex), work, n, dB, lddb);
+        magma_csetmatrix( n, nrhs, work, n, dB, lddb );
 
         if ( nrhs == 1) {
-            cublasCtrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
-            cublasCtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_ctrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_ctrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
         } else {
-            cublasCtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasCtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ctrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ctrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
         }
     } else {
         inc = -1;
 
         /* Solve A' * X = B. */
         if ( nrhs == 1) {
-            cublasCtrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
-            cublasCtrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_ctrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_ctrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
         } else {
-            cublasCtrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasCtrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ctrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ctrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
         }
 
-        cublasGetMatrix( n, nrhs, sizeof(cuFloatComplex), dB, lddb, work, n );
+        magma_cgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_claswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(cuFloatComplex), work, n, dB, lddb);
+        magma_csetmatrix( n, nrhs, work, n, dB, lddb );
     }
     free(work);
 
-    return MAGMA_SUCCESS;
+    return *info;
 }
 

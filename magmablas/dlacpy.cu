@@ -1,74 +1,47 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:38 2011
+       @generated d Tue May 15 18:18:03 2012
 
 */
 #include "common_magma.h"
 
-static __global__ void 
-dlacpy_generic(int M, int N, double *A, int LDA, double *B, int LDB ) 
-{ 
-    int ibx = blockIdx.x * 64;
-    int tx  = threadIdx.x;
-    int ty  = threadIdx.y;
-    int idt = ty * 16 + tx;
+/*
+    Matrix is divided into 64 x n block rows.
+    Each block has 64 threads.
+    Each thread copies one row, iterating across all columns.
+    The bottom block of rows may be partially outside the matrix;
+    if so, rows outside the matrix (row >= m) are disabled.
     
-    if( (ibx+idt) >=M ){
-        A += M-1;
-        B += M-1;
-    }
-    else{
-        A += ibx+idt;
-        B += ibx+idt;
-    }
-    const double * Aend = A+LDA*N;
-    double Ap[1]={A[0]};
-    do {
-        A += LDA;
-        B[0] = Ap[0];
-        Ap[0]= A[0];        
-        B += LDB;
-    } while (A < Aend);
-    B[0] = Ap[0];
-}
-
-static __global__ void 
-dlacpy_special(int M, int N, double *A, int LDA, double *B, int LDB ) 
+    @author Mark Gates
+*/
+__global__ void 
+dlacpy_kernel( int m, int n,
+               double *A, int lda,
+               double *B, int ldb ) 
 { 
-    int ibx = blockIdx.x * 64;
-    int tx  = threadIdx.x;
-    int ty  = threadIdx.y;
-    int idt = ty * 16 + tx;
-    if( (ibx+idt) >=M ){
-        A += M-1;
-        B += M-1;
+    int row = blockIdx.x*64 + threadIdx.x;
+    if ( row < m ) {
+        A += row;
+        B += row;
+        double *Aend = A + lda*n;
+        while( A < Aend ) {
+            *B = *A;
+            A += lda;
+            B += ldb;
+        }
     }
-    else{
-        A += ibx+idt;
-        B += ibx+idt;
-    }
-    double Ap[1]={A[0]};
-    B[0] = Ap[0];
 }
 
-extern "C" void 
-magmablas_dlacpy_64_64_16_4_v2(int M, int N, double *A, int LDA, double *B, int LDB )
-{
-        dim3 threads( 16, 4 );
-        dim3 grid( M/64+(M%64!=0), 1 );
-        if( N == 1 ) 
-            dlacpy_special<<< grid, threads, 0, magma_stream >>> ( M, N, A, LDA, B, LDB ) ;
-        else        
-            dlacpy_generic<<< grid, threads, 0, magma_stream >>> ( M, N, A, LDA, B, LDB ) ;
-}
 
 extern "C" void 
-magmablas_dlacpy(char uplo, int M, int N, double *A, int LDA, double *B, int LDB)
+magmablas_dlacpy( char uplo, int m, int n,
+                  double *A, int lda,
+                  double *B, int ldb )
 {
 /*
     Note
@@ -113,11 +86,20 @@ magmablas_dlacpy(char uplo, int M, int N, double *A, int LDA, double *B, int LDB
 
   =====================================================================   */
 
+    dim3 threads( 64 );
+    dim3 grid( m/64 + (m%64 != 0) );
+    
+    //printf( "m %d, n %d, grid %d, threads %d\n", m, n, grid.x, threads.x );
+    if ( m == 0 || n == 0 )
+        return;
+    
     if ( (uplo == 'U') || (uplo == 'u') ) {
-        fprintf(stderr, "Lacpy upper is not implemented\n");
-    } else if ( (uplo == 'L') || (uplo == 'l') ) {
-        fprintf(stderr, "Lacpy lower is not implemented\n");
-    } else {
-        magmablas_dlacpy_64_64_16_4_v2(M, N, A, LDA, B, LDB);
+        fprintf(stderr, "lacpy upper is not implemented\n");
+    }
+    else if ( (uplo == 'L') || (uplo == 'l') ) {
+        fprintf(stderr, "lacpy lower is not implemented\n");
+    }
+    else {
+        dlacpy_kernel<<< grid, threads, 0, magma_stream >>> ( m, n, A, lda, B, ldb );
     }
 }

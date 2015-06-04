@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
   
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated c Sun Nov 13 20:48:28 2011
+       @generated c Tue May 15 18:17:43 2012
 
 */
 #include "common_magma.h"
@@ -26,11 +26,11 @@ magma_cunmqr2_gpu(const char side, const char trans,
                   cuFloatComplex *wa,    magma_int_t ldwa, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -38,7 +38,7 @@ magma_cunmqr2_gpu(const char side, const char trans,
 
                     SIDE = 'L'     SIDE = 'R'   
     TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q\*\*H * C     C * Q\*\*H   
+    TRANS = 'T':      Q**H * C     C * Q**H   
 
     where Q is a complex orthogonal matrix defined as the product of k   
     elementary reflectors   
@@ -51,12 +51,12 @@ magma_cunmqr2_gpu(const char side, const char trans,
     Arguments   
     =========   
     SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q\*\*H from the Left;   
-            = 'R': apply Q or Q\*\*H from the Right.   
+            = 'L': apply Q or Q**H from the Left;   
+            = 'R': apply Q or Q**H from the Right.   
 
     TRANS   (input) CHARACTER*1   
             = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q\*\*H.   
+            = 'T':  Transpose, apply Q**H.   
 
     M       (input) INTEGER   
             The number of rows of the matrix C. M >= 0.   
@@ -87,7 +87,7 @@ magma_cunmqr2_gpu(const char side, const char trans,
 
     DC      (device input/output) COMPLEX array, dimension (LDDC,N)   
             On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q\*\*H*C or C*Q\*\*H or C*Q.   
+            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.   
 
     LDDC    (input) INTEGER   
             The leading dimension of the array C. LDDC >= max(1,M). 
@@ -114,9 +114,8 @@ magma_cunmqr2_gpu(const char side, const char trans,
 
     /* Allocate work space on the GPU */
     cuFloatComplex *dwork;
-    cublasAlloc(2*(m+64)*64, sizeof(cuFloatComplex), (void**)&dwork);
 
-    magma_int_t wa_offset, dc_offset, i__4;
+    magma_int_t wa_offset, dc_offset, i__4, lddwork;
     static magma_int_t i__;
     static cuFloatComplex t[2*4160]        /* was [65][64] */;
     static magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
@@ -136,9 +135,11 @@ magma_cunmqr2_gpu(const char side, const char trans,
     if (left) {
         nq = m;
         nw = n;
+        magma_cmalloc( &dwork, (n + 64)*64 );
     } else {
         nq = n;
         nw = m;
+        magma_cmalloc( &dwork, (m + 64)*64 );
     }
     if (! left && ! lapackf77_lsame(side_, "R")) {
         *info = -1;
@@ -163,12 +164,12 @@ magma_cunmqr2_gpu(const char side, const char trans,
   
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (m == 0 || n == 0 || k == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
         
         /* Use hybrid CPU-GPU code */
@@ -216,19 +217,24 @@ magma_cunmqr2_gpu(const char side, const char trans,
                 ni = n - i__ + 1;
                 jc = i__;
               }
+
+            if (left)
+                lddwork = ni;
+            else
+                lddwork = mi;
             
             /* Apply H or H'; First copy T to the GPU */
-            cublasSetMatrix(ib, ib, sizeof(cuFloatComplex), t, ib, dwork+i__4*ib, ib);
+            magma_csetmatrix( ib, ib, t, ib, dwork, ib );
             magma_clarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
                               mi, ni, ib,
-                              da + (i__ - 1) + (i__ - 1) * ldda , ldda, dwork+i__4*ib, ib,
+                              da + (i__ - 1) + (i__ - 1) * ldda , ldda, dwork, ib,
                               &dc[ic + jc * lddc], lddc, 
-                              dwork+i__4*ib + ib*ib, ni);
+                              dwork + ib*ib, lddwork);
           }
 
-    cublasFree(dwork);
+    magma_free( dwork );
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_cunmqr */
 
 

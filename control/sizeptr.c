@@ -1,9 +1,8 @@
-#include <stdlib.h>
 #include <stdio.h>
 
-int main (){
-
-  printf("%lu", sizeof(void *));
-
-  return EXIT_SUCCESS;
+int main()
+{
+    int size = sizeof(void*);
+    printf("%d", size);
+    return 0;
 }

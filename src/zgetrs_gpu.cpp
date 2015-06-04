@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -13,7 +13,7 @@
 // === Define what BLAS to use ============================================
 #define PRECISION_z
 #if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define cublasZtrsm magmablas_ztrsm
+  #define magma_ztrsm magmablas_ztrsm
 #endif
 // === End defining what BLAS to use =======================================
 
@@ -24,11 +24,11 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -101,17 +101,18 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     work = (cuDoubleComplex*)malloc(n * nrhs * sizeof(cuDoubleComplex));
     if ( !work ) {
-        return MAGMA_ERR_ALLOCATION;
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
       
     i1 = 1;
@@ -120,35 +121,35 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         inc = 1;
 
         /* Solve A * X = B. */
-        cublasGetMatrix( n, nrhs, sizeof(cuDoubleComplex), dB, lddb, work, n);
+        magma_zgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_zlaswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(cuDoubleComplex), work, n, dB, lddb);
+        magma_zsetmatrix( n, nrhs, work, n, dB, lddb );
 
         if ( nrhs == 1) {
-            cublasZtrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
-            cublasZtrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_ztrsv(MagmaLower, MagmaNoTrans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_ztrsv(MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, dA, ldda, dB, 1 );
         } else {
-            cublasZtrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasZtrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ztrsm(MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ztrsm(MagmaLeft, MagmaUpper, MagmaNoTrans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
         }
     } else {
         inc = -1;
 
         /* Solve A' * X = B. */
         if ( nrhs == 1) {
-            cublasZtrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
-            cublasZtrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
+            magma_ztrsv(MagmaUpper, trans, MagmaNonUnit, n, dA, ldda, dB, 1 );
+            magma_ztrsv(MagmaLower, trans, MagmaUnit,    n, dA, ldda, dB, 1 );
         } else {
-            cublasZtrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
-            cublasZtrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ztrsm(MagmaLeft, MagmaUpper, trans, MagmaNonUnit, n, nrhs, c_one, dA, ldda, dB, lddb );
+            magma_ztrsm(MagmaLeft, MagmaLower, trans, MagmaUnit,    n, nrhs, c_one, dA, ldda, dB, lddb );
         }
 
-        cublasGetMatrix( n, nrhs, sizeof(cuDoubleComplex), dB, lddb, work, n );
+        magma_zgetmatrix( n, nrhs, dB, lddb, work, n );
         lapackf77_zlaswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
-        cublasSetMatrix( n, nrhs, sizeof(cuDoubleComplex), work, n, dB, lddb);
+        magma_zsetmatrix( n, nrhs, work, n, dB, lddb );
     }
     free(work);
 
-    return MAGMA_SUCCESS;
+    return *info;
 }
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> c
 
@@ -29,11 +29,11 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
             cuDoubleComplex *work, magma_int_t lwork,
             double *rwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -173,7 +173,7 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
     if (*info == 0) {
         nb = magma_get_zgehrd_nb(n);
         minwrk = (1+nb)*n;
-        work[1] = MAGMA_Z_MAKE((double) minwrk, 0.);
+        work[0] = MAGMA_Z_MAKE((double) minwrk, 0.);
 
         if (lwork < minwrk && ! lquery) {
             *info = -12;
@@ -182,23 +182,22 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
    
     // if eigenvectors are needed
 #if defined(VERSION3)
-    if (CUBLAS_STATUS_SUCCESS != 
-        cublasAlloc( nb*n, sizeof(cuDoubleComplex), (void**)&dT)) {
-        *info = -6;
-        return MAGMA_ERR_CUBLASALLOC;
+    if (MAGMA_SUCCESS != magma_zmalloc( &dT, nb*n )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
     }
 #endif
 
@@ -402,16 +401,16 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
                    Fortran BLAS does not have to add 1
                    C       BLAS must add one to cblas_idamax */
             k = cblas_idamax(n, &rwork[irwork], 1)+1;
-            MAGMA_Z_CNJG(z__2, vl[k + i__ * vl_dim1]);
+            z__2 = MAGMA_Z_CNJG(vl[k + i__ * vl_dim1]);
             d__1 = magma_dsqrt(rwork[irwork + k - 1]);
             MAGMA_Z_DSCALE(z__1, z__2, d__1);
-            MAGMA_Z_ASSIGN(tmp, z__1);
+            tmp = z__1;
             cblas_zscal(n, CBLAS_SADDR(tmp), &vl[i__ * vl_dim1 + 1], 1);
             i__2 = k + i__ * vl_dim1;
             i__3 = k + i__ * vl_dim1;
             d__1 = MAGMA_Z_REAL(vl[i__3]);
             MAGMA_Z_SET2REAL(z__1, d__1);
-            MAGMA_Z_ASSIGN(vl[i__2], z__1);
+            vl[i__2] = z__1;
         }
     }
 
@@ -439,16 +438,16 @@ magma_zgeev(char jobvl, char jobvr, magma_int_t n,
                    Fortran BLAS does not have to add 1
                    C       BLAS must add one to cblas_idamax */
             k = cblas_idamax(n, &rwork[irwork], 1)+1;
-            MAGMA_Z_CNJG(z__2, vr[k + i__ * vr_dim1]);
+            z__2 = MAGMA_Z_CNJG(vr[k + i__ * vr_dim1]);
             d__1 = magma_dsqrt(rwork[irwork + k - 1]);
             MAGMA_Z_DSCALE(z__1, z__2, d__1);
-            MAGMA_Z_ASSIGN(tmp, z__1);
+            tmp = z__1;
             cblas_zscal(n, CBLAS_SADDR(tmp), &vr[i__ * vr_dim1 + 1], 1);
             i__2 = k + i__ * vr_dim1;
             i__3 = k + i__ * vr_dim1;
             d__1 = MAGMA_Z_REAL(vr[i__3]);
             MAGMA_Z_SET2REAL(z__1, d__1);
-            MAGMA_Z_ASSIGN(vr[i__2], z__1);
+            vr[i__2] = z__1;
         }
     }
 
@@ -469,8 +468,8 @@ L50:
     }
 
 #if defined(VERSION3)
-    cublasFree( dT );
+    magma_free( dT );
 #endif
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_zgeev */
 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated d Sun Nov 13 20:48:20 2011
+       @generated d Tue May 15 18:17:33 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
              double *tau, double *dT,
              magma_int_t nb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -96,32 +96,31 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     if (n <= 0)
-      return MAGMA_SUCCESS;
+      return *info;
 
     /* Allocate GPU work space */
     ldda = ((m+31)/32)*32;
     lddwork = ((lddwork+31)/32)*32;
-    if (CUBLAS_STATUS_SUCCESS != 
-        cublasAlloc((n)*ldda + nb*lddwork, sizeof(double), (void**)&da)) 
-      {
-        *info = -11;
-        return MAGMA_ERR_CUBLASALLOC;
-      }
+    if (MAGMA_SUCCESS != magma_dmalloc( &da, (n)*ldda + nb*lddwork )) {
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
+    }
     dwork = da + (n)*ldda;
 
     /* Allocate CPU work space */
     lwork = n * nb;
     work = (double *)malloc(lwork*sizeof(double));
     if( work == NULL ) {
-        cublasFree(da);
-        return MAGMA_ERR_ALLOCATION;
+        magma_free( da );
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
     }
 
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
 
     if ( (nb > 1) && (nb < k) )
       {
@@ -146,9 +145,9 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
                          a_ref(kk, kk), &lda,
                          &tau[kk], work, &lwork, &iinfo);
 
-        cublasSetMatrix(i__1, i__2, sizeof(double),
-                          a_ref(kk, kk), lda, 
-                        da_ref(kk, kk), ldda);
+        magma_dsetmatrix( i__1, i__2,
+                          a_ref(kk, kk),  lda,
+                          da_ref(kk, kk), ldda );
       }
 
     if (kk > 0)
@@ -161,9 +160,7 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
             /* Send the current panel to the GPU */
             i__2 = m - i;
             dpanel_to_q(MagmaUpper, ib, a_ref(i,i), lda, work);
-            cublasSetMatrix( i__2, ib, sizeof(double),
-                              a_ref(i, i), lda,
-                             da_ref(i, i), ldda);
+            magma_dsetmatrix( i__2, ib, a_ref(i, i), lda, da_ref(i, i), ldda );
                              
             if (i + ib < n)
               {
@@ -179,10 +176,9 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
             lapackf77_dorgqr(&i__2, &ib, &ib, 
                              a_ref(i, i), &lda, 
                              &tau[i], work, &lwork, &iinfo);
-            cudaMemcpy2DAsync(da_ref(i,i), ldda * sizeof(double),
-                               a_ref(i,i), lda * sizeof(double),
-                              sizeof(double)*i__2, ib,
-                              cudaMemcpyHostToDevice, stream);
+            magma_dsetmatrix_async( i__2, ib,
+                                    a_ref(i,i),  lda,
+                                    da_ref(i,i), ldda, stream );
 
             /* Set rows 1:i-1 of current block to zero */
             i__2 = i + ib;
@@ -190,15 +186,14 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
           }
       }
 
-    cublasGetMatrix(m, n, sizeof(double),
-                    da_ref(0, 0), ldda, a_ref(0, 0), lda);
+    magma_dgetmatrix( m, n, da_ref(0, 0), ldda, a_ref(0, 0), lda );
 
     
-    cudaStreamDestroy(stream);
-    cublasFree(da);
+    magma_queue_destroy( stream );
+    magma_free( da );
     free(work);
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_dorgqr */
 
 #undef da_ref

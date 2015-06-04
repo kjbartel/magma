@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:50 2011
+       @generated c Tue May 15 18:18:18 2012
 
 */
 
@@ -42,11 +42,11 @@ int main( int argc, char** argv)
     magma_timestr_t       start, end;
     float           flops, gpu_perf, cpu_perf;
     float           matnorm, work[1];
-    cuFloatComplex  mzone= MAGMA_C_NEG_ONE;
+    cuFloatComplex  c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex *h_A, *h_R, *tau, *h_work, tmp[1];
 
     /* Matrix size */
-    magma_int_t M = 0, N = 0, n2, lda, ldda, lwork;
+    magma_int_t M = 0, N = 0, n2, lda, lwork;
     magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,9984};
 
     magma_int_t i, info, min_mn, nb;
@@ -106,7 +106,6 @@ int main( int argc, char** argv)
         min_mn= min(M, N);
         lda   = M;
         n2    = lda*N;
-        ldda  = ((M+31)/32)*32;
         flops = FLOPS( (float)M, (float)N ) / 1000000;
 
         /* Initialize the matrix */
@@ -139,7 +138,7 @@ int main( int argc, char** argv)
            Check the result compared to LAPACK
            =================================================================== */
         matnorm = lapackf77_clange("f", &M, &N, h_A, &lda, work);
-        blasf77_caxpy(&n2, &mzone, h_A, &ione, h_R, &ione);
+        blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
 
         printf("%5d %5d  %6.2f         %6.2f        %e\n",
                M, N, cpu_perf, gpu_perf,

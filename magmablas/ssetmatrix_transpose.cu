@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated s Sun Nov 13 20:48:40 2011
+       @generated s Tue May 15 18:18:06 2012
 
 */
 #include "common_magma.h"
@@ -44,24 +44,22 @@ magmablas_ssetmatrix_transpose( int m, int n,
     }
 
     static cudaStream_t stream[2];
-    cudaStreamCreate(&stream[0]);
-    cudaStreamCreate(&stream[1]);
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
    
     /* Move data from CPU to GPU in the first panel in the dB buffer */
     ib   = min(n-i, nb);
-    cudaMemcpy2DAsync(dB + (j%2) * nb * lddb, lddb*sizeof(float),
-                      ha + i*lda, lda*sizeof(float),
-                      sizeof(float)*m, ib,
-                      cudaMemcpyHostToDevice, stream[j%2]);
+    magma_ssetmatrix_async( m, ib,
+                            ha + i*lda,             lda,
+                            dB + (j%2) * nb * lddb, lddb, stream[j%2] );
     j++;
 
     for(i=nb; i<n; i+=nb){
        /* Move data from CPU to GPU in the second panel in the dB buffer */
        ib   = min(n-i, nb);
-       cudaMemcpy2DAsync(dB + (j%2) * nb * lddb, lddb*sizeof(float),
-                         ha+i*lda, lda*sizeof(float),
-                         sizeof(float)*m, ib, 
-                         cudaMemcpyHostToDevice, stream[j%2]);
+       magma_ssetmatrix_async( m, ib,
+                               ha+i*lda,               lda,
+                               dB + (j%2) * nb * lddb, lddb, stream[j%2] );
        j++;
   
        /* Note that the previous panel (i.e., j%2) comes through the stream
@@ -75,8 +73,8 @@ magmablas_ssetmatrix_transpose( int m, int n,
     // magmablas_stranspose2( dat+i-nb, ldda, dB + (j%2)*nb*lddb, lddb, m, ib);
     magmablas_stranspose2s( dat+i-nb, ldda, dB + (j%2)*nb*lddb, lddb, m, ib, &stream[j%2]);
 
-    cudaStreamDestroy( stream[0] );
-    cudaStreamDestroy( stream[1] );
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
 }
 
 //===========================================================================
@@ -106,20 +104,19 @@ magmablas_ssetmatrix_transpose2( int m, int n,
     if (n<num_gpus*nb){
        for(i=0; i<n; i+=nb){
           k = (i/nb)%num_gpus;
-          cudaSetDevice(k);
+          magma_setdevice(k);
 
           ib = min(n-i, nb);
-          cudaMemcpy2DAsync(dB[k], lddb*sizeof(float),
-                            ha+i*lda, lda*sizeof(float),
-                            sizeof(float)*m, ib,
-                            cudaMemcpyHostToDevice, stream[k][0]);
+          magma_ssetmatrix_async( m, ib,
+                                  ha+i*lda, lda,
+                                  dB[k],    lddb, stream[k][0] );
        }
        for(i=0; i<n; i+=nb){
           k = (i/nb)%num_gpus;
-          cudaSetDevice(k);
+          magma_setdevice(k);
 
           ib = min(n-i, nb);
-          //cudaStreamSynchronize( stream[k][0]);
+          //magma_queue_sync( stream[k][0] );
           //magmablas_stranspose2( dat[k]+ i/(nb*num_gpus)*nb, ldda[k],
           //                       dB[k], lddb, m, ib);
           magmablas_stranspose2s( dat[k]+ i/(nb*num_gpus)*nb, ldda[k],
@@ -130,22 +127,21 @@ magmablas_ssetmatrix_transpose2( int m, int n,
     {
       for(i=0; i<(n + num_gpus*nb); i+=nb){
          k = (i/nb)%num_gpus;
-         cudaSetDevice(k);
+         magma_setdevice(k);
 
          if (i<n){
             /* Move data from CPU to GPU in the second panel in the dB buffer */
             ib = min(n-i, nb);
-            cudaMemcpy2DAsync(dB[k] + (j[k]%2)*nb*lddb, lddb*sizeof(float),
-                         ha+i*lda, lda*sizeof(float),
-                         sizeof(float)*m, ib, 
-                         cudaMemcpyHostToDevice, stream[k][j[k]%2]);
+            magma_ssetmatrix_async( m, ib,
+                                    ha+i*lda,                 lda,
+                                    dB[k] + (j[k]%2)*nb*lddb, lddb, stream[k][j[k]%2] );
          }
          j[k]++;
   
          if (i> (num_gpus-1)*nb){
             /* Make sure that the previous panel (i.e., j[k]%2) has arrived 
                and transpose it directly into the dat matrix                  */
-            //cudaStreamSynchronize( stream[k][ j[k]%2 ]);
+            //magma_queue_sync( stream[k][ j[k]%2 ] );
             ib = min(n - i + num_gpus*nb, nb);
             //magmablas_stranspose2( dat[k]+ i/(nb*num_gpus)*nb -nb, ldda[k],
             //                       dB[k] +(j[k]%2)*nb*lddb, lddb, m, ib);

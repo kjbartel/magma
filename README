@@ -6,6 +6,7 @@ VERSION 0.1  :  September 2009
 VERSION 0.2  :  November  2009
 VERSION 1.0  :  August    2011
 VERSION 1.1  :  November  2011
+VERSION 1.2  :  May       2012
 
 * To INSTALL MAGMA, modify the make.inc file to indicate where 
   CUDA, CPU BLAS, and LAPACK are installed on your system. Examples
@@ -25,6 +26,16 @@ VERSION 1.1  :  November  2011
   general Tesla and Fermi GPUs. If you have a Fermi (C2050), you can also 
   compare your performance to what we get, given in file 
   'testing/results_fermi.txt', as an easy check for your installation.
+
+* To RUN EXPERIMENTAL MAGMA, go to directory 'exp' and type 'make'.  Then 
+  type 'export NUM_MKL_THREADS=1'.  Next go to directory 'testing'.  
+  Provided are drivers testing multi-core Choleskey, QR, and LU; and 
+  single GPU all, available CPU cores QR.  Typing a given driver name will 
+  result in clear instructions on what to provide on the command line.  
+
+  Note that on some systems the experimental code must be linked against 
+  sequential MKL.  If you notice excessively poor performance, change 
+  make.inc to link against sequential MKL.
 
 For more INFORMATION, please refer to the MAGMA homepage and user forum:
   

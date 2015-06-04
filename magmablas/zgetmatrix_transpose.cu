@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -44,8 +44,8 @@ magmablas_zgetmatrix_transpose( int m, int n,
     }
 
     static cudaStream_t stream[2];
-    cudaStreamCreate(&stream[0]);
-    cudaStreamCreate(&stream[1]);
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
 
     for(i=0; i<n; i+=nb){
        /* Move data from GPU to CPU using 2 buffers; 1st transpose the data on the GPU */
@@ -53,15 +53,14 @@ magmablas_zgetmatrix_transpose( int m, int n,
 
        //magmablas_ztranspose2 ( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m);
        magmablas_ztranspose2s( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m, &stream[j%2]);
-       cudaMemcpy2DAsync(ha+i*lda, lda*sizeof(cuDoubleComplex),
-                         dB + (j%2) * nb * lddb, lddb*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*m, ib, 
-                         cudaMemcpyDeviceToHost, stream[j%2]);
+       magma_zgetmatrix_async( m, ib,
+                               dB + (j%2) * nb * lddb, lddb,
+                               ha+i*lda,               lda, stream[j%2] );
        j++;
     }
 
-    cudaStreamDestroy( stream[0] );
-    cudaStreamDestroy( stream[1] );
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
 }
 
 //===========================================================================
@@ -92,19 +91,17 @@ magmablas_zgetmatrix_transpose2( int m, int n,
        /* Move data from GPU to CPU using 2 buffers; 1st transpose the data on the GPU */
        k = (i/nb)%num_gpus;
        ib   = min(n-i, nb);
-       cudaSetDevice(k);
+       magma_setdevice(k);
 
-       //cudaStreamSynchronize(stream[k][j[k]%2]);
+       //magma_queue_sync( stream[k][j[k]%2] );
        //magmablas_ztranspose2( dB[k] + (j[k]%2)*nb*lddb, lddb, 
        //                       dat[k]+i/(nb*num_gpus)*nb, ldda[k], ib, m);
        magmablas_ztranspose2s(dB[k] + (j[k]%2)*nb*lddb, lddb,
                               dat[k]+i/(nb*num_gpus)*nb, ldda[k], 
                               ib, m, &stream[k][j[k]%2]);
-       cudaMemcpy2DAsync(ha+i*lda, lda*sizeof(cuDoubleComplex),
-                         dB[k] + (j[k]%2) * nb * lddb, lddb*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*m, ib,
-                         cudaMemcpyDeviceToHost,
-                         stream[k][j[k]%2]);
+       magma_zgetmatrix_async( m, ib,
+                               dB[k] + (j[k]%2) * nb * lddb, lddb,
+                               ha+i*lda,                     lda, stream[k][j[k]%2] );
        j[k]++;
     }
 }

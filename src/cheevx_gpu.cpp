@@ -1,17 +1,18 @@
 /*
-   -- MAGMA (version 1.1) --
+   -- MAGMA (version 1.2.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      November 2011
+      May 2012
  
       @author Raffaele Solca
 
-      @generated c Sun Nov 13 20:48:29 2011
+      @generated c Tue May 15 18:17:46 2012
  
  */
 #include "common_magma.h"
 
+/* These interfaces are used for TAU profiling */
 extern"C"{
     void Mylapackf77_cstein(magma_int_t *n, float *d, float *e, magma_int_t *m, 
                             float *w, magma_int_t *iblock, magma_int_t *isplit,
@@ -42,11 +43,11 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
                  cuFloatComplex *work, magma_int_t lwork,
                  float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    November 2011
+    May 2012
    
     Purpose   
     =======   
@@ -270,20 +271,20 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
   
   if (*info != 0) {
       magma_xerbla( __func__, -(*info));
-      return MAGMA_ERR_ILLEGAL_VALUE;
+      return *info;
   } else if (lquery) {
-      return MAGMA_SUCCESS;
+      return *info;
   }
   
   /* Quick return if possible */
   *m = 0;
   if (n == 0) {
-    return MAGMA_SUCCESS;
+    return *info;
   }
   
   if (n == 1) {
     cuFloatComplex tmp;
-    cublasGetVector(1, sizeof(cuFloatComplex), da, 1, &tmp, 1);
+    magma_cgetvector( 1, da, 1, &tmp, 1 );
     w[0] = MAGMA_C_REAL(tmp);
     if (alleig || indeig) {
       *m = 1;
@@ -294,14 +295,15 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
     }
     if (wantz) {
       tmp = MAGMA_C_ONE;
-      cublasSetVector(1, sizeof(cuFloatComplex), &tmp, 1, da, 1);
+      magma_csetvector( 1, &tmp, 1, da, 1 );
     }
-    return MAGMA_SUCCESS;
+    return *info;
   }
 
-  if (cudaSuccess != cudaMalloc((void**)&dwork, n*sizeof(float))) {
+  if (MAGMA_SUCCESS != magma_smalloc( &dwork, n )) {
     fprintf (stderr, "!!!! device memory allocation error (magma_cheevx_gpu)\n");
-    return MAGMA_ERR_CUBLASALLOC;
+    *info = MAGMA_ERR_DEVICE_ALLOC;
+    return *info;
   }
     
   --w;
@@ -382,7 +384,7 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
         for (i = 1; i <= n; ++i) {
           ifail[i] = 0;
         }
-        cublasSetMatrix(n, n, sizeof(cuFloatComplex), wz, ldwz, dz, lddz);
+        magma_csetmatrix( n, n, wz, ldwz, dz, lddz );
       }
 
     }
@@ -410,7 +412,7 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
       Mylapackf77_cstein(&n, &rwork[indd], &rwork[inde], m, &w[1], &iwork[indibl], &iwork[indisp],
                        wz, &ldwz, &rwork[indrwk], &iwork[indiwk], &ifail[1], info);
       
-      cublasSetMatrix(n, *m, sizeof(cuFloatComplex), wz, ldwz, dz, lddz);
+      magma_csetmatrix( n, *m, wz, ldwz, dz, lddz );
       
       /*        Apply unitary matrix used in reduction to tridiagonal   
        form to eigenvectors returned by ZSTEIN. */
@@ -449,7 +451,7 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
         iwork[indibl + i - 1] = iwork[indibl + j - 1];
         w[j] = tmp1;
         iwork[indibl + j - 1] = itmp1;
-        cublasCswap(n, dz + (i-1)*lddz, ione, dz + (j-1)*lddz, ione);
+        magma_cswap(n, dz + (i-1)*lddz, ione, dz + (j-1)*lddz, ione);
         if (*info != 0) {
           itmp1 = ifail[i];
           ifail[i] = ifail[j];
@@ -463,7 +465,7 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
   
   work[1] = MAGMA_C_MAKE((float) lopt, 0.);
   
-  return MAGMA_SUCCESS;
+  return *info;
   
 } /* magma_cheevx_gpu_ */
 

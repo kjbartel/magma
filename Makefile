@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.1) --
+#   -- MAGMA (version 1.2.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2011
+#      May 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = .
@@ -16,6 +16,7 @@ lib: libmagma libmagmablas
 libmagma:
 	( cd control        && $(MAKE) )
 	( cd src            && $(MAKE) )
+	( cd interface_cuda && $(MAKE) )
 
 libmagmablas:
 	( cd magmablas      && $(MAKE) )
@@ -33,14 +34,17 @@ test:
 clean:
 	( cd control        && $(MAKE) clean )
 	( cd src            && $(MAKE) clean )
+	( cd interface_cuda && $(MAKE) clean )
 	( cd testing        && $(MAKE) clean )
 	( cd testing/lin    && $(MAKE) clean )
 	( cd magmablas      && $(MAKE) clean ) 
 #	( cd quark          && $(MAKE) clean )
+	-rm -f $(LIBMAGMA) $(LIBMAGMABLAS)
 
 cleanall:
 	( cd control        && $(MAKE) cleanall )
 	( cd src            && $(MAKE) cleanall )
+	( cd interface_cuda && $(MAKE) cleanall )
 	( cd testing        && $(MAKE) cleanall )
 	( cd testing/lin    && $(MAKE) cleanall )
 	( cd magmablas      && $(MAKE) cleanall ) 
@@ -49,6 +53,7 @@ cleanall:
 	$(MAKE) cleanall2
 
 # cleanall2 is a dummy rule to run cleangen at the *end* of make cleanall, so
+# .Makefile.gen files aren't deleted and immediately re-created. see Makefile.gen
 cleanall2:
 	@echo
 

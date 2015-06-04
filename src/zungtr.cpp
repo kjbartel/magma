@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @precisions normal z -> s d c
 
@@ -17,11 +17,11 @@ magma_zungtr(char uplo, magma_int_t n, cuDoubleComplex *a,
              cuDoubleComplex *dT, magma_int_t nb, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======
@@ -115,15 +115,15 @@ magma_zungtr(char uplo, magma_int_t n, cuDoubleComplex *a,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info));
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     } else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /* Quick return if possible */
     if (n == 0) {
         work[0] = MAGMA_Z_ONE;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     if (upper) {
@@ -170,7 +170,7 @@ magma_zungtr(char uplo, magma_int_t n, cuDoubleComplex *a,
     
     MAGMA_Z_SET2REAL( work[0], lwkopt);
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_zungtr */
 
 #undef a_ref

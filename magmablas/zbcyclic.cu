@@ -1,76 +1,66 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
+       @author Stan Tomov
        @precisions normal z -> s d c
-
 */
 #include "common_magma.h"
 #define PRECISION_z
 #include "commonblas.h"
 
 //===========================================================================
-//  Set a matrix from CPU to multi-GPUs is 1D block cyclic distribution. 
-//  The da arrays are pointers to the matrix data for the corresponding GPUs. 
+//  Set a matrix from CPU to multi-GPUs is 1D block cyclic distribution.
+//  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
-extern "C" void 
+extern "C" void
 magmablas_zsetmatrix_1D_bcyclic( int m, int n,
-                                 cuDoubleComplex  *ha, int lda, 
-                                 cuDoubleComplex  *da[], int ldda, 
+                                 cuDoubleComplex  *hA,   int lda,
+                                 cuDoubleComplex  *dA[], int ldda,
                                  int num_gpus, int nb )
 {
-    int i, k, nk, cdevice;
+    int i, d, nk, cdevice;
 
-    cudaGetDevice(&cdevice);
+    magma_getdevice( &cdevice );
 
-    for(i=0; i<n; i+=nb){
-       k = (i/nb)%num_gpus;
-       cudaSetDevice(k);
-         
-       nk = min(nb, n-i);
-       //cublasSetMatrix( m, nk, sizeof(cuDoubleComplex), ha+i*lda, lda,
-       //                 da[k]+i/(nb*num_gpus)*nb*ldda, ldda);
-       cudaMemcpy2DAsync(da[k]+i/(nb*num_gpus)*nb*ldda, ldda*sizeof(cuDoubleComplex),
-                         ha + i*lda, lda*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*m, nk,
-                         cudaMemcpyHostToDevice, NULL);
+    for( i = 0; i < n; i += nb ) {
+        d = (i/nb) % num_gpus;
+        magma_setdevice( d );
+        nk = min(nb, n-i);
+        magma_zsetmatrix_async( m, nk,
+                                hA + i*lda, lda,
+                                dA[d] + i/(nb*num_gpus)*nb*ldda, ldda, NULL );
     }
 
-    cudaSetDevice(cdevice);
+    magma_setdevice( cdevice );
 }
 
 
 //===========================================================================
 //  Get a matrix with 1D block cyclic distribution on multiGPUs to the CPU.
-//  The da arrays are pointers to the matrix data for the corresponding GPUs.
+//  The dA arrays are pointers to the matrix data for the corresponding GPUs.
 //===========================================================================
 extern "C" void
 magmablas_zgetmatrix_1D_bcyclic( int m, int n,
-                                 cuDoubleComplex  *da[], int ldda,
-                                 cuDoubleComplex  *ha, int lda,
+                                 cuDoubleComplex  *dA[], int ldda,
+                                 cuDoubleComplex  *hA,   int lda,
                                  int num_gpus, int nb )
 {
-    int i, k, nk, cdevice;
+    int i, d, nk, cdevice;
 
-    cudaGetDevice(&cdevice);
+    magma_getdevice( &cdevice );
 
-    for(i=0; i<n; i+=nb){
-       k = (i/nb)%num_gpus;
-       cudaSetDevice(k);
-
-       nk = min(nb, n-i);
-       //cublasGetMatrix( m, nk, sizeof(cuDoubleComplex),
-       //                 da[k]+i/(nb*num_gpus)*nb*ldda, ldda,
-       //                 ha+i*lda, lda);
-       cudaMemcpy2DAsync(ha + i*lda, lda*sizeof(cuDoubleComplex),
-                         da[k]+i/(nb*num_gpus)*nb*ldda, ldda*sizeof(cuDoubleComplex),
-                         sizeof(cuDoubleComplex)*m, nk,
-                         cudaMemcpyDeviceToHost, NULL);
+    for( i = 0; i < n; i += nb ) {
+        d = (i/nb) % num_gpus;
+        magma_setdevice( d );
+        nk = min(nb, n-i);
+        magma_zgetmatrix_async( m, nk,
+                                dA[d] + i/(nb*num_gpus)*nb*ldda, ldda,
+                                hA + i*lda, lda, NULL );
     }
-        
-    cudaSetDevice(cdevice);
-}
 
+    magma_setdevice( cdevice );
+}

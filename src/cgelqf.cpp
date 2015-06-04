@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
-       @generated c Sun Nov 13 20:48:20 2011
+       @generated c Tue May 15 18:17:32 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
               cuFloatComplex *a,    magma_int_t lda,   cuFloatComplex *tau, 
               cuFloatComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -45,7 +45,7 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
             product of elementary reflectors (see Further Details).
 
             Higher performance is achieved if A is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,M).
@@ -58,7 +58,7 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
             Higher performance is achieved if WORK is in pinned memory, e.g.
-            allocated using cudaMallocHost.
+            allocated using magma_malloc_host.
 
     LWORK   (input) INTEGER
             The dimension of the array WORK.  LWORK >= max(1,M).
@@ -116,16 +116,16 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
     else if (lquery) {
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     /*  Quick return if possible */
     if (min(m, n) == 0) {
         work[0] = c_one;
-        return MAGMA_SUCCESS;
+        return *info;
     }
 
     maxm = ((m + 31)/32)*32;
@@ -136,12 +136,12 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
         {
             ldda = maxdim;
 
-            if (CUBLAS_STATUS_SUCCESS != cublasAlloc(maxdim*maxdim, sizeof(cuFloatComplex), (void**)&dA)) {
-                *info = -10;
-                return MAGMA_ERR_CUBLASALLOC;
+            if (MAGMA_SUCCESS != magma_cmalloc( &dA, maxdim*maxdim )) {
+                *info = MAGMA_ERR_DEVICE_ALLOC;
+                return *info;
             }
 
-            cublasSetMatrix( m, n, sizeof(cuFloatComplex), a, lda, dA, ldda);
+            magma_csetmatrix( m, n, a, lda, dA, ldda );
             dAT = dA;
             magmablas_cinplace_transpose( dAT, ldda, ldda );
         }
@@ -149,12 +149,12 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
         {
             ldda = maxn;
 
-            if (CUBLAS_STATUS_SUCCESS != cublasAlloc(2*maxn*maxm, sizeof(cuFloatComplex), (void**)&dA)) {
-                *info = -10;
-                return MAGMA_ERR_CUBLASALLOC;
+            if (MAGMA_SUCCESS != magma_cmalloc( &dA, 2*maxn*maxm )) {
+                *info = MAGMA_ERR_DEVICE_ALLOC;
+                return *info;
             }
 
-            cublasSetMatrix( m, n, sizeof(cuFloatComplex), a, lda, dA, maxm);
+            magma_csetmatrix( m, n, a, lda, dA, maxm );
 
             dAT = dA + maxn * maxm;
             magmablas_ctranspose2( dAT, ldda, dA, maxm, m, n );
@@ -164,15 +164,15 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
 
     if (maxdim*maxdim< 2*maxm*maxn){
         magmablas_cinplace_transpose( dAT, ldda, ldda );
-        cublasGetMatrix( m, n, sizeof(cuFloatComplex), dA, ldda, a, lda);
+        magma_cgetmatrix( m, n, dA, ldda, a, lda );
     } else {
         magmablas_ctranspose2( dA, maxm, dAT, ldda, n, m );
-        cublasGetMatrix( m, n, sizeof(cuFloatComplex), dA, maxm, a, lda);
+        magma_cgetmatrix( m, n, dA, maxm, a, lda );
     }
 
-    cublasFree(dA);
+    magma_free( dA );
 
-    return MAGMA_SUCCESS;
+    return *info;
 } /* magma_cgelqf */
 
 #undef  a_ref

@@ -1,9 +1,9 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
  *  @precisions normal z -> c d s
  *
@@ -19,6 +19,7 @@
 
 #include "flops.h"
 #include "magma.h"
+#include "magmablas.h"
 #include "magma_lapack.h"
 #include "testings.h"
 
@@ -29,6 +30,17 @@
 #define FLOPS(n) (      FMULS_SYMV(n) +      FADDS_SYMV(n))
 #endif
 
+#if (GPUSHMEM == 200)
+extern "C" magma_int_t
+magmablas_zhemv2( char uplo, magma_int_t n,
+                      cuDoubleComplex alpha,
+                      cuDoubleComplex *A, magma_int_t lda,
+                      cuDoubleComplex *X, magma_int_t incx,
+                      cuDoubleComplex beta,
+                      cuDoubleComplex *Y, magma_int_t incy,
+                      cuDoubleComplex *work, magma_int_t lwork);
+#endif
+
 int main(int argc, char **argv)
 {        
     TESTING_CUDA_INIT();
@@ -37,7 +49,7 @@ int main(int argc, char **argv)
     double      flops, magma_perf, cuda_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuDoubleComplex mzone = MAGMA_Z_NEG_ONE;
+    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
 
     FILE        *fp ; 
     magma_int_t N, m, i, lda, LDA;
@@ -50,12 +62,10 @@ int main(int argc, char **argv)
     cuDoubleComplex beta  = MAGMA_Z_MAKE(0., 0.); // MAGMA_Z_MAKE( -0.6,  0.8 );
     cuDoubleComplex *A, *X, *Y, *Ycublas, *Ymagma;
     cuDoubleComplex *dA, *dX, *dY;
-#if defined(PRECISION_z) || defined(PRECISION_c)
+    int nb = 64;
 
-#else
      cuDoubleComplex *C_work;
      cuDoubleComplex *dC_work;
-#endif
     
     fp = fopen ("results_zhemv.txt", "w") ;
     if( fp == NULL ){ printf("Couldn't open output file\n"); exit(1);}
@@ -63,7 +73,12 @@ int main(int argc, char **argv)
     printf("HEMV cuDoubleComplex Precision\n\n"
            "Usage\n\t\t testing_zhemv U|L N\n\n");
 
+#ifdef PRECISION_z
     N = 8*1024+64;
+#else
+    N = 15*1024+64;
+#endif 
+
     if( argc > 1 ) {
       uplo = argv[1][0];
     }
@@ -84,14 +99,11 @@ int main(int argc, char **argv)
     TESTING_DEVALLOC( dX, cuDoubleComplex, vecsize );
     TESTING_DEVALLOC( dY, cuDoubleComplex, vecsize );
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
 
-#else
-    int blocks    = N / 64 + (N % 64 != 0);
+    int blocks    = N / nb + (N % nb != 0);
     int workspace = LDA * (blocks + 1);
     TESTING_MALLOC(    C_work, cuDoubleComplex, workspace );
     TESTING_DEVALLOC( dC_work, cuDoubleComplex, workspace );
-#endif        
 
     /* Initialize the matrix */
     lapackf77_zlarnv( &ione, ISEED, &matsize, A );
@@ -126,37 +138,38 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using CUDA-BLAS
            =================================================================== */
-        cublasSetMatrix( m, m, sizeof( cuDoubleComplex ), A, LDA ,  dA, lda  );
-        cublasSetVector( m,    sizeof( cuDoubleComplex ), X, incx, dX, incx );
-        cublasSetVector( m,    sizeof( cuDoubleComplex ), Y, incx, dY, incx );
+        magma_zsetmatrix( m, m, A, LDA, dA, lda );
+        magma_zsetvector( m, X, incx, dX, incx );
+        magma_zsetvector( m, Y, incx, dY, incx );
 
-#if defined(PRECISION_z) || defined(PRECISION_c)
 
-#else
-            blocks    = m / 64 + (m % 64 != 0);
-            cublasSetMatrix(lda,blocks, sizeof( cuDoubleComplex ), C_work, LDA , dC_work, lda);
-#endif        
+            blocks    = m / nb + (m % nb != 0);
+            magma_zsetmatrix( lda, blocks, C_work, LDA, dC_work, lda );
         start = get_current_time();
         cublasZhemv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
         end = get_current_time();
 
-        cublasGetVector( m, sizeof( cuDoubleComplex ), dY, incx, Ycublas, incx );
+        magma_zgetvector( m, dY, incx, Ycublas, incx );
         
         
         cuda_perf = flops / GetTimerValue(start,end);
         printf(     "%11.2f", cuda_perf );
         fprintf(fp, "%11.2f", cuda_perf );
         
-        cublasSetVector( m, sizeof( cuDoubleComplex ), Y, incx, dY, incx );
+        magma_zsetvector( m, Y, incx, dY, incx );
         magmablas_zhemv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
-        cublasSetVector( m, sizeof( cuDoubleComplex ), Y, incx, dY, incx );
+        magma_zsetvector( m, Y, incx, dY, incx );
         
         
         start = get_current_time();
+#if (GPUSHMEM == 200)
+        magmablas_zhemv2( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx, dC_work, lda * (blocks + 1));
+#else
         magmablas_zhemv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
+#endif
         end = get_current_time();
         
-        cublasGetVector( m, sizeof( cuDoubleComplex ), dY, incx, Ymagma, incx );
+        magma_zgetvector( m, dY, incx, Ymagma, incx );
 
         magma_perf = flops / GetTimerValue(start,end);
         printf(     "%11.2f", magma_perf );
@@ -166,7 +179,7 @@ int main(int argc, char **argv)
            Computing the Difference Cublas VS Magma
            =================================================================== */
         
-        blasf77_zaxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_zaxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_zlange( "M", &m, &ione, Ycublas, &m, work );
             
 #if 0
@@ -181,7 +194,7 @@ int main(int argc, char **argv)
                      CBLAS_SADDR(alpha), A, LDA, X, incx, 
                      CBLAS_SADDR(beta), Ycublas, incx );
  
-        blasf77_zaxpy( &m, &mzone, Ymagma, &incx, Ycublas, &incx);
+        blasf77_zaxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
         error = lapackf77_zlange( "M", &m, &ione, Ycublas, &m, work );
 #endif
 
@@ -201,12 +214,8 @@ int main(int argc, char **argv)
     TESTING_DEVFREE( dA );
     TESTING_DEVFREE( dX );
     TESTING_DEVFREE( dY );
-#if defined(PRECISION_z) || defined(PRECISION_c)
-        
-#else 
     TESTING_FREE( C_work );
     TESTING_DEVFREE( dC_work );
-#endif        
 
     /* Free device */
     TESTING_CUDA_FINALIZE();

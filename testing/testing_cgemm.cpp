@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated c Sun Nov 13 20:48:47 2011
+ * @generated c Tue May 15 18:18:14 2012
  *
  **/
 
@@ -53,7 +53,7 @@ int main( int argc, char** argv)
     
     cuFloatComplex *h_A, *h_B, *h_C, *h_C2;
     cuFloatComplex *d_A, *d_B, *d_C;
-    cuFloatComplex mzone = MAGMA_C_NEG_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex alpha = MAGMA_C_MAKE(  0.29, -0.86 );
     cuFloatComplex beta  = MAGMA_C_MAKE( -0.48,  0.38 );
 
@@ -197,9 +197,9 @@ int main( int argc, char** argv)
         /* =====================================================================
            Performs operation using MAGMA-BLAS
            =================================================================== */
-        cublasSetMatrix( Am, An, sizeof( cuFloatComplex ), h_A, lda, d_A, ldda );
-        cublasSetMatrix( Bm, Bn, sizeof( cuFloatComplex ), h_B, ldb, d_B, lddb );
-        cublasSetMatrix( M,  N,  sizeof( cuFloatComplex ), h_C, ldc, d_C, lddc );
+        magma_csetmatrix( Am, An, h_A, lda, d_A, ldda );
+        magma_csetmatrix( Bm, Bn, h_B, ldb, d_B, lddb );
+        magma_csetmatrix( M, N, h_C, ldc, d_C, lddc );
 
         start = get_current_time();
         magmablas_cgemm( transA, transB, M, N, K, 
@@ -209,12 +209,12 @@ int main( int argc, char** argv)
         end = get_current_time();
         magma_perf = flops / GetTimerValue(start, end);
         
-        cublasGetMatrix( M, N, sizeof( cuFloatComplex ), d_C, lddc, h_C2, ldc );
+        magma_cgetmatrix( M, N, d_C, lddc, h_C2, ldc );
         
         /* =====================================================================
            Performs operation using CUDA-BLAS
            =================================================================== */
-        cublasSetMatrix( M, N, sizeof( cuFloatComplex ), h_C, ldc, d_C, lddc );
+        magma_csetmatrix( M, N, h_C, ldc, d_C, lddc );
         
         start = get_current_time();
         cublasCgemm( transA, transB, M, N, K, 
@@ -224,12 +224,12 @@ int main( int argc, char** argv)
         end = get_current_time();
         cuda_perf = flops / GetTimerValue(start, end);
         
-        cublasGetMatrix( M, N, sizeof( cuFloatComplex ), d_C, lddc, h_C, ldc );
+        magma_cgetmatrix( M, N, d_C, lddc, h_C, ldc );
         
         /* =====================================================================
            Error Computation and Performance Compariosn
            =================================================================== */
-        blasf77_caxpy(&szeC, &mzone, h_C, &ione, h_C2, &ione);
+        blasf77_caxpy(&szeC, &c_neg_one, h_C, &ione, h_C2, &ione);
         error = lapackf77_clange("M", &M, &N, h_C2, &ldc, work);
         printf("%5d %5d %5d       %6.2f           %6.2f         %e\n",
                M, N, K, magma_perf, cuda_perf, error);

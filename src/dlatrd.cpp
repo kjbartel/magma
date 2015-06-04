@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated d Sun Nov 13 20:48:26 2011
+       @generated d Tue May 15 18:17:41 2012
 
 */
 #include "common_magma.h"
@@ -30,11 +30,11 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
              double *da, magma_int_t ldda, 
              double *dw, magma_int_t lddw)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======   
@@ -180,7 +180,7 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
     }
 
     static cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    magma_queue_create( &stream );
 
     if (lapackf77_lsame(uplo_, "U")) {
 
@@ -199,36 +199,35 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
                         W(i, iw+1), &ldw, &c_one, A(0, i), &ione);
           #if defined(PRECISION_z) || defined(PRECISION_c)
               lapackf77_dlacgv(&i_n, W(i, iw+1), &ldw);
-              lapackf77_dlacgv(&i_n, A(i, i+1), &ldw);
+              lapackf77_dlacgv(&i_n, A(i, i+1), &lda);
           #endif
           blasf77_dgemv("No transpose", &i_1, &i_n, &c_neg_one, W(0, iw+1), &ldw,
                         A(i, i+1), &lda, &c_one, A(0, i), &ione);
           #if defined(PRECISION_z) || defined(PRECISION_c)
-              lapackf77_dlacgv(&i_n, A(i, i+1), &ldw);
+              lapackf77_dlacgv(&i_n, A(i, i+1), &lda);
           #endif
         }
         if (i > 0) {
           /* Generate elementary reflector H(i) to annihilate A(1:i-2,i) */
           
-          MAGMA_D_ASSIGN(alpha, *A(i-1, i));
+          alpha = *A(i-1, i);
           
           lapackf77_dlarfg(&i, &alpha, A(0, i), &ione, &tau[i - 1]);
           
-          e[i-1] = MAGMA_D_GET_X( alpha );
+          e[i-1] = MAGMA_D_REAL( alpha );
           MAGMA_D_SET2REAL(*A(i-1, i), 1.);
           
           /* Compute W(1:i-1,i) */
           // 1. Send the block reflector  A(0:n-i-1,i) to the GPU
-          cublasSetVector(i, sizeof(double), A(0, i), 1, dA(0, i), 1);
+          magma_dsetvector( i, A(0, i), 1, dA(0, i), 1 );
           
-          cublasDsymv(MagmaUpper, i, c_one, dA(0, 0), ldda,
+          magma_dsymv(MagmaUpper, i, c_one, dA(0, 0), ldda,
                       dA(0, i), ione, c_zero, dW(0, iw), ione);
           
           // 2. Start putting the result back (asynchronously)
-          cudaMemcpy2DAsync(W(0, iw) /*test*/, ldw*sizeof(double),
-                            dW(0, iw), lddw*sizeof(double),
-                            sizeof(double)*i, 1,
-                            cudaMemcpyDeviceToHost,stream);
+          magma_dgetmatrix_async( i, 1,
+                                  dW(0, iw),         lddw,
+                                  W(0, iw) /*test*/, ldw, stream );
           
           if (i < n-1) {
 
@@ -237,7 +236,7 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
           }
           
             // 3. Here is where we need it // TODO find the right place
-            cudaStreamSynchronize(stream);
+            magma_queue_sync( stream );
 
           if (i < n-1) {
           
@@ -254,7 +253,9 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
           blasf77_dscal(&i, &tau[i - 1], W(0, iw), &ione);
 
 #if defined(PRECISION_z) || defined(PRECISION_c)
-          blasf77_ddot(&value, &i, W(0, iw), &ione, A(0, i), &ione);
+          cblas_ddot_sub(i, W(0, iw), ione, A(0, i), ione, &value);
+
+//          blasf77_ddot(&value, &i, W(0, iw), &ione, A(0, i), &ione);
           alpha = tau[i - 1] * -.5f * value;
 #else
           alpha = tau[i - 1] * -.5f * blasf77_ddot(&i, W(0, iw), &ione, A(0, i), &ione);
@@ -291,23 +292,22 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
             {
               /* Generate elementary reflector H(i) to annihilate A(i+2:n,i) */
               i_n = n - i - 1;
-              MAGMA_D_ASSIGN(alpha, *A(i+1, i));
+              alpha = *A(i+1, i);
               lapackf77_dlarfg(&i_n, &alpha, A(min(i+2,n-1), i), &ione, &tau[i]);
-              e[i] = MAGMA_D_GET_X( alpha );
+              e[i] = MAGMA_D_REAL( alpha );
               MAGMA_D_SET2REAL(*A(i+1, i), 1.);
 
               /* Compute W(i+1:n,i) */ 
               // 1. Send the block reflector  A(i+1:n,i) to the GPU
-              cublasSetVector(i_n, sizeof(double), A(i+1, i), 1, dA(i+1, i), 1);          
+              magma_dsetvector( i_n, A(i+1, i), 1, dA(i+1, i), 1 );          
           
-              cublasDsymv('L', i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
+              magma_dsymv(MagmaLower, i_n, c_one, dA(i+1, i+1), ldda, dA(i+1, i), ione, c_zero,
                           dW(i+1, i), ione);
           
               // 2. Start putting the result back (asynchronously)
-              cudaMemcpy2DAsync(W(i+1, i), ldw*sizeof(double),
-                                dW(i+1, i), lddw*sizeof(double),
-                                sizeof(double)*i_n, 1,
-                                cudaMemcpyDeviceToHost,stream);
+              magma_dgetmatrix_async( i_n, 1,
+                                      dW(i+1, i), lddw,
+                                      W(i+1, i),  ldw, stream );
 
               blasf77_dgemv(MagmaTransStr, &i_n, &i, &c_one, W(i+1, 0), &ldw, 
                             A(i+1, i), &ione, &c_zero, W(0, i), &ione);
@@ -319,7 +319,7 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
                             A(i+1, i), &ione, &c_zero, W(0, i), &ione);
 
               // 3. Here is where we need it
-              cudaStreamSynchronize(stream);
+              magma_queue_sync( stream );
 
               if (i!=0)
                 blasf77_daxpy(&i_n, &c_one, f, &ione, W(i+1, i), &ione);
@@ -334,11 +334,11 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
                         out version works with MKL but is not a standard interface
                         for other BLAS zdoc implementations                        
                      */
-                     /*
+                     
                         cblas_ddot_sub(i_n, W(i +1, i), ione,
                                         A(i +1, i), ione, &value);
-                     */
-                  blasf77_ddot(&value, &i_n, W(i+1,i), &ione, A(i+1, i), &ione);
+                    
+                  //blasf77_ddot(&value, &i_n, W(i+1,i), &ione, A(i+1, i), &ione);
                   alpha = tau[i]* -.5f * value;
               #else
                   alpha = tau[i]* -.5f* blasf77_ddot(&i_n, W(i+1,i), &ione, A(i+1, i), &ione);
@@ -349,7 +349,7 @@ magma_dlatrd(char uplo, magma_int_t n, magma_int_t nb,
     }
 
     free(f);
-    cudaStreamDestroy(stream);
+    magma_queue_destroy( stream );
 
     return 0;
 } /* dlatrd_ */

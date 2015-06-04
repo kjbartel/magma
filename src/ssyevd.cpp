@@ -1,13 +1,13 @@
 /*    
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Stan Tomov
 
-       @generated s Sun Nov 13 20:48:29 2011
+       @generated s Tue May 15 18:17:46 2012
 
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_ssyevd(char jobz, char uplo,
              magma_int_t *iwork, magma_int_t liwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose   
     =======
@@ -150,6 +150,8 @@ magma_ssyevd(char jobz, char uplo,
     static float smlnum;
     static magma_int_t lquery;
 
+    float* dwork;
+
     wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || liwork == -1;
@@ -237,13 +239,22 @@ magma_ssyevd(char jobz, char uplo,
     indwk2 = indwrk + n * n;
     llwrk2 = lwork - indwk2 + 1;
   
-    /*
-    lapackf77_ssytrd(uplo_, &n, &a[a_offset], &lda, &w[1], &work[inde], 
-                     &work[indtau], &work[indwrk], &llwork, &iinfo);
-    */
+//#define ENABLE_TIMER
+#ifdef ENABLE_TIMER 
+    magma_timestr_t start, end;
+    
+    start = get_current_time();
+#endif
+
     magma_ssytrd(uplo_[0], n, &a[a_offset], lda, &w[1], &work[inde],
                  &work[indtau], &work[indwrk], llwork, &iinfo);
     
+#ifdef ENABLE_TIMER    
+    end = get_current_time();
+    
+    printf("time ssytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call   
        ZSTEDC to generate the eigenvector matrix, WORK(INDWRK), of the   
        tridiagonal matrix, then call SORMTR to multiply it to the Householder 
@@ -251,16 +262,41 @@ magma_ssyevd(char jobz, char uplo,
     if (! wantz) {
         lapackf77_ssterf(&n, &w[1], &work[inde], info);
     } else {
-        lapackf77_sstedc("I", &n, &w[1], &work[inde], &work[indwrk], &n, &work[indwk2], 
-                &llwrk2, &iwork[1], &liwork, info);
-        /*
-        lapackf77_sormtr("L", uplo_, "N", &n, &n, &a[a_offset], &lda, &work[indtau], 
-                &work[indwrk], &n, &work[indwk2], &llwrk2, &iinfo);
-        */
+
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
+        
+        if (MAGMA_SUCCESS != magma_smalloc( &dwork, 3*n*(n/2 + 1) )) {
+            *info = -14;
+            return MAGMA_ERR_DEVICE_ALLOC;
+        }
+        
+        magma_sstedx('A', n, 0., 0., 0, 0, &w[1], &work[inde],
+                     &work[indwrk], n, &work[indwk2],
+                     llwrk2, &iwork[1], liwork, dwork, info);
+        
+        magma_free( dwork );
+        
+#ifdef ENABLE_TIMER  
+        end = get_current_time();
+        
+        printf("time sstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
+        
+        start = get_current_time();
+#endif
+
         magma_sormtr(MagmaLeft, uplo, MagmaNoTrans, n, n, &a[a_offset], lda, &work[indtau],
                      &work[indwrk], n, &work[indwk2], llwrk2, &iinfo);
         
         lapackf77_slacpy("A", &n, &n, &work[indwrk], &n, &a[a_offset], &lda);
+
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time sormtr + copy = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
+
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */

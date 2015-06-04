@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.1) --
+    -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated d Sun Nov 13 20:48:31 2011
+       @generated d Tue May 15 18:17:51 2012
 
 */
 #ifdef MAGMA_WITH_PLASMA
@@ -17,9 +17,9 @@
 #include <core_blas.h>
 #include "common_magma.h"
 
-#define cublasDgemm magmablas_dgemm
-//#define cublasDtrsm magmablas_dtrsm
-//#define cublasDtrmm magmablas_dtrmm
+#define magma_dgemm magmablas_dgemm
+//#define magma_dtrsm magmablas_dtrsm
+//#define magma_dtrmm magmablas_dtrmm
 
 extern "C" magma_int_t
 magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
@@ -29,11 +29,11 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
                   double *dwork, magma_int_t lddwork,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.1) --
+/*  -- MAGMA (version 1.2.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2011
+       May 2012
 
     Purpose
     =======
@@ -78,7 +78,7 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
     INFO    (output) INTEGER
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
-                  if INFO = -7, internal GPU memory allocation failed.
+                  or another error occured, such as memory allocation failed.
             > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
                   has been completed, but the factor U is exactly
                   singular, and division by zero will occur if it is used
@@ -116,12 +116,12 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
-        return MAGMA_ERR_ILLEGAL_VALUE;
+        return *info;
     }
 
     /* Quick return if possible */
     if (m == 0 || n == 0)
-        return MAGMA_SUCCESS;
+        return *info;
 
     /* Function Body */
     mindim = min(m, n);
@@ -142,14 +142,14 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
           fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
         }          
 
-        cublasSetMatrix(mindim, mindim, sizeof(double), hL2, ldhl, dL2, lddl);
+        magma_dsetmatrix( mindim, mindim, hL2, ldhl, dL2, lddl );
 #endif
             
         if ( (storev == 'R') || (storev == 'r') ) {
-            cublasSetMatrix(m, n, sizeof(double), hA, ldha, dwork, lddwork);
+            magma_dsetmatrix( m, n, hA, ldha, dwork, lddwork );
             magmablas_dtranspose( dA, ldda, dwork, lddwork, m, n );
         } else {
-            cublasSetMatrix(m, n, sizeof(double), hA, ldha, dA, ldda);
+            magma_dsetmatrix( m, n, hA, ldha, dA, ldda );
         }
     }
     else {
@@ -171,22 +171,22 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
             if ( i>0 ){
                 // download i-th panel
                 magmablas_dtranspose( dwork, maxm, AT(0, i), ldda, sb, m );
-                cublasGetMatrix( m, sb, sizeof(double), dwork, maxm, hA(0, i), ldha );
+                magma_dgetmatrix( m, sb, dwork, maxm, hA(0, i), ldha );
                 
                 // make sure that gpu queue is empty
-                //cuCtxSynchronize();
+                //magma_device_sync();
 #ifndef WITHOUTTRTRI
-                cublasDtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_dtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n - (ii+sb), ib, 
                              c_one, dL2(i-1),    lddl, 
                                     AT(i-1,i+1), ldda );
 #else
-                cublasDtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
+                magma_dtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
                              n - (ii+sb), ib, 
                              c_one, AT(i-1,i-1), ldda, 
                                     AT(i-1,i+1), ldda );
 #endif
-                cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                              n-(ii+sb), m-ii, ib, 
                              c_neg_one, AT(i-1,i+1), ldda, 
                                         AT(i,  i-1), ldda, 
@@ -218,26 +218,26 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
             if (*info != 0 ) {
               fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
             }
-            cublasSetMatrix(sb, sb, sizeof(double), hL2(i), ldhl, dL2(i), lddl);
+            magma_dsetmatrix( sb, sb, hL2(i), ldhl, dL2(i), lddl );
 #endif
             // upload i-th panel
-            cublasSetMatrix( rows, sb, sizeof(double), hA(i, i), ldha, dwork, cols);
+            magma_dsetmatrix( rows, sb, hA(i, i), ldha, dwork, cols );
             magmablas_dtranspose( AT(i,i), ldda, dwork, cols, rows, sb);
 
             // do the small non-parallel computations
             if ( s > (i+1) ) {
 #ifndef WITHOUTTRTRI
-                cublasDtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_dtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              sb, sb, 
                              c_one, dL2(i),     lddl,
                                     AT(i, i+1), ldda);
 #else
-                cublasDtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
+                magma_dtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
                              sb, sb, 
                              c_one, AT(i, i  ), ldda,
                                     AT(i, i+1), ldda);
 #endif
-                cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                              sb, m-(ii+sb), sb, 
                              c_neg_one, AT(i,   i+1), ldda,
                                         AT(i+1, i  ), ldda, 
@@ -246,18 +246,18 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
             else {
                 /* Update of the last panel */
 #ifndef WITHOUTTRTRI
-                cublasDtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
+                magma_dtrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
                              n-mindim, sb, 
                              c_one, dL2(i),     lddl,
                                     AT(i, i+1), ldda);
 #else
-                cublasDtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
+                magma_dtrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
                              n-mindim, sb, 
                              c_one, AT(i, i  ), ldda,
                                     AT(i, i+1), ldda);
 #endif
                 /* m-(ii+sb) should be always 0 */
-                cublasDgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
                              n-mindim, m-(ii+sb), sb,
                              c_neg_one, AT(i,   i+1), ldda,
                                         AT(i+1, i  ), ldda, 
@@ -269,7 +269,7 @@ magma_dgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
             magmablas_dgetmo_out( dA, dAT, ldda, m, n );
         }
     }
-    return MAGMA_SUCCESS;
+    return *info;
 }
 
 #endif

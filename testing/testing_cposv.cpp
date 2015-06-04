@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.1) --
+ *  -- MAGMA (version 1.2.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     November 2011
+ *     May 2012
  *
- * @generated c Sun Nov 13 20:48:49 2011
+ * @generated c Tue May 15 18:18:16 2012
  *
  **/
 // includes, system
@@ -24,16 +24,6 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-#define PRECISION_c
-// Flops formula
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS_POTRF(n      ) ( 6.*FMULS_POTRF(n      ) + 2.*FADDS_POTRF(n      ) )
-#define FLOPS_POTRS(n, nrhs) ( 6.*FMULS_POTRS(n, nrhs) + 2.*FADDS_POTRS(n, nrhs) )
-#else
-#define FLOPS_POTRF(n      ) (    FMULS_POTRF(n      ) +    FADDS_POTRF(n      ) )
-#define FLOPS_POTRS(n, nrhs) (    FMULS_POTRS(n, nrhs) +    FADDS_POTRS(n, nrhs) )
-#endif
-
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing cposv
 */
@@ -41,11 +31,10 @@ int main( int argc, char** argv)
 {
     TESTING_CUDA_INIT();
 
-    magma_timestr_t start, end;
-    float          flops, gpu_perf;
-    float          Rnorm, Anorm, Bnorm, *work;
-    cuFloatComplex zone  = MAGMA_C_ONE;
-    cuFloatComplex mzone = MAGMA_C_NEG_ONE;
+    real_Double_t   gflops, gpu_perf, gpu_time;
+    float          Rnorm, Anorm, Xnorm, *work;
+    cuFloatComplex c_one     = MAGMA_C_ONE;
+    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex *h_A, *h_R, *h_B, *h_X;
     const char  *uplo     = MagmaLowerStr;
     magma_int_t lda, ldb, N;
@@ -105,15 +94,15 @@ int main( int argc, char** argv)
     TESTING_MALLOC( h_X, cuFloatComplex, ldb*NRHS );
     TESTING_MALLOC( work, float,         N        );
 
-    printf("\n\n");
-    printf("  N     NRHS       GPU GFlop/s      || b-Ax || / ||A||*||B||\n");
-    printf("========================================================\n");
+    printf("\n");
+    printf("    N   NRHS   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
+    printf("===========================================================\n");
     
     for( i = 0; i < ntest; ++i ) {
         N   = size[i];
         lda = ldb = N;
-        flops = ( FLOPS_POTRF( (float)N ) +
-                  FLOPS_POTRS( (float)N, (float)NRHS ) ) / 1e6;
+        gflops = ( FLOPS_CPOTRF( (float)N ) +
+                   FLOPS_CPOTRS( (float)N, (float)NRHS ) ) / 1e9;
 
         /* ====================================================================
            Initialize the matrix
@@ -126,7 +115,7 @@ int main( int argc, char** argv)
         {
             magma_int_t i, j;
             for(i=0; i<N; i++) {
-                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_GET_X(h_A[i*lda+i]) + 1.*N ) );
+                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_REAL(h_A[i*lda+i]) + 1.*N ) );
                 for(j=0; j<i; j++)
                     h_A[i*lda+j] = cuConjf(h_A[j*lda+i]);
             }
@@ -138,29 +127,29 @@ int main( int argc, char** argv)
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
-        start = get_current_time();
+        gpu_time = magma_wtime();
         magma_cposv( uplo[0], N, NRHS, h_R, lda, h_X, ldb, &info );
-        end = get_current_time();
+        gpu_time = magma_wtime() - gpu_time;
         if (info != 0)
-            printf("Argument %d of magma_cpotrf had an illegal value.\n", -info);
+            printf("magma_cpotrf returned error %d.\n", info);
 
-        gpu_perf = flops / GetTimerValue(start, end);
+        gpu_perf = gflops / gpu_time;
 
         /* =====================================================================
            Residual
            =================================================================== */
         Anorm = lapackf77_clange("I", &N, &N,    h_A, &lda, work);
-        Bnorm = lapackf77_clange("I", &N, &NRHS, h_B, &ldb, work);
+        Xnorm = lapackf77_clange("I", &N, &NRHS, h_X, &ldb, work);
 
         blasf77_cgemm( MagmaNoTransStr, MagmaNoTransStr, &N, &NRHS, &N,
-                       &zone,  h_A, &lda,
-                               h_X, &ldb,
-                       &mzone, h_B, &ldb );
+                       &c_one,     h_A, &lda,
+                                   h_X, &ldb,
+                       &c_neg_one, h_B, &ldb );
         
         Rnorm = lapackf77_clange("I", &N, &NRHS, h_B, &ldb, work);
 
-        printf("%5d  %4d             %6.2f        %e\n",
-               N, NRHS, gpu_perf, Rnorm/(Anorm*Bnorm) );
+        printf( "%5d  %5d   %7.2f (%7.2f)   %8.2e\n",
+                N, NRHS, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
     }
 
     /* Memory clean up */
