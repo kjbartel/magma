@@ -1,37 +1,16 @@
 /*
-   -- MAGMA (version 1.2.1) --
+   -- MAGMA (version 1.3.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      June 2012
+      November 2012
  
       @author Raffaele Solca
 
-      @generated c Thu Jun 28 12:30:52 2012
+      @generated c Wed Nov 14 22:53:19 2012
  
  */
 #include "common_magma.h"
-
-/* These interfaces are used for TAU profiling */
-extern"C"{
-    void Mylapackf77_cstein(magma_int_t *n, float *d, float *e, magma_int_t *m, 
-                            float *w, magma_int_t *iblock, magma_int_t *isplit,
-                            cuFloatComplex *z, magma_int_t *ldz, float *work, 
-                            magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
-    {
-        lapackf77_cstein(n, d, e, m, w, iblock, isplit, z, ldz, work, iwork, ifail, info);
-    }
-
-    void Mylapackf77_sstebz(char *range, char *order, magma_int_t *n, float *vl,
-                            float *vu, magma_int_t *il, magma_int_t *iu, float *abstol,
-                            float *d, float *e, magma_int_t *m, magma_int_t *nsplit, 
-                            float *w, magma_int_t *iblock, magma_int_t *isplit, 
-                            float *work, magma_int_t *iwork, magma_int_t *info)
-    {
-        lapackf77_sstebz(range, order, n, vl, vu, il, iu, abstol, 
-                         d, e, m, nsplit, w, iblock, isplit, work, iwork,info);
-    }
-}
 
 extern "C" magma_int_t 
 magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n, 
@@ -43,11 +22,11 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
                  cuFloatComplex *work, magma_int_t lwork,
                  float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
    
     Purpose   
     =======   
@@ -404,12 +383,12 @@ magma_cheevx_gpu(char jobz, char range, char uplo, magma_int_t n,
     indisp = indibl + n;
     indiwk = indisp + n;
 
-    Mylapackf77_sstebz(range_, order, &n, &vl, &vu, &il, &iu, &abstol, &rwork[indd], &rwork[inde], m,
+    lapackf77_sstebz(range_, order, &n, &vl, &vu, &il, &iu, &abstol, &rwork[indd], &rwork[inde], m,
                      &nsplit, &w[1], &iwork[indibl], &iwork[indisp], &rwork[indrwk], &iwork[indiwk], info);
     
     if (wantz) {
       
-      Mylapackf77_cstein(&n, &rwork[indd], &rwork[inde], m, &w[1], &iwork[indibl], &iwork[indisp],
+      lapackf77_cstein(&n, &rwork[indd], &rwork[inde], m, &w[1], &iwork[indibl], &iwork[indisp],
                        wz, &ldwz, &rwork[indrwk], &iwork[indiwk], &ifail[1], info);
       
       magma_csetmatrix( n, *m, wz, ldwz, dz, lddz );

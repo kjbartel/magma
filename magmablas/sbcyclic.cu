@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Stan Tomov
-       @generated s Thu Jun 28 12:31:23 2012
+       @generated s Wed Nov 14 22:53:53 2012
 */
 #include "common_magma.h"
 #define PRECISION_s
@@ -18,8 +18,8 @@
 //===========================================================================
 extern "C" void
 magmablas_ssetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
-                                 float  *hA,   magma_int_t lda,
-                                 float  *dA[], magma_int_t ldda,
+                                 const float *hA,   magma_int_t lda,
+                                 float       *dA[], magma_int_t ldda,
                                  magma_int_t num_gpus, magma_int_t nb )
 {
     magma_int_t i, d, nk;

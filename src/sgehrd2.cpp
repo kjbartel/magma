@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:04 2012
+       @generated s Wed Nov 14 22:53:32 2012
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_sgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
               float *tau, float *work, 
               magma_int_t *lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -263,7 +263,7 @@ magma_sgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     MAGMA_S_SET2REAL( work[0], (float) iws );
     
     magma_free( da );
-    free(t);
+    magma_free_cpu(t);
  
     return *info;
 } /* magma_sgehrd2 */

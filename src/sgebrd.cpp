@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:05 2012
+       @generated s Wed Nov 14 22:53:34 2012
 
 */
 #include "common_magma.h"
@@ -27,11 +27,11 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
              float *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -88,11 +88,10 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
             represent the orthogonal matrix P. See Further Details.
 
     WORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))
-            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+            On exit, if INFO = 0, WORK[0] returns the optimal LWORK.
 
     LWORK   (input) INTEGER
-            The length of the array WORK.  LWORK >= max(1,M,N).
-            For optimum performance LWORK >= (M+N)*NB, where NB
+            The length of the array WORK.  LWORK >= (M+N)*NB, where NB
             is the optimal blocksize.
 
             If LWORK = -1, then a workspace query is assumed; the routine
@@ -150,7 +149,6 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
     magma_int_t ncol, nrow, jmax, nb, ldda;
 
     magma_int_t i, j, nx;
-    float ws;
     magma_int_t iinfo;
 
     magma_int_t minmn;
@@ -172,7 +170,7 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
         *info = -2;
     } else if (lda < max(1,m)) {
         *info = -4;
-    } else if ( (lwork < max( max(1, m), n)) && (! lquery) ) {
+    } else if (lwork < lwkopt && (! lquery) ) {
         *info = -10;
     }
     if (*info < 0) {
@@ -196,7 +194,6 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
     }
     dwork = da + (n)*ldda;
 
-    MAGMA_S_SET2REAL( ws, max(m,n) );
     ldwrkx = m;
     ldwrky = n;
 
@@ -204,9 +201,10 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
     nx = 128;
 
     /* Copy the matrix to the GPU */
-    if (minmn-nx>=1)
+    if (minmn - nx >= 1) {
         magma_ssetmatrix( m, n, a, lda, da, ldda );
-
+    }
+    
     for (i=0; i< (minmn - nx); i += nb) {
 
         /*  Reduce rows and columns i:i+nb-1 to bidiagonal form and return
@@ -264,7 +262,6 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
             for (j = i; j < jmax; ++j) {
                 *A(j,   j ) = MAGMA_S_MAKE( d[j], 0. );
                 *A(j+1, j ) = MAGMA_S_MAKE( e[j], 0. );
-                /* L20: */
             }
         }
     }
@@ -273,15 +270,15 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
     nrow = m - i;
     ncol = n - i;
 
-    if ( 0 < (minmn-nx) )
-        magma_sgetmatrix( nrow, ncol, dA(i, i), ldda, A( i, i), lda );
-
+    if ( 0 < minmn - nx ) {
+        magma_sgetmatrix( nrow, ncol, dA(i, i), ldda, A(i, i), lda );
+    }
+    
     lapackf77_sgebrd( &nrow, &ncol, 
                       A(i, i), &lda, d+i, e+i,
                       tauq+i, taup+i, work, &lwork, &iinfo);
-    work[0] = ws;
+    work[0] = MAGMA_S_MAKE( lwkopt, 0. );
 
     magma_free( da );
     return *info;
-} /* sgebrd_ */
-
+} /* sgebrd */

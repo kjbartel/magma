@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:16 2012
+       @generated d Wed Nov 14 22:53:45 2012
 
 */
 #include "common_magma.h"
@@ -21,14 +21,14 @@
 */
 __global__ void 
 dlacpy_kernel( int m, int n,
-               double *A, int lda,
-               double *B, int ldb ) 
+               const double *A, int lda,
+               double       *B, int ldb ) 
 { 
     int row = blockIdx.x*64 + threadIdx.x;
     if ( row < m ) {
         A += row;
         B += row;
-        double *Aend = A + lda*n;
+        const double *Aend = A + lda*n;
         while( A < Aend ) {
             *B = *A;
             A += lda;
@@ -40,8 +40,8 @@ dlacpy_kernel( int m, int n,
 
 extern "C" void 
 magmablas_dlacpy( char uplo, magma_int_t m, magma_int_t n,
-                  double *A, magma_int_t lda,
-                  double *B, magma_int_t ldb )
+                  const double *A, magma_int_t lda,
+                  double       *B, magma_int_t ldb )
 {
 /*
     Note

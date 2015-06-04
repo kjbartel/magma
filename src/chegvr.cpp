@@ -1,34 +1,16 @@
 /*
-   -- MAGMA (version 1.2.1) --
+   -- MAGMA (version 1.3.0) --
       Univ. of Tennessee, Knoxville
       Univ. of California, Berkeley
       Univ. of Colorado, Denver
-      June 2012
+      November 2012
  
       @author Raffaele Solca
 
-      @generated c Thu Jun 28 12:31:01 2012
+      @generated c Wed Nov 14 22:53:30 2012
  
  */
 #include "common_magma.h"
-
-void Mymagma_ctrmm(char side, char uplo, char trans, char unit, 
-                   magma_int_t n, magma_int_t m,
-                   cuFloatComplex alpha, cuFloatComplex *db, magma_int_t lddb, 
-                   cuFloatComplex *dz, magma_int_t lddz)
-{
-    magma_ctrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    magma_device_sync();
-}
-
-void Mymagma_ctrsm(char side, char uplo, char trans, char unit, 
-                   magma_int_t n, magma_int_t m,
-                   cuFloatComplex alpha, cuFloatComplex *db, magma_int_t lddb,
-                   cuFloatComplex *dz, magma_int_t lddz)
-{
-    magma_ctrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    magma_device_sync();
-}
 
 extern "C" magma_int_t
 magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
@@ -40,11 +22,11 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magma_int_t liwork, magma_int_t *info)
 {
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
     
     Purpose   
     =======   
@@ -408,7 +390,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaNoTrans;
             }
             
-            Mymagma_ctrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
+            magma_ctrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
                           db, lddb, dz, lddz);
       
         } else if (itype == 3) {
@@ -421,7 +403,7 @@ magma_chegvr(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
                 *(unsigned char *)trans = MagmaConjTrans;
             }
             
-            Mymagma_ctrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
+            magma_ctrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, 
                           db, lddb, dz, lddz);
         }
         

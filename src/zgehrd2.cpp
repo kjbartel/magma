@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -16,11 +16,11 @@ magma_zgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
               cuDoubleComplex *tau, cuDoubleComplex *work, 
               magma_int_t *lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -263,7 +263,7 @@ magma_zgehrd2(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     MAGMA_Z_SET2REAL( work[0], (double) iws );
     
     magma_free( da );
-    free(t);
+    magma_free_cpu(t);
  
     return *info;
 } /* magma_zgehrd2 */

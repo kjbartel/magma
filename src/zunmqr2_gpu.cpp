@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
   
        @author Raffaele Solca
        @author Stan Tomov
@@ -26,11 +26,11 @@ magma_zunmqr2_gpu(const char side, const char trans,
                   cuDoubleComplex *wa,    magma_int_t ldwa, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   

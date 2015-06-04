@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:30:40 2012
+       @generated d Wed Nov 14 22:53:05 2012
 
 */
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_dgesv(     magma_int_t n, magma_int_t nrhs,
                  double *B, magma_int_t ldb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -110,7 +110,7 @@ magma_dgesv(     magma_int_t n, magma_int_t nrhs,
         dA = NULL;
         goto CPU_INTERFACE;
     }
-    assert( num_gpus == 1 and dA != NULL and dB != NULL );
+    assert( num_gpus == 1 && dA != NULL && dB != NULL );
     magma_dsetmatrix( n, n, A, lda, dA, ldda );
     magma_dgetrf_gpu( n, n, dA, ldda, ipiv, info );
     magma_dgetmatrix( n, n, dA, ldda, A, lda );

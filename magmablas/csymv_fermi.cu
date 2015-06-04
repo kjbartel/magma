@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:20 2012
+       @generated c Wed Nov 14 22:53:50 2012
 
 */
 #include "common_magma.h"
@@ -30,8 +30,8 @@
 
 __global__ void
 magmablas_csymv_200_L_special( magma_int_t n, cuFloatComplex alpha,
-                               cuFloatComplex *A, magma_int_t lda,
-                               cuFloatComplex *x, magma_int_t incx,
+                               const cuFloatComplex *A, magma_int_t lda,
+                               const cuFloatComplex *x, magma_int_t incx,
                                cuFloatComplex  beta,
                                cuFloatComplex *y, magma_int_t incy,
                                cuFloatComplex *WC)
@@ -364,8 +364,8 @@ magmablas_csymv_200_L_special( magma_int_t n, cuFloatComplex alpha,
  */
 __global__ void
 magmablas_csymv_200_L_generic(magma_int_t n, cuFloatComplex alpha,
-                              cuFloatComplex *A, magma_int_t lda,
-                              cuFloatComplex *x, magma_int_t incx,
+                              const cuFloatComplex *A, magma_int_t lda,
+                              const cuFloatComplex *x, magma_int_t incx,
                               cuFloatComplex beta,
                               cuFloatComplex *y, magma_int_t incy,
                               cuFloatComplex *WC,
@@ -789,8 +789,8 @@ magmablas_csymv_200_L_generic(magma_int_t n, cuFloatComplex alpha,
 
 __global__ void
 magmablas_csymv_200_L_update(magma_int_t n, cuFloatComplex alpha,
-                         cuFloatComplex* A, magma_int_t lda,
-                         cuFloatComplex *x, magma_int_t incx,
+                         const cuFloatComplex* A, magma_int_t lda,
+                         const cuFloatComplex *x, magma_int_t incx,
                          cuFloatComplex beta,
                          cuFloatComplex *y, magma_int_t incy,
                          cuFloatComplex *WC )
@@ -814,8 +814,8 @@ magmablas_csymv_200_L_update(magma_int_t n, cuFloatComplex alpha,
 
 extern "C"
 void magmablas_csymv_200_L(magma_int_t m, cuFloatComplex alpha,
-                           cuFloatComplex *A, magma_int_t lda,
-                           cuFloatComplex *X, magma_int_t incx,
+                           const cuFloatComplex *A, magma_int_t lda,
+                           const cuFloatComplex *X, magma_int_t incx,
                            cuFloatComplex beta,
                            cuFloatComplex *Y, magma_int_t incy,
                            cuFloatComplex *dC_work)
@@ -941,8 +941,8 @@ extern "C"
 magma_int_t
 magmablas_csymv_200( char uplo, magma_int_t n,
                      cuFloatComplex alpha, 
-                     cuFloatComplex *A, magma_int_t lda,
-                     cuFloatComplex *X, magma_int_t incx,
+                     const cuFloatComplex *A, magma_int_t lda,
+                     const cuFloatComplex *X, magma_int_t incx,
                      cuFloatComplex beta,  
                      cuFloatComplex *Y, magma_int_t incy)
 {
@@ -1037,8 +1037,8 @@ extern "C"
 magma_int_t
 magmablas_csymv2_200( char uplo, magma_int_t n,
                       cuFloatComplex alpha, 
-                      cuFloatComplex *A, magma_int_t lda,
-                      cuFloatComplex *X, magma_int_t incx,
+                      const cuFloatComplex *A, magma_int_t lda,
+                      const cuFloatComplex *X, magma_int_t incx,
                       cuFloatComplex beta,  
                       cuFloatComplex *Y, magma_int_t incy,
                       cuFloatComplex *dC_work,

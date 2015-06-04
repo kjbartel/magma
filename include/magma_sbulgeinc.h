@@ -1,17 +1,18 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
- * @generated s Thu Jun 28 12:30:03 2012
+ * @generated s Wed Nov 14 22:52:27 2012
  */
 
-#ifndef _MAGMA_SBULGEINC_H_
-#define _MAGMA_SBULGEINC_H_
+#ifndef MAGMA_SBULGEINC_H
+#define MAGMA_SBULGEINC_H
 
 #define PRECISION_s
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,7 +25,6 @@ extern "C" {
  // maximum contexts
 #define MAX_THREADS_BLG         256
 
-real_Double_t get_time_azz(void);
 void findVTpos(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t sweep, magma_int_t st, magma_int_t *Vpos, magma_int_t *TAUpos, magma_int_t *Tpos, magma_int_t *myblkid);
 void findVTsiz(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t *blkcnt, magma_int_t *LDV);
 magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
@@ -100,6 +100,11 @@ extern struct gbstrct_blg core_in_all;
 #define MAX_EVENTSBLG 163840
 //#define MAX_EVENTSBLG 1048576
 
+// If we're not using GNU C, elide __attribute__
+#ifndef __GNUC__
+#define __attribute__(x)  /*NOTHING*/
+#endif
+
 // declare globals here; defined in ssytrd_bsy2trc.cpp
 extern int           event_numblg        [MAX_THREADS_BLG]                 __attribute__ ((aligned (128)));
 extern real_Double_t event_start_timeblg [MAX_THREADS_BLG]                 __attribute__ ((aligned (128)));
@@ -107,11 +112,15 @@ extern real_Double_t event_end_timeblg   [MAX_THREADS_BLG]                 __att
 extern real_Double_t event_logblg        [MAX_THREADS_BLG][MAX_EVENTSBLG]  __attribute__ ((aligned (128)));
 extern int           log_eventsblg;
 
+#ifndef __GNUC__
+#undef  __attribute__
+#endif
+
 #define core_event_startblg(my_core_id)\
-    event_start_timeblg[my_core_id] = get_time_azz();\
+    event_start_timeblg[my_core_id] = magma_wtime();
 
 #define core_event_endblg(my_core_id)\
-    event_end_timeblg[my_core_id] = get_time_azz();\
+    event_end_timeblg[my_core_id] = magma_wtime();
 
 #define core_log_eventblg(event, my_core_id)\
     event_logblg[my_core_id][event_numblg[my_core_id]+0] = my_core_id;\
@@ -128,8 +137,5 @@ extern int           log_eventsblg;
 #endif
 
 #undef PRECISION_s
-#endif
 
-
-
-
+#endif /* MAGMA_SBULGEINC_H */

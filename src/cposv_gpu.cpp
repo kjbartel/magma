@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:31 2012
+       @generated c Wed Nov 14 22:52:57 2012
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_cposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *dA, magma_int_t ldda, 
                  cuFloatComplex *dB, magma_int_t lddb, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
     Purpose
     =======

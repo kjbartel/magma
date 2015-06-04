@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> z
 
@@ -17,7 +17,11 @@
 #define magmablas_zgemv_fermi magmablas_zgemv
 
 __global__ void 
-zgemvn_kernel1_fermi(int n, int m, int n1, cuDoubleComplex alpha, cuDoubleComplex* A, int lda, cuDoubleComplex *x, cuDoubleComplex *y)
+zgemvn_kernel1_fermi(
+    int n, int m, int n1, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, int lda,
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
   int ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -50,7 +54,11 @@ zgemvn_kernel1_fermi(int n, int m, int n1, cuDoubleComplex alpha, cuDoubleComple
 }
 
 __global__ void 
-zgemvn_kernel2_fermi(int n, int m, int n1, cuDoubleComplex alpha,  cuDoubleComplex* A, int lda, cuDoubleComplex *x, cuDoubleComplex *y)
+zgemvn_kernel2_fermi(
+    int n, int m, int n1, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, int lda,
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
   int ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -89,13 +97,17 @@ zgemvn_kernel2_fermi(int n, int m, int n1, cuDoubleComplex alpha,  cuDoubleCompl
 }
 
 extern "C" void
-magmablas_zgemvn_fermi(int n, int m, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, cuDoubleComplex *x, cuDoubleComplex *y)
+magmablas_zgemvn_fermi(
+    int n, int m, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, int lda,
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -139,8 +151,11 @@ magmablas_zgemvn_fermi(int n, int m, cuDoubleComplex alpha, cuDoubleComplex *A, 
 
 
 __global__ void 
-zgemvt_kernel_fermi(int m, int n, cuDoubleComplex alpha, int n1, cuDoubleComplex* A, int lda,
-              cuDoubleComplex *x, cuDoubleComplex *y)
+zgemvt_kernel_fermi(
+    int m, int n, cuDoubleComplex alpha, int n1,
+    const cuDoubleComplex *A, int lda,
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
         unsigned int tx = threadIdx.x;
 
@@ -212,14 +227,17 @@ zgemvt_kernel_fermi(int m, int n, cuDoubleComplex alpha, int n1, cuDoubleComplex
 
 
 extern "C" void
-magmablas_zgemvt_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, 
-                 cuDoubleComplex *x, cuDoubleComplex *y)
+magmablas_zgemvt_fermi(
+    int m, int n, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, int lda, 
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -256,8 +274,11 @@ magmablas_zgemvt_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, 
 
 
 __global__ void 
-zgemvc_kernel_fermi(int m, int n, cuDoubleComplex alpha, int n1, cuDoubleComplex* A, int lda,
-              cuDoubleComplex *x, cuDoubleComplex *y)
+zgemvc_kernel_fermi(
+    int m, int n, cuDoubleComplex alpha, int n1,
+    const cuDoubleComplex *A, int lda,
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
         unsigned int tx = threadIdx.x;
 
@@ -332,14 +353,17 @@ zgemvc_kernel_fermi(int m, int n, cuDoubleComplex alpha, int n1, cuDoubleComplex
 
 
 extern "C" void
-magmablas_zgemvc_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, int lda, 
-                 cuDoubleComplex *x, cuDoubleComplex *y)
+magmablas_zgemvc_fermi(
+    int m, int n, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, int lda, 
+    const cuDoubleComplex *x,
+    cuDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -378,7 +402,12 @@ magmablas_zgemvc_fermi(int m, int n, cuDoubleComplex alpha, cuDoubleComplex *A, 
 
 
 extern "C" void
-magmablas_zgemv_fermi(char flag, magma_int_t m, magma_int_t n, cuDoubleComplex alpha, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *x, magma_int_t incx, cuDoubleComplex beta, cuDoubleComplex *y, magma_int_t incy) 
+magmablas_zgemv_fermi(
+    char flag, magma_int_t m, magma_int_t n, cuDoubleComplex alpha,
+    const cuDoubleComplex *A, magma_int_t lda,
+    const cuDoubleComplex *x, magma_int_t incx,
+    cuDoubleComplex beta,
+    cuDoubleComplex *y, magma_int_t incy) 
 {
 
     if(beta.x==0.0 && beta.y==0.0 && incx ==1 && incy==1)

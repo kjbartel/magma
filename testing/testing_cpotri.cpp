@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.1) --
+ *  -- MAGMA (version 1.3.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     June 2012
+ *     November 2012
  *
- * @generated c Thu Jun 28 12:31:39 2012
+ * @generated c Wed Nov 14 22:54:15 2012
  *
  **/
 // includes, system
@@ -22,14 +22,6 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-// Flops formula
-#define PRECISION_c
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_POTRF(n) + 2. * FADDS_POTRF(n) + FMULS_POTRI(n) +      FADDS_POTRI(n) )
-#else
-#define FLOPS(n) (      FMULS_POTRF(n) +      FADDS_POTRF(n) +  FMULS_POTRI(n) +      FADDS_POTRI(n))
-#endif
-
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing cpotri
 */
@@ -41,7 +33,7 @@ int main( int argc, char** argv)
     float           flops, gpu_perf, cpu_perf;
     cuFloatComplex *h_A, *h_R;
     magma_int_t      N=0, n2, lda;
-    magma_int_t      size[10] = {1024,2048,3072,4032,5184,6048,7200,8064,8928,10240};
+    magma_int_t      size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
 
     magma_int_t  i, info;
     const char  *uplo     = MagmaLowerStr;
@@ -74,7 +66,7 @@ int main( int argc, char** argv)
         N     = size[i];
         lda   = N;
         n2    = lda*N;
-        flops = FLOPS( (float)N ) / 1000000;
+        flops = FLOPS_CPOTRI( (float)N ) / 1000000;
 
         /* ====================================================================
            Initialize the matrix
@@ -94,36 +86,35 @@ int main( int argc, char** argv)
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
+        /* warm-up */
         magma_cpotrf(uplo[0], N, h_R, lda, &info);
         magma_cpotri(uplo[0], N, h_R, lda, &info);
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &N, h_A, &lda, h_R, &lda );
 
-        start = get_current_time();
+        /* factorize matrix */
         magma_cpotrf(uplo[0], N, h_R, lda, &info);
+        
+        // check for exact singularity
+        //h_R[ 10 + 10*lda ] = MAGMA_C_MAKE( 0.0, 0.0 );
+        
+        start = get_current_time();
         magma_cpotri(uplo[0], N, h_R, lda, &info);
-
-//        magma_clauum(uplo[0], N, h_R, lda, &info);        
-//        magma_ctrtri(uplo[0], MagmaNonUnit, N, h_R, lda, &info);
-
         end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_cpotri had an illegal value.\n", (int) -info);
+        if (info != 0)
+            printf("magma_cpotri returned error %d\n", (int) info);
 
         gpu_perf = flops / GetTimerValue(start, end);
 
         /* =====================================================================
            Performs operation using LAPACK
            =================================================================== */
-        start = get_current_time();
         lapackf77_cpotrf(uplo, &N, h_A, &lda, &info);
+        
+        start = get_current_time();
         lapackf77_cpotri(uplo, &N, h_A, &lda, &info);
-
-//         lapackf77_clauum(uplo, &N, h_A, &lda, &info);
-//         lapackf77_ctrtri(uplo,"Non-unit" ,&N, h_A, &lda, &info);
-      
         end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of lapack_cpotri had an illegal value.\n", (int) -info);
+        if (info != 0)
+            printf("lapackf77_cpotri returned error %d\n", (int) info);
 
         cpu_perf = flops / GetTimerValue(start, end);
 

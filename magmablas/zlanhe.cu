@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -21,7 +21,7 @@
 #if (!defined(PRECISION_z)) || (GPUSHMEM >= 200)
 
 __global__ void
-l_zlanhe_special (int n, cuDoubleComplex* A, int lda,  double *y){
+l_zlanhe_special (int n, const cuDoubleComplex* A, int lda,  double *y){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -100,7 +100,7 @@ l_zlanhe_special (int n, cuDoubleComplex* A, int lda,  double *y){
 }
 
 __global__ void
-l_zlanhe_generic(int n, cuDoubleComplex* A, int lda,  double *y , int m_full_block , 
+l_zlanhe_generic(int n, const cuDoubleComplex* A, int lda,  double *y, int m_full_block, 
                  int m_mod_32)
 { 
   int tx = threadIdx.x ; 
@@ -321,7 +321,7 @@ l_zlanhe_generic(int n, cuDoubleComplex* A, int lda,  double *y , int m_full_blo
 }
 
 __global__ void
-u_zlanhe_generic (int n, cuDoubleComplex* A, int lda, double *y , int m_full_block , int m_mod_32){
+u_zlanhe_generic (int n, const cuDoubleComplex* A, int lda, double *y, int m_full_block, int m_mod_32){
 
   
   int tx = threadIdx.x ; 
@@ -425,7 +425,7 @@ u_zlanhe_generic (int n, cuDoubleComplex* A, int lda, double *y , int m_full_blo
   ****************************************
   -------------------------------------*/
   ind = blockIdx.x *  dgemv_bs + tx + m_mod_32 ;
-  cuDoubleComplex *A1 = A ; 
+  const cuDoubleComplex *A1 = A ; 
   A+= lda*(n-1)  ; 
 
   A += ind;
@@ -533,7 +533,7 @@ u_zlanhe_generic (int n, cuDoubleComplex* A, int lda, double *y , int m_full_blo
 }
 
 __global__ void
-u_zlanhe_special (int n, cuDoubleComplex* A, int lda, double *y ){
+u_zlanhe_special (int n, const cuDoubleComplex* A, int lda, double *y ){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -623,7 +623,7 @@ u_zlanhe_special (int n, cuDoubleComplex* A, int lda, double *y ){
 }
 
 
-extern "C" void mzlanhe (char uplo , int m ,  cuDoubleComplex *A , int lda ,  double *Y  )
+extern "C" void mzlanhe (char uplo, int m, const cuDoubleComplex *A, int lda,  double *Y  )
 {
 /*
 Note:
@@ -652,10 +652,10 @@ Note:
             int  m_full_block = (m - m % 32 ) /32 ; 
             int  m_mod_32 = m%32 ;  
             if( uplo == 'L' || uplo == 'l'){
-                    l_zlanhe_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    l_zlanhe_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
             else{
-                    u_zlanhe_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    u_zlanhe_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
     }
 }
@@ -663,7 +663,7 @@ Note:
 #endif /* (!defined(PRECISION_z)) || (GPUSHMEM >= 200) */
 
 __global__ void
-l_zlanhe_max (int m, cuDoubleComplex* A, int lda,  double *y){
+l_zlanhe_max (int m, const cuDoubleComplex* A, int lda,  double *y){
     int tx  = threadIdx.x ;
     int ind =  blockIdx.x * zlanhe_bs + tx ;
     double res = 0., res1;
@@ -695,7 +695,7 @@ l_zlanhe_max (int m, cuDoubleComplex* A, int lda,  double *y){
 }
 
 __global__ void
-u_zlanhe_max (int m, cuDoubleComplex* A, int lda,  double *y){
+u_zlanhe_max (int m, const cuDoubleComplex* A, int lda,  double *y){
     int ind =  blockIdx.x * zlanhe_bs + threadIdx.x ;
     double res = 0.;
 
@@ -709,7 +709,7 @@ u_zlanhe_max (int m, cuDoubleComplex* A, int lda,  double *y){
 }
 
 
-extern "C" void zlanhe_max (char uplo, int m, cuDoubleComplex *A , int lda , double *y){
+extern "C" void zlanhe_max (char uplo, int m, const cuDoubleComplex *A, int lda, double *y){
     int blocks;
     if (m % zlanhe_bs==0)
         blocks = m/ zlanhe_bs;
@@ -729,12 +729,12 @@ extern "C" void zlanhe_max (char uplo, int m, cuDoubleComplex *A , int lda , dou
  
 extern "C" double 
 magmablas_zlanhe(char norm, char uplo, magma_int_t n, 
-                 cuDoubleComplex *A, magma_int_t lda, double *WORK )
+                 const cuDoubleComplex *A, magma_int_t lda, double *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {
 #if (GPUSHMEM >= 200)
-                mzlanhe ( uplo , n , A , lda , WORK);
+                mzlanhe ( uplo, n, A, lda, WORK);
                 int val = cublasIdamax(n,WORK,1);
                 double retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( double ), WORK+val-1, 1, retVal, 1 ) ;
@@ -746,7 +746,7 @@ magmablas_zlanhe(char norm, char uplo, magma_int_t n,
             }
         else if (norm == 'M' || norm =='m')
             {  
-                zlanhe_max ( uplo , n , A , lda , WORK);
+                zlanhe_max ( uplo, n, A, lda, WORK);
                 int val = cublasIdamax(n,WORK,1);
                 double retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( double ), WORK+val-1, 1, retVal, 1 ) ;

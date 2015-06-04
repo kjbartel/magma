@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:37 2012
+       @generated c Wed Nov 14 22:53:03 2012
 
 */
 #include "common_magma.h"
@@ -27,11 +27,11 @@ magma_cgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
                        cuFloatComplex *dA, magma_int_t ldda,
                        magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -115,7 +115,7 @@ magma_cgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
         magma_cgetmatrix( m, n, dA, ldda, work, m );
         magma_cgetrf_nopiv(&m, &n, work, &m, info);
         magma_csetmatrix( m, n, work, m, dA, ldda );
-        free(work);
+        magma_free_cpu(work);
     }
     else {
         /* Use hybrid blocked code. */

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> c d s
 */
@@ -23,9 +23,6 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-extern "C" void
-magmablas_zsymmetrize( char uplo, int m, cuDoubleComplex *A, int lda );
-
 int main( int argc, char** argv) 
 {
     #define hA(i,j) (hA + (i) + (j)*lda)
@@ -36,15 +33,16 @@ int main( int argc, char** argv)
     cuDoubleComplex c_one  = MAGMA_Z_ONE;
     
     cuDoubleComplex *hA, *hR, *dA;
-    real_Double_t   gpu_time, gpu_perf;
+    //real_Double_t   gpu_time, gpu_perf;
 
-    int ione     = 1;
-    int ISEED[4] = {0, 0, 0, 1};
+    //int ione     = 1;
+    //int ISEED[4] = {0, 0, 0, 1};
     
-    int nsize[] = { 32, 64, 96, 128, 100, 200 };
+    int nsize[] = { 32, 64, 96, 256, 100, 200, 512 };
     int ntest = sizeof(nsize) / sizeof(int);
     int n   = nsize[ntest-1];
     int lda = ((n + 31)/32)*32;
+    int ntile, nb;
     
     TESTING_MALLOC   ( hA, cuDoubleComplex, lda*n );
     TESTING_MALLOC   ( hR, cuDoubleComplex, lda*n );
@@ -55,9 +53,14 @@ int main( int argc, char** argv)
         lda = ((n + 31)/32)*32;
         
         // initialize matrices; entries are (i.j) for A
-        double nf = 1000.;
-        for( int i = 0; i < n; ++i ) {
-            for( int j = 0; j < n; ++j ) {
+        double nf = 100.;
+        for( int j = 0; j < n; ++j ) {
+            // upper
+            for( int i = 0; i < j; ++i ) {
+                *hA(i,j) = MAGMA_Z_MAKE( (i + j/nf)/nf, 0. );
+            }
+            // lower
+            for( int i = j; i < n; ++i ) {
                 *hA(i,j) = MAGMA_Z_MAKE( i + j/nf, 0. );
             }
         }
@@ -74,6 +77,66 @@ int main( int argc, char** argv)
         magmablas_zsymmetrize( MagmaUpper, n, dA, lda );
         magma_zgetmatrix( n, n, dA, lda, hR, lda );
         printf( "U%d = ", n );
+        magma_zprint( n, n, hR, lda );
+        
+        // -----
+        //lapackf77_zlaset( "u", &n, &n, &c_zero, &c_one, hA, &lda );
+        
+        nb = 64;
+        ntile = n / nb;
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        nb = 32;
+        ntile = n / nb;
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        ntile = (n - nb < 0 ? 0 : (n - nb) / (2*nb) + 1);
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, 2*nb, nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d_2m = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        nb = 25;
+        ntile = n / nb;
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        nb = 25;
+        ntile = (n - nb < 0 ? 0 : (n - nb) / (3*nb) + 1);
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, 3*nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d_3n = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        nb = 100;
+        ntile = n / nb;
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
+        magmablas_zsymmetrize( MagmaLower, n%nb, &dA[ ntile*nb*(1+lda) ], lda );  // last partial block
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "L%d_%d = ", n, nb );
+        magma_zprint( n, n, hR, lda );
+        
+        // -----
+        nb = 64;
+        ntile = n / nb;
+        magma_zsetmatrix( n, n, hA, lda, dA, lda );
+        magmablas_zsymmetrize_tiles( MagmaUpper, nb, dA, lda, ntile, nb, nb );
+        magma_zgetmatrix( n, n, dA, lda, hR, lda );
+        printf( "U%d_%d = ", n, nb );
         magma_zprint( n, n, hR, lda );
     }
     

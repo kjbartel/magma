@@ -2,11 +2,11 @@
  *
  * @file transpose.h
  *
- *  MAGMA (version 1.2.1) --
+ *  MAGMA (version 1.3.0) --
  *  Univ. of Tennessee, Knoxville
  *  Univ. of California, Berkeley
  *  Univ. of Colorado, Denver
- *  June 2012
+ *  November 2012
  *
  * @version 1.0.0
  * @author Mathieu Faverge
@@ -25,7 +25,7 @@
   if ( ( (m) == (n) ) && ( (m)%32 == 0) && ( (ldda)%32 == 0) ){ \
     magmablas_sinplace_transpose( dAT, ldda, ldda );            \
   } else {                                                      \
-    cublasStatus status = cublasAlloc( (m)*(n), sizeof(float), (void**)&dAT); \
+    cublasStatus_t status = cublasAlloc( (m)*(n), sizeof(float), (void**)&dAT); \
     if (status != CUBLAS_STATUS_SUCCESS)                                \
       return -7;                                                        \
     magmablas_stranspose2( dAT, ldda, dA, ldda, m, n );                 \
@@ -44,7 +44,7 @@
   if ( ( (m) == (n) ) && ( (m)%32 == 0) && ( (ldda)%32 == 0) ){ \
     magmablas_dinplace_transpose( dAT, ldda, ldda );            \
   } else {                                                      \
-    cublasStatus status = cublasAlloc( (m)*(n), sizeof(double), (void**)&dAT); \
+    cublasStatus_t status = cublasAlloc( (m)*(n), sizeof(double), (void**)&dAT); \
     if (status != CUBLAS_STATUS_SUCCESS)                                \
       return -7;                                                        \
     magmablas_dtranspose2( dAT, ldda, dA, ldda, m, n );                 \
@@ -63,7 +63,7 @@
   if ( ( (m) == (n) ) && ( (m)%32 == 0) && ( (ldda)%32 == 0) ){ \
     magmablas_cinplace_transpose( dAT, ldda, ldda );            \
   } else {                                                      \
-    cublasStatus status = cublasAlloc( (m)*(n), sizeof(cuFloatComplex), (void**)&dAT); \
+    cublasStatus_t status = cublasAlloc( (m)*(n), sizeof(cuFloatComplex), (void**)&dAT); \
     if (status != CUBLAS_STATUS_SUCCESS)                                \
       return -7;                                                        \
     magmablas_ctranspose2( dAT, ldda, dA, ldda, m, n );                 \
@@ -82,7 +82,7 @@
   if ( ( (m) == (n) ) && ( (m)%32 == 0) && ( (ldda)%32 == 0) ){ \
     magmablas_zinplace_transpose( dAT, ldda, ldda );            \
   } else {                                                      \
-    cublasStatus status = cublasAlloc( (m)*(n), sizeof(cuDoubleComplex), (void**)&dAT); \
+    cublasStatus_t status = cublasAlloc( (m)*(n), sizeof(cuDoubleComplex), (void**)&dAT); \
     if (status != CUBLAS_STATUS_SUCCESS)                                \
       return -7;                                                        \
     magmablas_ztranspose2( dAT, ldda, dA, ldda, m, n );                 \

@@ -1,36 +1,32 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
 */
-
 #include "common_magma.h"
 #define PRECISION_z
 
-/*The version for tesla can be found in zhemv_tesla.cu */
+
 #if (GPUSHMEM >= 200)
 
-#define magmablas_zhemv_200_mgpu_32 magmablas_zhemv_mgpu_32
 
 #define zhemv_bs         32
-#define thread_x         64
-#define thread_y          4
 #define bank_shift       33
-#define quarter_thread_x 16
-#define half_thread_x    32
+
 
 /*******************************************************************************
  *     Functions for each specific cases - Lower case
  */
-#define SWITCH  1400
+
+
 
 __global__ void
-magmablas_zhemv_200_L_special_mgpu_32_s( magma_int_t n, cuDoubleComplex alpha,
+magmablas_zhemv_200_L_special_mgpu_offset_32( magma_int_t n, cuDoubleComplex alpha,
                                cuDoubleComplex *A, magma_int_t lda,
                                cuDoubleComplex *x, magma_int_t incx,
                                cuDoubleComplex  beta,
@@ -38,146 +34,8 @@ magmablas_zhemv_200_L_special_mgpu_32_s( magma_int_t n, cuDoubleComplex alpha,
                                cuDoubleComplex *WC, 
                          magma_int_t my_gpu_id,
                          magma_int_t num_gpus, 
-                         magma_int_t nb)
-{
-
-
-    if(blockIdx.y > blockIdx.x) return;
-    if(blockIdx.y % num_gpus != my_gpu_id) return;
-    
-    if(blockIdx.x < my_gpu_id)
-    {
-      return;
-    }
-
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-
-
-    cuDoubleComplex res  = MAGMA_Z_ZERO;// used in scan the row
-    cuDoubleComplex res_ = MAGMA_Z_ZERO;// used in scan the column
-
-    __shared__ cuDoubleComplex la   [1056];
-    __shared__ cuDoubleComplex buff [32];
-    __shared__ cuDoubleComplex buff2 [32];
-
-
-    magma_int_t break_d   =  32 * blockIdx.x;
-                  
-    A +=  break_d ;
-    A +=  lda * ty + tx;
-    A +=  lda * (blockIdx.y / num_gpus) * 32; // 
-
-    x +=  tx;
-
-
-    if ( blockIdx.x == blockIdx.y && (blockIdx.x % num_gpus) == my_gpu_id) // diagonal 
-    {    
-    
-        x  += (blockIdx.y * 32) * incx;    
-        if( ty == 0 )
-        {
-            buff[tx] = x[0];
-        } // obtain the vector x store in buff;
-       
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j +=8)
-        la[ bank_shift * (ty+j) + tx] =  A[ j * lda];
-        __syncthreads();
-
-        #pragma unroll
-        for(magma_int_t  i=ty*4; i<(ty * 4 + 4)  ; i++)
-        {
-            if ( i < tx )   
-            {
-                la[bank_shift * tx + i] = cuConj(la[ i * bank_shift + tx])  ;
-            }
-        }
-        __syncthreads();
-
-        #pragma unroll
-        for(magma_int_t j=0; j < 4 ; j++)
-            res += cuConj(la[bank_shift * tx + j + ty * 4])  * buff[j + ty * 4];
-    
-        __syncthreads();
-    
-    }
-    else // non diagonal
-    {
-        x  += (blockIdx.x * 32) * incx;    
-        if( ty == 0 )
-        {
-            buff[tx] = x[0];
-        } // obtain the vector x and  store in buff; buff store its corresponding upper elements instead of buff2; 
-            
-        x  -= (blockIdx.x * 32 ) * incx;
-        
-        x  += (blockIdx.y * 32 ) * incx;    
-            
-        if( ty == 0 )
-        {
-            buff2[tx] = x[0]; 
-        } // obtain the vector x store in buff2; 
-    
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j +=8)
-        {
-            la[ bank_shift * (ty+j) + tx] =  A[ j * lda];
-        }
-            
-        __syncthreads();
-
-            #pragma unroll
-            for(magma_int_t j=0; j < 4 ; j++)
-            {
-                    res += (la[bank_shift * (ty + j * 8) + tx] )* buff2[ ty + j * 8];
-                    res_ += cuConj(la[bank_shift * tx + j + ty * 4]) * buff[j + ty * 4]; // 
-            }
-            __syncthreads();
-
-            
-            la[bank_shift*tx+ty]= res_ ;
-            __syncthreads();
-
-            if( ty== 0 )
-            {
-                  res_ = la[tx*bank_shift+0]+la[tx*bank_shift+1]
-                +    la[tx*bank_shift+2]+la[tx*bank_shift+3]
-                +    la[tx*bank_shift+4]+la[tx*bank_shift+5]
-                +    la[tx*bank_shift+6]+la[tx*bank_shift+7];
-            
-                WC[ tx + blockIdx.y * 32 + lda * blockIdx.x ] =   res_; // write to its corresponding upper side position
-            }
-            __syncthreads();
-            
-      } // end if else 
-
-        la[bank_shift*tx+ty]= res ;
-        __syncthreads();
-
-            if( ty== 0 )
-            {
-                  res = la[tx*bank_shift+0]+la[tx*bank_shift+1]
-                +    la[tx*bank_shift+2]+la[tx*bank_shift+3]
-                +    la[tx*bank_shift+4]+la[tx*bank_shift+5]
-                +    la[tx*bank_shift+6]+la[tx*bank_shift+7];
-            
-                 WC[ tx + blockIdx.x * 32 + lda * blockIdx.y] =  res;
-            }
-        
-}
-
-
-__global__ void
-magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
-                               cuDoubleComplex *A, magma_int_t lda,
-                               cuDoubleComplex *x, magma_int_t incx,
-                               cuDoubleComplex  beta,
-                               cuDoubleComplex *y, magma_int_t incy,
-                               cuDoubleComplex *WC, 
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb)
+                         magma_int_t nb,
+                         magma_int_t kstan)
 {
     magma_int_t tx   = threadIdx.x ;
     magma_int_t ty   = threadIdx.y ;
@@ -193,12 +51,13 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
     cuDoubleComplex res1 = MAGMA_Z_ZERO;// tem for res
     cuDoubleComplex res2 = MAGMA_Z_ZERO;// tem for res_
 
-    __shared__ cuDoubleComplex la   [16][64+2];
-    __shared__ cuDoubleComplex buff [32];
-    __shared__ cuDoubleComplex buff2 [32];
+    __shared__ cuDoubleComplex la   [zhemv_bs][bank_shift];
+    __shared__ cuDoubleComplex sdata   [zhemv_bs][9];
+    __shared__ cuDoubleComplex buff [zhemv_bs];
+    __shared__ cuDoubleComplex buff2 [zhemv_bs];
 
 
-    magma_int_t break_d   =  32 * blkc;
+    magma_int_t break_d   =  zhemv_bs * blkc;
 
     x  += (break_d + tx ) * incx;
     A  +=  break_d ;
@@ -207,17 +66,21 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
     if( ty == 0 )
     {
         buff[tx] = x[0];
+    if(blkc == 0 && my_gpu_id == 0 && tx < kstan)
+    {
+             MAGMA_Z_SET2REAL(buff[tx], 0.0);
+        }
     } // obtain the vector x store in buff;
-
+    
 
     magma_int_t flag = 0;
     
     if ( (blkc % num_gpus) == my_gpu_id) 
     {
-        A += lda * (blkc/num_gpus) * 32; // change
+        A += lda * (blkc/num_gpus) * zhemv_bs; // change
 
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j +=8)
+        for(magma_int_t j =0; j<zhemv_bs; j +=8)
         la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
         __syncthreads();
 
@@ -232,16 +95,17 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
         #pragma unroll
         for(magma_int_t j=0; j < 4 ; j++)
             res += cuConj( la[0][bank_shift * tx + j + ty * 4] ) * buff[j + ty * 4];
-    
             __syncthreads();
+            
 
-             A -= lda * (blkc/num_gpus) * 32; 
+             A -= lda * (blkc/num_gpus) * zhemv_bs; 
     
               flag = 1;
         }
 
+        
 
-        x -= blkc * 32  *incx  ;
+        x -= blkc * zhemv_bs  *incx  ;
 
         x= x- tx*incx;
 
@@ -257,7 +121,7 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
         num_blocks_iters += 1;
         }
 
-        x += (my_gpu_id ) * 32 ;
+        x += (my_gpu_id ) * zhemv_bs ;
 
         if( blkc > my_gpu_id)
 
@@ -267,13 +131,17 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
             count++;
 
                      #pragma unroll
-            for(magma_int_t j =0; j<half_thread_x; j +=8)
+            for(magma_int_t j =0; j< zhemv_bs; j +=8)
             la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
 
             if( ty == 0 )
             {
-            buff2[tx] = x[tx];
-            } // obtain the vector x store in buff;
+                buff2[tx] = x[tx];
+                if(my_gpu_id == 0 && tx < kstan && count==1)
+                {
+                     MAGMA_Z_SET2REAL(buff2[tx], 0.0);
+                }
+            } // obtain the vector x store in buff2;
             __syncthreads();
 
             #pragma unroll
@@ -282,28 +150,24 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
                         res += (la[0][bank_shift * (ty + j * 8) + tx] )* buff2[ ty + j * 8];
                         res_ += cuConj( la[0][bank_shift * tx + j + ty * 4] ) * buff[j + ty * 4]; //iterate colum
                 }
-                     __syncthreads();
 
-                    la[0][bank_shift*tx+ty]= res_ ;
+                    sdata[tx][ty]= res_ ;
             __syncthreads();
 
-            if( ty== 0 )
+            if( ty== 1 )
             {
-              res2 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
-            +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
-            +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
-            +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
-                    
-                    WC[wc_c*lda ] =   res2;
+              res2 = sdata[tx][0]+sdata[tx][1]
+              + sdata[tx][2]+sdata[tx][3]
+              + sdata[tx][4]+sdata[tx][5]
+              + sdata[tx][6]+sdata[tx][7];
+                        
+                WC[wc_c*lda ] =   res2;
             }
- 
-            __syncthreads();
 
 
                     wc_c += num_gpus;
-                x += num_gpus * 32;
-                    A += lda * 32 ;
-
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
 
                }
 
@@ -312,209 +176,32 @@ magmablas_zhemv_200_L_special_mgpu_32( magma_int_t n, cuDoubleComplex alpha,
         __syncthreads();
 
             if( ty== 0 )
-                    {
+            {
               res1 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
             +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
             +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
             +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
-                 
-                 WC[0+lda*(blkc)] =  res1;
-                    }
+              
+              WC[0+lda*(blkc)] =  res1;
+            }
+        
 }
 
 /**************************************************************
  *    Lower case for generic sizes
  */
-
 __global__ void
-magmablas_zhemv_200_L_generic_mgpu_32_s( magma_int_t n, cuDoubleComplex alpha,
-                               cuDoubleComplex *A, magma_int_t lda,
-                               cuDoubleComplex *x, magma_int_t incx,
-                               cuDoubleComplex  beta,
-                               cuDoubleComplex *y, magma_int_t incy,
-                               cuDoubleComplex *WC, 
-                               magma_int_t m_mod_thread_x,
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb)
-{
-
-
-    if(blockIdx.y > blockIdx.x) return;
-    if(blockIdx.y % num_gpus != my_gpu_id) return;
-    
-    if(blockIdx.x < my_gpu_id)
-    {
-      return;
-    }
-
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-
-
-    cuDoubleComplex res  = MAGMA_Z_ZERO;// used in scan the row
-    cuDoubleComplex res_ = MAGMA_Z_ZERO;// used in scan the column
-
-    __shared__ cuDoubleComplex la   [1056];
-    __shared__ cuDoubleComplex buff [32];
-    __shared__ cuDoubleComplex buff2 [32];
-
-
-    magma_int_t break_d   =  32 * blockIdx.x;
-                  
-    A +=  break_d ;
-    A +=  lda * ty;
-    A +=  lda * (blockIdx.y / num_gpus) * 32; // 
-    x +=  tx;
-    x  += (blockIdx.x * 32) * incx;    
-
-    magma_int_t trackA ;
-    if( blockIdx.x == ( gridDim.x - 1 ) ) {
-        if( ty == 0 ){
-            if( tx > m_mod_thread_x )
-            {
-                MAGMA_Z_SET2REAL(buff[tx],0);
-            }
-            else
-                buff[tx]  = x[0];
-        }
-        if ( tx > m_mod_thread_x )
-            trackA=m_mod_thread_x;
-        else
-            trackA=tx;
-        A += trackA ;
-    }
-    else {
-        if( ty == 0 ){
-            buff[tx]  = x[0];
-        }
-        trackA = tx;
-        A += trackA ;
-    }
-
-    __syncthreads();
-/* ===========================================
-    --------------------> threadIdx.y, blockIdx.y
-    |
-    |
-    |
-    |
-    threadIdx.x blockIdx.x
-
-=========================================== */
-
-    if ( blockIdx.x == blockIdx.y && (blockIdx.x % num_gpus) == my_gpu_id) // diagonal 
-    {    
-
-               if( blockIdx.x == ( gridDim.x - 1 ) ) {
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            if( ( ty + j ) > m_mod_thread_x )
-            {
-                MAGMA_Z_SET2REAL(la[bank_shift*(ty+j)+tx], 9999);
-            }
-            else
-                la[bank_shift*(ty+j)+tx] =  A[ j * lda];
-        }
-        }
-        else {
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            la[bank_shift*(ty+j)+tx] = A[ j * lda];
-        }
-        }
-        __syncthreads();
-
-        #pragma unroll
-        for(magma_int_t  i=ty*4; i<(ty * 4 + 4)  ; i++)
-        {
-            if ( i < tx )   
-            {
-                la[bank_shift * tx + i] = cuConj(la[ i * bank_shift + tx])  ;
-            }
-        }
-        __syncthreads();
-
-        #pragma unroll
-        for(magma_int_t j=0; j < 4 ; j++)
-            res += cuConj(la[bank_shift * tx + j + ty * 4])  * buff[j + ty * 4];
-    
-        __syncthreads();
-    
-    }
-    else // non diagonal
-    {
-
-        // obtain the vector x and  store in buff; buff store its corresponding upper elements instead of buff2; 
-            
-        x  -= (blockIdx.x * 32 ) * incx;
-        
-        x  += (blockIdx.y * 32 ) * incx;    
-            
-        if( ty == 0 )
-        {
-            buff2[tx] = x[0]; 
-        } // obtain the vector x store in buff2; 
-    
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j +=8)
-        {
-            la[ bank_shift * (ty+j) + tx] =  A[ j * lda];
-        }
-            
-        __syncthreads();
-
-            #pragma unroll
-            for(magma_int_t j=0; j < 4 ; j++)
-            {
-                    res += (la[bank_shift * (ty + j * 8) + tx] )* buff2[ ty + j * 8];
-                    res_ += cuConj(la[bank_shift * tx + j + ty * 4]) * buff[j + ty * 4]; // 
-            }
-            __syncthreads();
-
-            
-            la[bank_shift*tx+ty]= res_ ;
-            __syncthreads();
-
-            if( ty== 0 )
-            {
-                  res_ = la[tx*bank_shift+0]+la[tx*bank_shift+1]
-                +    la[tx*bank_shift+2]+la[tx*bank_shift+3]
-                +    la[tx*bank_shift+4]+la[tx*bank_shift+5]
-                +    la[tx*bank_shift+6]+la[tx*bank_shift+7];
-            
-                WC[ tx + blockIdx.y * 32 + lda * blockIdx.x ] =   res_; // write to its corresponding upper side position
-            }
-            __syncthreads();
-            
-      } // end if else 
-
-        la[bank_shift*tx+ty]= res ;
-        __syncthreads();
-
-        if( ty== 0 )
-            {
-                  res = la[tx*bank_shift+0]+la[tx*bank_shift+1]
-                +    la[tx*bank_shift+2]+la[tx*bank_shift+3]
-                +    la[tx*bank_shift+4]+la[tx*bank_shift+5]
-                +    la[tx*bank_shift+6]+la[tx*bank_shift+7];
-            
-                 WC[ tx + blockIdx.x * 32 + lda * blockIdx.y] =  res;
-            }
-        
-}
-
-__global__ void
-magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
+magmablas_zhemv_200_L_generic_mgpu_offset_32(magma_int_t n, cuDoubleComplex alpha,
                               cuDoubleComplex *A, magma_int_t lda,
                               cuDoubleComplex *x, magma_int_t incx,
                               cuDoubleComplex beta,
                               cuDoubleComplex *y, magma_int_t incy,
                               cuDoubleComplex *WC,
-                              magma_int_t m_mod_thread_x,
+                              magma_int_t m_mod_nb,
                          magma_int_t my_gpu_id,
                          magma_int_t num_gpus, 
-                         magma_int_t nb)
+                         magma_int_t nb,
+                         magma_int_t kstan)
 {
     magma_int_t tx   = threadIdx.x ;
     magma_int_t ty   = threadIdx.y ;
@@ -530,12 +217,13 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
     cuDoubleComplex res1 = MAGMA_Z_ZERO;
     cuDoubleComplex res2 = MAGMA_Z_ZERO;
 
-    __shared__ cuDoubleComplex la   [16][64+2];
-    __shared__ cuDoubleComplex buff [32];
-    __shared__ cuDoubleComplex buff2 [32];
+    __shared__ cuDoubleComplex la   [zhemv_bs][bank_shift];
+    __shared__ cuDoubleComplex sdata   [zhemv_bs][9];
+    __shared__ cuDoubleComplex buff [zhemv_bs];
+    __shared__ cuDoubleComplex buff2 [zhemv_bs];
 
 
-    magma_int_t break_d   =  32 * blkc;
+    magma_int_t break_d   =  zhemv_bs * blkc;
 
     x += (break_d + tx ) * incx;
     A +=  break_d ;
@@ -544,15 +232,15 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
     magma_int_t trackA ;
     if( blkc == ( gridDim.x - 1 ) ) {
         if( ty == 0 ){
-            if( tx > m_mod_thread_x )
+            if( tx > m_mod_nb )
             {
                 MAGMA_Z_SET2REAL(buff[tx],0);
             }
             else
                 buff[tx]  = x[0];
         }
-        if ( tx > m_mod_thread_x )
-            trackA=m_mod_thread_x;
+        if ( tx > m_mod_nb )
+            trackA=m_mod_nb;
         else
             trackA=tx;
         A += trackA ;
@@ -565,18 +253,25 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
         A += trackA ;
     }
 
+     if(ty == 0 )
+     { 
+           if(my_gpu_id == 0 && blkc ==0  && tx < kstan)//
+       {
+                 MAGMA_Z_SET2REAL(buff[tx], 0.0);
+       }
+     }
 
     magma_int_t flag = 0;
     
     if ( (blkc % num_gpus) == my_gpu_id) 
     {
-        A += lda * (blkc/num_gpus) * 32; // change
+        A += lda * (blkc/num_gpus) * zhemv_bs; // change
         // Somehow merging these two if - else creates problem
         // It could be a potential bug -- from synchronization or from cuda or compiler
         if( blkc == ( gridDim.x - 1 ) ) {
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            if( ( ty + j ) > m_mod_thread_x )
+        for(magma_int_t j =0; j< zhemv_bs; j+=8){
+            if( ( ty + j ) > m_mod_nb )
             {
                 MAGMA_Z_SET2REAL(la[0][bank_shift*(ty+j)+tx], 9999);
             }
@@ -586,7 +281,7 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
         }
         else {
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
+        for(magma_int_t j =0; j< zhemv_bs; j+=8){
             la[0][bank_shift*(ty+j)+tx] = A[ j * lda];
         }
         }
@@ -597,8 +292,6 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
         if ( i < tx )   {
             la[0][bank_shift*tx+i] = cuConj(la[0][i*bank_shift+tx]) ;
         }
-        else
-            la[0][bank_shift*tx+i] = la[0][bank_shift*tx+i]  ;
         }
         __syncthreads();
 
@@ -608,7 +301,7 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
         __syncthreads();
 
        
-          A -= lda * (blkc/num_gpus) * 32; 
+          A -= lda * (blkc/num_gpus) * zhemv_bs; 
     
           flag = 1;
     }
@@ -633,7 +326,7 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
     num_blocks_iters += 1;
     }
 
-    x += (my_gpu_id ) * nb ;
+    x += (my_gpu_id ) * zhemv_bs ;
 
         if( blkc > my_gpu_id)
 
@@ -643,15 +336,538 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
             count++;
 
                      #pragma unroll
-            for(magma_int_t j =0; j<half_thread_x; j +=8)
+            for(magma_int_t j =0; j< zhemv_bs; j +=8)
             la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
-            __syncthreads();
 
             if( ty == 0 )
             {
-            buff2[tx] = x[tx];
+                buff2[tx] = x[tx];
+                if(my_gpu_id == 0 && tx < kstan && count==1)//
+                {
+                     MAGMA_Z_SET2REAL(buff2[tx], 0.0);
+                }
             } // obtain the vector x store in buff2;
             __syncthreads();
+
+            #pragma unroll
+            for(magma_int_t j=0; j < 4 ; j++)
+            {
+            
+                        res += (la[0][bank_shift * (ty + j * 8) + tx] )* buff2[ ty + j * 8];
+                        res_ += cuConj( la[0][bank_shift * tx + j + ty * 4] ) * buff[j + ty * 4]; //iterate colum
+                }
+
+                   sdata[tx][ty]= res_ ;
+            __syncthreads();
+
+
+            if( ty== 1 )
+            {
+              res2 = sdata[tx][0]+sdata[tx][1]
+              + sdata[tx][2]+sdata[tx][3]
+              + sdata[tx][4]+sdata[tx][5]
+              + sdata[tx][6]+sdata[tx][7];
+                        
+                WC[wc_c*lda ] =   res2;
+            }
+
+
+                    wc_c += num_gpus;
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
+
+
+               }
+
+
+        la[0][bank_shift*tx+ty]= res ;
+        __syncthreads();
+
+            if( ty== 0 )
+            {
+              res1 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
+            +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
+            +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
+            +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
+              WC[0+lda*(blkc)] =  res1;
+            }
+
+}
+
+
+/**************************************************************
+ *    
+ */
+
+
+__global__ void
+magmablas_zhemv_200_L_update_mgpu_offset_32(magma_int_t n, cuDoubleComplex alpha,
+                         cuDoubleComplex* A, magma_int_t lda,
+                         cuDoubleComplex *x, magma_int_t incx,
+                         cuDoubleComplex beta,
+                         cuDoubleComplex *y, magma_int_t incy,
+                         cuDoubleComplex *WC,
+                         magma_int_t my_gpu_id,
+                         magma_int_t num_gpus, 
+                         magma_int_t nb,
+                                                 magma_int_t kstan )
+{
+    magma_int_t i;
+    magma_int_t tx  = threadIdx.x ;
+    magma_int_t ind = blockIdx.x * zhemv_bs + tx ;
+    cuDoubleComplex Ca;
+
+    MAGMA_Z_SET2REAL(Ca, 0) ;
+    WC+= ind + lda * blockIdx.x;
+
+    for(i = blockIdx.x* zhemv_bs; i<n; i+= zhemv_bs){
+        Ca += WC[0] ;
+        WC += zhemv_bs;
+    }
+    if( ind < n && ind >= kstan)
+        y[ind * incy] = beta * y[ind * incy]  + alpha * Ca ;
+}
+
+
+extern "C"
+void magmablas_zhemv_200_L_mgpu_offset_32(magma_int_t m, cuDoubleComplex alpha,
+                           cuDoubleComplex *A, magma_int_t lda,
+                           cuDoubleComplex *X, magma_int_t incx,
+                           cuDoubleComplex beta,
+                           cuDoubleComplex *Y, magma_int_t incy,
+                           cuDoubleComplex *dC_work,
+                         magma_int_t my_gpu_id,
+                         magma_int_t num_gpus, 
+                         magma_int_t nb,
+                             magma_int_t offset,
+                         magma_int_t num_blocks_skipped)
+{
+
+    magma_int_t the_chosen_block_id = offset / nb; 
+   
+    magma_int_t kstan = offset % nb;
+
+    A += lda * num_blocks_skipped * nb + the_chosen_block_id * nb;
+    X += the_chosen_block_id * nb;
+    Y += the_chosen_block_id * nb;
+
+    magma_int_t blocks;
+
+    if (m % zhemv_bs==0)
+        blocks = m / zhemv_bs;
+    else
+        blocks = m / zhemv_bs + 1;
+
+    blocks -= the_chosen_block_id;
+
+    dim3 grid(blocks, 1, 1);
+
+    dim3 threads(nb, 8, 1);
+    dim3 threads_u(nb, 1, 1);
+
+        
+    /*
+         * If matrix size is multiple of zhemv_bs, we use a specific code.
+         * otherwise, we call the generic case.
+         */
+      if(m % zhemv_bs == 0 ) 
+      {
+
+        magmablas_zhemv_200_L_special_mgpu_offset_32 <<< grid, threads, 0, magma_stream >>>(
+            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb, kstan);
+        }
+    else
+        {
+         magma_int_t m_mod_nb = m%zhemv_bs - 1;
+
+
+
+        magmablas_zhemv_200_L_generic_mgpu_offset_32 <<< grid, threads, 0, magma_stream >>> (
+            m, alpha, A, lda, X, incx ,beta, Y, incy, dC_work, m_mod_nb, my_gpu_id, num_gpus, nb, kstan);
+        }
+
+        magmablas_zhemv_200_L_update_mgpu_offset_32<<< grid, threads_u, 0, magma_stream >>>(
+        m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb, kstan);
+    
+}
+
+/*******************************************************************************
+ *     Functions for each specific cases - Upper case
+ */
+
+
+__global__ void
+magmablas_zhemv_200_U_special_mgpu_offset_32( magma_int_t n, cuDoubleComplex alpha,
+                               cuDoubleComplex *A, magma_int_t lda,
+                               cuDoubleComplex *x, magma_int_t incx,
+                               cuDoubleComplex  beta,
+                               cuDoubleComplex *y, magma_int_t incy,
+                               cuDoubleComplex *WC, 
+                         magma_int_t my_gpu_id,
+                         magma_int_t num_gpus, 
+                         magma_int_t nb,
+                         magma_int_t kstan)
+{
+    magma_int_t tx   = threadIdx.x ;
+    magma_int_t ty   = threadIdx.y ;
+    magma_int_t blkc = blockIdx.x ;
+
+
+    cuDoubleComplex res  = MAGMA_Z_ZERO;// used in scan the row
+    cuDoubleComplex res_ = MAGMA_Z_ZERO;// used in scan the column
+    cuDoubleComplex res1 = MAGMA_Z_ZERO;// tem for res
+    cuDoubleComplex res2 = MAGMA_Z_ZERO;// tem for res_
+
+    __shared__ cuDoubleComplex la   [zhemv_bs][bank_shift];
+    __shared__ cuDoubleComplex buff [zhemv_bs];
+    __shared__ cuDoubleComplex buff2 [zhemv_bs];
+
+
+    magma_int_t break_d   =  zhemv_bs * blkc;
+
+    x  += (break_d + tx ) * incx;
+    A  +=  break_d ;
+    A  +=  ty * lda + tx ;
+
+    if( ty == 0 )
+    {
+        buff[tx] = x[0];
+    if(blkc == 0  && tx < kstan)
+    {
+             MAGMA_Z_SET2REAL(buff[tx], 0.0);
+        }
+    } // obtain the vector x store in buff;
+ 
+    
+    if ( (blkc % num_gpus) == my_gpu_id) 
+    {
+        A += lda * (blkc/num_gpus) * zhemv_bs; // change
+
+        #pragma unroll
+        for(magma_int_t j =0; j<zhemv_bs; j +=8)
+        la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
+        __syncthreads();
+
+        #pragma unroll
+        for(magma_int_t  i=ty*4; i<(ty * 4 + 4)  ; i++){
+            if ( i > tx )   
+            {
+                la[0][bank_shift * tx + i] = cuConj(la[0][ i * bank_shift + tx])  ;
+            }
+        }
+        __syncthreads();
+
+        #pragma unroll
+        for(magma_int_t j=0; j < 4 ; j++)
+            res += cuConj( la[0][bank_shift * tx + j + ty * 4] ) * buff[j + ty * 4];
+    
+            __syncthreads();
+
+             A -= lda * (blkc/num_gpus) * zhemv_bs; 
+    
+              
+        }
+        __syncthreads();
+
+    
+        x  -= (break_d + tx ) * incx;// return to the beginning
+
+            x += (my_gpu_id ) * zhemv_bs ;// 
+
+            magma_int_t wc_c = my_gpu_id ;
+
+        magma_int_t total_blocks_gpu = gridDim.x /num_gpus;
+
+        if( my_gpu_id < ( gridDim.x % num_gpus) )
+        {
+        total_blocks_gpu += 1;
+        }
+
+        magma_int_t shift = (blkc +1) /num_gpus ;
+    
+        if( my_gpu_id < ( (blkc+1) % num_gpus) )
+        {
+        shift += 1;
+        }
+
+            #pragma unroll
+            for(magma_int_t s=0; s<shift; s++)
+            {
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
+            wc_c += num_gpus;
+            }
+
+
+               WC +=  break_d + tx;
+           
+           magma_int_t num_blocks_iters = total_blocks_gpu - shift;
+
+       magma_int_t count = 0;
+
+
+        for(magma_int_t s=0; s<num_blocks_iters; s++)
+        {
+            MAGMA_Z_SET2REAL(res_,0);
+            count++;
+
+                     #pragma unroll
+            for(magma_int_t j =0; j<zhemv_bs; j +=8)
+            la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
+
+            if( ty == 0 )
+            {
+                buff2[tx] = x[tx];
+
+            } // obtain the vector x store in buff;
+            __syncthreads();
+
+            #pragma unroll
+            for(magma_int_t j=0; j < 4 ; j++)
+            {
+                        res += (la[0][bank_shift * (ty + j * 8) + tx] )* buff2[ ty + j * 8];
+                        res_ += cuConj( la[0][bank_shift * tx + j + ty * 4] ) * buff[j + ty * 4]; //iterate colum
+                }
+                     __syncthreads();
+
+                    la[0][bank_shift*tx+ty]= res_ ;
+            __syncthreads();
+
+            if( ty== 0 )
+            {
+              res2 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
+            +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
+            +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
+            +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
+                        
+                WC[wc_c*lda ] =   res2;
+            }
+
+ 
+            __syncthreads();
+
+
+                    wc_c += num_gpus;
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
+
+               }
+
+
+        la[0][bank_shift*tx+ty]= res ;
+        __syncthreads();
+
+        if( ty== 0 )
+            {
+              res1 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
+            +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
+            +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
+            +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
+              
+              WC[0+lda*(blkc)] =  res1;
+        }
+}
+
+
+
+__global__ void
+magmablas_zhemv_200_U_generic_mgpu_offset_32(magma_int_t n, cuDoubleComplex alpha,
+                              cuDoubleComplex *A, magma_int_t lda,
+                              cuDoubleComplex *x, magma_int_t incx,
+                              cuDoubleComplex beta,
+                              cuDoubleComplex *y, magma_int_t incy,
+                              cuDoubleComplex *WC,
+                              magma_int_t m_mod_thread_x,
+                         magma_int_t my_gpu_id,
+                         magma_int_t num_gpus, 
+                         magma_int_t nb,
+                         magma_int_t kstan,
+                                                 magma_int_t the_right_gpu)
+{
+    magma_int_t tx   = threadIdx.x ;
+    magma_int_t ty   = threadIdx.y ;
+    magma_int_t blkc = blockIdx.x ;
+
+
+    cuDoubleComplex res  = MAGMA_Z_ZERO;
+    cuDoubleComplex res_ = MAGMA_Z_ZERO;
+    cuDoubleComplex res1 = MAGMA_Z_ZERO;
+    cuDoubleComplex res2 = MAGMA_Z_ZERO;
+
+    __shared__ cuDoubleComplex la   [zhemv_bs][bank_shift];
+    __shared__ cuDoubleComplex buff [zhemv_bs];
+    __shared__ cuDoubleComplex buff2 [zhemv_bs];
+
+
+    magma_int_t break_d   =  zhemv_bs * blkc;
+
+    x += (break_d + tx ) * incx;
+    A +=  break_d ;
+    A += lda * ty;
+
+    magma_int_t trackA ;
+    if( blkc == ( gridDim.x - 1 )) 
+    {
+        if( ty == 0 ){
+            if( tx > m_mod_thread_x )
+            {
+                MAGMA_Z_SET2REAL(buff[tx],0);
+            }
+            else
+                buff[tx]  = x[0];
+        }
+        if ( tx > m_mod_thread_x )
+            trackA=m_mod_thread_x;
+        else
+            trackA=tx;
+        A += trackA ;
+    }
+    else
+    {
+        if( ty == 0 )
+        {
+            buff[tx]  = x[0];
+        }
+        
+        A += tx ;
+    }
+
+     if(ty == 0 )
+     { 
+           if(blkc ==0  && tx < kstan)//
+       {
+                 MAGMA_Z_SET2REAL(buff[tx], 0.0);
+       }
+     }
+
+    
+    if ( (blkc % num_gpus) == my_gpu_id) 
+    {
+        A += lda * (blkc/num_gpus) * zhemv_bs; // change
+
+        if( blkc == ( gridDim.x - 1 ) ) {
+        #pragma unroll
+        for(magma_int_t j =0; j<zhemv_bs; j+=8){
+            if( ( ty + j ) > m_mod_thread_x )
+            {
+                MAGMA_Z_SET2REAL(la[0][bank_shift*(ty+j)+tx], 9999);
+            }
+            else
+                la[0][bank_shift*(ty+j)+tx] =  A[ j * lda];
+        }
+        }
+        else {
+        #pragma unroll
+        for(magma_int_t j =0; j<zhemv_bs; j+=8){
+            la[0][bank_shift*(ty+j)+tx] = A[ j * lda];
+        }
+        }
+        __syncthreads();
+
+        #pragma unroll
+        for(magma_int_t  i=ty*4; i<(ty*4+4)  ; i++){
+            if ( i > tx )   
+            {
+                la[0][bank_shift * tx + i] = cuConj(la[0][ i * bank_shift + tx])  ;
+            }
+        }
+        __syncthreads();
+
+        #pragma unroll
+        for(magma_int_t j=0; j < 4 ; j++)
+        res += cuConj(la[0][bank_shift*tx+j+ty*4])* buff[j+ty*4];
+        __syncthreads();
+
+       
+          A -= lda * (blkc/num_gpus) * zhemv_bs; 
+    
+      
+    }
+
+
+    
+        x  -= (break_d + tx ) * incx;// return to the beginning
+
+            x += (my_gpu_id ) * zhemv_bs ;// 
+
+            magma_int_t wc_c = my_gpu_id ;
+
+        magma_int_t total_blocks_gpu = gridDim.x /num_gpus;
+
+        if( my_gpu_id < ( gridDim.x % num_gpus) )
+        {
+        total_blocks_gpu += 1;
+        }
+
+        magma_int_t shift = (blkc +1) /num_gpus ;
+    
+        if( my_gpu_id < ( (blkc+1) % num_gpus) )
+        {
+        shift += 1;
+        }
+
+            #pragma unroll
+            for(magma_int_t s=0; s<shift; s++)
+            {
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
+            wc_c += num_gpus;
+            }
+
+
+               WC +=  break_d + tx;
+           
+           magma_int_t num_blocks_iters = total_blocks_gpu - shift;
+
+       magma_int_t count = 0;
+
+
+        for(magma_int_t s=0; s<num_blocks_iters; s++)
+        {
+            MAGMA_Z_SET2REAL(res_,0);
+            count++;
+
+
+           if(my_gpu_id == the_right_gpu && s==num_blocks_iters-1)
+           {
+            
+                         if( ty == 0 )
+                         {
+                    if( tx > m_mod_thread_x )
+                    {
+                    MAGMA_Z_SET2REAL(buff2[tx],0);
+                    }
+                    else
+                         
+                    buff2[tx]  = x[tx];
+                      }
+              
+                #pragma unroll
+                  for(magma_int_t j =0; j<zhemv_bs; j+=8)
+                      {
+                    if( ( ty + j ) > m_mod_thread_x )
+                    {
+                    MAGMA_Z_SET2REAL(la[0][bank_shift*(ty+j)+tx], 0);
+                    }
+                    else
+                    la[0][bank_shift*(ty+j)+tx] =  A[ j * lda];
+                }
+                     __syncthreads();
+
+                 }// end of the_right_gpu
+                 else
+                 {
+                   #pragma unroll
+            for(magma_int_t j =0; j<zhemv_bs; j +=8)
+            la[0][ bank_shift * (ty+j) + tx] =  A[ j * lda];
+           
+            if( ty == 0 )
+            {
+            buff2[tx] = x[tx];
+            } // obtain the vector x store in buff;
+            __syncthreads();
+                 }
+
 
             #pragma unroll
             for(magma_int_t j=0; j < 4 ; j++)
@@ -666,25 +882,22 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
             __syncthreads();
 
             if( ty== 0 )
+            {
               res2 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
             +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
             +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
             +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
-            else
-            {
-                MAGMA_Z_SET2REAL(res2,0);
+                        
+                WC[wc_c*lda ] =   res2;
             }
  
             __syncthreads();
 
-                    if( ty== 0 )
-                        WC[wc_c*lda ] =   res2;
 
                     wc_c += num_gpus;
-                x += num_gpus * 32;
-                    A += lda * 32 ;
+                x += num_gpus * zhemv_bs;
+                    A += lda * zhemv_bs ;
 
-                    __syncthreads();
 
                }
 
@@ -693,27 +906,19 @@ magmablas_zhemv_200_L_generic_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
         __syncthreads();
 
             if( ty== 0 )
-                    {
+            {
               res1 = la[0][tx*bank_shift+0]+la[0][tx*bank_shift+1]
             +    la[0][tx*bank_shift+2]+la[0][tx*bank_shift+3]
             +    la[0][tx*bank_shift+4]+la[0][tx*bank_shift+5]
             +    la[0][tx*bank_shift+6]+la[0][tx*bank_shift+7];
-                    }
-            else
-            {
-             MAGMA_Z_SET2REAL(res1,0);
+              WC[0+lda*(blkc)] =  res1;
             }
-             __syncthreads();
 
-        if( ty == 0 ) {
-        WC[0+lda*(blkc)] =  res1;
-        }
 }
 
 
-
 __global__ void
-magmablas_zhemv_200_L_update_mgpu_32_s(magma_int_t n, cuDoubleComplex alpha,
+magmablas_zhemv_200_U_update_mgpu_offset_32(magma_int_t n, cuDoubleComplex alpha,
                          cuDoubleComplex* A, magma_int_t lda,
                          cuDoubleComplex *x, magma_int_t incx,
                          cuDoubleComplex beta,
@@ -721,54 +926,30 @@ magmablas_zhemv_200_L_update_mgpu_32_s(magma_int_t n, cuDoubleComplex alpha,
                          cuDoubleComplex *WC,
                          magma_int_t my_gpu_id,
                          magma_int_t num_gpus, 
-                         magma_int_t nb )
+                         magma_int_t nb,
+                                                 magma_int_t kstan )
 {
     magma_int_t i;
     magma_int_t tx  = threadIdx.x ;
-    magma_int_t ind = blockIdx.x * 32 + tx ;
+    magma_int_t ind = blockIdx.x * zhemv_bs + tx ;
     cuDoubleComplex Ca;
 
     MAGMA_Z_SET2REAL(Ca, 0) ;
-    WC+= ind;
+    WC+=  blockIdx.x * lda + tx;
 
-    for(i =0; i<n; i+=32){
-        Ca += WC[i/32 * lda] ;
-    }
-    if( ind < n )
-        y[ind * incy] = beta * y[ind * incy]  + alpha * Ca ;
-}
+    for(i = 0; i<(blockIdx.x+1)*zhemv_bs; i+= zhemv_bs)
+    {
 
-
-__global__ void
-magmablas_zhemv_200_L_update_mgpu_32(magma_int_t n, cuDoubleComplex alpha,
-                         cuDoubleComplex* A, magma_int_t lda,
-                         cuDoubleComplex *x, magma_int_t incx,
-                         cuDoubleComplex beta,
-                         cuDoubleComplex *y, magma_int_t incy,
-                         cuDoubleComplex *WC,
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb )
-{
-    magma_int_t i;
-    magma_int_t tx  = threadIdx.x ;
-    magma_int_t ind = blockIdx.x * 32 + tx ;
-    cuDoubleComplex Ca;
-
-    MAGMA_Z_SET2REAL(Ca, 0) ;
-    WC+= ind + lda * blockIdx.x;
-
-    for(i = blockIdx.x*32; i<n; i+=32){
         Ca += WC[0] ;
-        WC += 32;
+        WC += zhemv_bs ;
     }
-    if( ind < n )
+    if( ind < n && ind >= kstan)
         y[ind * incy] = beta * y[ind * incy]  + alpha * Ca ;
 }
 
 
 extern "C"
-void magmablas_zhemv_200_L_mgpu_32(magma_int_t m, cuDoubleComplex alpha,
+void magmablas_zhemv_200_U_mgpu_offset_32(magma_int_t m, cuDoubleComplex alpha,
                            cuDoubleComplex *A, magma_int_t lda,
                            cuDoubleComplex *X, magma_int_t incx,
                            cuDoubleComplex beta,
@@ -776,8 +957,19 @@ void magmablas_zhemv_200_L_mgpu_32(magma_int_t m, cuDoubleComplex alpha,
                            cuDoubleComplex *dC_work,
                          magma_int_t my_gpu_id,
                          magma_int_t num_gpus, 
-                         magma_int_t nb)
+                         magma_int_t nb,
+                             magma_int_t offset,
+                         magma_int_t num_blocks_skipped, 
+                                                 magma_int_t the_right_gpu)
 {
+
+    magma_int_t the_chosen_block_id = offset / nb; 
+    magma_int_t kstan = offset % nb;
+
+    A += lda * num_blocks_skipped * nb + the_chosen_block_id * nb;
+    X += the_chosen_block_id * nb;
+    Y += the_chosen_block_id * nb;
+
     magma_int_t blocks;
 
     if (m % zhemv_bs==0)
@@ -785,41 +977,34 @@ void magmablas_zhemv_200_L_mgpu_32(magma_int_t m, cuDoubleComplex alpha,
     else
         blocks = m / zhemv_bs + 1;
 
+    blocks -= the_chosen_block_id;
+
     dim3 grid(blocks, 1, 1);
-    dim3 grid_s(blocks, blocks, 1);
+    dim3 threads(nb, 8, 1);
+    dim3 threads_u(nb, 1, 1);
 
-    dim3 threads(32, 8, 1);
-    dim3 threads_u(32, 1, 1);
-
+        
     /*
-     * If matrix size is multiple of zhemv_bs, we use a specific code.
-     * otherwise, we call the generic case.
-     */
-    if(m % zhemv_bs == 0 ) {
-    if((m / num_gpus) < SWITCH)
-        magmablas_zhemv_200_L_special_mgpu_32_s <<< grid_s, threads, 0, magma_stream >>>(
-            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb);
-        else
-        magmablas_zhemv_200_L_special_mgpu_32 <<< grid, threads, 0, magma_stream >>>(
-            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb);
-
-    }
-    else{
+         * If matrix size is multiple of zhemv_bs, we use a specific code.
+         * otherwise, we call the generic case.
+         */
+        if(m % zhemv_bs == 0 ) {
+        magmablas_zhemv_200_U_special_mgpu_offset_32 <<< grid, threads, 0, magma_stream >>>(
+            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb, kstan);
+        }
+        else{
         magma_int_t m_mod_thread_x = m%zhemv_bs - 1;
-    if((m / num_gpus) < SWITCH )
-        magmablas_zhemv_200_L_generic_mgpu_32_s <<< grid_s, threads, 0, magma_stream >>> (
-            m, alpha, A, lda, X, incx ,beta, Y, incy, dC_work, m_mod_thread_x, my_gpu_id, num_gpus, nb);
-    else
-    magmablas_zhemv_200_L_generic_mgpu_32 <<< grid, threads, 0, magma_stream >>> (
-            m, alpha, A, lda, X, incx ,beta, Y, incy, dC_work, m_mod_thread_x, my_gpu_id, num_gpus, nb);
-    }
-    if((m / num_gpus) < SWITCH )
-    magmablas_zhemv_200_L_update_mgpu_32_s<<< grid, threads_u, 0, magma_stream >>>(
-        m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb);
-    else
-    magmablas_zhemv_200_L_update_mgpu_32<<< grid, threads_u, 0, magma_stream >>>(
-        m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb);
+
+
+        magmablas_zhemv_200_U_generic_mgpu_offset_32 <<< grid, threads, 0, magma_stream >>> (
+            m, alpha, A, lda, X, incx ,beta, Y, incy, dC_work, m_mod_thread_x, my_gpu_id, num_gpus, nb, kstan, the_right_gpu);
+        }
+
+        magmablas_zhemv_200_U_update_mgpu_offset_32<<< grid, threads_u, 0, magma_stream >>>(
+        m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb, kstan);
+    
 }
+
 
 /*************************************************************************
 
@@ -912,7 +1097,7 @@ void magmablas_zhemv_200_L_mgpu_32(magma_int_t m, cuDoubleComplex alpha,
 
 extern "C"
 magma_int_t
-magmablas_zhemv_200_mgpu_32( char uplo, magma_int_t n,
+magmablas_zhemv_mgpu_32_offset( char uplo, magma_int_t n,
                       cuDoubleComplex alpha,
                       cuDoubleComplex **A, magma_int_t lda,
                       cuDoubleComplex **X, magma_int_t incx,
@@ -920,11 +1105,116 @@ magmablas_zhemv_200_mgpu_32( char uplo, magma_int_t n,
                       cuDoubleComplex **Y, magma_int_t incy,
                       cuDoubleComplex **work, magma_int_t lwork,
               magma_int_t num_gpus, 
-              magma_int_t nb)
+              magma_int_t nb,
+                      magma_int_t offset,
+                      cudaStream_t stream[][10])
 
 {
     char uplo_[2] = {uplo, 0};
     int  upper    = lapackf77_lsame(uplo_, "U");
+
+
+
+    /*
+     * Test the input parameters.
+     */
+  
+    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
+        return -1;
+    } else if ( n < 0 ) {
+        return -2;
+    } else if ( lda < max(1,n) ) {
+        return -5;
+    } else if ( incx == 0 ) {
+        return -7;
+    } else if ( incy == 0 ) {
+        return -10;
+    }
+
+    
+
+    /*
+     * Quick return if possible.
+     */
+    if ( (n == 0) || ( MAGMA_Z_EQUAL(alpha, MAGMA_Z_ZERO) && MAGMA_Z_EQUAL(beta, MAGMA_Z_ONE) ) )
+        return MAGMA_SUCCESS;
+
+        magma_int_t blocks    = n / zhemv_bs + (n % zhemv_bs != 0);
+        magma_int_t workspace = lda * (blocks + 1);
+
+        if (lwork < workspace){
+           printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
+                  lwork, workspace);
+           exit(1);
+        }
+        if(nb != 32)
+        {
+        printf("Error in magmablas_zhemv_200_mgpu: nb != 32, program will exit! please reallocate your matrix among GPUs\n");
+        exit(0);
+        }
+        magma_int_t i = 0;
+        for(i=0; i<num_gpus; i++)
+        {
+             magma_setdevice(i);
+             magmablasSetKernelStream(stream[i][0]);
+
+             magma_int_t the_chosen_block_id = offset / nb; 
+         magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus; 
+
+         magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
+
+         if(i < the_chosen_gpu_id)     
+             {
+         num_blocks_skipped += 1;
+             }
+              
+             int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
+             
+
+             magma_int_t the_right_block_id = n / nb ;
+             magma_int_t the_right_gpu = the_right_block_id % num_gpus;
+
+             the_right_gpu = ( the_right_gpu + num_gpus - the_chosen_gpu_id ) % num_gpus;
+             // the_right_gpu is used in Upper generic case.
+
+          if ( upper)
+          { 
+          magmablas_zhemv_200_U_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                  new_gpu_id, num_gpus, nb, offset, num_blocks_skipped, the_right_gpu);     
+           }
+           else
+           {
+           magmablas_zhemv_200_L_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                                        new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);
+            } 
+        
+      }
+
+
+
+    return MAGMA_SUCCESS;
+}
+
+
+
+extern "C"
+magma_int_t
+magmablas_zhemv2_mgpu_32_offset( char uplo, magma_int_t n,
+                      cuDoubleComplex alpha,
+                      cuDoubleComplex **A, magma_int_t lda,
+                      cuDoubleComplex **X, magma_int_t incx,
+                      cuDoubleComplex beta,
+                      cuDoubleComplex **Y, magma_int_t incy,
+                      cuDoubleComplex **work, magma_int_t lwork,
+              magma_int_t num_gpus, 
+              magma_int_t nb,
+                      magma_int_t offset)
+
+{
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
+
+
 
     /*
      * Test the input parameters.
@@ -947,14 +1237,6 @@ magmablas_zhemv_200_mgpu_32( char uplo, magma_int_t n,
     if ( (n == 0) || ( MAGMA_Z_EQUAL(alpha, MAGMA_Z_ZERO) && MAGMA_Z_EQUAL(beta, MAGMA_Z_ONE) ) )
         return MAGMA_SUCCESS;
 
-    /* TODO: Upper case is not implemented in MAGMA */
-    if ( upper)
-    {
-       printf("Upper case is not implemented on multi GPUs\n");
-       exit(0);
-    }
-    else
-    {
         magma_int_t blocks    = n / zhemv_bs + (n % zhemv_bs != 0);
         magma_int_t workspace = lda * (blocks + 1);
 
@@ -972,11 +1254,127 @@ magmablas_zhemv_200_mgpu_32( char uplo, magma_int_t n,
         for(i=0; i<num_gpus; i++)
         {
              magma_setdevice(i);
-             magmablas_zhemv_200_L_mgpu_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], i, num_gpus, nb);     
-        }
-    }
+            // magmablasSetKernelStream(stream[i][0]);
+
+             magma_int_t the_chosen_block_id = offset / nb; 
+         magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus; 
+
+         magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
+
+         if(i < the_chosen_gpu_id)     
+             {
+         num_blocks_skipped += 1;
+             }
+              
+             int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
+             
+             magma_int_t the_right_block_id = n / nb ;
+             magma_int_t the_right_gpu = the_right_block_id % num_gpus;
+
+             the_right_gpu = ( the_right_gpu + num_gpus - the_chosen_gpu_id ) % num_gpus;
+             // the_right_gpu is used in Upper generic case.
+
+          if ( upper)
+          { 
+          magmablas_zhemv_200_U_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                  new_gpu_id, num_gpus, nb, offset, num_blocks_skipped, the_right_gpu);     
+           }
+          else
+         magmablas_zhemv_200_L_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                                        new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);
+             
+        
+      }
+
+
+
     return MAGMA_SUCCESS;
+
 }
+
+
+extern "C"
+magma_int_t
+magmablas_zhemv2_mgpu_32( char uplo, magma_int_t n,
+                      cuDoubleComplex alpha,
+                      cuDoubleComplex **A, magma_int_t lda,
+                      cuDoubleComplex **X, magma_int_t incx,
+                      cuDoubleComplex beta,
+                      cuDoubleComplex **Y, magma_int_t incy,
+                      cuDoubleComplex **work, magma_int_t lwork,
+              magma_int_t num_gpus, 
+              magma_int_t nb)
+
+{
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
+
+
+
+    /*
+     * Test the input parameters.
+     */
+    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
+        return -1;
+    } else if ( n < 0 ) {
+        return -2;
+    } else if ( lda < max(1,n) ) {
+        return -5;
+    } else if ( incx == 0 ) {
+        return -7;
+    } else if ( incy == 0 ) {
+        return -10;
+    }
+
+    /*
+     * Quick return if possible.
+     */
+    if ( (n == 0) || ( MAGMA_Z_EQUAL(alpha, MAGMA_Z_ZERO) && MAGMA_Z_EQUAL(beta, MAGMA_Z_ONE) ) )
+        return MAGMA_SUCCESS;
+
+        magma_int_t blocks    = n / zhemv_bs + (n % zhemv_bs != 0);
+        magma_int_t workspace = lda * (blocks + 1);
+
+        if (lwork < workspace){
+           printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
+                  lwork, workspace);
+           exit(1);
+        }
+        if(nb != 32)
+        {
+        printf("Error in magmablas_zhemv_200_mgpu: nb != 32, program will exit! please reallocate your matrix among GPUs\n");
+        exit(0);
+        }
+        magma_int_t i = 0;
+
+        for(i=0; i<num_gpus; i++)
+        {
+             magma_setdevice(i);
+             
+             magma_int_t the_right_block_id = n / nb ;
+             magma_int_t the_right_gpu = the_right_block_id % num_gpus;
+
+             
+             // the_right_gpu is used in Upper generic case.
+
+          if ( upper)
+          { 
+          magmablas_zhemv_200_U_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                  i, num_gpus, nb, 0, 0, the_right_gpu);     
+           }
+          else
+         magmablas_zhemv_200_L_mgpu_offset_32(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i], 
+                                                       i, num_gpus, nb, 0, 0);
+             
+        
+      }
+
+
+
+    return MAGMA_SUCCESS;
+
+}
+
 
 
 __global__ void 

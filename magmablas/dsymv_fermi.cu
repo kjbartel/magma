@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:20 2012
+       @generated d Wed Nov 14 22:53:50 2012
 
 */
 #include "common_magma.h"
@@ -30,8 +30,8 @@
 
 __global__ void
 magmablas_dsymv_200_L_special( magma_int_t n, double alpha,
-                               double *A, magma_int_t lda,
-                               double *x, magma_int_t incx,
+                               const double *A, magma_int_t lda,
+                               const double *x, magma_int_t incx,
                                double  beta,
                                double *y, magma_int_t incy,
                                double *WC)
@@ -364,8 +364,8 @@ magmablas_dsymv_200_L_special( magma_int_t n, double alpha,
  */
 __global__ void
 magmablas_dsymv_200_L_generic(magma_int_t n, double alpha,
-                              double *A, magma_int_t lda,
-                              double *x, magma_int_t incx,
+                              const double *A, magma_int_t lda,
+                              const double *x, magma_int_t incx,
                               double beta,
                               double *y, magma_int_t incy,
                               double *WC,
@@ -789,8 +789,8 @@ magmablas_dsymv_200_L_generic(magma_int_t n, double alpha,
 
 __global__ void
 magmablas_dsymv_200_L_update(magma_int_t n, double alpha,
-                         double* A, magma_int_t lda,
-                         double *x, magma_int_t incx,
+                         const double* A, magma_int_t lda,
+                         const double *x, magma_int_t incx,
                          double beta,
                          double *y, magma_int_t incy,
                          double *WC )
@@ -814,8 +814,8 @@ magmablas_dsymv_200_L_update(magma_int_t n, double alpha,
 
 extern "C"
 void magmablas_dsymv_200_L(magma_int_t m, double alpha,
-                           double *A, magma_int_t lda,
-                           double *X, magma_int_t incx,
+                           const double *A, magma_int_t lda,
+                           const double *X, magma_int_t incx,
                            double beta,
                            double *Y, magma_int_t incy,
                            double *dC_work)
@@ -941,8 +941,8 @@ extern "C"
 magma_int_t
 magmablas_dsymv_200( char uplo, magma_int_t n,
                      double alpha, 
-                     double *A, magma_int_t lda,
-                     double *X, magma_int_t incx,
+                     const double *A, magma_int_t lda,
+                     const double *X, magma_int_t incx,
                      double beta,  
                      double *Y, magma_int_t incy)
 {
@@ -1037,8 +1037,8 @@ extern "C"
 magma_int_t
 magmablas_dsymv2_200( char uplo, magma_int_t n,
                       double alpha, 
-                      double *A, magma_int_t lda,
-                      double *X, magma_int_t incx,
+                      const double *A, magma_int_t lda,
+                      const double *X, magma_int_t incx,
                       double beta,  
                       double *Y, magma_int_t incy,
                       double *dC_work,

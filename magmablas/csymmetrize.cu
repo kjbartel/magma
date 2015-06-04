@@ -1,102 +1,108 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:20 2012
+       @generated c Wed Nov 14 22:53:49 2012
        @author Mark Gates
 */
 #include "common_magma.h"
+#include <assert.h>
+
+#define NB 64
 
 /*
-    Matrix is divided into 64 x m block rows.
-    Each block has 64 threads.
+    Matrix is m x m, and is divided into block rows, each NB x m.
+    Each block has NB threads.
     Each thread copies one row, iterating across all columns below diagonal.
     The bottom block of rows may be partially outside the matrix;
     if so, rows outside the matrix (i >= m) are disabled.
 */
 __global__ void
-csymmetrize_kernel_lower( int m, cuFloatComplex *A, int lda )
+csymmetrize_lower( int m, cuFloatComplex *dA, int ldda )
 {
-    // A iterates across row i and AT iterates down column i.
-    int i = blockIdx.x*64 + threadIdx.x;
-    cuFloatComplex *AT = A;
+    // dA iterates across row i and dAT iterates down column i.
+    int i = blockIdx.x*NB + threadIdx.x;
+    cuFloatComplex *dAT = dA;
     if ( i < m ) {
-        A  += i;
-        AT += i*lda;
-        cuFloatComplex *Aend = A + i*lda;
-        while( A < Aend ) {
-            *AT = cuConjf(*A);
-            A  += lda;
-            AT += 1;
+        dA  += i;
+        dAT += i*ldda;
+        cuFloatComplex *dAend = dA + i*ldda;
+        while( dA < dAend ) {
+            *dAT = cuConjf(*dA);  // upper := lower
+            dA  += ldda;
+            dAT += 1;
         }
     }
 }
 
 
-// only difference with _lower version is direction A=AT instead of AT=A.
+// only difference with _lower version is direction dA=dAT instead of dAT=dA.
 __global__ void
-csymmetrize_kernel_upper( int m, cuFloatComplex *A, int lda )
+csymmetrize_upper( int m, cuFloatComplex *dA, int ldda )
 {
-    // A iterates across row i and AT iterates down column i.
-    int i = blockIdx.x*64 + threadIdx.x;
-    cuFloatComplex *AT = A;
+    // dA iterates across row i and dAT iterates down column i.
+    int i = blockIdx.x*NB + threadIdx.x;
+    cuFloatComplex *dAT = dA;
     if ( i < m ) {
-        A  += i;
-        AT += i*lda;
-        cuFloatComplex *Aend = A + i*lda;
-        while( A < Aend ) {
-            *A = cuConjf(*AT);
-            A  += lda;
-            AT += 1;
+        dA  += i;
+        dAT += i*ldda;
+        cuFloatComplex *dAend = dA + i*ldda;
+        while( dA < dAend ) {
+            *dA = cuConjf(*dAT);  // lower := upper
+            dA  += ldda;
+            dAT += 1;
         }
     }
 }
 
 
 extern "C" void
-magmablas_csymmetrize( char uplo, int m, cuFloatComplex *A, int lda )
+magmablas_csymmetrize( char uplo, magma_int_t m, cuFloatComplex *dA, magma_int_t ldda )
 {
 /*
-  Purpose
-  =======
-
-  CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa,
-  to make A a general representation of a symmetric matrix.
-
-  Arguments
-  =========
-
-  UPLO    (input) CHARACTER*1
-          Specifies the part of the matrix A that is valid on input.
-          = 'U':      Upper triangular part
-          = 'L':      Lower triangular part
-
-  M       (input) INTEGER
-          The number of rows of the matrix A.  M >= 0.
-
-  A       (input/output) COMPLEX DOUBLE PRECISION array, dimension (LDA,N)
-          The m by m matrix A.
-
-  LDA     (input) INTEGER
-          The leading dimension of the array A.  LDA >= max(1,M).
-
-  =====================================================================   */
-
-    dim3 threads( 64 );
-    dim3 grid( m/64 + (m%64 != 0) );
+    Purpose
+    =======
     
+    CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa,
+    to make dA a general representation of a symmetric matrix.
+    
+    Arguments
+    =========
+    
+    UPLO    (input) CHARACTER*1
+            Specifies the part of the matrix dA that is valid on input.
+            = 'U':      Upper triangular part
+            = 'L':      Lower triangular part
+    
+    M       (input) INTEGER
+            The number of rows of the matrix dA.  M >= 0.
+    
+    dA      (input/output) COMPLEX DOUBLE PRECISION array, dimension (LDDA,N)
+            The m by m matrix dA.
+    
+    LDDA    (input) INTEGER
+            The leading dimension of the array dA.  LDDA >= max(1,M).
+    
+    =====================================================================   */
+
     //printf( "m %d, grid %d, threads %d\n", m, grid.x, threads.x );
     if ( m == 0 )
         return;
     
+    assert( m >= 0 );
+    assert( ldda >= m );
+    
+    dim3 threads( NB );
+    dim3 grid( (m + NB - 1)/NB );
+    
     if ( (uplo == 'U') || (uplo == 'u') ) {
-        csymmetrize_kernel_upper<<< grid, threads, 0, magma_stream >>>( m, A, lda );
+        csymmetrize_upper<<< grid, threads, 0, magma_stream >>>( m, dA, ldda );
     }
     else if ( (uplo == 'L') || (uplo == 'l') ) {
-        csymmetrize_kernel_lower<<< grid, threads, 0, magma_stream >>>( m, A, lda );
+        csymmetrize_lower<<< grid, threads, 0, magma_stream >>>( m, dA, ldda );
     }
     else {
         printf( "uplo has illegal value\n" );

@@ -1,9 +1,9 @@
 /*
-  -- MAGMA (version 1.2.1) --
+  -- MAGMA (version 1.3.0) --
   Univ. of Tennessee, Knoxville
   Univ. of California, Berkeley
   Univ. of Colorado, Denver
-  June 2012
+  November 2012
 
   @precisions mixed zc -> ds
 
@@ -21,7 +21,11 @@
 __device__ int flag = 0; 
 
 __global__ void
-l_zlat2c_special( int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_int_t *INFO, double RMAX, int ldsa )
+l_zlat2c_special(
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    magma_int_t *info, double RMAX, int ldsa )
 {
     double mRMAX = - RMAX;
     int tx  = threadIdx.x ;
@@ -90,13 +94,16 @@ l_zlat2c_special( int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_
     //la[tx][ty] = flag ;
     //__syncthreads();
     //if( ty == 0 ) {
-    //    //  INFO[0] = flag+ la[tx] [1] +  la[tx] [2] + la[tx] [3] ;
+    //    //  info[0] = flag+ la[tx] [1] +  la[tx] [2] + la[tx] [3] ;
     //}
 }
 
 __global__ void
-l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_full_block,
-                 int m_mod_32, magma_int_t *INFO, double RMAX, int ldsa)
+l_zlat2c_generic(
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     double mRMAX = - RMAX;
     int tx = threadIdx.x ;
@@ -201,7 +208,7 @@ l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
           The leader accumulates all the results from his peer.
           ----------------------------------------------------------*/
         //if( ty == 0 ) {
-            //  INFO[ind] = ld[tx][0] +  ld[tx][1] + ld[tx][2] + ld[tx][3] ;
+            //  info[ind] = ld[tx][0] +  ld[tx][1] + ld[tx][2] + ld[tx][3] ;
         //}
 
     }
@@ -291,7 +298,7 @@ l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
           ----------------------------------------------------------*/
         //if( ty == 0 )
         //    {
-                //  INFO [ind] =  flag + la[tx][1]+ la[tx][2]+ la[tx][3] ;
+                //  info [ind] =  flag + la[tx][1]+ la[tx][2]+ la[tx][3] ;
         //    }
     }
 }
@@ -301,8 +308,11 @@ l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
 /* Generic Case*/
 
 __global__ void
-u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_full_block,
-                 int m_mod_32, magma_int_t *INFO, double RMAX, int ldsa)
+u_zlat2c_generic(
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     double mRMAX = - RMAX;
     int tx = threadIdx.x ;
@@ -412,7 +422,7 @@ u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
         //la[tx][ty] = flag ;
         //__syncthreads();
         //if( ty == 0 ) {
-        //    // INFO [ind] = flag  + la[tx][1] + la[tx][2] + la[tx][3]  ;
+        //    // info [ind] = flag  + la[tx][1] + la[tx][2] + la[tx][3]  ;
         //}
 
     }
@@ -506,7 +516,7 @@ u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
         //__syncthreads();
         //
         //if( ty == 0 ) {
-        //    //  INFO[ind] = flag +  la[tx] [1] +  la[tx] [2] + la[tx] [3]  ;
+        //    //  info[ind] = flag +  la[tx] [1] +  la[tx] [2] + la[tx] [3]  ;
         //}
 
     }
@@ -515,7 +525,11 @@ u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
 /*- ---------------------------------------------- UPLO = 'U' ----------------------------------*/
 /*Good Dimension*/
 __global__ void
-u_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_int_t *INFO, double RMAX, int ldsa )
+u_zlat2c_special (
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    magma_int_t *info, double RMAX, int ldsa )
 {
     double mRMAX = - RMAX;
     int tx = threadIdx.x ;
@@ -602,13 +616,17 @@ u_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_
     //__syncthreads();
     //
     //if( ty == 0 ) {
-    //    // INFO[0] = flag + la[tx][1] + la[tx][2] + la[tx][3] ;
+    //    // info[0] = flag + la[tx][1] + la[tx][2] + la[tx][3] ;
     //}
 }
 
 
 extern "C" void
-mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatComplex *Y, magma_int_t LDSA, magma_int_t *INFO)
+mzlat2c(
+    char uplo, magma_int_t m,
+    const cuDoubleComplex *A,  magma_int_t lda,
+    cuFloatComplex        *SA, magma_int_t ldsa,
+    magma_int_t *info)
 {
     /*
       Note:
@@ -626,10 +644,10 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
 
     if( m % dgemv_bs == 0 ) {
         if( uplo == 'L' || uplo == 'l'){
-            l_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, INFO, RMAX, LDSA  );
+            l_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, info, RMAX, ldsa  );
         }
         else{
-            u_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, INFO, RMAX, LDSA  );
+            u_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, info, RMAX, ldsa  );
         }
 
     }
@@ -637,10 +655,10 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
         int  m_full_block = (m - m % 32 ) /32 ;
         int  m_mod_32 = m%32 ;
         if( uplo == 'L' || uplo == 'l'){
-            l_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32, INFO, RMAX, LDSA );
+            l_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, m_full_block, m_mod_32, info, RMAX, ldsa );
         }
         else{
-            u_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32, INFO, RMAX, LDSA );
+            u_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, m_full_block, m_mod_32, info, RMAX, ldsa );
         }
     }
 }
@@ -652,15 +670,18 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
   How to deliver the info.
 */
 extern "C" void
-magmablas_zlat2c(char uplo, magma_int_t n, cuDoubleComplex *A, magma_int_t lda,
-                 cuFloatComplex *SA, magma_int_t LDSA, magma_int_t *INFO)
+magmablas_zlat2c(
+    char uplo, magma_int_t n,
+    const cuDoubleComplex *A,  magma_int_t lda,
+    cuFloatComplex        *SA, magma_int_t ldsa,
+    magma_int_t *info)
 {
     /*
       The routine converts a COMPLEX_16 triangular
       matrix A to COMPLEX triangular matrix SA.
     */
-    *INFO = 0;
-    mzlat2c( uplo, n, A, lda, SA, LDSA, INFO );
+    *info = 0;
+    mzlat2c( uplo, n, A, lda, SA, ldsa, info );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -669,8 +690,11 @@ magmablas_zlat2c(char uplo, magma_int_t n, cuDoubleComplex *A, magma_int_t lda,
 /*------------------------------------------ UPLO = 'L' ----------------------------------*/
 
 __global__ void
-l_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_int_t *INFO, 
-                  double RMAX, int ldsa )
+l_zlat2c_special (
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    magma_int_t *info, double RMAX, int ldsa )
 {
     int tx  = threadIdx.x ;
     int ty  = threadIdx.y ;
@@ -695,8 +719,11 @@ l_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, magma_
 
 
 __global__ void
-l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_full_block,
-                 int m_mod_32, magma_int_t *INFO, double RMAX, int ldsa)
+l_zlat2c_generic(
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     int tx = threadIdx.x ;
     int ty = threadIdx.y ;
@@ -792,8 +819,11 @@ l_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
 /* Generic Case*/
 
 __global__ void
-u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_full_block,
-                 int m_mod_32, magma_int_t *INFO, double RMAX, int ldsa)
+u_zlat2c_generic(
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA,
+    int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     int tx = threadIdx.x ;
     int ty = threadIdx.y ;
@@ -898,8 +928,11 @@ u_zlat2c_generic(int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, int m_f
 /*- ---------------------------------------------- UPLO = 'U' ----------------------------------*/
 /*Good Dimension*/
 __global__ void
-u_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA, 
-                  magma_int_t *INFO, double RMAX, int ldsa )
+u_zlat2c_special (
+    int n,
+    const cuDoubleComplex *A, int lda,
+    cuFloatComplex        *SA, 
+    magma_int_t *info, double RMAX, int ldsa )
 {
     int tx = threadIdx.x ;
     int ty = threadIdx.y ;
@@ -933,7 +966,11 @@ u_zlat2c_special (int n, cuDoubleComplex *A, int lda, cuFloatComplex *SA,
 }
 
 extern "C" void
-mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatComplex *Y, magma_int_t LDSA, magma_int_t *INFO)
+mzlat2c(
+    char uplo, magma_int_t m,
+    const cuDoubleComplex *A,  magma_int_t lda,
+    cuFloatComplex        *SA, magma_int_t ldsa,
+    magma_int_t *info)
 {
     /*
       Note:
@@ -951,10 +988,10 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
 
     if( m % dgemv_bs == 0 ) {
         if( uplo == 'L' || uplo == 'l'){
-            l_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, INFO, RMAX, LDSA );
+            l_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, info, RMAX, ldsa );
         }
         else{
-            u_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, INFO, RMAX, LDSA );
+            u_zlat2c_special <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, info, RMAX, ldsa );
         }
 
     }
@@ -962,10 +999,10 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
         int  m_full_block = (m - m % 32 ) /32 ;
         int  m_mod_32 = m%32 ;
         if( uplo == 'L' || uplo == 'l'){
-            l_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32, INFO, RMAX, LDSA );
+            l_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, m_full_block, m_mod_32, info, RMAX, ldsa );
         }
         else{
-            u_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32, INFO, RMAX, LDSA );
+            u_zlat2c_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, SA, m_full_block, m_mod_32, info, RMAX, ldsa );
         }
     }
 }
@@ -977,16 +1014,19 @@ mzlat2c(char uplo, magma_int_t m, cuDoubleComplex *A, magma_int_t lda, cuFloatCo
   How to deliver the info.
 */
 extern "C" void
-magmablas_zlat2c(char uplo, magma_int_t n, cuDoubleComplex *A, magma_int_t lda,
-                 cuFloatComplex *SA, magma_int_t LDSA, magma_int_t *INFO)
+magmablas_zlat2c(
+    char uplo, magma_int_t n,
+    const cuDoubleComplex *A,  magma_int_t lda,
+    cuFloatComplex        *SA, magma_int_t ldsa,
+    magma_int_t *info)
 {
     /*
       The routine converts a COMPLEX_16 triangular
       matrix A (along with its block diagonal entries) to a COMPLEX 
       triangular matrix SA (along with its block diagonal entries).
     */
-    *INFO = 0;
-    mzlat2c( uplo, n, A, lda, SA, LDSA, INFO );
+    *info = 0;
+    mzlat2c( uplo, n, A, lda, SA, ldsa, info );
     /*
       int val = cublasIdamax(n, WORK, 1);
       double retVal[1];

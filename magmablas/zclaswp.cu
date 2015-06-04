@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions mixed zc -> ds
 
@@ -13,7 +13,7 @@
 #define num_threadzc 64
 
 __global__ void
-zclaswp_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, magma_int_t *ipiv)
+zclaswp_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadzc + threadIdx.x;
     int newind;
@@ -34,7 +34,7 @@ zclaswp_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, ma
 }
 
 __global__ void
-zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, magma_int_t *ipiv)
+zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadzc + threadIdx.x;
     int newind;
@@ -58,13 +58,13 @@ zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m
 extern "C" void
 magmablas_zclaswp( magma_int_t n, cuDoubleComplex *a, magma_int_t lda,
                    cuFloatComplex *sa, magma_int_t m,
-                   magma_int_t *ipiv, magma_int_t incx )
+                   const magma_int_t *ipiv, magma_int_t incx )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -104,9 +104,9 @@ magmablas_zclaswp( magma_int_t n, cuDoubleComplex *a, magma_int_t lda,
     dim3 threazc(num_threadzc, 1, 1);
 
     if (incx >=0)
-      zclaswp_kernel<<< grid, threazc, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
+        zclaswp_kernel<<< grid, threazc, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
     else
-      zclaswp_inv_kernel<<< grid, threazc, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
+        zclaswp_inv_kernel<<< grid, threazc, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
 }
 
 #undef num_threadzc

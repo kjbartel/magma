@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.1) --
+ *  -- MAGMA (version 1.3.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     June 2012
+ *     November 2012
  *
- * @generated c Thu Jun 28 12:31:42 2012
+ * @generated c Wed Nov 14 22:54:13 2012
  *
  **/
 // includes, system
@@ -22,135 +22,122 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-#define PRECISION_c
-// Flops formula
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_POTRF(n) + 2. * FADDS_POTRF(n) )
-#else
-#define FLOPS(n) (      FMULS_POTRF(n) +      FADDS_POTRF(n) )
-#endif
-
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing cpotrf
 */
-int main( int argc, char** argv) 
+int main( int argc, char** argv)
 {
     TESTING_CUDA_INIT();
 
-    magma_timestr_t  start, end;
-    float      flops, gpu_perf, cpu_perf;
+    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
     cuFloatComplex *h_A, *h_R;
     cuFloatComplex *d_A;
+    
+    /* Matrix size */
     magma_int_t N = 0, n2, lda, ldda;
-    magma_int_t size[10] = {1024,2048,3072,4032,5184,6048,7200,8064,8928,10240};
+    const int MAXTESTS = 10;
+    magma_int_t size[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
     
     magma_int_t i, info;
-    const char *uplo     = MagmaUpperStr;
+    const char *uplo     = MagmaLowerStr;
     cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    float      work[1], matnorm;
+    float      work[1], error;
+    magma_int_t checkres;
+
+    checkres = getenv("MAGMA_TESTINGS_CHECK") != NULL;
     
-    if (argc != 1){
-        for(i = 1; i<argc; i++){        
-            if (strcmp("-N", argv[i])==0)
-                N = atoi(argv[++i]);
+    // process command line arguments
+    printf( "\nUsage: %s -N <n> [-L|-U] -c\n", argv[0] );
+    printf( "  -N can be repeated up to %d times.\n", MAXTESTS );
+    printf( "  -c or setting $MAGMA_TESTINGS_CHECK runs LAPACK and checks result.\n\n" );
+    int ntest = 0;
+    for( int i = 1; i < argc; ++i ) {
+        if ( strcmp("-N", argv[i]) == 0 && i+1 < argc ) {
+            magma_assert( ntest < MAXTESTS, "error: -N repeated more than maximum %d tests\n", MAXTESTS );
+            size[ ntest ] = atoi( argv[++i] );
+            magma_assert( size[ ntest ] > 0, "error: -N %s is invalid; must be > 0.\n", argv[i] );
+            N = max( N, size[ ntest ] );
+            ntest++;
         }
-        if (N>0) size[0] = size[9] = N;
-        else exit(1);
+        else if ( strcmp("-L", argv[i]) == 0 ) {
+            uplo = MagmaLowerStr;
+        }
+        else if ( strcmp("-U", argv[i]) == 0 ) {
+            uplo = MagmaUpperStr;
+        }
+        else if ( strcmp("-c", argv[i]) == 0 ) {
+            checkres = true;
+        }
+        else {
+            printf( "invalid argument: %s\n", argv[i] );
+            exit(1);
+        }
     }
-    else {
-        printf("\nUsage: \n");
-        printf("  testing_cpotrf_gpu -N %d\n\n", 1024);
+    if ( ntest == 0 ) {
+        ntest = MAXTESTS;
+        N = size[ntest-1];
     }
 
-    /* Allocate host memory for the matrix */
-    n2   = size[9] * size[9];
-    ldda = ((size[9]+31)/32) * 32;
+    /* Allocate memory for the matrix */
+    n2   = N*N;
+    ldda = ((N+31)/32) * 32;
     TESTING_MALLOC(    h_A, cuFloatComplex, n2);
     TESTING_HOSTALLOC( h_R, cuFloatComplex, n2);
-    TESTING_DEVALLOC(  d_A, cuFloatComplex, ldda*size[9] );
+    TESTING_DEVALLOC(  d_A, cuFloatComplex, ldda*N );
 
-    printf("  N    CPU GFlop/s    GPU GFlop/s    ||R_magma - R_lapack||_F / ||R_lapack||_F\n");
+    printf("  N     CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R_magma - R_lapack||_F / ||R_lapack||_F\n");
     printf("========================================================\n");
-    for(i=0; i<10; i++){
+    for( i = 0; i < ntest; ++i ) {
         N   = size[i];
-        lda = N; 
+        lda = N;
         n2  = lda*N;
-        flops = FLOPS( (float)N ) / 1000000;
-        
         ldda = ((N+31)/32)*32;
+        gflops = FLOPS_CPOTRF( N ) / 1e9;
 
         /* Initialize the matrix */
         lapackf77_clarnv( &ione, ISEED, &n2, h_A );
-        /* Symmetrize and increase the diagonal */
-        {
-            magma_int_t i, j;
-            for(i=0; i<N; i++) {
-                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_REAL(h_A[i*lda+i]) + 1.*N ) );
-                for(j=0; j<i; j++)
-                    h_A[i*lda+j] = cuConjf(h_A[j*lda+i]);
-            }
-        }
+        magma_chpd( N, h_A, lda );
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &N, h_A, &lda, h_R, &lda );
-
+        magma_csetmatrix( N, N, h_A, lda, d_A, ldda );
+    
         /* ====================================================================
-           Performs operation using MAGMA 
+           Performs operation using MAGMA
            =================================================================== */
-        magma_csetmatrix( N, N, h_A, lda, d_A, ldda );
-        
-        float *dwork, maxnorm;
-        TESTING_DEVALLOC(  dwork, float, size[9] );
-
-        start = get_current_time();
-        magmablas_clascl('U', 1, 1, 1., 2., N, N, d_A, ldda, &info);
-        end = get_current_time();
-        printf("clascl GB/s = %f, time (ms) = %f\n",
-               16.*N*N/(1000000.*GetTimerValue(start, end)),
-               GetTimerValue(start, end));
-
-        start = get_current_time();
-        maxnorm = magmablas_clanhe('M', 'L',N, d_A, ldda, dwork);
-        end = get_current_time();
-        printf("Norm = %f, GB/s = %f, time (ms) = %f\n",
-               maxnorm, 16.*N*N/(1000000.*GetTimerValue(start, end)),
-               GetTimerValue(start, end));
-        TESTING_DEVFREE( dwork );
-        
+        gpu_time = magma_wtime();
         magma_cpotrf_gpu(uplo[0], N, d_A, ldda, &info);
-
-        magma_csetmatrix( N, N, h_A, lda, d_A, ldda );
-              start = get_current_time();
-        magma_cpotrf_gpu(uplo[0], N, d_A, ldda, &info);
-        end = get_current_time();
+        gpu_time = magma_wtime() - gpu_time;
+        gpu_perf = gflops / gpu_time;
         if (info != 0)
-            printf("Argument %d of magma_cpotrf had an illegal value.\n", (int) -info);
-
-        gpu_perf = flops / GetTimerValue(start, end);
+            printf("magma_cpotrf_gpu returned error %d.\n", (int) info);
         
-        /* =====================================================================
-           Performs operation using LAPACK 
-           =================================================================== */
-        start = get_current_time();
-        lapackf77_cpotrf(uplo, &N, h_A, &lda, &info);
-        end = get_current_time();
-        if (info != 0)  
-            printf("Argument %d of cpotrf had an illegal value.\n", (int) -info);
-        
-        cpu_perf = flops / GetTimerValue(start, end);
-      
-        /* =====================================================================
-           Check the result compared to LAPACK
-           =================================================================== */
-        magma_cgetmatrix( N, N, d_A, ldda, h_R, lda );
-        matnorm = lapackf77_clange("f", &N, &N, h_A, &lda, work);
-        blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
-        printf("%5d    %6.2f         %6.2f        %e\n", 
-               (int) size[i], cpu_perf, gpu_perf,
-               lapackf77_clange("f", &N, &N, h_R, &lda, work) / matnorm);
-        
-        if (argc != 1)
-            break;
+        if ( checkres ) {
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            cpu_time = magma_wtime();
+            lapackf77_cpotrf(uplo, &N, h_A, &lda, &info);
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gflops / cpu_time;
+            if (info != 0)
+                printf("lapackf77_cpotrf returned error %d.\n", (int) info);
+            
+            /* =====================================================================
+               Check the result compared to LAPACK
+               =================================================================== */
+            magma_cgetmatrix( N, N, d_A, ldda, h_R, lda );
+            error = lapackf77_clange("f", &N, &N, h_A, &lda, work);
+            blasf77_caxpy(&n2, &c_neg_one, h_A, &ione, h_R, &ione);
+            error = lapackf77_clange("f", &N, &N, h_R, &lda, work) / error;
+            
+            printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
+                   (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+        }
+        else {
+            printf("%5d     ---   (  ---  )   %7.2f (%7.2f)     ---  \n",
+                   (int) N, gpu_perf, gpu_time );
+        }
     }
 
     /* Memory clean up */
@@ -158,6 +145,6 @@ int main( int argc, char** argv)
     TESTING_HOSTFREE( h_R );
     TESTING_DEVFREE( d_A );
 
-    /* Shutdown */
     TESTING_CUDA_FINALIZE();
+    return 0;
 }

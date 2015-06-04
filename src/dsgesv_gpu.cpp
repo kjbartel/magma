@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated ds Thu Jun 28 12:30:36 2012
+       @generated ds Wed Nov 14 22:53:02 2012
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_dsgesv_gpu(char trans, magma_int_t N, magma_int_t NRHS,
                  double *dworkd, float *dworks,
                  magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -201,7 +201,7 @@ magma_dsgesv_gpu(char trans, magma_int_t N, magma_int_t NRHS,
         }
         swp2pswp(trans, N, IPIV, newipiv);
         magma_setvector( N, sizeof(magma_int_t), newipiv, 1, dIPIV, 1 );
-        free(newipiv);
+        magma_free_cpu(newipiv);
     }
     
     if(info[0] !=0){

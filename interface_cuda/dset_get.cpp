@@ -1,17 +1,16 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
  * @author Mark Gates
- * @generated d Thu Jun 28 12:31:08 2012
+ * @generated d Wed Nov 14 22:53:36 2012
  */
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include "magma.h"
 #include "error.h"
@@ -21,159 +20,169 @@
 // ========================================
 // copying vectors
 extern "C"
-void magma_dsetvector(
+void magma_dsetvector_internal(
     magma_int_t n,
     double const* hx_src, magma_int_t incx,
-    double*       dy_dst, magma_int_t incy )
+    double*       dy_dst, magma_int_t incy,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasSetVector(
         n, sizeof(double),
         hx_src, incx,
         dy_dst, incy );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dgetvector(
+void magma_dgetvector_internal(
     magma_int_t n,
     double const* dx_src, magma_int_t incx,
-    double*       hy_dst, magma_int_t incy )
+    double*       hy_dst, magma_int_t incy,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasGetVector(
         n, sizeof(double),
         dx_src, incx,
         hy_dst, incy );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dsetvector_async(
+void magma_dsetvector_async_internal(
     magma_int_t n,
     double const* hx_src, magma_int_t incx,
     double*       dy_dst, magma_int_t incy,
-    cudaStream_t stream )
+    cudaStream_t stream,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasSetVectorAsync(
         n, sizeof(double),
         hx_src, incx,
         dy_dst, incy, stream );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dgetvector_async(
+void magma_dgetvector_async_internal(
     magma_int_t n,
     double const* dx_src, magma_int_t incx,
     double*       hy_dst, magma_int_t incy,
-    cudaStream_t stream )
+    cudaStream_t stream,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasGetVectorAsync(
         n, sizeof(double),
         dx_src, incx,
         hy_dst, incy, stream );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 
 // ========================================
 // copying sub-matrices (contiguous columns)
 extern "C"
-void magma_dsetmatrix(
+void magma_dsetmatrix_internal(
     magma_int_t m, magma_int_t n,
     double const* hA_src, magma_int_t lda,
-    double*       dB_dst, magma_int_t ldb )
+    double*       dB_dst, magma_int_t ldb,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasSetMatrix(
         m, n, sizeof(double),
         hA_src, lda,
         dB_dst, ldb );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dgetmatrix(
+void magma_dgetmatrix_internal(
     magma_int_t m, magma_int_t n,
     double const* dA_src, magma_int_t lda,
-    double*       hB_dst, magma_int_t ldb )
+    double*       hB_dst, magma_int_t ldb,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasGetMatrix(
         m, n, sizeof(double),
         dA_src, lda,
         hB_dst, ldb );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dsetmatrix_async(
+void magma_dsetmatrix_async_internal(
     magma_int_t m, magma_int_t n,
     double const* hA_src, magma_int_t lda,
     double*       dB_dst, magma_int_t ldb,
-    cudaStream_t stream )
+    cudaStream_t stream,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasSetMatrixAsync(
         m, n, sizeof(double),
         hA_src, lda,
         dB_dst, ldb, stream );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dgetmatrix_async(
+void magma_dgetmatrix_async_internal(
     magma_int_t m, magma_int_t n,
     double const* dA_src, magma_int_t lda,
     double*       hB_dst, magma_int_t ldb,
-    cudaStream_t stream )
+    cudaStream_t stream,
+    const char* func, const char* file, int line )
 {
     cublasStatus_t status;
     status = cublasGetMatrixAsync(
         m, n, sizeof(double),
         dA_src, lda,
         hB_dst, ldb, stream );
-    check_error( status );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dcopymatrix(
+void magma_dcopymatrix_internal(
     magma_int_t m, magma_int_t n,
     double const* dA_src, magma_int_t lda,
-    double*       dB_dst, magma_int_t ldb )
+    double*       dB_dst, magma_int_t ldb,
+    const char* func, const char* file, int line )
 {
     cudaError_t status;
     status = cudaMemcpy2D(
         dB_dst, ldb*sizeof(double),
         dA_src, lda*sizeof(double),
         m*sizeof(double), n, cudaMemcpyDeviceToDevice );
-    assert( status == cudaSuccess );
+    check_xerror( status, func, file, line );
 }
 
 // --------------------
 extern "C"
-void magma_dcopymatrix_async(
+void magma_dcopymatrix_async_internal(
     magma_int_t m, magma_int_t n,
     double const* dA_src, magma_int_t lda,
     double*       dB_dst, magma_int_t ldb,
-    cudaStream_t stream )
+    cudaStream_t stream,
+    const char* func, const char* file, int line )
 {
     cudaError_t status;
     status = cudaMemcpy2DAsync(
         dB_dst, ldb*sizeof(double),
         dA_src, lda*sizeof(double),
         m*sizeof(double), n, cudaMemcpyDeviceToDevice, stream );
-    assert( status == cudaSuccess );
+    check_xerror( status, func, file, line );
 }
 
 #endif // HAVE_CUBLAS

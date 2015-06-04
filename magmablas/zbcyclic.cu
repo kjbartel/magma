@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Stan Tomov
        @precisions normal z -> s d c
@@ -18,8 +18,8 @@
 //===========================================================================
 extern "C" void
 magmablas_zsetmatrix_1D_bcyclic( magma_int_t m, magma_int_t n,
-                                 cuDoubleComplex  *hA,   magma_int_t lda,
-                                 cuDoubleComplex  *dA[], magma_int_t ldda,
+                                 const cuDoubleComplex *hA,   magma_int_t lda,
+                                 cuDoubleComplex       *dA[], magma_int_t ldda,
                                  magma_int_t num_gpus, magma_int_t nb )
 {
     magma_int_t i, d, nk;

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -19,11 +19,11 @@ magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
              cuDoubleComplex *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -132,7 +132,7 @@ magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
 
     // Allocate CPU work space
     lwork = n * nb;
-    work = (cuDoubleComplex*) malloc( lwork * sizeof(cuDoubleComplex));
+    magma_zmalloc_cpu( &work, lwork );
     if (work == NULL) {
         magma_free( dA );
         *info = MAGMA_ERR_HOST_ALLOC;
@@ -196,7 +196,7 @@ magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
     magmablasSetKernelStream( NULL );
     magma_queue_destroy( stream );
     magma_free( dA );
-    free( work );
+    magma_free_cpu( work );
 
     return *info;
 } /* magma_zungqr */

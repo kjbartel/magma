@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal s
 
@@ -16,7 +16,7 @@ __global__ void
 sgemvT32_kernel_tail(int m, int n, float alpha, float* A, int lda, 
                      float *x, float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -69,7 +69,7 @@ __global__ void
 sgemvT32_kernel(int m, float alpha, float* A, int lda, float *x, 
                 float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -121,7 +121,7 @@ __global__ void
 dgemvT32_kernel(int m, double alpha, double* A, int lda, double *x,
                 double *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -171,7 +171,7 @@ __global__ void
 sgemv32_kernel_tail(int m, int n, float alpha, float* A, int lda, float *x, 
                     float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -206,7 +206,7 @@ __global__ void
 sgemv32_kernel(int m, float alpha, float* A, int lda, float *x, 
                float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -241,7 +241,7 @@ __global__ void
 dgemv32_kernel(int n, double alpha, double* A, int lda, double *x, 
                double *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -275,7 +275,7 @@ extern "C" void
 magmablas_sgemv32_tesla(char tran, int m, int n, float alpha, 
                         float *A, int lda, float *x, float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======
@@ -317,7 +317,7 @@ extern "C" void
 magmablas_dgemv32_tesla(char tran, int m, int n, double alpha, double *A, 
                         int lda, double *x, double *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
 
     Purpose
     =======

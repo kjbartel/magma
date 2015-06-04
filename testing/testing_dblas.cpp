@@ -1,12 +1,12 @@
 /*
- *  -- MAGMA (version 1.2.1) --
+ *  -- MAGMA (version 1.3.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     June 2012
+ *     November 2012
  *
  * @author Mark Gates
- * @generated d Thu Jun 28 12:31:51 2012
+ * @generated d Wed Nov 14 22:54:10 2012
  *
  **/
 #include <stdlib.h>
@@ -60,8 +60,7 @@ int main( int argc, char** argv )
     maxn = max( max( m, n ), k );
     ld = maxn;
     size = maxn*maxn;
-    piv = (magma_int_t*) malloc( maxn * sizeof(magma_int_t) );
-    assert( piv != NULL );
+    err = magma_malloc_cpu( (void**) &piv, maxn );    assert( err == 0 );
     err = magma_dmalloc_pinned( &A , size );  assert( err == 0 );
     err = magma_dmalloc_pinned( &B , size );  assert( err == 0 );
     err = magma_dmalloc_pinned( &C , size );  assert( err == 0 );
@@ -303,6 +302,7 @@ int main( int argc, char** argv )
     }}}}
     
     // cleanup
+    magma_free_cpu( piv );
     magma_free_pinned( A  );
     magma_free_pinned( B  );
     magma_free_pinned( C  );

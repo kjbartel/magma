@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
        @author Stan Tomov
@@ -43,11 +43,11 @@ magma_zlatrd2(char uplo, magma_int_t n, magma_int_t nb,
               cuDoubleComplex *dw, magma_int_t lddw,
               cuDoubleComplex *dwork, magma_int_t ldwork)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -361,9 +361,9 @@ magma_zlatrd2(char uplo, magma_int_t n, magma_int_t nb,
         }
     }
 
-    free(f);
+    magma_free_cpu(f);
     magma_queue_destroy( stream );
 
     return 0;
-} /* zlatrd_ */
+} /* zlatrd */
 

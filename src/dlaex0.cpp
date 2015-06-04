@@ -1,8 +1,8 @@
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
     @author Raffaele Solca
 
@@ -26,11 +26,11 @@ magma_dlaex0(magma_int_t n, double* d, double* e, double* q, magma_int_t ldq,
              magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE

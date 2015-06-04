@@ -1,21 +1,16 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:22 2012
+       @generated s Wed Nov 14 22:53:52 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_s
 #include "commonblas.h"
-
-extern "C" void
-magmablas_stranspose2s(float *odata, magma_int_t ldo,
-                       float *idata, magma_int_t ldi,
-                       magma_int_t m, magma_int_t n, cudaStream_t *stream );
 
 
 //
@@ -28,9 +23,9 @@ magmablas_stranspose2s(float *odata, magma_int_t ldo,
 //
 extern "C" void 
 magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
-                                float *dat, magma_int_t ldda,
-                                float  *ha, magma_int_t lda,
-                                float  *dB, magma_int_t lddb, magma_int_t nb )
+                                const float *dat, magma_int_t ldda,
+                                float       *ha,  magma_int_t lda,
+                                float       *dB,  magma_int_t lddb, magma_int_t nb )
 {
     magma_int_t i = 0, j = 0, ib;
 
@@ -39,7 +34,7 @@ magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
         return;
 
     if (lda < m || ldda < n || lddb < m){
-        printf("Wrong arguments in zdtoht.\n");
+        printf("Wrong arguments in sgetmatrix_transpose.\n");
         return;
     }
 
@@ -72,9 +67,9 @@ magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
 //===========================================================================
 extern "C" void
 magmablas_sgetmatrix_transpose2( magma_int_t m, magma_int_t n,
-                                 float **dat, magma_int_t *ldda,
-                                 float  *ha,  magma_int_t  lda,
-                                 float **dB,  magma_int_t  lddb, magma_int_t nb,
+                                 const float **dat, magma_int_t *ldda,
+                                 float         *ha, magma_int_t  lda,
+                                 float        **dB, magma_int_t  lddb, magma_int_t nb,
                                  magma_int_t num_gpus, cudaStream_t stream[][2] )
 {
     magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k;
@@ -84,7 +79,7 @@ magmablas_sgetmatrix_transpose2( magma_int_t m, magma_int_t n,
         return;
 
     if (lda < m || lddb < m){
-        printf("Wrong arguments in zdtoht.\n");
+        printf("Wrong arguments in sgetmatrix_transpose2.\n");
         return;
     }
 

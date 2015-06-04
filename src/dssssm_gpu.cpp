@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated d Thu Jun 28 12:30:39 2012
+       @generated d Wed Nov 14 22:53:08 2012
 
 */
 #include "common_magma.h"
@@ -26,56 +26,73 @@ magma_dssssm_gpu(char storev, magma_int_t m1, magma_int_t n1,
                  double *dL2, magma_int_t lddl2,
                  magma_int_t *IPIV, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
 
-    SGETRF computes an LU factorization of a general M-by-N matrix A
-    using partial pivoting with row interchanges.
-
-    The factorization has the form
-       A = P * L * U
-    where P is a permutation matrix, L is lower triangular with unit
-    diagonal elements (lower trapezoidal if m > n), and U is upper
-    triangular (upper trapezoidal if m < n).
-
-    This is the right-looking Level 3 BLAS version of the algorithm.
-
+    DSSSSM applies the LU factorization update from a real
+    matrix formed by a lower triangular IB-by-K tile L1 on top of a
+    M2-by-K tile L2 to a second real matrix formed by a M1-by-N1
+    tile A1 on top of a M2-by-N2 tile A2 (N1 == N2).
+  
+    This is the right-looking Level 2.5 BLAS version of the algorithm.
+  
     Arguments
     =========
 
-    M       (input) INTEGER
-            The number of rows of the matrix A.  M >= 0.
+    M1      (input) INTEGER
+            The number of rows of the matrix A1.  M1 >= 0.
 
-    N       (input) INTEGER
-            The number of columns of the matrix A.  N >= 0.
+    N1      (input) INTEGER
+            The number of columns of the matrix A1.  N1 >= 0.
 
-    A       (input/output) REAL array on the GPU, dimension (LDA,N).
-            On entry, the M-by-N matrix to be factored.
-            On exit, the factors L and U from the factorization
-            A = P*L*U; the unit diagonal elements of L are not stored.
+    M2      (input) INTEGER
+            The number of rows of the matrix A2.  M2 >= 0.
 
-    LDA     (input) INTEGER
-            The leading dimension of the array A.  LDA >= max(1,M).
+    N2      (input) INTEGER
+            The number of columns of the matrix A2.  N2 >= 0.
 
-    IPIV    (output) INTEGER array, dimension (min(M,N))
-            The pivot indices; for 1 <= i <= min(M,N), row i of the
-            matrix was interchanged with row IPIV(i).
+    K       (input) INTEGER
+            The number of columns of the matrix L1 and L2.  K >= 0.
 
-    INFO    (output) INTEGER
-            = 0:  successful exit
-            < 0:  if INFO = -i, the i-th argument had an illegal value
-                  or another error occured, such as memory allocation failed.
-            > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
-                  has been completed, but the factor U is exactly
-                  singular, and division by zero will occur if it is used
-                  to solve a system of equations.
+    IB      (input) INTEGER
+            The inner-blocking size.  IB >= 0.
 
+    dA1     (input,output) DOUBLE COMPLEX array, dimension(LDDA1, N), on gpu. 
+            On entry, the M1-by-N1 tile dA1.
+            On exit, dA1 is updated by the application of dL (dL1 dL2).
+ 
+    LDDA1   (input) INTEGER
+            The leading dimension of the array dA1.  LDDA1 >= max(1,M1).
+ 
+    dA2     (input,output) DOUBLE COMPLEX array, dimension(LDDA2, N) , on gpu.
+            On entry, the M2-by-N2 tile dA2.
+            On exit, dA2 is updated by the application of dL (dL1 dL2).
+ 
+    LDDA2   (input) INTEGER
+            The leading dimension of the array dA2.  LDDA2 >= max(1,M2).
+ 
+    dL1     (input) DOUBLE COMPLEX array, dimension(LDDL1, K), on gpu.
+            The inverse of the IB-by-K lower triangular tile as returned by
+            DTSTRF.
+ 
+    LDDL1   (input) INTEGER
+            The leading dimension of the array L1.  LDDL1 >= max(1,2*IB).
+ 
+    dL2     (input) DOUBLE COMPLEX array, dimension(LDDL2, K) 
+            The M2-by-K tile as returned by DTSTRF.
+ 
+    LDDL2   (input) INTEGER
+            The leading dimension of the array L2.  LDDL2 >= max(1,M2).
+ 
+    IPIV    (input) INTEGER array on the cpu.
+            The pivot indices array of size K as returned by DTSTRF
+ 
     =====================================================================    */
 
 #define A1T(i,j) (dA1T + (i)*ldda1 + (j))

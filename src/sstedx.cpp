@@ -1,22 +1,18 @@
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
     @author Raffaele Solca
 
-    @generated s Thu Jun 28 12:30:55 2012
+    @generated s Wed Nov 14 22:53:21 2012
 */
 #include "common_magma.h"
 
 #define Z(ix, iy) (z + (ix) + ldz * (iy))
 
-#define lapackf77_slanst FORTRAN_NAME( slanst, SLANST )
-
 extern "C"{
-    float lapackf77_slanst( char* norm, magma_int_t* n, float* d, float* e);
-
     magma_int_t get_sstedx_smlsize()
     {
         return 25;
@@ -30,11 +26,11 @@ magma_sstedx(char range, magma_int_t n, float vl, float vu,
              float* dwork, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE

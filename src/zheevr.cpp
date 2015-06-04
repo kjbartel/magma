@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
        @author Raffaele Solca
 
@@ -11,15 +11,6 @@
  
 */
 #include "common_magma.h"
-
-extern "C" {
-#ifdef ADD_
-#    define lapackf77_ieeeck   ieeeck_
-#elif defined NOCHANGE
-#    define lapackf77_ieeeck   ieeeck
-#endif
-  magma_int_t lapackf77_ieeeck(magma_int_t* ispec, float* zero, float* one);
-}
 
 extern "C" magma_int_t 
 magma_zheevr(char jobz, char range, char uplo, magma_int_t n, 
@@ -30,11 +21,11 @@ magma_zheevr(char jobz, char range, char uplo, magma_int_t n,
              double *rwork, magma_int_t lrwork, magma_int_t *iwork, 
              magma_int_t liwork, magma_int_t *info)
 {
-    /*  -- MAGMA (version 1.2.1) --
+    /*  -- MAGMA (version 1.3.0) --
         Univ. of Tennessee, Knoxville
         Univ. of California, Berkeley
         Univ. of Colorado, Denver
-        June 2012
+        November 2012
    
     Purpose   
     =======   

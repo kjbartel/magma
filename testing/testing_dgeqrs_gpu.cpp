@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:46 2012
+       @generated d Wed Nov 14 22:54:19 2012
 
 */
 
@@ -45,7 +45,7 @@ int main( int argc, char** argv)
     double           matnorm, work[1];
     double  c_one     = MAGMA_D_ONE;
     double  c_neg_one = MAGMA_D_NEG_ONE;
-    double *h_A, *h_A2, *h_B, *h_X, *h_R, *tau, *hwork, tmp[1];
+    double *h_A, *h_A2, *h_B, *h_X, *h_R, *tau, *h_work, tmp[1];
     double *d_A, *d_B;
 
     /* Matrix size */
@@ -115,7 +115,7 @@ int main( int argc, char** argv)
     l2 = (magma_int_t)MAGMA_D_REAL( tmp[0] );
     lhwork = max( max( l1, l2 ), lworkgpu );
 
-    TESTING_MALLOC( hwork, double, lhwork );
+    TESTING_MALLOC( h_work, double, lhwork );
 
     printf("                                         ||b-Ax|| / (N||A||)\n");
     printf("  M     N    CPU GFlop/s   GPU GFlop/s      CPU      GPU    \n");
@@ -147,7 +147,7 @@ int main( int argc, char** argv)
 
         start = get_current_time();
         magma_dgels_gpu( MagmaNoTrans, M, N, nrhs, d_A, ldda, 
-                         d_B, lddb, hwork, lworkgpu, &info);
+                         d_B, lddb, h_work, lworkgpu, &info);
         end = get_current_time();
         if (info < 0)
             printf("Argument %d of magma_dgels had an illegal value.\n", (int) -info);
@@ -171,7 +171,7 @@ int main( int argc, char** argv)
 
         start = get_current_time();
         lapackf77_dgels( MagmaNoTransStr, &M, &N, &nrhs,
-                         h_A, &lda, h_X, &ldb, hwork, &lhwork, &info);
+                         h_A, &lda, h_X, &ldb, h_work, &lhwork, &info);
         end = get_current_time();
         cpu_perf = flops / GetTimerValue(start, end);
         if (info < 0)
@@ -198,7 +198,7 @@ int main( int argc, char** argv)
     TESTING_FREE( h_B );
     TESTING_FREE( h_X );
     TESTING_FREE( h_R );
-    TESTING_FREE( hwork );
+    TESTING_FREE( h_work );
     TESTING_DEVFREE( d_A );
     TESTING_DEVFREE( d_B );
 

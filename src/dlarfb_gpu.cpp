@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Mark Gates
-       @generated d Thu Jun 28 12:30:45 2012
+       @generated d Wed Nov 14 22:53:12 2012
 */
 #include "common_magma.h"
 
@@ -20,14 +20,14 @@
 extern "C" magma_int_t
 magma_dlarfb_gpu( char side, char trans, char direct, char storev,
                   magma_int_t m, magma_int_t n, magma_int_t k,
-                  double *dV,    magma_int_t ldv,
-                  double *dT,    magma_int_t ldt,
-                  double *dC,    magma_int_t ldc,
-                  double *dwork, magma_int_t ldwork)
+                  const double *dV,    magma_int_t ldv,
+                  const double *dT,    magma_int_t ldt,
+                  double *dC,          magma_int_t ldc,
+                  double *dwork,       magma_int_t ldwork )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Univ. of California Berkeley
-       June 2012
+       November 2012
 
     Purpose
     =======

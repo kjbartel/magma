@@ -22,6 +22,7 @@
 extern "C" {
 #endif
 
+#define lapackf77_ieeeck FORTRAN_NAME( ieeeck, IEEECK )
 #define lapackf77_lsame  FORTRAN_NAME( lsame,  LSAME  )
 #define lapackf77_xerbla FORTRAN_NAME( xerbla, XERBLA )
 
@@ -43,6 +44,8 @@ extern "C" {
 #define lapackf77_dlapy2 FORTRAN_NAME( dlapy2, DLAPY2 )
 #define lapackf77_slapy2 FORTRAN_NAME( slapy2, SLAPY2 )
 
+magma_int_t lapackf77_ieeeck( magma_int_t* ispec, float* zero, float* one );
+
 long   lapackf77_lsame(  const char *ca, const char *cb );
 
 void   lapackf77_xerbla( const char *name, magma_int_t *info, magma_int_t name_len );
@@ -50,8 +53,9 @@ void   lapackf77_xerbla( const char *name, magma_int_t *info, magma_int_t name_l
 float  lapackf77_slamch( const char *cmach );
 double lapackf77_dlamch( const char *cmach );
 
-void   lapackf77_slabad( float  *small, float  *large );
-void   lapackf77_dlabad( double *small, double *large );
+// "small" (lowercase) defined as char on Windows (reported by MathWorks)
+void   lapackf77_slabad( float  *Small, float  *large );
+void   lapackf77_dlabad( double *Small, double *large );
 
 void   lapackf77_zcgesv( const magma_int_t *n, const magma_int_t *nrhs,
                          cuDoubleComplex *A, const magma_int_t *lda,

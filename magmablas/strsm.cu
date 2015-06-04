@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
        
        @precisions normal s -> s
 
@@ -26,11 +26,11 @@
 #define NB 128// outer blocking size, >BLOCK_SIZE 
 
 __global__ void
-diag_strtri_kernel_upper (char diag, float *A, float *d_dinvA, int lda)
+diag_strtri_kernel_upper (char diag, const float *A, float *d_dinvA, int lda)
 {
         int i,j;
         float Ystx=0;
-        float *y=NULL, *Aoff=NULL;
+        float *y=NULL;
         int switcher=0;
 
         // Thread index
@@ -39,7 +39,7 @@ diag_strtri_kernel_upper (char diag, float *A, float *d_dinvA, int lda)
         // Block index
         int bx = blockIdx.x;
                 
-        Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
+        const float *Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
         int NumBLperNB = NB/BLOCK_SIZE;
         d_dinvA += bx/NumBLperNB*NB*NB+(bx%NumBLperNB)*(NB*BLOCK_SIZE+BLOCK_SIZE);
 
@@ -87,11 +87,11 @@ diag_strtri_kernel_upper (char diag, float *A, float *d_dinvA, int lda)
 
 }
 __global__ void
-diag_strtri_kernel_lower (char diag, float *A, float *d_dinvA, int lda)
+diag_strtri_kernel_lower (char diag, const float *A, float *d_dinvA, int lda)
 {
         int i,j;
         float Ystx=0;
-        float *Bw=NULL, *x=NULL, *y=NULL, *Aoff=NULL;
+        float *Bw=NULL, *x=NULL, *y=NULL;
         int switcher=0;
 
         // Thread index
@@ -101,7 +101,7 @@ diag_strtri_kernel_lower (char diag, float *A, float *d_dinvA, int lda)
         // Block index
         int bx = blockIdx.x;
                 
-        Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
+        const float *Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
         int NumBLperNB = NB/BLOCK_SIZE;
         d_dinvA += bx/NumBLperNB*NB*NB+(bx%NumBLperNB)*(NB*BLOCK_SIZE+BLOCK_SIZE);
 
@@ -244,7 +244,7 @@ __device__ void sgemm_kernel_16 (float *A, int lda, float *B, int ldb, float * C
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 
 __global__ void
-triple_sgemm_update_16_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_16_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
 //        const int page = (blockIdx.y)%(npages);
@@ -261,7 +261,8 @@ triple_sgemm_update_16_R (float * Ain, float *d_dinvA, int blk, int lda, int npa
         {
                 // A12*inv(A22) -> A12
                 // A=A12, B=inv(A22), C=A12(d_dinvA)
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -418,7 +419,7 @@ triple_sgemm_update_16_R (float * Ain, float *d_dinvA, int blk, int lda, int npa
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 
 __global__ void
-triple_sgemm_update_16_part1_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_16_part1_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
 //        const int page = (blockIdx.y)%(npages);
@@ -434,7 +435,8 @@ triple_sgemm_update_16_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -520,7 +522,7 @@ triple_sgemm_update_16_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 
 __global__ void
-triple_sgemm_update_16_part2_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_16_part2_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -616,7 +618,7 @@ triple_sgemm_update_16_part2_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_32_part1_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_32_part1_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -632,7 +634,8 @@ triple_sgemm_update_32_part1_R (float * Ain, float *d_dinvA, int blk, int lda, i
         {
                 // A12*inv(A22) -> A21
                 // A=A12, B=inv(A22), C=A12(d_dinvA)
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -704,7 +707,7 @@ triple_sgemm_update_32_part1_R (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_32_part2_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_32_part2_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -791,7 +794,7 @@ triple_sgemm_update_32_part2_R (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_32_part1_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_32_part1_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -807,7 +810,8 @@ triple_sgemm_update_32_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -879,7 +883,7 @@ triple_sgemm_update_32_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_32_part2_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_32_part2_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -966,7 +970,7 @@ triple_sgemm_update_32_part2_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_64_part1_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_64_part1_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -982,7 +986,8 @@ triple_sgemm_update_64_part1_R (float * Ain, float *d_dinvA, int blk, int lda, i
         {
                 // A12*inv(A22) -> A12(d_dinvA)
                 // A=A12, B=inv(A22), C=A12
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1049,7 +1054,7 @@ triple_sgemm_update_64_part1_R (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_64_part2_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_64_part2_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1132,7 +1137,7 @@ triple_sgemm_update_64_part2_R (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_64_part1_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_64_part1_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1148,7 +1153,8 @@ triple_sgemm_update_64_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1214,7 +1220,7 @@ triple_sgemm_update_64_part1_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_64_part2_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_64_part2_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1298,7 +1304,7 @@ triple_sgemm_update_64_part2_L (float * Ain, float *d_dinvA, int blk, int lda, i
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_above64_part1_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part1_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1314,7 +1320,8 @@ triple_sgemm_update_above64_part1_R (float * Ain, float *d_dinvA, int blk, int l
         {
                 // A12*inv(A22) -> A12(d_dinvA)
                 // A=A12, B=inv(A22), C=A12
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1381,7 +1388,7 @@ triple_sgemm_update_above64_part1_R (float * Ain, float *d_dinvA, int blk, int l
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_above64_part1_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part1_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1397,7 +1404,8 @@ triple_sgemm_update_above64_part1_L (float * Ain, float *d_dinvA, int blk, int l
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                float *A, *B, *C;
+                const float *A;
+                float *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1465,7 +1473,7 @@ triple_sgemm_update_above64_part1_L (float * Ain, float *d_dinvA, int blk, int l
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_sgemm_update_above64_part2_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part2_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1549,7 +1557,7 @@ triple_sgemm_update_above64_part2_R (float * Ain, float *d_dinvA, int blk, int l
  * part 3, copy data into position 
  */
 __global__ void
-triple_sgemm_update_above64_part3_R (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part3_R (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1594,7 +1602,7 @@ triple_sgemm_update_above64_part3_R (float * Ain, float *d_dinvA, int blk, int l
  * part 3: copy data back to position 
  */
 __global__ void
-triple_sgemm_update_above64_part3_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part3_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1636,7 +1644,7 @@ triple_sgemm_update_above64_part3_L (float * Ain, float *d_dinvA, int blk, int l
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_sgemm_update_above64_part2_L (float * Ain, float *d_dinvA, int blk, int lda, int npages)
+triple_sgemm_update_above64_part2_L (const float *Ain, float *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1731,7 +1739,7 @@ b_copy_kernel (int M, int N, float *b, int ldb, float *d_x, int ldx)
 
 
 extern "C"
-void diag_strtri (magma_int_t M, char uplo, char diag, float *A, float *d_dinvA, magma_int_t lda)
+void diag_strtri (magma_int_t M, char uplo, char diag, const float *A, float *d_dinvA, magma_int_t lda)
 {
         int nblocks = M/BLOCK_SIZE+(M%BLOCK_SIZE!=0);
 
@@ -1811,13 +1819,13 @@ void diag_strtri (magma_int_t M, char uplo, char diag, float *A, float *d_dinvA,
  */
 extern "C"
 void magmablas_strsm( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
-                      float alpha, /*const*/ float* A, magma_int_t lda, float* b, magma_int_t ldb)
+                      float alpha, const float* A, magma_int_t lda, float* b, magma_int_t ldb)
 {
-        /*  -- MAGMA (version 1.2.1) --
+        /*  -- MAGMA (version 1.3.0) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                June 2012
+                November 2012
 
                 Purpose
                 =======

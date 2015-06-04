@@ -1,13 +1,40 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 */
 
 #include "common_magma.h"
 #include <assert.h>
+
+
+#if defined( _WIN32 ) || defined( _WIN64 )
+
+// -------------------------
+// Return log base 2 of x, per C99 standard. Not provided by Microsoft.
+double log2( double x )
+{
+    const double log_2 = 0.6931471805599453;
+    return log( x ) / log_2;
+}
+
+#endif
+
+
+// -------------------------
+// Returns version of MAGMA, as defined by
+// MAGMA_VERSION_MAJOR, MAGMA_VERSION_MINOR, MAGMA_VERSION_MICRO constants.
+void magma_version( int* major, int* minor, int* micro )
+{
+    if ( major != NULL && minor != NULL && micro != NULL ) {
+        *major = MAGMA_VERSION_MAJOR;
+        *minor = MAGMA_VERSION_MINOR;
+        *micro = MAGMA_VERSION_MICRO;
+    }
+}
+
 
 // -------------------------
 // Returns:
@@ -17,7 +44,7 @@
 // On 2.0 cards with unified addressing, CUDA can tell if this is a device pointer.
 // For malloc'd host pointers, cudaPointerGetAttributes returns error.
 // @author Mark Gates
-int magma_is_devptr( void* A )
+int magma_is_devptr( const void* A )
 {
     cudaError_t err;
     cudaDeviceProp prop;
@@ -26,8 +53,9 @@ int magma_is_devptr( void* A )
     err = cudaGetDevice( &dev );
     if ( ! err ) {
         err = cudaGetDeviceProperties( &prop, dev );
-        if ( ! err and prop.unifiedAddressing ) {
-            err = cudaPointerGetAttributes( &attr, A );
+        if ( ! err && prop.unifiedAddressing ) {
+            // I think the cudaPointerGetAttributes prototype is wrong, missing const (mgates)
+            err = cudaPointerGetAttributes( &attr, const_cast<void*>( A ));
             if ( ! err ) {
                 // definitely know type
                 return (attr.memoryType == cudaMemoryTypeDevice);
@@ -62,17 +90,17 @@ int magma_num_gpus( void )
         int ndevices;
         cudaGetDeviceCount( &ndevices );
         // if *endptr == '\0' then entire string was valid number (or empty)
-        if ( ngpu < 1 or *endptr != '\0' ) {
+        if ( ngpu < 1 || *endptr != '\0' ) {
             ngpu = 1;
             fprintf( stderr, "$MAGMA_NUM_GPUS=%s is an invalid number; using %d GPU.\n",
                      ngpu_str, ngpu );
         }
-        else if ( ngpu > MagmaMaxGPUs or ngpu > ndevices ) {
+        else if ( ngpu > MagmaMaxGPUs || ngpu > ndevices ) {
             ngpu = min( ndevices, MagmaMaxGPUs );
             fprintf( stderr, "$MAGMA_NUM_GPUS=%s exceeds MagmaMaxGPUs=%d or available GPUs=%d; using %d GPUs.\n",
                      ngpu_str, MagmaMaxGPUs, ndevices, ngpu );
         }
-        assert( 1 <= ngpu and ngpu <= ndevices );
+        assert( 1 <= ngpu && ngpu <= ndevices );
     }
     return ngpu;
 }
@@ -85,6 +113,10 @@ int magma_num_gpus( void )
 extern "C"
 void printout_devices( )
 {
+    int major, minor, micro;
+    magma_version( &major, &minor, &micro );
+    printf( "MAGMA %d.%d.%d\n", major, minor, micro );
+    
     int ndevices;
     cudaGetDeviceCount( &ndevices );
     for( int idevice = 0; idevice < ndevices; idevice++ ) {

@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:21 2012
+       @generated s Wed Nov 14 22:53:51 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_s
 #include "commonblas.h"
 
-__global__ void stranspose3_32( float *B, int ldb, 
-                                float *A, int lda,
+__global__ void stranspose3_32( float       *B, int ldb, 
+                                const float *A, int lda,
                                 int m, int m32, int n, int n32)
 {
          __shared__ float a[32][SSIZE_1SHARED+1];
@@ -109,8 +109,8 @@ __global__ void stranspose3_32( float *B, int ldb,
 
 
 
-__global__ void stranspose2_32( float *B, int ldb, 
-                                float *A, int lda, 
+__global__ void stranspose2_32( float       *B, int ldb, 
+                                const float *A, int lda, 
                                 int m, int m32, int n, int n32)
 {        
         __shared__ float a[32][SSIZE_1SHARED+1];
@@ -176,8 +176,8 @@ __global__ void stranspose2_32( float *B, int ldb,
 //             Note that ldi >= m and ldo >= n.
 //
 extern "C" void 
-magmablas_stranspose2(float *odata, magma_int_t ldo, 
-                      float *idata, magma_int_t ldi, 
+magmablas_stranspose2(float       *odata, magma_int_t ldo, 
+                      const float *idata, magma_int_t ldi, 
                       magma_int_t m, magma_int_t n )
 {
     /* Quick return */
@@ -192,8 +192,8 @@ magmablas_stranspose2(float *odata, magma_int_t ldo,
 }
 
 extern "C" void
-magmablas_stranspose2s(float *odata, magma_int_t ldo,
-                       float *idata, magma_int_t ldi,
+magmablas_stranspose2s(float       *odata, magma_int_t ldo,
+                       const float *idata, magma_int_t ldi,
                        magma_int_t m, magma_int_t n, cudaStream_t *stream )
 {
     /* Quick return */

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
        @author Stan Tomov
@@ -22,11 +22,11 @@ magma_zunmtr_gpu(char side, char uplo, char trans,
                  cuDoubleComplex *wa,    magma_int_t ldwa,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -202,5 +202,5 @@ magma_zunmtr_gpu(char side, char uplo, char trans,
       }
 
     return *info;
-} /* zunmtr_ */
+} /* zunmtr */
 

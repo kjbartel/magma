@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
 
-       @generated c Thu Jun 28 12:31:02 2012
+       @generated c Wed Nov 14 22:53:30 2012
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_chegst_gpu(magma_int_t itype, char uplo, magma_int_t n,
                  cuFloatComplex *db, magma_int_t lddb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.1) --
+  -- MAGMA (version 1.3.0) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     June 2012
+     November 2012
  
    Purpose
    =======

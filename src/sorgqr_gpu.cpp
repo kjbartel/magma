@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:30:46 2012
+       @generated s Wed Nov 14 22:53:12 2012
        
        @author Stan Tomov
        @author Mark Gates
@@ -21,11 +21,11 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
                  float *dT, magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -131,7 +131,7 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     
     // Allocate work space on GPU
     if (MAGMA_SUCCESS != magma_smalloc( &dV, ldda*nb )) {
-        free( work );
+        magma_free_cpu( work );
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
     }
@@ -196,7 +196,7 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 
     magmablasSetKernelStream( NULL );
     magma_free( dV );
-    free( work );
+    magma_free_cpu( work );
     magma_queue_destroy( stream );
 
     return *info;

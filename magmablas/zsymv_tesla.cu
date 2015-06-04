@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> z
 
@@ -24,8 +24,8 @@
 
 __global__ void 
 magmablas_zsymv_130_kernel1( magma_int_t m, cuDoubleComplex alpha,
-                             cuDoubleComplex *A, magma_int_t lda,
-                             cuDoubleComplex *x, magma_int_t incx,
+                             const cuDoubleComplex *A, magma_int_t lda,
+                             const cuDoubleComplex *x, magma_int_t incx,
                              cuDoubleComplex beta,
                              cuDoubleComplex *y, magma_int_t incy )
 {
@@ -46,8 +46,8 @@ magmablas_zsymv_130_kernel1( magma_int_t m, cuDoubleComplex alpha,
 
 __global__ void 
 magmablas_zsymv_130_kernel2( magma_int_t m, cuDoubleComplex alpha,
-                             cuDoubleComplex *A, magma_int_t lda,
-                             cuDoubleComplex *x, magma_int_t incx,
+                             const cuDoubleComplex *A, magma_int_t lda,
+                             const cuDoubleComplex *x, magma_int_t incx,
                              cuDoubleComplex beta,
                              cuDoubleComplex *y, magma_int_t incy )
 {
@@ -195,8 +195,8 @@ extern "C"
 magma_int_t
 magmablas_zsymv_130( char uplo, magma_int_t n,
                      cuDoubleComplex alpha, 
-                     cuDoubleComplex *A, magma_int_t lda,
-                     cuDoubleComplex *X, magma_int_t incx,
+                     const cuDoubleComplex *A, magma_int_t lda,
+                     const cuDoubleComplex *X, magma_int_t incx,
                      cuDoubleComplex beta,  
                      cuDoubleComplex *Y, magma_int_t incy)
 {

@@ -36,46 +36,48 @@ SET(ZMATGEN  zlatms.f zlatme.f zlatmr.f zlatmt.f
   zlagge.f zlaghe.f zlagsy.f zlakf2.f zlarge.f zlaror.f zlarot.f 
   zlatm1.f zlarnd.f zlatm2.f zlatm3.f zlatm5.f zlatm6.f zlahilb.f)
 
-SET(ALLOBJ ${SMATGEN}
-           ${CMATGEN}
-           ${SCATGEN}
-           ${DMATGEN}
-           ${ZMATGEN}
-           ${DZATGEN}
-           )
+UNSET(ALLOBJ)
 
 IF(BUILD_SINGLE)
-  SET(ALLOBJ ${SMATGEN} ${SCATGEN})
+  LIST(APPEND ALLOBJ ${SMATGEN})
 ENDIF()
 
 IF(BUILD_DOUBLE)
-  SET(ALLOBJ ${DMATGEN} ${DZATGEN})
+  LIST(APPEND ALLOBJ ${DMATGEN})
 ENDIF()
 
 IF(BUILD_COMPLEX)
-  SET(ALLOBJ  ${CMATGEN} ${SCATGEN})
+  LIST(APPEND ALLOBJ ${CMATGEN})
 ENDIF()
 
 IF(BUILD_COMPLEX16)
-  SET(ALLOBJ ${ZMATGEN} ${DZATGEN})
+  LIST(APPEND ALLOBJ ${ZMATGEN})
+ENDIF()
+
+IF(BUILD_SINGLE OR BUILD_COMPLEX)
+  LIST(APPEND ALLOBJ ${SCATGEN})
+ENDIF()
+
+IF(BUILD_DOUBLE OR BUILD_COMPLEX16)
+  LIST(APPEND ALLOBJ ${DZATGEN})
 ENDIF()
 
 # Create libtmglib.a
-# ------------------
+# ---------------------
 ADD_LIBRARY(tmglib ${ALLOBJ})
 SET_PROPERTY(TARGET tmglib PROPERTY LINKER_LANGUAGE Fortran)
-TARGET_LINK_LIBRARIES(tmglib ${EXTRA_LIBS})
-FOREACH(_external_package "blas" "lapack" "plasma")
+TARGET_LINK_LIBRARIES(tmglib ${MAGMA_EXTRA_LIBS})
+FOREACH(_external_package "blas" "lapack")
     STRING(TOUPPER "${_external_package}" _NAMEVAR)
-    IF(DEFINED ${_NAMEVAR}_BUILD_MODE)
-        ADD_DEPENDENCIES(tmglib ${_external_package}_install)
+    IF(HAVE_${_NAMEVAR})
+        TARGET_LINK_LIBRARIES(tmglib ${${_external_package}_LIBRARIES})
     ENDIF()
 ENDFOREACH()
 
 # Install step of libtmglib.a
 # ---------------------------
 INSTALL(TARGETS tmglib
-    DESTINATION lib)
+        DESTINATION lib)
 
 ###
 ### END CMakeLists.txt

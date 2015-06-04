@@ -1,21 +1,16 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:22 2012
+       @generated c Wed Nov 14 22:53:52 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_c
 #include "commonblas.h"
-
-extern "C" void
-magmablas_ctranspose2s(cuFloatComplex *odata, magma_int_t ldo,
-                       cuFloatComplex *idata, magma_int_t ldi,
-                       magma_int_t m, magma_int_t n, cudaStream_t *stream );
 
 
 //
@@ -28,9 +23,9 @@ magmablas_ctranspose2s(cuFloatComplex *odata, magma_int_t ldo,
 //
 extern "C" void 
 magmablas_csetmatrix_transpose( magma_int_t m, magma_int_t n,
-                                cuFloatComplex  *ha, magma_int_t lda, 
-                                cuFloatComplex *dat, magma_int_t ldda,
-                                cuFloatComplex  *dB, magma_int_t lddb, magma_int_t nb )
+                                const cuFloatComplex  *ha, magma_int_t lda, 
+                                cuFloatComplex       *dat, magma_int_t ldda,
+                                cuFloatComplex        *dB, magma_int_t lddb, magma_int_t nb )
 {
     magma_int_t i = 0, j = 0, ib;
 
@@ -86,9 +81,9 @@ magmablas_csetmatrix_transpose( magma_int_t m, magma_int_t n,
 //===========================================================================
 extern "C" void 
 magmablas_csetmatrix_transpose2( magma_int_t m, magma_int_t n,
-                                 cuFloatComplex  *ha,  magma_int_t  lda, 
-                                 cuFloatComplex **dat, magma_int_t *ldda,
-                                 cuFloatComplex **dB,  magma_int_t  lddb, magma_int_t nb,
+                                 const cuFloatComplex  *ha,  magma_int_t  lda, 
+                                 cuFloatComplex       **dat, magma_int_t *ldda,
+                                 cuFloatComplex       **dB,  magma_int_t  lddb, magma_int_t nb,
                                  magma_int_t num_gpus, cudaStream_t stream[][2] )
 {
     magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k = 0;

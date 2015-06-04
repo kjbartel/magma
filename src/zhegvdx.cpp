@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
 
@@ -12,22 +12,6 @@
 */
 #include "common_magma.h"
 
-void Mymagma_ztrmm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
-                   cuDoubleComplex alpha, cuDoubleComplex *db, magma_int_t lddb, 
-                   cuDoubleComplex *dz, magma_int_t lddz)
-{
-    magma_ztrmm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    magma_device_sync();
-}
-
-void Mymagma_ztrsm(char side, char uplo, char trans, char unit, magma_int_t n, magma_int_t m,
-                   cuDoubleComplex alpha, cuDoubleComplex *db, magma_int_t lddb, 
-                   cuDoubleComplex *dz, magma_int_t lddz)
-{
-    magma_ztrsm(side, uplo, trans, unit, n, m, alpha, db, lddb, dz, lddz);
-    magma_device_sync();
-}
-
 extern "C" magma_int_t
 magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
               cuDoubleComplex *a, magma_int_t lda, cuDoubleComplex *b, magma_int_t ldb, 
@@ -35,11 +19,11 @@ magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
               magma_int_t *m, double *w, cuDoubleComplex *work, magma_int_t lwork, double *rwork,
               magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -320,12 +304,25 @@ magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
     magma_zsetmatrix_async( n, n,
                             a,  lda,
                             da, ldda, stream );  
-  
+ 
+//#define ENABLE_TIMER
+#ifdef ENABLE_TIMER 
+        magma_timestr_t start, end;
+        
+        start = get_current_time();
+#endif
+ 
     magma_zpotrf_gpu(uplo_[0], n, db, lddb, info);
     if (*info != 0) {
         *info = n + *info;
         return *info;
     }
+
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time zpotrf_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
 
     magma_queue_sync( stream );
   
@@ -333,22 +330,34 @@ magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
                             db, lddb,
                             b,  ldb, stream );
 
-/*     Transform problem to standard eigenvalue problem and solve. */
+#ifdef ENABLE_TIMER 
+        start = get_current_time();
+#endif
 
+/*     Transform problem to standard eigenvalue problem and solve. */
     magma_zhegst_gpu(itype, uplo, n, da, ldda, db, lddb, info);
   
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time zhegst_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
+
+        start = get_current_time();
+#endif        
+
     magma_zheevdx_gpu(jobz, range, uplo, n, da, ldda, vl, vu, il, iu, m, w, a, lda, work, lwork, rwork, lrwork, iwork, liwork, info);
-/* Computing MAX */
-//    d__1 = (double) lopt, d__2 = work[1].r;
-//    lopt = (magma_int_t) max(d__1,d__2);
-/* Computing MAX */
-//    d__1 = (double) lropt;
-//    lropt = (magma_int_t) max(d__1,rwork[1]);
-/* Computing MAX */
-//    d__1 = (double) liopt, d__2 = (doublereal) iwork[1];
-//    liopt = (magma_int_t) max(d__1,d__2);
+
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time zheevdx_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
 
     if (wantz && *info == 0) {
+
+#ifdef ENABLE_TIMER 
+        start = get_current_time();
+#endif
 
 /*        Backtransform eigenvectors to the original problem. */
 
@@ -363,7 +372,7 @@ magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
                 *(unsigned char *)trans = MagmaNoTrans;
             }
 
-            Mymagma_ztrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, da, ldda);
+            magma_ztrsm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, da, ldda);
 
         } else if (itype == 3) {
 
@@ -375,11 +384,17 @@ magma_zhegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
                 *(unsigned char *)trans = MagmaConjTrans;
             }
 
-            Mymagma_ztrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, da, ldda);
+            magma_ztrmm(MagmaLeft, uplo, *trans, MagmaNonUnit, n, *m, c_one, db, lddb, da, ldda);
 
         }
 
         magma_zgetmatrix( n, *m, da, ldda, a, lda );
+
+#ifdef ENABLE_TIMER    
+        end = get_current_time();
+        
+        printf("time trsm/mm + getmatrix = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif        
 
     }
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
 
@@ -24,11 +24,11 @@ magma_zhegst(magma_int_t itype, char uplo, magma_int_t n,
              cuDoubleComplex *b, magma_int_t ldb, magma_int_t *info)
 {
 /*
-  -- MAGMA (version 1.2.1) --
+  -- MAGMA (version 1.3.0) --
      Univ. of Tennessee, Knoxville
      Univ. of California, Berkeley
      Univ. of Colorado, Denver
-     June 2012
+     November 2012
 
  
    Purpose

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:17 2012
+       @generated d Wed Nov 14 22:53:46 2012
 
 */
 #include "common_magma.h"
@@ -21,7 +21,7 @@
 #if (!defined(PRECISION_z)) || (GPUSHMEM >= 200)
 
 __global__ void
-l_dlansy_special (int n, double* A, int lda,  double *y){
+l_dlansy_special (int n, const double* A, int lda,  double *y){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -100,7 +100,7 @@ l_dlansy_special (int n, double* A, int lda,  double *y){
 }
 
 __global__ void
-l_dlansy_generic(int n, double* A, int lda,  double *y , int m_full_block , 
+l_dlansy_generic(int n, const double* A, int lda,  double *y, int m_full_block, 
                  int m_mod_32)
 { 
   int tx = threadIdx.x ; 
@@ -321,7 +321,7 @@ l_dlansy_generic(int n, double* A, int lda,  double *y , int m_full_block ,
 }
 
 __global__ void
-u_dlansy_generic (int n, double* A, int lda, double *y , int m_full_block , int m_mod_32){
+u_dlansy_generic (int n, const double* A, int lda, double *y, int m_full_block, int m_mod_32){
 
   
   int tx = threadIdx.x ; 
@@ -425,7 +425,7 @@ u_dlansy_generic (int n, double* A, int lda, double *y , int m_full_block , int 
   ****************************************
   -------------------------------------*/
   ind = blockIdx.x *  dgemv_bs + tx + m_mod_32 ;
-  double *A1 = A ; 
+  const double *A1 = A ; 
   A+= lda*(n-1)  ; 
 
   A += ind;
@@ -533,7 +533,7 @@ u_dlansy_generic (int n, double* A, int lda, double *y , int m_full_block , int 
 }
 
 __global__ void
-u_dlansy_special (int n, double* A, int lda, double *y ){
+u_dlansy_special (int n, const double* A, int lda, double *y ){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -623,7 +623,7 @@ u_dlansy_special (int n, double* A, int lda, double *y ){
 }
 
 
-extern "C" void mdlansy (char uplo , int m ,  double *A , int lda ,  double *Y  )
+extern "C" void mdlansy (char uplo, int m, const double *A, int lda,  double *Y  )
 {
 /*
 Note:
@@ -652,10 +652,10 @@ Note:
             int  m_full_block = (m - m % 32 ) /32 ; 
             int  m_mod_32 = m%32 ;  
             if( uplo == 'L' || uplo == 'l'){
-                    l_dlansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    l_dlansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
             else{
-                    u_dlansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    u_dlansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
     }
 }
@@ -663,7 +663,7 @@ Note:
 #endif /* (!defined(PRECISION_z)) || (GPUSHMEM >= 200) */
 
 __global__ void
-l_dlansy_max (int m, double* A, int lda,  double *y){
+l_dlansy_max (int m, const double* A, int lda,  double *y){
     int tx  = threadIdx.x ;
     int ind =  blockIdx.x * dlansy_bs + tx ;
     double res = 0., res1;
@@ -695,7 +695,7 @@ l_dlansy_max (int m, double* A, int lda,  double *y){
 }
 
 __global__ void
-u_dlansy_max (int m, double* A, int lda,  double *y){
+u_dlansy_max (int m, const double* A, int lda,  double *y){
     int ind =  blockIdx.x * dlansy_bs + threadIdx.x ;
     double res = 0.;
 
@@ -709,7 +709,7 @@ u_dlansy_max (int m, double* A, int lda,  double *y){
 }
 
 
-extern "C" void dlansy_max (char uplo, int m, double *A , int lda , double *y){
+extern "C" void dlansy_max (char uplo, int m, const double *A, int lda, double *y){
     int blocks;
     if (m % dlansy_bs==0)
         blocks = m/ dlansy_bs;
@@ -729,12 +729,12 @@ extern "C" void dlansy_max (char uplo, int m, double *A , int lda , double *y){
  
 extern "C" double 
 magmablas_dlansy(char norm, char uplo, magma_int_t n, 
-                 double *A, magma_int_t lda, double *WORK )
+                 const double *A, magma_int_t lda, double *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {
 #if (GPUSHMEM >= 200)
-                mdlansy ( uplo , n , A , lda , WORK);
+                mdlansy ( uplo, n, A, lda, WORK);
                 int val = cublasIdamax(n,WORK,1);
                 double retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( double ), WORK+val-1, 1, retVal, 1 ) ;
@@ -746,7 +746,7 @@ magmablas_dlansy(char norm, char uplo, magma_int_t n,
             }
         else if (norm == 'M' || norm =='m')
             {  
-                dlansy_max ( uplo , n , A , lda , WORK);
+                dlansy_max ( uplo, n, A, lda, WORK);
                 int val = cublasIdamax(n,WORK,1);
                 double retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( double ), WORK+val-1, 1, retVal, 1 ) ;

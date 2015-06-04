@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:19 2012
+       @generated d Wed Nov 14 22:53:49 2012
 
 */
 #include "common_magma.h"
@@ -73,12 +73,16 @@ magmablas_dswapblk( char storev, magma_int_t n,
                     double *dA1T, magma_int_t lda1,
                     double *dA2T, magma_int_t lda2,
                     magma_int_t i1, magma_int_t i2,
-                    magma_int_t *ipiv, magma_int_t inci, magma_int_t offset )
+                    const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset )
 {
     int  blocksize = 64;
     dim3 blocks( (n+blocksize-1) / blocksize, 1, 1);
     int  k, im;
-
+    
+    /* Quick return */
+    if ( n == 0 )
+        return;
+    
     if ( (storev == 'C') || (storev == 'c') ) {
         for( k=(i1-1); k<i2; k+=BLOCK_SIZE )
         {

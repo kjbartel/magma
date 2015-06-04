@@ -1,8 +1,8 @@
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
     @author Raffaele Solca
 
@@ -12,11 +12,7 @@
 
 #define Z(ix, iy) (z + (ix) + ldz * (iy))
 
-#define lapackf77_dlanst FORTRAN_NAME( dlanst, DLANST )
-
 extern "C"{
-    double lapackf77_dlanst( char* norm, magma_int_t* n, double* d, double* e);
-
     magma_int_t get_dstedx_smlsize()
     {
         return 25;
@@ -30,11 +26,11 @@ magma_dstedx(char range, magma_int_t n, double vl, double vu,
              double* dwork, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE

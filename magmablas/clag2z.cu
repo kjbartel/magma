@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions mixed zc -> ds
 
@@ -12,8 +12,8 @@
 
 __global__ void 
 clag2z_generic(int M, int N, 
-               cuFloatComplex *SA, int LDSA, 
-               cuDoubleComplex *A, int LDA ) 
+               const cuFloatComplex *SA, int LDSA, 
+               cuDoubleComplex       *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -44,8 +44,8 @@ clag2z_generic(int M, int N,
 
 __global__ void 
 clag2z_special(int M, int N, 
-               cuFloatComplex *SA, int LDSA, 
-               cuDoubleComplex *A, int LDA ) 
+               const cuFloatComplex *SA, int LDSA, 
+               cuDoubleComplex       *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -67,8 +67,8 @@ clag2z_special(int M, int N,
 
 void 
 magmablas_clag2z_64_64_16_4_v2( int M, int N, 
-                                cuFloatComplex *SA, int LDSA, 
-                                cuDoubleComplex *A, int LDA )
+                                const cuFloatComplex *SA, int LDSA, 
+                                cuDoubleComplex       *A, int LDA )
 {
     if( M == 0 || N==0 ) {
         printf("One of the dimension is ZERO\n");
@@ -85,7 +85,11 @@ magmablas_clag2z_64_64_16_4_v2( int M, int N,
 }
 
 extern "C" void 
-magmablas_clag2z(magma_int_t M, magma_int_t N, cuFloatComplex *SA, magma_int_t LDSA, cuDoubleComplex *A, magma_int_t LDA, magma_int_t *INFO)
+magmablas_clag2z(
+    magma_int_t m, magma_int_t n,
+    const cuFloatComplex *SA, magma_int_t ldsa,
+    cuDoubleComplex       *A, magma_int_t lda,
+    magma_int_t *info)
 {
 /*
   Purpose
@@ -125,6 +129,6 @@ magmablas_clag2z(magma_int_t M, magma_int_t N, cuFloatComplex *SA, magma_int_t L
           = 0:  successful exit
   =========
 */
-    *INFO = 0;
-    magmablas_clag2z_64_64_16_4_v2( M, N, SA, LDSA, A, LDA ) ;
+    *info = 0;
+    magmablas_clag2z_64_64_16_4_v2( m, n, SA, ldsa, A, lda );
 }        

@@ -8,10 +8,10 @@ SHDR = \
 commonblas_s.h
 
 CSRC = \
-cauxiliary.cu chemv_fermi.cu clacpy.cu clange.cu clanhe.cu clascl.cu cpermute.cu cpermute-v2.cu cpermute-v3.cu cswap.cu cswapblk.cu cswapdblk.cu csymmetrize.cu csymv_fermi.cu ctranspose.cu ctranspose-v2.cu cinplace_transpose.cu cgetmatrix_transpose.cu csetmatrix_transpose.cu cbcyclic.cu chemm_mgpu.cpp cher2k_mgpu.cpp cgetmatrix_transpose_mgpu.cu csetmatrix_transpose_mgpu.cu
+cauxiliary.cu cgeadd.cu chemv_fermi.cu clacpy.cu clange.cu clanhe.cu clarf.cu clarfg-v2.cu clascl.cu claswp.cu cswap.cu cswapblk.cu cswapdblk.cu csymmetrize.cu csymmetrize_tiles.cu csymv_fermi.cu ctranspose.cu ctranspose-v2.cu cinplace_transpose.cu cgetmatrix_transpose.cu csetmatrix_transpose.cu scnrm2.cu cbcyclic.cu cgetmatrix_transpose_mgpu.cu csetmatrix_transpose_mgpu.cu chemv_fermi_mgpu_32.cu chemv_fermi_mgpu.cu
 
 DSRC = \
-dauxiliary.cu dsaxpycp.cu dslaswp.cu dlacpy.cu dlag2s.cu slag2d.cu dlange.cu dlansy.cu dlascl.cu dlat2s.cu dpermute.cu dpermute-v2.cu dpermute-v3.cu dswap.cu dswapblk.cu dswapdblk.cu dsymmetrize.cu dsymv_fermi.cu dsymv_tesla.cu dtranspose.cu dtranspose-v2.cu dinplace_transpose.cu dgetmatrix_transpose.cu dsetmatrix_transpose.cu dbcyclic.cu dsymm_mgpu.cpp dsyr2k_mgpu.cpp dgetmatrix_transpose_mgpu.cu dsetmatrix_transpose_mgpu.cu
+dauxiliary.cu dsaxpycp.cu dslaswp.cu dgeadd.cu dlacpy.cu dlag2s.cu slag2d.cu dlange.cu dlansy.cu dlarf.cu dlarfg-v2.cu dlascl.cu dlaswp.cu dlat2s.cu dswap.cu dswapblk.cu dswapdblk.cu dsymmetrize.cu dsymmetrize_tiles.cu dsymv_fermi.cu dsymv_tesla.cu dtranspose.cu dtranspose-v2.cu dinplace_transpose.cu dgetmatrix_transpose.cu dsetmatrix_transpose.cu dnrm2.cu dbcyclic.cu dgetmatrix_transpose_mgpu.cu dsetmatrix_transpose_mgpu.cu dsymv_fermi_mgpu_32.cu dsymv_fermi_mgpu.cu
 
 SSRC = \
-sauxiliary.cu slacpy.cu slange.cu slansy.cu slascl.cu spermute.cu spermute-v2.cu spermute-v3.cu sswap.cu sswapblk.cu sswapdblk.cu ssymmetrize.cu ssymv_fermi.cu ssymv_tesla.cu stranspose.cu stranspose-v2.cu sinplace_transpose.cu sgetmatrix_transpose.cu ssetmatrix_transpose.cu sbcyclic.cu ssymm_mgpu.cpp ssyr2k_mgpu.cpp sgetmatrix_transpose_mgpu.cu ssetmatrix_transpose_mgpu.cu
+sauxiliary.cu sgeadd.cu slacpy.cu slange.cu slansy.cu slarf.cu slarfg-v2.cu slascl.cu slaswp.cu sswap.cu sswapblk.cu sswapdblk.cu ssymmetrize.cu ssymmetrize_tiles.cu ssymv_fermi.cu ssymv_tesla.cu stranspose.cu stranspose-v2.cu sinplace_transpose.cu sgetmatrix_transpose.cu ssetmatrix_transpose.cu snrm2.cu sbcyclic.cu sgetmatrix_transpose_mgpu.cu ssetmatrix_transpose_mgpu.cu ssymv_fermi_mgpu_32.cu ssymv_fermi_mgpu.cu

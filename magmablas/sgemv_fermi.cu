@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal s
 
@@ -18,7 +18,11 @@
 
 
 __global__ void 
-sgemvn_kernel1_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, float alpha, float* A, magma_int_t lda, float *x, float *y)
+sgemvn_kernel1_fermi(
+    magma_int_t n, magma_int_t m, magma_int_t n1, float alpha,
+    const float* A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
   magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -50,7 +54,11 @@ sgemvn_kernel1_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, float alpha, 
 }
 
 __global__ void 
-sgemvn_kernel2_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, float alpha,  float* A, magma_int_t lda, float *x, float *y)
+sgemvn_kernel2_fermi(
+    magma_int_t n, magma_int_t m, magma_int_t n1, float alpha,
+    const float* A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
   magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -88,13 +96,17 @@ sgemvn_kernel2_fermi(magma_int_t n, magma_int_t m, magma_int_t n1, float alpha, 
 }
 
 extern "C" void
-magmablas_sgemvn_fermi(magma_int_t n, magma_int_t m, float alpha, float *A, magma_int_t lda, float *x, float *y)
+magmablas_sgemvn_fermi(
+    magma_int_t n, magma_int_t m, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -138,8 +150,11 @@ magmablas_sgemvn_fermi(magma_int_t n, magma_int_t m, float alpha, float *A, magm
 
 
 __global__ void 
-sgemvt_kernel1_fermi(magma_int_t m, magma_int_t n, float alpha, magma_int_t n1, float* A, magma_int_t lda,
-              float *x, float *y)
+sgemvt_kernel1_fermi(
+    magma_int_t m, magma_int_t n, float alpha, magma_int_t n1,
+    const float* A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
         magma_int_t tx = threadIdx.x;
 
@@ -205,8 +220,11 @@ sgemvt_kernel1_fermi(magma_int_t m, magma_int_t n, float alpha, magma_int_t n1, 
 
 
 __global__ void 
-sgemvt_kernel2_fermi(magma_int_t m, magma_int_t n, float alpha,
-               magma_int_t n1, float* A, magma_int_t lda, float *x, float *y)
+sgemvt_kernel2_fermi(
+    magma_int_t m, magma_int_t n, float alpha, magma_int_t n1,
+    const float* A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
   const magma_int_t inx = threadIdx.x;
   const magma_int_t iny = threadIdx.y;
@@ -311,8 +329,11 @@ sgemvt_kernel2_fermi(magma_int_t m, magma_int_t n, float alpha,
 }
 
 extern "C" void
-magmablas_sgemvt1_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
-                  float *x, float *y)
+magmablas_sgemvt1_fermi(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
 
 
@@ -326,8 +347,11 @@ magmablas_sgemvt1_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, mag
 }
 
 extern "C" void
-magmablas_sgemvt2_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
-                  float *x, float *y)
+magmablas_sgemvt2_fermi(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float *y)
 {
 
     magma_int_t blocks;
@@ -345,14 +369,17 @@ magmablas_sgemvt2_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, mag
 }
 
 extern "C" void
-magmablas_sgemvt_fermi(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda, 
-                 float *x, float *y)
+magmablas_sgemvt_fermi(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda, 
+    const float *x,
+    float *y)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -387,16 +414,16 @@ extern "C" void
 magmablas_sgemv_fermi(char trans,
                       magma_int_t m, magma_int_t n,
                       float alpha, 
-                      float *A, magma_int_t lda, 
-                      float *x, magma_int_t incx,
+                      const float *A, magma_int_t lda, 
+                      const float *x, magma_int_t incx,
                       float beta,
                       float *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======

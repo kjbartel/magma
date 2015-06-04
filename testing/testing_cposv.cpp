@@ -1,11 +1,11 @@
 /*
- *  -- MAGMA (version 1.2.1) --
+ *  -- MAGMA (version 1.3.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     June 2012
+ *     November 2012
  *
- * @generated c Thu Jun 28 12:31:39 2012
+ * @generated c Wed Nov 14 22:54:14 2012
  *
  **/
 // includes, system
@@ -15,7 +15,6 @@
 #include <math.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
-#include <unistd.h>
 
 // includes, project
 #include "flops.h"
@@ -36,57 +35,49 @@ int main( int argc, char** argv)
     cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     cuFloatComplex *h_A, *h_R, *h_B, *h_X;
     const char  *uplo     = MagmaLowerStr;
-    magma_int_t lda, ldb, N;
+    magma_int_t lda, ldb;
     magma_int_t i, info, szeA, szeB;
     magma_int_t ione     = 1;
+    magma_int_t N        = 0;
     magma_int_t NRHS     = 100;
     magma_int_t ISEED[4] = {0,0,0,1};
     const int MAXTESTS   = 10;
     magma_int_t size[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
 
     // process command line arguments
-    printf( "\nUsage:\n" );
-    printf( "  %s -N <matrix size> -R <right hand sides>\n", argv[0] );
+    printf( "\nUsage: %s -N <matrix size> -R <right hand sides> [-L|-U]\n", argv[0] );
     printf( "  -N can be repeated up to %d times\n\n", MAXTESTS );
     int ntest = 0;
-    int ch;
-    while( (ch = getopt( argc, argv, "N:R:" )) != -1 ) {
-        switch( ch ) {
-            case 'N':
-                if ( ntest == MAXTESTS ) {
-                    printf( "error: -N exceeded maximum %d tests\n", MAXTESTS );
-                    exit(1);
-                }
-                else {
-                    size[ntest] = atoi( optarg );
-                    if ( size[ntest] <= 0 ) {
-                        printf( "error: -N value %d <= 0\n", (int) size[ntest] );
-                        exit(1);
-                    }
-                    ntest++;
-                }
-                break;
-            case 'R':
-                NRHS = atoi( optarg );
-                break;
-            case '?':
-            default:
-                exit(1);
+    for( int i = 1; i < argc; ++i ) {
+        if ( strcmp("-N", argv[i]) == 0 && i+1 < argc ) {
+            magma_assert( ntest < MAXTESTS, "error: -N repeated more than maximum %d tests\n", MAXTESTS );
+            size[ntest] = atoi( argv[++i] );
+            magma_assert( size[ntest] > 0, "error: -N %s is invalid; must be > 0.\n", argv[i] );
+            N = max( N, size[ntest] );
+            ntest++;
+        }
+        else if ( strcmp("-R", argv[i]) == 0 && i+1 < argc ) {
+            NRHS = atoi( argv[++i] );
+            magma_assert( NRHS > 0, "error: -R %is is invalid; must be > 0.\n", argv[i] );
+        }
+        else if ( strcmp("-L", argv[i]) == 0 ) {
+            uplo = MagmaLowerStr;
+        }
+        else if ( strcmp("-U", argv[i]) == 0 ) {
+            uplo = MagmaUpperStr;
+        }
+        else {
+            printf( "invalid argument: %s\n", argv[i] );
+            exit(1);
         }
     }
-    argc -= optind;
-    argv += optind;
     if ( ntest == 0 ) {
         ntest = MAXTESTS;
+        N = size[ntest-1];
     }
     
     // allocate maximum amount of memory required
-    N = 0;
-    for( i = 0; i < ntest; ++i ) {
-        N = max( N, size[i] );
-    }
     lda = ldb = N;
-    
     TESTING_MALLOC( h_A, cuFloatComplex, lda*N    );
     TESTING_MALLOC( h_R, cuFloatComplex, lda*N    );
     TESTING_MALLOC( h_B, cuFloatComplex, ldb*NRHS );
@@ -109,15 +100,8 @@ int main( int argc, char** argv)
         szeB = ldb*NRHS;
         lapackf77_clarnv( &ione, ISEED, &szeA, h_A );
         lapackf77_clarnv( &ione, ISEED, &szeB, h_B );
-        /* Symmetrize and increase the diagonal */
-        {
-            magma_int_t i, j;
-            for(i=0; i<N; i++) {
-                MAGMA_C_SET2REAL( h_A[i*lda+i], ( MAGMA_C_REAL(h_A[i*lda+i]) + 1.*N ) );
-                for(j=0; j<i; j++)
-                    h_A[i*lda+j] = cuConjf(h_A[j*lda+i]);
-            }
-        }
+        magma_chpd( N, h_A, lda );
+        
         // copy A to R and B to X; save A and B for residual
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &N,    h_A, &lda, h_R, &lda );
         lapackf77_clacpy( MagmaUpperLowerStr, &N, &NRHS, h_B, &ldb, h_X, &ldb );

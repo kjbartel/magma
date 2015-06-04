@@ -1,18 +1,18 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:21 2012
+       @generated c Wed Nov 14 22:53:51 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_c
 #include "commonblas.h"
 
-__global__ void ctranspose_32( cuFloatComplex *B, int ldb, cuFloatComplex *A, int lda )
+__global__ void ctranspose_32( cuFloatComplex *B, int ldb, const cuFloatComplex *A, int lda )
 {        
         __shared__ cuFloatComplex a[32][CSIZE_1SHARED+1];
         
@@ -65,8 +65,8 @@ __global__ void ctranspose_32( cuFloatComplex *B, int ldb, cuFloatComplex *A, in
 //             This version works when m and n are divisible by 32.
 //
 extern "C" void 
-magmablas_ctranspose(cuFloatComplex *odata, magma_int_t ldo, 
-                     cuFloatComplex *idata, magma_int_t ldi, 
+magmablas_ctranspose(cuFloatComplex       *odata, magma_int_t ldo, 
+                     const cuFloatComplex *idata, magma_int_t ldi, 
                      magma_int_t m, magma_int_t n )
 {
         //assert( (m%32) == 0 && (n%32) == 0, "misaligned transpose" );

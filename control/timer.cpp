@@ -1,5 +1,5 @@
 /*
-    -- clMAGMA (version 1.2.1) --
+    -- clMAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -112,6 +112,14 @@ double magma_wtime( void )
     struct timeval t;
     gettimeofday( &t, NULL );
     return t.tv_sec + t.tv_usec*1e-6;
+}
+
+// synchronize before getting time, e.g., to time asynchronous cublas calls
+extern "C"
+double magma_sync_wtime( magma_queue_t queue )
+{
+    magma_queue_sync( queue );
+    return magma_wtime();
 }
 
 // version callable from Fortran stores seconds in time.

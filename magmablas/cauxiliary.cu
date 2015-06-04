@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:15 2012
+       @generated c Wed Nov 14 22:53:45 2012
 
 */
 #include "common_magma.h"
@@ -191,7 +191,10 @@ magmablas_claset_identityonly(magma_int_t m, magma_int_t n,
       The function is used for debugging.
 */
 extern "C"
-float cpu_gpu_cdiff(magma_int_t M, magma_int_t N, cuFloatComplex * a, magma_int_t lda, cuFloatComplex *da, magma_int_t ldda)
+float cpu_gpu_cdiff(
+    magma_int_t M, magma_int_t N,
+    const cuFloatComplex *a,  magma_int_t lda,
+    const cuFloatComplex *da, magma_int_t ldda )
 {
   magma_int_t d_one = 1;
   magma_int_t j;

@@ -3,8 +3,8 @@
 
 -----------------------------------------------------
 
-MAGMA is intended for a single CUDA enabled NVIDIA GPU.  It supports
-Tesla and Fermi GPUs. For more details see the MAGMA 1.0 presentation.
+MAGMA is intended for CUDA enabled NVIDIA GPUs.  It supports
+Tesla, Fermi, and GPUs. For more details see the MAGMA 1.3 presentation.
 
 Included are routines for the following algorithms:
 
@@ -23,7 +23,12 @@ Included are routines for the following algorithms:
     * MAGMA BLAS in real arithmetic (single and double), including
       gemm, gemv, symv, and trsm.
 
- 1.x.x
+ 1.3.0 - November 12, 2012
+    * Add MAGMA_VERSION constants and magma_version() in magma.h.
+    * Fix printing complex matrices.
+    * Fix documentation and query for heevd/syevd workspace sizes.
+
+ 1.2.1 - June 29, 2012
     * Fix bug in [zcsd]getrf_gpu.cpp
     * Fix workspace requirement for SVD in [zcsd]gesvd.cpp
     * Fix a bug in freeing pinned memory (in interface_cuda/alloc.cpp)
@@ -42,7 +47,7 @@ Included are routines for the following algorithms:
     * Improve performance of ungqr/orgqr CPU and GPU interfaces by 30%;
       more for small matrices
 
- 1.2.0
+ 1.2.0 - May 10, 2012
     * Fix bugs in [zcsd]hegst[_gpu].cpp
     * Fix a bug in [zcsd]latrd.cpp
     * Fix a bug in [zcsd]gelqf_gpu.cpp

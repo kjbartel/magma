@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:17 2012
+       @generated s Wed Nov 14 22:53:46 2012
 
 */
 #include "common_magma.h"
@@ -21,7 +21,7 @@
 #if (!defined(PRECISION_z)) || (GPUSHMEM >= 200)
 
 __global__ void
-l_slansy_special (int n, float* A, int lda,  float *y){
+l_slansy_special (int n, const float* A, int lda,  float *y){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -100,7 +100,7 @@ l_slansy_special (int n, float* A, int lda,  float *y){
 }
 
 __global__ void
-l_slansy_generic(int n, float* A, int lda,  float *y , int m_full_block , 
+l_slansy_generic(int n, const float* A, int lda,  float *y, int m_full_block, 
                  int m_mod_32)
 { 
   int tx = threadIdx.x ; 
@@ -321,7 +321,7 @@ l_slansy_generic(int n, float* A, int lda,  float *y , int m_full_block ,
 }
 
 __global__ void
-u_slansy_generic (int n, float* A, int lda, float *y , int m_full_block , int m_mod_32){
+u_slansy_generic (int n, const float* A, int lda, float *y, int m_full_block, int m_mod_32){
 
   
   int tx = threadIdx.x ; 
@@ -425,7 +425,7 @@ u_slansy_generic (int n, float* A, int lda, float *y , int m_full_block , int m_
   ****************************************
   -------------------------------------*/
   ind = blockIdx.x *  dgemv_bs + tx + m_mod_32 ;
-  float *A1 = A ; 
+  const float *A1 = A ; 
   A+= lda*(n-1)  ; 
 
   A += ind;
@@ -533,7 +533,7 @@ u_slansy_generic (int n, float* A, int lda, float *y , int m_full_block , int m_
 }
 
 __global__ void
-u_slansy_special (int n, float* A, int lda, float *y ){
+u_slansy_special (int n, const float* A, int lda, float *y ){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -623,7 +623,7 @@ u_slansy_special (int n, float* A, int lda, float *y ){
 }
 
 
-extern "C" void mslansy (char uplo , int m ,  float *A , int lda ,  float *Y  )
+extern "C" void mslansy (char uplo, int m, const float *A, int lda,  float *Y  )
 {
 /*
 Note:
@@ -652,10 +652,10 @@ Note:
             int  m_full_block = (m - m % 32 ) /32 ; 
             int  m_mod_32 = m%32 ;  
             if( uplo == 'L' || uplo == 'l'){
-                    l_slansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    l_slansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
             else{
-                    u_slansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y , m_full_block , m_mod_32);
+                    u_slansy_generic <<< grid, threads, 0, magma_stream >>> (m, A, lda, Y, m_full_block, m_mod_32);
             }        
     }
 }
@@ -663,7 +663,7 @@ Note:
 #endif /* (!defined(PRECISION_z)) || (GPUSHMEM >= 200) */
 
 __global__ void
-l_slansy_max (int m, float* A, int lda,  float *y){
+l_slansy_max (int m, const float* A, int lda,  float *y){
     int tx  = threadIdx.x ;
     int ind =  blockIdx.x * slansy_bs + tx ;
     float res = 0., res1;
@@ -695,7 +695,7 @@ l_slansy_max (int m, float* A, int lda,  float *y){
 }
 
 __global__ void
-u_slansy_max (int m, float* A, int lda,  float *y){
+u_slansy_max (int m, const float* A, int lda,  float *y){
     int ind =  blockIdx.x * slansy_bs + threadIdx.x ;
     float res = 0.;
 
@@ -709,7 +709,7 @@ u_slansy_max (int m, float* A, int lda,  float *y){
 }
 
 
-extern "C" void slansy_max (char uplo, int m, float *A , int lda , float *y){
+extern "C" void slansy_max (char uplo, int m, const float *A, int lda, float *y){
     int blocks;
     if (m % slansy_bs==0)
         blocks = m/ slansy_bs;
@@ -729,12 +729,12 @@ extern "C" void slansy_max (char uplo, int m, float *A , int lda , float *y){
  
 extern "C" float 
 magmablas_slansy(char norm, char uplo, magma_int_t n, 
-                 float *A, magma_int_t lda, float *WORK )
+                 const float *A, magma_int_t lda, float *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {
 #if (GPUSHMEM >= 200)
-                mslansy ( uplo , n , A , lda , WORK);
+                mslansy ( uplo, n, A, lda, WORK);
                 int val = cublasIsamax(n,WORK,1);
                 float retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( float ), WORK+val-1, 1, retVal, 1 ) ;
@@ -746,7 +746,7 @@ magmablas_slansy(char norm, char uplo, magma_int_t n,
             }
         else if (norm == 'M' || norm =='m')
             {  
-                slansy_max ( uplo , n , A , lda , WORK);
+                slansy_max ( uplo, n, A, lda, WORK);
                 int val = cublasIsamax(n,WORK,1);
                 float retVal[1];
                 cublasGetMatrix( 1, 1, sizeof( float ), WORK+val-1, 1, retVal, 1 ) ;

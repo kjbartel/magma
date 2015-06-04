@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -12,7 +12,7 @@
 
 // === Define what BLAS to use ============================================
 #define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d))
+#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d))
   #define magma_zgemm magmablas_zgemm
   #define magma_ztrsm magmablas_ztrsm
 #endif
@@ -23,11 +23,11 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
                  cuDoubleComplex *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -117,7 +117,7 @@ magma_zgetrf_gpu(magma_int_t m, magma_int_t n,
         magma_zgetmatrix( m, n, dA, ldda, work, m );
         lapackf77_zgetrf(&m, &n, work, &m, ipiv, info);
         magma_zsetmatrix( m, n, work, m, dA, ldda );
-        free(work);
+        magma_free_cpu(work);
     }
     else {
         /* Use hybrid blocked code. */

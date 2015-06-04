@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-    @generated s Thu Jun 28 12:31:49 2012
+    @generated s Wed Nov 14 22:54:25 2012
 
     @author Stan Tomov
     @author Raffaele Solca
@@ -58,10 +58,8 @@ int main( int argc, char** argv)
     float dten      = 10.;
     magma_int_t ISEED[4] = {0,0,0,1};
 
-    //const char *uplo = MagmaLowerStr;
-    char *uplo = (char*)MagmaLowerStr;
-    //char *uplo = (char*)MagmaUpperStr;
-    char *jobz = (char*)MagmaVectorsStr;
+    const char *uplo = MagmaLowerStr;
+    const char *jobz = MagmaVectorsStr;
     itype = 1;
 
     magma_int_t checkres;
@@ -95,11 +93,11 @@ int main( int argc, char** argv)
                 }
             }
             if (strcmp("-L", argv[i])==0){
-              uplo = (char*)MagmaLowerStr;
+              uplo = MagmaLowerStr;
               printf("  testing_ssygvd -L");
             }
             if (strcmp("-U", argv[i])==0){
-              uplo = (char*)MagmaUpperStr;
+              uplo = MagmaUpperStr;
               printf("  testing_ssygvd -U");              
             }
           

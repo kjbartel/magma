@@ -1,17 +1,16 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
  * @author Mark Gates
- * @generated c Thu Jun 28 12:31:07 2012
+ * @generated c Wed Nov 14 22:53:36 2012
  */
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include "magma.h"
 #include "error.h"

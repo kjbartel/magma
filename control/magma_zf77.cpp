@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -84,7 +84,7 @@ typedef size_t devptr_t;
 #define MAGMAF_ZGEQRS3_GPU MAGMA_GPU_FORTRAN_NAME(zgeqrs3, ZGEQRS3) 
 #define MAGMAF_ZGESSM_GPU  MAGMA_GPU_FORTRAN_NAME(zgessm,  ZGESSM ) 
 #define MAGMAF_ZGESV_GPU   MAGMA_GPU_FORTRAN_NAME(zgesv,   ZGESV  )  
-#define MAGMAF_ZGETRL_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrl,  ZGETRL ) 
+#define MAGMAF_ZGETRF_INCPIV_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrf_incpiv,  ZGETRF_INCPIV ) 
 #define MAGMAF_ZGETRF_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrf,  ZGETRF ) 
 #define MAGMAF_ZGETRS_GPU  MAGMA_GPU_FORTRAN_NAME(zgetrs,  ZGETRS ) 
 #define MAGMAF_ZHEGST_GPU  MAGMA_GPU_FORTRAN_NAME(zhegst,  ZHEGST )

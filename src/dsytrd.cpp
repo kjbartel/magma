@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated d Thu Jun 28 12:30:55 2012
+       @generated d Wed Nov 14 22:53:22 2012
 
 */
 #include "common_magma.h"
@@ -35,11 +35,11 @@ magma_dsytrd(char uplo, magma_int_t n,
              double *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -93,10 +93,9 @@ magma_dsytrd(char uplo, magma_int_t n,
     WORK    (workspace/output) DOUBLE_PRECISION array, dimension (MAX(1,LWORK))   
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.   
 
-    LWORK   (input) INTEGER   
-            The dimension of the array WORK.  LWORK >= 1.   
-            For optimum performance LWORK >= N*NB, where NB is the   
-            optimal blocksize.   
+    LWORK   (input) INTEGER
+            The dimension of the array WORK.  LWORK >= N*NB, where NB is the
+            optimal blocksize given by magma_get_dsytrd_nb().
 
             If LWORK = -1, then a workspace query is assumed; the routine   
             only calculates the optimal size of the WORK array, returns   
@@ -179,10 +178,10 @@ magma_dsytrd(char uplo, magma_int_t n,
     }
 
     if (*info == 0) {
-      /* Determine the block size. */
-      ldwork = lddwork = n;
-      lwkopt = n * nb;
-      MAGMA_D_SET2REAL( work[0], lwkopt );
+        /* Determine the block size. */
+        ldwork = lddwork = n;
+        lwkopt = n * nb;
+        MAGMA_D_SET2REAL( work[0], lwkopt );
     }
 
     if (*info != 0) {
@@ -190,7 +189,7 @@ magma_dsytrd(char uplo, magma_int_t n,
         return *info;
     }
     else if (lquery)
-      return *info;
+        return *info;
 
     /* Quick return if possible */
     if (n == 0) {
@@ -207,12 +206,11 @@ magma_dsytrd(char uplo, magma_int_t n,
     double *dwork = da + (n)*ldda;
 
     if (n < 2048)
-      nx = n;
+        nx = n;
     else
-      nx = 512;
+        nx = 512;
 
     if (upper) {
-
         /* Copy the matrix to the GPU */ 
         magma_dsetmatrix( n, n, A(0, 0), lda, dA(0, 0), ldda );
 
@@ -220,15 +218,14 @@ magma_dsytrd(char uplo, magma_int_t n,
             Columns 1:kk are handled by the unblocked method. */
         kk = n - (n - nx + nb - 1) / nb * nb;
 
-        for (i = n - nb; i >= kk; i -= nb) 
-          {
+        for (i = n - nb; i >= kk; i -= nb) {
             /* Reduce columns i:i+nb-1 to tridiagonal form and form the   
                matrix W which is needed to update the unreduced part of   
                the matrix */
             
             /*   Get the current panel (no need for the 1st iteration) */
             if (i!=n-nb)
-              magma_dgetmatrix( i+nb, nb, dA(0, i), ldda, A(0, i), lda );
+                magma_dgetmatrix( i+nb, nb, dA(0, i), ldda, A(0, i), lda );
             
             magma_dlatrd(uplo, i+nb, nb, A(0, 0), lda, e, tau, 
                          work, ldwork, dA(0, 0), ldda, dwork, lddwork);
@@ -247,19 +244,17 @@ magma_dsytrd(char uplo, magma_int_t n,
                 MAGMA_D_SET2REAL( *A(j-1, j), e[j - 1] );
                 d[j] = MAGMA_D_REAL( *A(j, j) );
             }
-
-          }
+        }
       
         magma_dgetmatrix( kk, kk, dA(0, 0), ldda, A(0, 0), lda );
       
         /*  Use unblocked code to reduce the last or only block */
         lapackf77_dsytd2(uplo_, &kk, A(0, 0), &lda, d, e, tau, &iinfo);
     } 
-    else 
-      {
+    else {
         /* Copy the matrix to the GPU */
         if (1<=n-nx)
-          magma_dsetmatrix( n, n, A(0,0), lda, dA(0,0), ldda );
+            magma_dsetmatrix( n, n, A(0,0), lda, dA(0,0), ldda );
 
         #ifdef FAST_SYMV
         // TODO this leaks memory from da, above
@@ -270,15 +265,14 @@ magma_dsytrd(char uplo, magma_int_t n,
         }
         #endif
         /* Reduce the lower triangle of A */
-        for (i = 0; i < n-nx; i += nb) 
-          {
+        for (i = 0; i < n-nx; i += nb) {
             /* Reduce columns i:i+nb-1 to tridiagonal form and form the
                matrix W which is needed to update the unreduced part of
                the matrix */
 
             /*   Get the current panel (no need for the 1st iteration) */
             if (i!=0)
-              magma_dgetmatrix( n-i, nb, dA(i, i), ldda, A(i, i), lda );
+                magma_dgetmatrix( n-i, nb, dA(i, i), ldda, A(i, i), lda );
             #ifdef FAST_SYMV
             magma_dlatrd2(uplo, n-i, nb, A(i, i), lda, &e[i], 
                          &tau[i], work, ldwork, 
@@ -305,7 +299,7 @@ magma_dsytrd(char uplo, magma_int_t n,
                 MAGMA_D_SET2REAL( *A(j+1, j), e[j] );
                 d[j] = MAGMA_D_REAL( *A(j, j) );
             }
-          }
+        }
 
         #ifdef FAST_SYMV
         magma_free( dwork2 );
@@ -313,12 +307,12 @@ magma_dsytrd(char uplo, magma_int_t n,
 
         /* Use unblocked code to reduce the last or only block */
         if (1<=n-nx)
-          magma_dgetmatrix( n-i, n-i, dA(i, i), ldda, A(i, i), lda );
+            magma_dgetmatrix( n-i, n-i, dA(i, i), ldda, A(i, i), lda );
         i_n = n-i;
         lapackf77_dsytrd(uplo_, &i_n, A(i, i), &lda, &d[i], &e[i],
                          &tau[i], work, &lwork, &iinfo);
         
-      }
+    }
     
     magma_free( da );
     MAGMA_D_SET2REAL( work[0], lwkopt );

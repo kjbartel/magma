@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:51 2012
+       @generated s Wed Nov 14 22:54:11 2012
 */
 
 // includes, system
@@ -91,8 +91,8 @@ int main( int argc, char** argv)
         
         for( int j = 0; j < n; ++j ) {
             for( int i = 0; i < n; ++i ) {
-                if ( i1 <= i and i < i2 and j1 <= j and j < j2 ) {
-                    if ( not MAGMA_S_EQUAL( hR[i + j*lda], hA[i + j*lda] )) {
+                if ( i1 <= i && i < i2 && j1 <= j && j < j2 ) {
+                    if ( ! MAGMA_S_EQUAL( hR[i + j*lda], hA[i + j*lda] )) {
                         bad_copies += 1;
                         printf( "Copy failed at B[%d,%d], expected %.4f, got %.4f\n",
                                 i, j, MAGMA_S_REAL( hA[i + j*lda] ),
@@ -100,7 +100,7 @@ int main( int argc, char** argv)
                     }
                 }
                 else {
-                    if ( not MAGMA_S_EQUAL( hR[i + j*lda], hB[i + j*lda] )) {
+                    if ( ! MAGMA_S_EQUAL( hR[i + j*lda], hB[i + j*lda] )) {
                         overwrites += 1;
                         printf( "Overwrote at B[%d,%d], expected %.4f, got %.4f\n",
                                 i, j, MAGMA_S_REAL( hA[i + j*lda] ),
@@ -112,7 +112,7 @@ int main( int argc, char** argv)
         printf( "B(%4d:%4d, %4d:%4d) = A(%4d:%4d, %4d:%4d) ",
                 i1, i2, j1, j2,
                 i1, i2, j1, j2 );
-        if ( bad_copies > 0 or overwrites > 0 ) {
+        if ( bad_copies > 0 || overwrites > 0 ) {
             printf( "failed, %d bad copies, %d overwrites\n", bad_copies, overwrites );
         }
         else {
@@ -160,7 +160,7 @@ int main( int argc, char** argv)
         magma_sgetmatrix( n, n, dB, lda, hB, lda );
         for( int j = 0; j < n; ++j ) {
             for( int i = 0; i < n; ++i ) {
-                if ( not MAGMA_S_EQUAL( hA[i + j*lda], hB[i + j*lda] )) {
+                if ( ! MAGMA_S_EQUAL( hA[i + j*lda], hB[i + j*lda] )) {
                     printf( "Copy failed at B[%d,%d], expected %.4f, got %.4f\n",
                             i, j, MAGMA_S_REAL( hA[i + j*lda] ),
                                   MAGMA_S_REAL( hB[i + j*lda] ));

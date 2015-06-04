@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal d -> d
        
@@ -26,11 +26,11 @@
 #define NB 128// outer blocking size, >BLOCK_SIZE 
 
 __global__ void
-diag_dtrtri_kernel_upper (char diag, double *A, double *d_dinvA, int lda)
+diag_dtrtri_kernel_upper (char diag, const double *A, double *d_dinvA, int lda)
 {
         int i,j;
         double Ystx=0;
-        double *y=NULL, *Aoff=NULL;
+        double *y=NULL;
         int switcher=0;
 
         // Thread index
@@ -39,7 +39,7 @@ diag_dtrtri_kernel_upper (char diag, double *A, double *d_dinvA, int lda)
         // Block index
         int bx = blockIdx.x;
                 
-        Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
+        const double *Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
         int NumBLperNB = NB/BLOCK_SIZE;
         d_dinvA += bx/NumBLperNB*NB*NB+(bx%NumBLperNB)*(NB*BLOCK_SIZE+BLOCK_SIZE);
 
@@ -87,11 +87,11 @@ diag_dtrtri_kernel_upper (char diag, double *A, double *d_dinvA, int lda)
 
 }
 __global__ void
-diag_dtrtri_kernel_lower (char diag, double *A, double *d_dinvA, int lda)
+diag_dtrtri_kernel_lower (char diag, const double *A, double *d_dinvA, int lda)
 {
         int i,j;
         double Ystx=0;
-        double *Bw=NULL, *x=NULL, *y=NULL, *Aoff=NULL;
+        double *Bw=NULL, *x=NULL, *y=NULL;
         int switcher=0;
 
         // Thread index
@@ -101,7 +101,7 @@ diag_dtrtri_kernel_lower (char diag, double *A, double *d_dinvA, int lda)
         // Block index
         int bx = blockIdx.x;
                 
-        Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
+        const double *Aoff = A+bx*lda*BLOCK_SIZE+bx*BLOCK_SIZE;
         int NumBLperNB = NB/BLOCK_SIZE;
         d_dinvA += bx/NumBLperNB*NB*NB+(bx%NumBLperNB)*(NB*BLOCK_SIZE+BLOCK_SIZE);
 
@@ -244,7 +244,7 @@ __device__ void dgemm_kernel_16 (double *A, int lda, double *B, int ldb, double 
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 
 __global__ void
-triple_dgemm_update_16_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_16_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
 //        const int page = (blockIdx.y)%(npages);
@@ -261,7 +261,8 @@ triple_dgemm_update_16_R (double * Ain, double *d_dinvA, int blk, int lda, int n
         {
                 // A12*inv(A22) -> A12
                 // A=A12, B=inv(A22), C=A12(d_dinvA)
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -418,7 +419,7 @@ triple_dgemm_update_16_R (double * Ain, double *d_dinvA, int blk, int lda, int n
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 
 __global__ void
-triple_dgemm_update_16_part1_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_16_part1_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
 //        const int page = (blockIdx.y)%(npages);
@@ -434,7 +435,8 @@ triple_dgemm_update_16_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -519,7 +521,7 @@ triple_dgemm_update_16_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
  */
 #define qmod(a,b) ((a)-(__mul24((b),(a)/(b))))
 __global__ void
-triple_dgemm_update_16_part2_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_16_part2_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -615,7 +617,7 @@ triple_dgemm_update_16_part2_L (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_32_part1_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_32_part1_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -631,7 +633,8 @@ triple_dgemm_update_32_part1_R (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // A12*inv(A22) -> A21
                 // A=A12, B=inv(A22), C=A12(d_dinvA)
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -704,7 +707,7 @@ triple_dgemm_update_32_part1_R (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_32_part2_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_32_part2_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -792,7 +795,7 @@ triple_dgemm_update_32_part2_R (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_32_part1_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_32_part1_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -808,7 +811,8 @@ triple_dgemm_update_32_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -881,7 +885,7 @@ triple_dgemm_update_32_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_32_part2_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_32_part2_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -897,7 +901,8 @@ triple_dgemm_update_32_part2_L (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // -inv(A22)*A21 -> A21
                 // A=inv(A22), B=A21, C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int lda = NB;
                 int ldb = NB;
                 int ldc = NB;
@@ -968,7 +973,7 @@ triple_dgemm_update_32_part2_L (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_64_part1_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_64_part1_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -984,7 +989,8 @@ triple_dgemm_update_64_part1_R (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // A12*inv(A22) -> A12(d_dinvA)
                 // A=A12, B=inv(A22), C=A12
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1052,7 +1058,7 @@ triple_dgemm_update_64_part1_R (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_64_part2_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_64_part2_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1069,7 +1075,8 @@ triple_dgemm_update_64_part2_R (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // -inv(A11)*A12 -> A12
                 // A=inv(A11), B=A12, C=A12
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int lda = NB;
                 int ldb = NB;
                 int ldc = NB;
@@ -1136,7 +1143,7 @@ triple_dgemm_update_64_part2_R (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_64_part1_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_64_part1_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1152,7 +1159,8 @@ triple_dgemm_update_64_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1219,7 +1227,7 @@ triple_dgemm_update_64_part1_L (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_64_part2_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_64_part2_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1236,7 +1244,8 @@ triple_dgemm_update_64_part2_L (double * Ain, double *d_dinvA, int blk, int lda,
         {
                 // -inv(A22)*A21 -> A21
                 // A=inv(A22), B=A21, C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int lda = NB;
                 int ldb = NB;
                 int ldc = NB;
@@ -1303,7 +1312,7 @@ triple_dgemm_update_64_part2_L (double * Ain, double *d_dinvA, int blk, int lda,
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_above64_part1_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part1_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1319,7 +1328,8 @@ triple_dgemm_update_above64_part1_R (double * Ain, double *d_dinvA, int blk, int
         {
                 // A12*inv(A22) -> A12(d_dinvA)
                 // A=A12, B=inv(A22), C=A12
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1387,7 +1397,7 @@ triple_dgemm_update_above64_part1_R (double * Ain, double *d_dinvA, int blk, int
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_above64_part1_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part1_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1403,7 +1413,8 @@ triple_dgemm_update_above64_part1_L (double * Ain, double *d_dinvA, int blk, int
         {
                 // A21*inv(A11) -> A21
                 // A=A21, B=inv(A11), C=A21
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int ldb = NB;
                 int ldc = NB;
 
@@ -1471,7 +1482,7 @@ triple_dgemm_update_above64_part1_L (double * Ain, double *d_dinvA, int blk, int
  * B21 = -inv(A11)*A12*inv(A22)
  */
 __global__ void
-triple_dgemm_update_above64_part2_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part2_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1488,7 +1499,8 @@ triple_dgemm_update_above64_part2_R (double * Ain, double *d_dinvA, int blk, int
         {
                 // -inv(A11)*A12 -> A12
                 // A=inv(A11), B=A12, C=A12
-                double *A, *B, *C;
+                const double *A;
+                double *B, *C;
                 int lda = NB;
                 int ldb = NB;
                 int ldc = NB;
@@ -1556,7 +1568,7 @@ triple_dgemm_update_above64_part2_R (double * Ain, double *d_dinvA, int blk, int
  * part 3, copy data into position 
  */
 __global__ void
-triple_dgemm_update_above64_part3_R (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part3_R (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1601,7 +1613,7 @@ triple_dgemm_update_above64_part3_R (double * Ain, double *d_dinvA, int blk, int
  * part 3: copy data back to position 
  */
 __global__ void
-triple_dgemm_update_above64_part3_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part3_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1644,7 +1656,7 @@ triple_dgemm_update_above64_part3_L (double * Ain, double *d_dinvA, int blk, int
  * B21 = -inv(A22)*A21*inv(A11)
  */
 __global__ void
-triple_dgemm_update_above64_part2_L (double * Ain, double *d_dinvA, int blk, int lda, int npages)
+triple_dgemm_update_above64_part2_L (const double *Ain, double *d_dinvA, int blk, int lda, int npages)
 {
         const int bIdy = blockIdx.y/npages;
         const int page = qmod(blockIdx.y, npages);
@@ -1739,7 +1751,7 @@ b_copy_kernel (int M, int N, double *b, int ldb, double *d_x, int ldx)
 
 
 extern "C"
-void diag_dtrtri (magma_int_t M, char uplo, char diag, double *A, double *d_dinvA, magma_int_t lda)
+void diag_dtrtri (magma_int_t M, char uplo, char diag, const double *A, double *d_dinvA, magma_int_t lda)
 {
         int nblocks = M/BLOCK_SIZE+(M%BLOCK_SIZE!=0);
 
@@ -1819,13 +1831,13 @@ void diag_dtrtri (magma_int_t M, char uplo, char diag, double *A, double *d_dinv
  */
 extern "C"
 void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
-                      double alpha, /*const*/ double* A, magma_int_t lda, double* b, magma_int_t ldb)
+                      double alpha, const double* A, magma_int_t lda, double* b, magma_int_t ldb)
 {
-        /*  -- MAGMA (version 1.2.1) --
+        /*  -- MAGMA (version 1.3.0) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                June 2012
+                November 2012
 
                 Purpose
                 =======

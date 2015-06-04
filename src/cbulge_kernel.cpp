@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Thu Jun 28 12:30:59 2012
+ *     @generated c Wed Nov 14 22:53:25 2012
  *
  */
 
@@ -66,10 +66,10 @@ magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatComple
   blasf77_chemv("L",&N, TAU, A, &LDA, V, &IONE, &Z_ZERO, WORK, &IONE);
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
-   //dtmp = Z_ZERO;
-   //for (j = 0; j < N ; j++)
-   //   dtmp = dtmp + MAGMA_C_CNJG(WORK[j]) * V[j];
-   cblas_cdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
+   dtmp = Z_ZERO;
+   for (j = 0; j < N ; j++)
+      dtmp = dtmp + MAGMA_C_CNJG(WORK[j]) * V[j];
+   //cblas_cdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
   dtmp = cblas_cdotc(N, WORK, IONE, V, IONE);
 #endif
@@ -83,7 +83,7 @@ magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatComple
   /* performs the symmetric rank 2 operation A := alpha*x*y' + alpha*y*x' + A */
   blasf77_cher2("L",&N,&Z_MONE,WORK,&IONE,V,&IONE,A,&LDA);
   
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ extern "C" void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
   magma_clarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
   //conjtmp = MAGMA_C_CNJG(*TAU(taupos));
   //lapackf77_clarfy("L", &len, V(vpos), &IONE, &conjtmp, A(st,st), &LDX, WORK); //&(MAGMA_C_CNJG(*TAU(taupos)))
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 #undef A
 #undef V
@@ -192,7 +192,7 @@ extern "C" void magma_ctrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
   magma_clarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
   //conjtmp = MAGMA_C_CNJG(*TAU(taupos));
   //lapackf77_clarfy("L", &len, V(vpos), &IONE,  &(MAGMA_C_CNJG(*TAU(taupos))), A(st,st), &LDX, WORK);
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 #undef A
 #undef V

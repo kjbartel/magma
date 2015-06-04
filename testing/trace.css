@@ -1,0 +1,32 @@
+    /* ----- begin trace.css SVG header ----- */
+    /* MAGMA (version 1.3.0)   */
+    /* @author Mark Gates    */
+    rect           { stroke-width: 0; stroke: #666666; }
+    
+    /* overhead */
+    .init          { fill: #666666; /* gray       */ }
+    .destroy       { fill: #666666; /* gray       */ }
+    
+    /* panels */
+    .getrf         { fill: #cc0000; /* red        */ }
+    .potrf         { fill: #ff0066; /* red-pink   */ }
+    .geqrf         { fill: #cc6600; /* red-orange */ }
+    
+    /* BLAS */
+    .symmetrize    { fill: #999999; /* gray       */ }
+    .axpy          { fill: #B587FF; /* purple  lt */ }
+    .scal          { fill: #9c51ff; /* purple     */ }
+    .trsm          { fill: #b7b7ff; /* blue       */ }
+    .symm          { fill: #00cc00; /* green      */ }
+    .gemm          { fill: #288400; /* green   dk */ }
+    .gemm2         { fill: #2e9900; /* green  dk2 */ }
+    .syrk,  .herk  { fill: #ffb266; /* orange  lt */ }
+    .syr2k, .her2k { fill: #ff9833; /* orange  dk */ }
+    
+    /* communication */
+    .get           { fill: #fdb7ff; /* magenta    */ }
+    .getsync,.sync { fill: #fed6ff; /* magenta lt */ }
+    
+    .set           { fill: #adfeff; /* cyan       */ }
+    .setsync       { fill: #d6feff; /* cyan    lt */ }
+    /* ----- end trace.css SVG header ----- */

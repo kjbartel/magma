@@ -1,23 +1,23 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:30:31 2012
+       @generated d Wed Nov 14 22:52:57 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
 #define PRECISION_d
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
+#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d)) 
   #define magma_dgemm magmablas_dgemm
   #define magma_dtrsm magmablas_dtrsm
 #endif
 
-#if (GPUSHMEM >= 200)
+#if (GPUSHMEM == 200)
   #if (defined(PRECISION_s))
      #undef  magma_sgemm
      #define magma_sgemm magmablas_sgemm_fermi80
@@ -31,11 +31,11 @@ extern "C" magma_int_t
 magma_dpotrf_gpu(char uplo, magma_int_t n, 
                  double *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   

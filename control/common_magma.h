@@ -2,11 +2,11 @@
  *
  * @file common_magma.h
  *
- *  MAGMA (version 1.2.1) --
+ *  MAGMA (version 1.3.0) --
  *  Univ. of Tennessee, Knoxville
  *  Univ. of California, Berkeley
  *  Univ. of Colorado, Denver
- *  June 2012
+ *  November 2012
  *
  * @version 1.0.0
  * @author Mathieu Faverge
@@ -33,16 +33,20 @@
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 
-#  include "magmawinthread.h"
-#  include <windows.h>
-#  include <limits.h>
-#  include <io.h>
+    #include "magmawinthread.h"
+    #include <windows.h>
+    #include <limits.h>
+    #include <io.h>
+
+    // functions where Microsoft fails to provide C99 standard
+    #define copysign(x,y) _copysign(x,y)
+    double log2( double x );  // defined in auxiliary.cpp
 
 #else
 
-#  include <pthread.h>
-#  include <unistd.h>
-#  include <inttypes.h>
+    #include <pthread.h>
+    #include <unistd.h>
+    #include <inttypes.h>
 
 #endif
 
@@ -64,7 +68,7 @@
 #endif
 
 /** ****************************************************************************
- *  Determine if weak symbol are allowed 
+ *  Determine if weak symbols are allowed 
  */
 #if defined(linux) || defined(__linux) || defined(__linux__)
 #if defined(__GNUC_EXCL__) || defined(__GNUC__) 
@@ -78,19 +82,21 @@
 #ifndef max
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
+
 #ifndef min
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #endif
+
 #ifndef roundup
 #define roundup(a, b) (b <= 0) ? (a) : (((a) + (b)-1) & ~((b)-1))
 #endif
 
 /** ****************************************************************************
  *  Define magma_[sd]sqrt functions 
- *    - sqrt alone cannot be catched by the generation script because of tsqrt
+ *    - sqrt alone cannot be caught by the generation script because of tsqrt
  */
 
 #define magma_dsqrt sqrt
-#define magma_ssqrt sqrt
+#define magma_ssqrt sqrtf
 
 #endif /* _MAGMA_COMMON_H_ */

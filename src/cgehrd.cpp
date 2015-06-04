@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:03 2012
+       @generated c Wed Nov 14 22:53:32 2012
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_cgehrd(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
              cuFloatComplex *dT,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -274,7 +274,7 @@ magma_cgehrd(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
     MAGMA_C_SET2REAL( work[0], (float) iws );
     
     magma_free( da );
-    free(t);
+    magma_free_cpu(t);
  
     return *info;
 } /* magma_cgehrd */

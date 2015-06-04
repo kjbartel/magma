@@ -1,17 +1,17 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:21 2012
+       @generated s Wed Nov 14 22:53:51 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_s
 
-/*The version for fermi can be found in ssymv_tesla.cu */
+/*The version for fermi can be found in ssymv_fermi.cu */
 #if (GPUSHMEM < 200)
 
 #define magmablas_ssymv_130  magmablas_ssymv
@@ -29,8 +29,8 @@
 
 __global__ void
 magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
-                               float *A, magma_int_t lda,
-                               float *x, magma_int_t incx,
+                               const float *A, magma_int_t lda,
+                               const float *x, magma_int_t incx,
                                float  beta,
                                float *y, magma_int_t incy,
                                float *WC)
@@ -308,8 +308,8 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
  */
 __global__ void
 magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
-                              float *A, magma_int_t lda,
-                              float *x, magma_int_t incx,
+                              const float *A, magma_int_t lda,
+                              const float *x, magma_int_t incx,
                               float beta,
                               float *y, magma_int_t incy,
                               float *WC,
@@ -681,8 +681,8 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
 
 __global__ void
 magmablas_ssymv_130_L_update(magma_int_t n, float alpha,
-                         float* A, magma_int_t lda,
-                         float *x, magma_int_t incx,
+                         const float* A, magma_int_t lda,
+                         const float *x, magma_int_t incx,
                          float beta,
                          float *y, magma_int_t incy,
                          float *WC )
@@ -706,8 +706,8 @@ magmablas_ssymv_130_L_update(magma_int_t n, float alpha,
 
 extern "C"
 void magmablas_ssymv_130_L(magma_int_t m, float alpha,
-                           float *A, magma_int_t lda,
-                           float *X, magma_int_t incx,
+                           const float *A, magma_int_t lda,
+                           const float *X, magma_int_t incx,
                            float beta,
                            float *Y, magma_int_t incy,
                            float *dC_work)
@@ -781,8 +781,8 @@ extern "C"
 magma_int_t
 magmablas_ssymv2_130( char uplo, magma_int_t n,
                       float alpha, 
-                      float *A, magma_int_t lda,
-                      float *X, magma_int_t incx,
+                      const float *A, magma_int_t lda,
+                      const float *X, magma_int_t incx,
                       float beta,  
                       float *Y, magma_int_t incy,
                       float *dC_work,
@@ -922,8 +922,8 @@ extern "C"
 magma_int_t
 magmablas_ssymv_130( char uplo, magma_int_t n,
                      float alpha, 
-                     float *A, magma_int_t lda,
-                     float *X, magma_int_t incx,
+                     const float *A, magma_int_t lda,
+                     const float *X, magma_int_t incx,
                      float beta,  
                      float *Y, magma_int_t incy)
 {

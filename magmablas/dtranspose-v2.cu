@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:21 2012
+       @generated d Wed Nov 14 22:53:51 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_d
 #include "commonblas.h"
 
-__global__ void dtranspose3_32( double *B, int ldb, 
-                                double *A, int lda,
+__global__ void dtranspose3_32( double       *B, int ldb, 
+                                const double *A, int lda,
                                 int m, int m32, int n, int n32)
 {
          __shared__ double a[32][DSIZE_1SHARED+1];
@@ -109,8 +109,8 @@ __global__ void dtranspose3_32( double *B, int ldb,
 
 
 
-__global__ void dtranspose2_32( double *B, int ldb, 
-                                double *A, int lda, 
+__global__ void dtranspose2_32( double       *B, int ldb, 
+                                const double *A, int lda, 
                                 int m, int m32, int n, int n32)
 {        
         __shared__ double a[32][DSIZE_1SHARED+1];
@@ -176,8 +176,8 @@ __global__ void dtranspose2_32( double *B, int ldb,
 //             Note that ldi >= m and ldo >= n.
 //
 extern "C" void 
-magmablas_dtranspose2(double *odata, magma_int_t ldo, 
-                      double *idata, magma_int_t ldi, 
+magmablas_dtranspose2(double       *odata, magma_int_t ldo, 
+                      const double *idata, magma_int_t ldi, 
                       magma_int_t m, magma_int_t n )
 {
     /* Quick return */
@@ -192,8 +192,8 @@ magmablas_dtranspose2(double *odata, magma_int_t ldo,
 }
 
 extern "C" void
-magmablas_dtranspose2s(double *odata, magma_int_t ldo,
-                       double *idata, magma_int_t ldi,
+magmablas_dtranspose2s(double       *odata, magma_int_t ldo,
+                       const double *idata, magma_int_t ldi,
                        magma_int_t m, magma_int_t n, cudaStream_t *stream )
 {
     /* Quick return */

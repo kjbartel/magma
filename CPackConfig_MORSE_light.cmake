@@ -31,6 +31,10 @@
 #   CPACK_PACKAGE_VERSION_MINOR         - Package project version (minor)
 #   CPACK_PACKAGE_VERSION_PATCH         - Package project version (patch)
 ###
+#
+# cpack --config CPackConfig_MORSE_light.cmake
+#
+###
 
 SET(SUFFIX_VERSION "")
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
        @author Ichitaro Yamazaki
@@ -22,92 +22,44 @@
 //
 extern "C" void 
 magmablas_zsetmatrix_transpose_mgpu(
-                  magma_int_t num_gpus, cudaStream_t **stream0,
-                  cuDoubleComplex  *ha,  magma_int_t lda, 
-                  cuDoubleComplex **dat, magma_int_t ldda, magma_int_t starti,
-                  cuDoubleComplex **dB,  magma_int_t lddb,
+                  magma_int_t ngpus, cudaStream_t stream[][2],
+                  const cuDoubleComplex  *ha,  magma_int_t lda, 
+                  cuDoubleComplex       **dat, magma_int_t ldda, 
+                  cuDoubleComplex       **db,  magma_int_t lddb,
                   magma_int_t m, magma_int_t n, magma_int_t nb)
 {
-    int d, i = 0, offset = 0, j = 0, j_local, ib;
-    cudaStream_t stream[4][2];
+#define   A(j)    (ha       + (j)*lda)
+#define  dB(d, j) (db[(d)]  + (j)*nb*lddb)
+#define dAT(d, j) (dat[(d)] + (j)*nb)
+    int nstreams = 2, d, j, j_local, id, ib;
 
     /* Quick return */
     if ( (m == 0) || (n == 0) )
         return;
 
-    if (lda < m || num_gpus*ldda < n || lddb < m){
-        printf( "Wrong arguments in zhtodt2 (%d<%d), (%d*%d<%d), or (%d<%d).\n",
-                (int) lda, (int) m, (int) num_gpus, (int) ldda, (int) n, (int) lddb, (int) m );
+    if (lda < m || ngpus*ldda < n || lddb < m){
+        printf( "Wrong arguments in magmablas_zsetmatrix_transpose_mgpu (%d<%d), (%d*%d<%d), or (%d<%d).\n",
+                (int) lda, (int) m, (int) ngpus, (int) ldda, (int) n, (int) lddb, (int) m );
         return;
     }
     
-    for( d=0; d<num_gpus; d++ ) {
-      magma_setdevice(d);
-      magma_queue_create( &stream[d][0] );
-      magma_queue_create( &stream[d][1] );
-    }
-
-    /* Move data from CPU to GPU in the first panel in the dB buffer */
-    for( d=0; d<num_gpus; d++ ) {
-      magma_setdevice(d);
-      i  = d * nb;
-      ib = min(n-i, nb);
-
-      //printf( " sent A(:,%d:%d) to %d-th panel of %d gpu\n",i,i+ib-1,0,d );
-      magma_zsetmatrix_async( m, ib,
-                              ha + i*lda, lda,
-                              dB[d],      lddb, stream[d][0] );
-      j++;
-    }
-
-    for(i=num_gpus*nb; i<n; i+=nb){
-       /* Move data from CPU to GPU in the second panel in the dB buffer */
-       d       = j%num_gpus;
-       j_local = j/num_gpus;
+    /* Move data from CPU to GPU by block columns and transpose it */
+    for(j=0; j<n; j+=nb){
+       d       = (j/nb)%ngpus;
+       j_local = (j/nb)/ngpus;
+       id      = j_local%nstreams;
        magma_setdevice(d);
 
-
-       ib = min(n-i, nb);
-       //printf( " sent A(:,%d:%d) to %d-th panel of %d gpu (%d,%d)\n",i,i+ib-1,j_local%2,d,m,ib );
+       ib = min(n-j, nb);
        magma_zsetmatrix_async( m, ib,
-                               ha+i*lda,                        lda,
-                               dB[d] + (j_local%2) * nb * lddb, lddb, stream[d][j_local%2] );
-  
-       /* Make sure that the previous panel (i.e., j%2) has arrived 
-          and transpose it directly into the dat matrix                  */
-       j_local = (j-num_gpus)/num_gpus;
-       //printf( " wait for %d-th panel of %d gpu and store in %d:%d\n\n",j_local%2,d,nb*(starti+j_local),nb*(starti+j_local)+nb-1 );
-       magma_queue_sync( stream[d][j_local%2] );
-       magmablas_ztranspose2(dat[d]+nb*(starti+j_local), ldda, 
-                             dB[d] +(j_local%2)*nb*lddb, lddb, 
-                             m, nb);
-       j++;
-       offset += nb;
+                               A(j),      lda,
+                               dB(d, id), lddb, 
+                               stream[d][id] );
+
+       magmablasSetKernelStream(stream[d][id]);
+       magmablas_ztranspose2(dAT(d, j_local), ldda, 
+                             dB(d, id),       lddb, 
+                             m, ib);
     }
-
-    /* Transpose the last part of the matrix.                            */
-    for( i=0; i<num_gpus; i++ ) {
-      d       = j%num_gpus;
-      j_local = (j-num_gpus)/num_gpus;
-      ib      = min(n-offset, nb);
-
-      magma_setdevice(d);
-
-      //printf( " wait for %d-th panel of %d gpu and store in %d:%d ((%d+%d)*%d)\n\n",j_local%2,d,nb*(starti+j_local),nb*(starti+j_local)+ib-1,starti,j_local,nb );
-      magma_queue_sync( stream[d][j_local%2] );
-      magmablas_ztranspose2(dat[d]+nb*(starti+j_local), ldda, 
-                            dB[d] +(j_local%2)*nb*lddb, lddb, 
-                            m, ib);
-      j++;
-      offset += nb;
-    }
-
-    
-    for( d=0; d<num_gpus; d++ ) {
-      magma_setdevice(d);
-      magma_queue_destroy( stream[d][0] );
-      magma_queue_destroy( stream[d][1] );
-    }
-    
 }
 

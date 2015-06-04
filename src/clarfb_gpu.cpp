@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Mark Gates
-       @generated c Thu Jun 28 12:30:46 2012
+       @generated c Wed Nov 14 22:53:12 2012
 */
 #include "common_magma.h"
 
@@ -20,14 +20,14 @@
 extern "C" magma_int_t
 magma_clarfb_gpu( char side, char trans, char direct, char storev,
                   magma_int_t m, magma_int_t n, magma_int_t k,
-                  cuFloatComplex *dV,    magma_int_t ldv,
-                  cuFloatComplex *dT,    magma_int_t ldt,
-                  cuFloatComplex *dC,    magma_int_t ldc,
-                  cuFloatComplex *dwork, magma_int_t ldwork)
+                  const cuFloatComplex *dV,    magma_int_t ldv,
+                  const cuFloatComplex *dT,    magma_int_t ldt,
+                  cuFloatComplex *dC,          magma_int_t ldc,
+                  cuFloatComplex *dwork,       magma_int_t ldwork )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Univ. of California Berkeley
-       June 2012
+       November 2012
 
     Purpose
     =======

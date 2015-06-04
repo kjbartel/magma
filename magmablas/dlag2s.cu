@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated ds Thu Jun 28 12:31:16 2012
+       @generated ds Wed Nov 14 22:53:46 2012
 
 */
 #include "common_magma.h"
@@ -109,7 +109,8 @@ magmablas_dlag2s( magma_int_t M, magma_int_t N ,
 
     dim3 threads( blksize, 1, 1 );
     dim3 grid( (M+blksize-1)/blksize, 1, 1);
-    flag = 0;
+    *info = 0;
+    cudaMemcpyToSymbol( flag, info, sizeof(flag) );    // flag = 0
     magmaint_dlag2s<<< grid, threads, 0, magma_stream >>>( M, N, A, lda, SA, ldsa, RMAX ) ; 
-    *info = flag;
+    cudaMemcpyFromSymbol( info, flag, sizeof(flag) );  // info = flag
 }

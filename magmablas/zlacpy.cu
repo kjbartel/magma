@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -21,14 +21,14 @@
 */
 __global__ void 
 zlacpy_kernel( int m, int n,
-               cuDoubleComplex *A, int lda,
-               cuDoubleComplex *B, int ldb ) 
+               const cuDoubleComplex *A, int lda,
+               cuDoubleComplex       *B, int ldb ) 
 { 
     int row = blockIdx.x*64 + threadIdx.x;
     if ( row < m ) {
         A += row;
         B += row;
-        cuDoubleComplex *Aend = A + lda*n;
+        const cuDoubleComplex *Aend = A + lda*n;
         while( A < Aend ) {
             *B = *A;
             A += lda;
@@ -40,8 +40,8 @@ zlacpy_kernel( int m, int n,
 
 extern "C" void 
 magmablas_zlacpy( char uplo, magma_int_t m, magma_int_t n,
-                  cuDoubleComplex *A, magma_int_t lda,
-                  cuDoubleComplex *B, magma_int_t ldb )
+                  const cuDoubleComplex *A, magma_int_t lda,
+                  cuDoubleComplex       *B, magma_int_t ldb )
 {
 /*
     Note

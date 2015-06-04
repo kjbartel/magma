@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Stan Tomov
 
@@ -18,11 +18,11 @@
 #define dC(gpui, i, j) (dw[gpui]+(j)*lddc + (i))
 #define dA_c(gpui, ind, i, j) (dw[gpui] + n_l*lddc + (ind)*lddar*lddac + (i) + (j)*lddac)
 #define dA_r(gpui, ind, i, j) (dw[gpui] + n_l*lddc + (ind)*lddar*lddac + (i) + (j)*lddar)
-#define dt(gpui, ind)    (dw[gpui] + n_l*lddc + 2*lddac*lddar + (ind)*(nb+1)*nb)
-#define dwork(gpui, ind) (dw[gpui] + n_l*lddc + 2*lddac*lddar + 2*(nb+1)*nb + (ind)*lddwork*nb)
+#define dt(gpui, ind)    (dw[gpui] + n_l*lddc + 2*lddac*lddar + (ind)*((nb+1)*nb))
+#define dwork(gpui, ind) (dw[gpui] + n_l*lddc + 2*lddac*lddar + 2*((nb+1)*nb) + (ind)*(lddwork*nb))
 
 extern"C"{
-    void magmablas_zsetdiag1subdiag0_stream(char uplo, int k, int nb, cuDoubleComplex *A, int lda, cudaStream_t stream);
+  void magmablas_zsetdiag1subdiag0_stream(char uplo, int k, int nb, cuDoubleComplex *A, int lda, cudaStream_t stream);
 }
 
 extern "C" magma_int_t
@@ -34,11 +34,11 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
                cuDoubleComplex *work, magma_int_t lwork,
                magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -195,17 +195,23 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
         return *info;
     }
 
-    magma_int_t lddc = m;
+    magma_int_t lddc = (m+63)/64*64;
     magma_int_t lddac = nq;
     magma_int_t lddar =nb;
     magma_int_t lddwork = nw;
 
-    magma_int_t n_l = (n-1)/nrgpu+1; // local n
+    magma_int_t n_l = (n+nrgpu-1)/nrgpu; // local n
+    n_l = ((n_l+63)/64)*64;
+
+    if (n_l<256)
+       n_l=256;
+
+    nrgpu = min(nrgpu, (n+n_l-1)/n_l); // Don't use GPU that will not have data.
 
     for (igpu = 0; igpu < nrgpu; ++igpu){
         magma_setdevice(igpu);
-        if (MAGMA_SUCCESS != magma_zmalloc( &dw[igpu], (n_l*lddc + 2*lddac*lddar + 2*(nb + 1 + lddwork)*nb) )) {
-            printf("%d: size: %ld\n", (int) igpu, (n_l*lddc + 2*lddac*lddar + (nb+1+lddwork)*nb)*sizeof(cuDoubleComplex));
+        magmablasSetKernelStream(NULL);
+        if (MAGMA_SUCCESS != magma_zmalloc( &dw[igpu], (n_l*lddc + 2*lddac*lddar + 2*(nb + 1 + lddwork)*nb))) {
             magma_xerbla( __func__, -(*info) );
             *info = MAGMA_ERR_DEVICE_ALLOC;
             return *info;
@@ -247,7 +253,7 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
             kb = min(nb, k-i1);
             for (igpu = 0; igpu < nrgpu; ++igpu){
                 magma_setdevice(igpu);
-                magma_zsetmatrix_async( (nq-i1), kb,
+                magma_zsetmatrix_async( nq-i1, kb,
                                         A(i1, i1),            lda,
                                         dA_c(igpu, 0, i1, 0), lddac, stream[igpu][0] );
             }
@@ -279,7 +285,7 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
                 if (kb > 0 && i+i3 >= 0){
                     for (igpu = 0; igpu < nrgpu; ++igpu){
                         magma_setdevice(igpu);
-                        magma_zsetmatrix_async( (i__4-i3), kb,
+                        magma_zsetmatrix_async( nq-(i+i3), kb,
                                                 A(i+i3, i+i3),                    lda,
                                                 dA_c(igpu, (ind_c+1)%2, i+i3, 0), lddac, stream[igpu][(ind_c+1)%2] );
                     }
@@ -287,13 +293,13 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
 
                 for (igpu = 0; igpu < nrgpu; ++igpu){
                     magma_setdevice(igpu);
-
                     // Put 0s in the upper triangular part of dA;
                     magmablas_zsetdiag1subdiag0_stream('L', ib, ib, dA_c(igpu, ind_c, i, 0), lddac, stream[igpu][ind_c]);
 
+                    kb = min(n_l, n-igpu*n_l);
                     magmablasSetKernelStream(stream[igpu][ind_c]);
                     magma_zlarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
-                                     m-i, n_l, ib,
+                                     m-i, kb, ib,
                                      dA_c(igpu, ind_c, i, 0), lddac, dt(igpu, ind_c), ib,
                                      dC(igpu, i, 0), lddc,
                                      dwork(igpu, ind_c), lddwork);
@@ -308,9 +314,13 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
                 magma_queue_sync( stream[igpu][0] );
                 magma_queue_sync( stream[igpu][1] );
                 kb = min(n_l, n-igpu*n_l);
-                magma_zgetmatrix_async( m, kb,
-                                        dC(igpu, 0, 0), lddc,
-                                        C(0, igpu*n_l), ldc, stream[igpu][0] );
+                //asynchronous copy gives problems sometimes...
+//                magma_zgetmatrix_async( m, kb,
+//                                        dC(igpu, 0, 0), lddc,
+//                                        C(0, igpu*n_l), ldc, stream[igpu][0] );
+                magma_zgetmatrix( m, kb,
+                                  dC(igpu, 0, 0), lddc,
+                                  C(0, igpu*n_l), ldc );
             }
 
         } else {
@@ -367,8 +377,8 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
 
     for (igpu = 0; igpu < nrgpu; ++igpu){
         magma_setdevice(igpu);
-        magmablasSetKernelStream(NULL);
         magma_queue_sync( stream[igpu][0] );
+        magmablasSetKernelStream(NULL);
         magma_queue_destroy( stream[igpu][0] );
         magma_queue_destroy( stream[igpu][1] );
         magma_free( dw[igpu] );

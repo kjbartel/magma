@@ -1,22 +1,27 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal s
 
 */
 #include "common_magma.h"
 
-#define num_threads 64
-#define sgemv_bs 64
 #define magmablas_sgemv_tesla magmablas_sgemv
 #define magmablas_sgemvt_tesla magmablas_sgemvt
 
+#define num_threads 64
+#define sgemv_bs 64
+
 __global__ void 
-sgemv_kernel(magma_int_t n, magma_int_t m, magma_int_t n1, float* A, magma_int_t lda, float *x, float *y)
+sgemv_kernel(
+    magma_int_t n, magma_int_t m, magma_int_t n1,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *y )
 {
   magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -54,8 +59,11 @@ sgemv_kernel(magma_int_t n, magma_int_t m, magma_int_t n1, float* A, magma_int_t
 }
 
 __global__ void
-sgemv_kernel2(magma_int_t n, magma_int_t m, magma_int_t n1, float* A, magma_int_t lda, 
-              float *x, magma_int_t incx, float *y)
+sgemv_kernel2(
+    magma_int_t n, magma_int_t m, magma_int_t n1,
+    const float *A, magma_int_t lda, 
+    const float *x, magma_int_t incx,
+    float       *y )
 {
   magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -93,24 +101,27 @@ sgemv_kernel2(magma_int_t n, magma_int_t m, magma_int_t n1, float* A, magma_int_
 }
 
 extern "C" void
-magmablas_sgemvt_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
-                       float *x, float *z);
+magmablas_sgemvt_tesla(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *z );
 
 
 extern "C" void
 magmablas_sgemv_tesla(char trans,
                       magma_int_t m, magma_int_t n,
                       float alpha, 
-                      float *A, magma_int_t lda, 
-                      float *x, magma_int_t incx,
+                      const float *A, magma_int_t lda, 
+                      const float *x, magma_int_t incx,
                       float beta,
                       float *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -178,9 +189,8 @@ magmablas_sgemv_tesla(char trans,
               dim3 grid(blocks, 1, 1);
               dim3 threads(num_threads, 1, 1);
  
-              sgemv_kernel<<< grid, threads, 0, magma_stream >>>(m, n, 
-                                              (n/sgemv_bs)*sgemv_bs, 
-                                              A, lda, x, z);
+              sgemv_kernel<<< grid, threads, 0, magma_stream >>>
+                  (m, n, (n/sgemv_bs)*sgemv_bs, A, lda, x, z);
            }
          else
            cublasSgemv(trans, m, n, alpha, A, lda,
@@ -193,17 +203,20 @@ magmablas_sgemv_tesla(char trans,
 }
 
 extern "C" void
-magmablas_sgemv2(magma_int_t n, magma_int_t m, float *A, magma_int_t lda, float *x, magma_int_t incx, float *z)
+magmablas_sgemv2(
+    magma_int_t n, magma_int_t m,
+    const float *A, magma_int_t lda,
+    const float *x, magma_int_t incx,
+    float       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
-
     This routine computes z = A x on the GPU.
     This version has INCX as an argument. 
 
@@ -225,7 +238,6 @@ magmablas_sgemv2(magma_int_t n, magma_int_t m, float *A, magma_int_t lda, float 
 
     Z      - (output) SINGLE PRECISION array of dimension m.
              On exit Z = A X.
-
     ===================================================================== */
 
     magma_int_t blocks;
@@ -237,13 +249,16 @@ magmablas_sgemv2(magma_int_t n, magma_int_t m, float *A, magma_int_t lda, float 
     dim3 grid(blocks, 1, 1);
     dim3 threads(num_threads, 1, 1);
 
-    sgemv_kernel2<<< grid, threads, 0, magma_stream >>>(n, m, (m / sgemv_bs)*sgemv_bs,
-                                     A, lda, x, incx, z);
+    sgemv_kernel2<<< grid, threads, 0, magma_stream >>>
+        (n, m, (m / sgemv_bs)*sgemv_bs, A, lda, x, incx, z);
 }
 
 __global__ void 
-sgemvt_kernel1(magma_int_t n, magma_int_t m, float alpha, magma_int_t n1, float* A, magma_int_t lda,
-              float *x, float *y)
+sgemvt_kernel1(
+    magma_int_t n, magma_int_t m, float alpha, magma_int_t n1,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *y )
 {
   const magma_int_t inx = threadIdx.x;
   const magma_int_t iny = threadIdx.y;
@@ -330,8 +345,11 @@ sgemvt_kernel1(magma_int_t n, magma_int_t m, float alpha, magma_int_t n1, float*
 }
 
 __global__ void 
-sgemvt_kernel2(magma_int_t n, magma_int_t m, float alpha,
-               magma_int_t n1, float* A, magma_int_t lda, float *x, float *y)
+sgemvt_kernel2(
+    magma_int_t n, magma_int_t m, float alpha, magma_int_t n1,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *y )
 {
   const magma_int_t inx = threadIdx.x;
   const magma_int_t iny = threadIdx.y;
@@ -436,18 +454,20 @@ sgemvt_kernel2(magma_int_t n, magma_int_t m, float alpha,
 }
 
 extern "C" void
-magmablas_sgemvt1_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
-                        float *x, float *z)
+magmablas_sgemvt1_tesla(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
-
     This routine computes z = alpha A^t x on the GPU. 
     Recommended for large M and N.
 
@@ -466,8 +486,8 @@ magmablas_sgemvt1_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, mag
 
     Z      - (output) SINGLE PRECISION array of dimension n.
              On exit Z = alpha A^t X.
-
     ===================================================================== */
+
     magma_int_t blocks;
 
     if (n % 32==0)
@@ -478,23 +498,25 @@ magmablas_sgemvt1_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, mag
     dim3 grid(blocks, 1, 1);
     dim3 threads(32, 2, 1);
 
-    sgemvt_kernel1<<< grid, threads, 0, magma_stream >>>(m, n, alpha, (m / sgemv_bs)*sgemv_bs,
-                                      A, lda, x, z);
+    sgemvt_kernel1<<< grid, threads, 0, magma_stream >>>
+        (m, n, alpha, (m / sgemv_bs)*sgemv_bs, A, lda, x, z);
 }
 
 extern "C" void
-magmablas_sgemvt2_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda,
-                        float *x, float *z)
+magmablas_sgemvt2_tesla(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
-
     This routine computes z = alpha A^t x on the GPU. Used in least squares 
     solver for N small (e.g. = BS, a block size of order 64, 128, etc).
 
@@ -513,7 +535,6 @@ magmablas_sgemvt2_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, mag
 
     Z      - (output) SINGLE PRECISION array of dimension n.
              On exit Z = alpha A^t X.
-
     ===================================================================== */
 
     magma_int_t blocks;
@@ -526,23 +547,25 @@ magmablas_sgemvt2_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, mag
     dim3 grid(blocks, 1, 1);
     dim3 threads(16, 4, 1);
 
-    sgemvt_kernel2<<< grid, threads, 0, magma_stream >>>(m, n, alpha, (m / 32)*32,
-                                      A, lda, x, z);
+    sgemvt_kernel2<<< grid, threads, 0, magma_stream >>>
+        (m, n, alpha, (m / 32)*32, A, lda, x, z);
 }
 
 extern "C" void
-magmablas_sgemvt_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magma_int_t lda, 
-                       float *x, float *z)
+magmablas_sgemvt_tesla(
+    magma_int_t m, magma_int_t n, float alpha,
+    const float *A, magma_int_t lda,
+    const float *x,
+    float       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
-
     This routine computes z = alpha A^t x on the GPU.
 
     M      - (input) INTEGER.
@@ -560,13 +583,12 @@ magmablas_sgemvt_tesla(magma_int_t m, magma_int_t n, float alpha, float *A, magm
 
     Z      - (output) SINGLE PRECISION array of dimension n.
              On exit Z = alpha A^t X.
-
     ===================================================================== */
 
     if (n<=128)
-      magmablas_sgemvt2_tesla(m, n, alpha, A, lda, x, z);
+        magmablas_sgemvt2_tesla(m, n, alpha, A, lda, x, z);
     else
-      magmablas_sgemvt1_tesla(m, n, alpha, A, lda, x, z);
+        magmablas_sgemvt1_tesla(m, n, alpha, A, lda, x, z);
 }
 
 #undef num_threads

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:30:33 2012
+       @generated s Wed Nov 14 22:52:59 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
                  float *A, magma_int_t lda, 
                  float *B, magma_int_t ldb, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
     Purpose
     =======
@@ -117,7 +117,7 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
         dA = NULL;
         goto CPU_INTERFACE;
     }
-    assert( num_gpus == 1 and dA != NULL and dB != NULL );
+    assert( num_gpus == 1 && dA != NULL && dB != NULL );
     magma_ssetmatrix( n, n, A, lda, dA, ldda );
     magma_spotrf_gpu( uplo, n, dA, ldda, info );
     magma_sgetmatrix( n, n, dA, ldda, A, lda );

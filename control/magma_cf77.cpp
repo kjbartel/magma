@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:06 2012
+       @generated c Wed Nov 14 22:52:30 2012
 
 */
 
@@ -84,7 +84,7 @@ typedef size_t devptr_t;
 #define MAGMAF_CGEQRS3_GPU MAGMA_GPU_FORTRAN_NAME(cgeqrs3, CGEQRS3) 
 #define MAGMAF_CGESSM_GPU  MAGMA_GPU_FORTRAN_NAME(cgessm,  CGESSM ) 
 #define MAGMAF_CGESV_GPU   MAGMA_GPU_FORTRAN_NAME(cgesv,   CGESV  )  
-#define MAGMAF_CGETRL_GPU  MAGMA_GPU_FORTRAN_NAME(cgetrl,  CGETRL ) 
+#define MAGMAF_CGETRF_INCPIV_GPU  MAGMA_GPU_FORTRAN_NAME(cgetrf_incpiv,  CGETRF_INCPIV ) 
 #define MAGMAF_CGETRF_GPU  MAGMA_GPU_FORTRAN_NAME(cgetrf,  CGETRF ) 
 #define MAGMAF_CGETRS_GPU  MAGMA_GPU_FORTRAN_NAME(cgetrs,  CGETRS ) 
 #define MAGMAF_CHEGST_GPU  MAGMA_GPU_FORTRAN_NAME(chegst,  CHEGST )

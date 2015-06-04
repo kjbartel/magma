@@ -1,21 +1,14 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_ztrsm magmablas_ztrsm
-#endif
-// === End defining what BLAS to use =======================================
 
 extern "C" magma_int_t
 magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs, 
@@ -24,11 +17,11 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *dB, magma_int_t lddb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -148,7 +141,7 @@ magma_zgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
         lapackf77_zlaswp(&nrhs, work, &n, &i1, &i2, ipiv, &inc);
         magma_zsetmatrix( n, nrhs, work, n, dB, lddb );
     }
-    free(work);
+    magma_free_cpu(work);
 
     return *info;
 }

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal d
 
@@ -17,7 +17,11 @@
 #define dgemv_bs 64
 
 __global__ void 
-dgemv_kernel(magma_int_t n, magma_int_t m, magma_int_t n1, double* A, magma_int_t lda, double *x, double *y)
+dgemv_kernel(
+    magma_int_t n, magma_int_t m, magma_int_t n1,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *y )
 {
   magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
 
@@ -55,23 +59,26 @@ dgemv_kernel(magma_int_t n, magma_int_t m, magma_int_t n1, double* A, magma_int_
 }
 
 extern "C" void
-magmablas_dgemvt_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
-                       double *x, double *z);
+magmablas_dgemvt_tesla(
+    magma_int_t m, magma_int_t n, double alpha,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double *z );
 
 extern "C" void
 magmablas_dgemv_tesla(char trans,
                       magma_int_t m, magma_int_t n,
                       double alpha, 
-                      double *A, magma_int_t lda, 
-                      double *x, magma_int_t incx,
+                      const double *A, magma_int_t lda,
+                      const double *x, magma_int_t incx,
                       double beta,
                       double *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -139,9 +146,8 @@ magmablas_dgemv_tesla(char trans,
               dim3 grid(blocks, 1, 1);
               dim3 threads(num_threads, 1, 1);
  
-              dgemv_kernel<<< grid, threads, 0, magma_stream >>>(m, n, 
-                                              (n/dgemv_bs)*dgemv_bs, 
-                                              A, lda, x, z);
+              dgemv_kernel<<< grid, threads, 0, magma_stream >>>
+                  (m, n, (n/dgemv_bs)*dgemv_bs, A, lda, x, z);
           }
          else
            cublasDgemv(trans, m, n, alpha, A, lda,
@@ -155,8 +161,11 @@ magmablas_dgemv_tesla(char trans,
 }
 
 __global__ void
-dgemvt_kernel1(magma_int_t n, magma_int_t m, double alpha, magma_int_t n1, double* A, magma_int_t lda,
-              double *x, double *y)
+dgemvt_kernel1(
+    magma_int_t n, magma_int_t m, double alpha, magma_int_t n1,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *y )
 {
   const magma_int_t inx = threadIdx.x;
   const magma_int_t iny = threadIdx.y;
@@ -243,8 +252,11 @@ dgemvt_kernel1(magma_int_t n, magma_int_t m, double alpha, magma_int_t n1, doubl
 }
 
 __global__ void
-dgemvt_kernel2(magma_int_t n, magma_int_t m, double alpha,
-                magma_int_t n1, double* A, magma_int_t lda, double *x, double *y)
+dgemvt_kernel2(
+    magma_int_t n, magma_int_t m, double alpha, magma_int_t n1,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *y )
 {
   const magma_int_t inx = threadIdx.x;
   const magma_int_t iny = threadIdx.y;
@@ -338,18 +350,20 @@ dgemvt_kernel2(magma_int_t n, magma_int_t m, double alpha,
 }
 
 extern "C" void
-magmablas_dgemvt1_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
-                        double *x, double *z)
+magmablas_dgemvt1_tesla(
+    magma_int_t m, magma_int_t n, double alpha,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
-
     This routine computes z = alpha A^t x on the GPU.
     Recommended for large M and N.
 
@@ -379,19 +393,23 @@ magmablas_dgemvt1_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, m
 
     dim3 grid(blocks, 1, 1);
     dim3 threads(32, 2, 1);
-    dgemvt_kernel1<<< grid, threads, 0, magma_stream >>>(m, n, alpha, (m / dgemv_bs)*dgemv_bs,
-                                      A, lda, x, z);
+
+    dgemvt_kernel1<<< grid, threads, 0, magma_stream >>>
+        (m, n, alpha, (m / dgemv_bs)*dgemv_bs, A, lda, x, z);
 }
 
 extern "C" void
-magmablas_dgemvt2_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
-                        double *x, double *z)
+magmablas_dgemvt2_tesla(
+    magma_int_t m, magma_int_t n, double alpha,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -425,19 +443,22 @@ magmablas_dgemvt2_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, m
     dim3 grid(blocks, 1, 1);
     dim3 threads(16, 4, 1);
 
-    dgemvt_kernel2<<< grid, threads, 0, magma_stream >>>(m, n, alpha, (m / 32)*32,
-                                      A, lda, x, z);
+    dgemvt_kernel2<<< grid, threads, 0, magma_stream >>>
+        (m, n, alpha, (m / 32)*32, A, lda, x, z);
 }
 
 extern "C" void
-magmablas_dgemvt_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, magma_int_t lda,
-                       double *x, double *z)
+magmablas_dgemvt_tesla(
+    magma_int_t m, magma_int_t n, double alpha,
+    const double *A, magma_int_t lda,
+    const double *x,
+    double       *z )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -461,9 +482,9 @@ magmablas_dgemvt_tesla(magma_int_t m, magma_int_t n, double alpha, double *A, ma
     ===================================================================== */
 
     if (n<=128)
-      magmablas_dgemvt2_tesla(m, n, alpha, A, lda, x, z);
+        magmablas_dgemvt2_tesla(m, n, alpha, A, lda, x, z);
     else
-      magmablas_dgemvt1_tesla(m, n, alpha, A, lda, x, z);
+        magmablas_dgemvt1_tesla(m, n, alpha, A, lda, x, z);
 }
 
 #undef num_threads

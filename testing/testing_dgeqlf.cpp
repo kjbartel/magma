@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:41 2012
+       @generated d Wed Nov 14 22:54:21 2012
 
 */
 
@@ -46,7 +46,7 @@ int main( int argc, char** argv)
 
     /* Matrix size */
     magma_int_t M = 0, N = 0, n2, lda, ldda, lwork;
-    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,9984};
+    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
 
     magma_int_t i, info, min_mn, nb;
     magma_int_t ione     = 1;

@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
        @author Stan Tomov
 
-       @generated c Thu Jun 28 12:30:51 2012
+       @generated c Wed Nov 14 22:53:17 2012
 
 */
 #include "common_magma.h"
@@ -15,17 +15,17 @@
 extern "C" magma_int_t
 magma_cunmqr(const char side, const char trans, 
              magma_int_t m, magma_int_t n, magma_int_t k, 
-             cuFloatComplex *a,    magma_int_t lda, 
+             cuFloatComplex *A,    magma_int_t lda, 
              cuFloatComplex *tau, 
-             cuFloatComplex *c,    magma_int_t ldc,
+             cuFloatComplex *C,    magma_int_t ldc,
              cuFloatComplex *work, magma_int_t lwork, 
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -94,9 +94,10 @@ magma_cunmqr(const char side, const char trans,
             The dimension of the array WORK.   
             If SIDE = 'L', LWORK >= max(1,N);   
             if SIDE = 'R', LWORK >= max(1,M).   
-            For optimum performance LWORK >= N*NB if SIDE = 'L', and   
-            LWORK >= M*NB if SIDE = 'R', where NB is the optimal   
-            blocksize.   
+            For optimum performance
+            LWORK >= N*NB if SIDE = 'L', and   
+            LWORK >= M*NB if SIDE = 'R',
+            where NB is the optimal blocksize.   
 
             If LWORK = -1, then a workspace query is assumed; the routine   
             only calculates the optimal size of the WORK array, returns   
@@ -108,35 +109,25 @@ magma_cunmqr(const char side, const char trans,
             < 0:  if INFO = -i, the i-th argument had an illegal value   
     =====================================================================   */
     
+    #define  A(a_1,a_2) ( A + (a_1) + (a_2)*lda)
+    #define dC(a_1,a_2) (dC + (a_1) + (a_2)*lddc)
+    
+    magma_int_t nb = magma_get_cgeqrf_nb( min( m, n ));
+    
     cuFloatComplex c_one = MAGMA_C_ONE;
 
-    char side_[2] = {side, 0};
+    char side_[2]  = {side,  0};
     char trans_[2] = {trans, 0};
 
-    /* Allocate work space on the GPU */
-    cuFloatComplex *dwork, *dc;
-    magma_cmalloc( &dc, (m)*(n) );
-    magma_cmalloc( &dwork, (m + n + 64)*64 );
-    
-    /* Copy matrix C from the CPU to the GPU */
-    magma_csetmatrix( m, n, c, ldc, dc, m );
-    dc -= (1 + m);
-
-    magma_int_t a_offset, c_offset, i__4, lddwork;
-    magma_int_t i__;
-    cuFloatComplex t[2*4160]        /* was [65][64] */;
-    magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
+    magma_int_t nq_i, lddwork;
+    magma_int_t i;
+    cuFloatComplex T[ 2*nb*nb ];
+    magma_int_t i1, i2, step, ib, ic, jc, mi, ni, nq, nw;
     int left, notran, lquery;
     magma_int_t iinfo, lwkopt;
 
-    a_offset = 1 + lda;
-    a -= a_offset;
-    --tau;
-    c_offset = 1 + ldc;
-    c -= c_offset;
-
     *info = 0;
-    left = lapackf77_lsame(side_, "L");
+    left   = lapackf77_lsame(side_,  "L");
     notran = lapackf77_lsame(trans_, "N");
     lquery = (lwork == -1);
 
@@ -148,9 +139,12 @@ magma_cunmqr(const char side, const char trans,
         nq = n;
         nw = m;
     }
+    lwkopt = max(1,nw) * nb;
+    work[0] = MAGMA_C_MAKE( lwkopt, 0 );
+    
     if (! left && ! lapackf77_lsame(side_, "R")) {
         *info = -1;
-    } else if (! notran && ! lapackf77_lsame(trans_, "T")) {
+    } else if (! notran && ! lapackf77_lsame(trans_, MagmaConjTransStr)) {
         *info = -2;
     } else if (m < 0) {
         *info = -3;
@@ -166,21 +160,12 @@ magma_cunmqr(const char side, const char trans,
         *info = -12;
     }
 
-    if (*info == 0) 
-      {
-        /* Determine the block size.  NB may be at most NBMAX, where NBMAX   
-           is used to define the local array T.    */
-        nb = 64;
-        lwkopt = max(1,nw) * nb;
-        MAGMA_C_SET2REAL( work[0], lwkopt );
-    }
-
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
         return *info;
     }
     else if (lquery) {
-      return *info;
+        return *info;
     }
 
     /* Quick return if possible */
@@ -189,86 +174,86 @@ magma_cunmqr(const char side, const char trans,
         return *info;
     }
 
-    if (nb >= k) 
-      {
+    /* Allocate work space on the GPU */
+    magma_int_t lddc = m;
+    cuFloatComplex *dwork, *dC;
+    magma_cmalloc( &dC, lddc*n );
+    magma_cmalloc( &dwork, (m + n + nb)*nb );
+    
+    /* Copy matrix C from the CPU to the GPU */
+    magma_csetmatrix( m, n, C, ldc, dC, lddc );
+    
+    if (nb >= k) {
         /* Use CPU code */
-        lapackf77_cunmqr(side_, trans_, &m, &n, &k, &a[a_offset], &lda, &tau[1],
-                         &c[c_offset], &ldc, work, &lwork, &iinfo);
-      } 
-    else 
-      {
+        lapackf77_cunmqr(side_, trans_, &m, &n, &k, A, &lda, &tau[1],
+                         C, &ldc, work, &lwork, &iinfo);
+    } 
+    else {
         /* Use hybrid CPU-GPU code */
-        if ( ( left && (! notran) ) ||  ( (! left) && notran ) ) {
-            i1 = 1;
+        if ( (left && (! notran)) ||  ((! left) && notran) ) {
+            i1 = 0;
             i2 = k;
-            i3 = nb;
+            step = nb;
         } else {
-            i1 = (k - 1) / nb * nb + 1;
-            i2 = 1;
-            i3 = -nb;
+            i1 = ((k - 1) / nb) * nb;
+            i2 = 0;
+            step = -nb;
         }
 
         if (left) {
             ni = n;
-            jc = 1;
+            jc = 0;
         } else {
             mi = m;
-            ic = 1;
+            ic = 0;
         }
         
-        for (i__ = i1; i3 < 0 ? i__ >= i2 : i__ <= i2; i__ += i3) 
-          {
-            ib = min(nb, k - i__ + 1);
+        for( i=i1; (step<0 ? i>=i2 : i<i2); i += step ) {
+            ib = min(nb, k - i);
 
             /* Form the triangular factor of the block reflector   
                H = H(i) H(i+1) . . . H(i+ib-1) */
-            i__4 = nq - i__ + 1;
-            lapackf77_clarft("F", "C", &i__4, &ib, &a[i__ + i__ * lda], &lda, 
-                             &tau[i__], t, &ib);
+            nq_i = nq - i;
+            lapackf77_clarft("F", "C", &nq_i, &ib, A(i,i), &lda, 
+                             &tau[i], T, &ib);
 
             /* 1) Put 0s in the upper triangular part of A;
                2) copy the panel from A to the GPU, and
                3) restore A                                      */
-            cpanel_to_q('U', ib, &a[i__ + i__ * lda], lda, t+ib*ib);
-            magma_csetmatrix( i__4, ib, &a[i__ + i__ * lda], lda, dwork, i__4 );
-            cq_to_panel('U', ib, &a[i__ + i__ * lda], lda, t+ib*ib);
+            cpanel_to_q('U', ib, A(i,i), lda, T+ib*ib);
+            magma_csetmatrix( nq_i, ib, A(i,i), lda, dwork, nq_i );
+            cq_to_panel('U', ib, A(i,i), lda, T+ib*ib);
 
-            if (left) 
-              {
+            if (left) {
                 /* H or H' is applied to C(i:m,1:n) */
-                mi = m - i__ + 1;
-                ic = i__;
-              } 
-            else 
-              {
+                mi = m - i;
+                ic = i;
+            } 
+            else {
                 /* H or H' is applied to C(1:m,i:n) */
-                ni = n - i__ + 1;
-                jc = i__;
-              }
+                ni = n - i;
+                jc = i;
+            }
             
             if (left)
-              lddwork = ni;
+                lddwork = ni;
             else
-              lddwork = mi;
+                lddwork = mi;
 
             /* Apply H or H'; First copy T to the GPU */
-            magma_csetmatrix( ib, ib, t, ib, dwork+i__4*ib, ib );
+            magma_csetmatrix( ib, ib, T, ib, dwork+nq_i*ib, ib );
             magma_clarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
                               mi, ni, ib,
-                              dwork, i__4, dwork+i__4*ib, ib,
-                              &dc[ic + jc * m], m, 
-                              dwork+i__4*ib + ib*ib, lddwork);
-          }
+                              dwork, nq_i, dwork+nq_i*ib, ib,
+                              dC(ic,jc), lddc, 
+                              dwork+nq_i*ib + ib*ib, lddwork);
+        }
+        magma_cgetmatrix( m, n, dC, lddc, C, ldc );
+    }
+    work[0] = MAGMA_C_MAKE( lwkopt, 0 );
 
-        magma_cgetmatrix( m, n, &dc[1+m], m, &c[c_offset], ldc );
-      }
-    MAGMA_C_SET2REAL( work[0], lwkopt );
-
-    dc += (1 + m);
-    magma_free( dc );
+    magma_free( dC );
     magma_free( dwork );
 
     return *info;
 } /* magma_cunmqr */
-
-

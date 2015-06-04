@@ -206,7 +206,7 @@ subs = {
     ('sgeqrs','dgeqrs','cgeqrs','zgeqrs'),
     ('SGEQRS','DGEQRS','CGEQRS','ZGEQRS'),
     ('sgetf2','dgetf2','cgetf2','zgetf2'),
-    ('sgetrl','dgetrl','cgetrl','zgetrl'),
+    ('sgetrf_incpiv','dgetrf_incpiv','cgetrf_incpiv','zgetrf_incpiv'),
     ('sgessm','dgessm','cgessm','zgessm'),
     ('ststrf','dtstrf','ctstrf','ztstrf'),
     ('sssssm','dssssm','cssssm','zssssm'),

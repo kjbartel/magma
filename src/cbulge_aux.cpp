@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Thu Jun 28 12:30:58 2012
+ *     @generated c Wed Nov 14 22:53:24 2012
  *
  */
 
@@ -27,7 +27,6 @@ extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
   magma_int_t *IWORK;
   magma_int_t LWORK, LIWORK, LRWORK;
   magma_int_t INFO;
-  magma_int_t NxN=N*N;
    
   if(JOBZ=='V'){
       LWORK = N*N;
@@ -60,9 +59,9 @@ extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
   }
 
 
-  free( IWORK );
-  free( WORK );
-  free( RWORK );
+  magma_free_cpu( IWORK );
+  magma_free_cpu( WORK );
+  magma_free_cpu( RWORK );
 }
 //////////////////////////////////////////////////////////////
 
@@ -75,7 +74,6 @@ extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
   magma_int_t *IWORK;
   magma_int_t LWORK, LIWORK, LRWORK;
   magma_int_t INFO;
-  magma_int_t NxN=N*N;
    
       LWORK = N;
       LRWORK  = 2*N*N+4*N+1+256*N; 
@@ -92,7 +90,19 @@ extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
   }
   printf("using magma_cstedx\n");
 
-  magma_cstedx('I', N, 0.,0., 1, NE, D, E, Z, LDZ, RWORK, LRWORK, IWORK, LIWORK, dwork, &INFO);
+#define ENABLE_TIMER 
+#ifdef ENABLE_TIMER 
+    magma_timestr_t start, end;
+    
+    start = get_current_time();
+#endif
+
+  char job = 'I';
+
+  if(NE==N)
+    job = 'A';
+
+  magma_cstedx(job, N, 0.,0., 1, NE, D, E, Z, LDZ, RWORK, LRWORK, IWORK, LIWORK, dwork, &INFO);
 
   if(INFO!=0){
         printf("=================================================\n");
@@ -101,8 +111,14 @@ extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
           //assert(INFO==0);
   }
 
+#ifdef ENABLE_TIMER    
+    end = get_current_time();
+    
+    printf("time zstevx = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
+
   magma_free( dwork );
-  free( IWORK );
-  free( RWORK );
+  magma_free_cpu( IWORK );
+  magma_free_cpu( RWORK );
 }
 

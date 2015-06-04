@@ -1,9 +1,9 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
  * @author Mark Gates
  * @precisions normal z -> s d c
@@ -11,9 +11,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include "magma.h"
+#include "error.h"
 
 #ifdef HAVE_CUBLAS
 
@@ -33,7 +33,7 @@ void magma_setvector(
         n, elemSize,
         hx_src, incx,
         dy_dst, incy );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -48,7 +48,7 @@ void magma_getvector(
         n, elemSize,
         dx_src, incx,
         hy_dst, incy );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -64,7 +64,7 @@ void magma_setvector_async(
         n, elemSize,
         hx_src, incx,
         dy_dst, incy, stream );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -80,7 +80,7 @@ void magma_getvector_async(
         n, elemSize,
         dx_src, incx,
         hy_dst, incy, stream );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 
@@ -97,7 +97,7 @@ void magma_setmatrix(
         m, n, elemSize,
         hA_src, lda,
         dB_dst, ldb );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -112,7 +112,7 @@ void magma_getmatrix(
         m, n, elemSize,
         dA_src, lda,
         hB_dst, ldb );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -128,7 +128,7 @@ void magma_setmatrix_async(
         m, n, elemSize,
         hA_src, lda,
         dB_dst, ldb, stream );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -144,7 +144,7 @@ void magma_getmatrix_async(
         m, n, elemSize,
         dA_src, lda,
         hB_dst, ldb, stream );
-    assert( status == CUBLAS_STATUS_SUCCESS );
+    check_error( status );
 }
 
 // --------------------
@@ -159,7 +159,7 @@ void magma_copymatrix(
         dB_dst, ldb*elemSize,
         dA_src, lda*elemSize,
         m*elemSize, n, cudaMemcpyDeviceToDevice );
-    assert( status == cudaSuccess );
+    check_error( status );
 }
 
 // --------------------
@@ -175,7 +175,7 @@ void magma_copymatrix_async(
         dB_dst, ldb*elemSize,
         dA_src, lda*elemSize,
         m*elemSize, n, cudaMemcpyDeviceToDevice, stream );
-    assert( status == cudaSuccess );
+    check_error( status );
 }
 
 #endif // HAVE_CUBLAS

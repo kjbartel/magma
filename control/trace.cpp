@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <sys/time.h>    // gettimeofday
 #include <assert.h>
 #include <errno.h>
 #include <string.h>      // strerror_r

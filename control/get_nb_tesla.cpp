@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 */
 
 // ==== Definition of blocking sizes for Nvidia Tesla (pre-Fermi) cards
@@ -47,22 +47,22 @@ int magma_get_zpotrf_nb(int n) {
 */
 extern "C"
 int magma_get_sgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_dgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_cgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_zgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 /* ////////////////////////////////////////////////////////////////////////////

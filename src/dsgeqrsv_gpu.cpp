@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated ds Thu Jun 28 12:30:42 2012
+       @generated ds Wed Nov 14 22:53:08 2012
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
                    double *dX,  magma_int_t lddx, 
                    magma_int_t *iter, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -298,7 +298,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     /* Free workspaces */
     magma_free( dworks );
     magma_free( dworkd );
-    free( hworks );
+    magma_free_cpu( hworks );
     return *info;
 
   L10:
@@ -355,7 +355,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         /* Free workspaces */
         magma_free( dworks );
         magma_free( dworkd );
-        free( hworks );
+        magma_free_cpu( hworks );
         return *info;
       L20:
         iiter++;
@@ -393,7 +393,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
         hworkd = (double*) hworks;
     }
     else {
-        free( hworks );
+        magma_free_cpu( hworks );
         magma_dmalloc_cpu( &hworkd, lhwork );
         if ( hworkd == NULL ) {
             magma_free( dworkd );
@@ -412,7 +412,7 @@ magma_dsgeqrsv_gpu(magma_int_t M, magma_int_t N, magma_int_t NRHS,
     }
     
     magma_free( dworkd );
-    free( hworkd );
+    magma_free_cpu( hworkd );
     return *info;
 }
 

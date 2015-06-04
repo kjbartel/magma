@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -46,12 +46,12 @@ int main( int argc, char** argv)
     double           flops, gpu_perf, cpu_perf;
     double           matnorm, work[1];
     cuDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex *h_A, *h_R, *tau, *hwork, tmp[1];
+    cuDoubleComplex *h_A, *h_R, *tau, *h_work, tmp[1];
     cuDoubleComplex *d_lA[4];
 
     /* Matrix size */
     magma_int_t M = 0, N = 0, n2, n_local[4], lda, ldda, lhwork;
-    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,9984};
+    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
 
     magma_int_t i, k, nk, info, min_mn;
     int max_num_gpus, num_gpus = 1;
@@ -127,7 +127,7 @@ int main( int argc, char** argv)
     lapackf77_zgeqrf(&M, &N, h_A, &M, tau, tmp, &lhwork, &info);
     lhwork = (magma_int_t)MAGMA_Z_REAL( tmp[0] );
 
-    TESTING_MALLOC( hwork, cuDoubleComplex, lhwork );
+    TESTING_MALLOC( h_work, cuDoubleComplex, lhwork );
 
     printf("  M     N   CPU GFlop/s   GPU GFlop/s    ||R||_F / ||A||_F\n");
     printf("==========================================================\n");
@@ -149,7 +149,7 @@ int main( int argc, char** argv)
            Performs operation using LAPACK
            =================================================================== */
         start = get_current_time();
-        lapackf77_zgeqrf(&M, &N, h_A, &M, tau, hwork, &lhwork, &info);
+        lapackf77_zgeqrf(&M, &N, h_A, &M, tau, h_work, &lhwork, &info);
         end = get_current_time();
         if (info < 0)
             printf("Argument %d of lapack_zgeqrf had an illegal value.\n", (int) -info);
@@ -189,7 +189,7 @@ int main( int argc, char** argv)
     /* Memory clean up */
     TESTING_FREE( tau );
     TESTING_FREE( h_A );
-    TESTING_FREE( hwork );
+    TESTING_FREE( h_work );
     TESTING_HOSTFREE( h_R );
 
     for(i=0; i<num_gpus; i++){

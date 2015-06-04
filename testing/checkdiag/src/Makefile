@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.1) --
+#   -- MAGMA (version 1.3.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2012
+#      November 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 #MAGMA_DIR = ../../..
@@ -29,10 +29,10 @@ $(LIBNAME): $(ALLOBJ)
 	$(CC) $(OPTS) $(INC) -c $*.c
 
 .f.o:
-	$(FC) -O3 -m64 -fPIC  $(INC) -c $*.f
+	$(FORT) -O3 -m64 -fPIC  $(INC) -c $*.f
 
 .F.o:
-	$(FC) $(FOPTS) $(INC) -c $*.F
+	$(FORT) $(FOPTS) $(INC) -c $*.F
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////
 

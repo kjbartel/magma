@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated s Thu Jun 28 12:31:48 2012
+       @generated s Wed Nov 14 22:54:25 2012
 
 */
 
@@ -65,8 +65,8 @@ int main( int argc, char** argv)
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
 
-    char *jobl = (char *)"V";
-    char *jobr = (char *)"V";
+    const char *jobl = "V";
+    const char *jobr = "V";
 
     if (argc != 1){
         for(i = 1; i<argc; i++){
@@ -75,13 +75,13 @@ int main( int argc, char** argv)
                 once = 1;
             }
             else if (strcmp("-LN", argv[i])==0)
-                jobl = (char *)"N";
+                jobl = "N";
             else if (strcmp("-LV", argv[i])==0)
-                jobl = (char *)"V";
+                jobl = "V";
             else if (strcmp("-RN", argv[i])==0)
-                jobr = (char *)"N";
+                jobr = "N";
             else if (strcmp("-RV", argv[i])==0)
-                jobr = (char *)"V";
+                jobr = "V";
         }
         if ( N > 0 )
             printf("  testing_sgeev -L[N|V] -R[N|V] -N %d\n\n", (int) N);

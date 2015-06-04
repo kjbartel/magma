@@ -1,18 +1,18 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:37 2012
+       @generated c Wed Nov 14 22:53:03 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
 #define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d))
+#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d))
   #define magma_cgemm magmablas_cgemm
   #define magma_ctrsm magmablas_ctrsm
 #endif
@@ -23,11 +23,11 @@ magma_cgetrf_gpu(magma_int_t m, magma_int_t n,
                  cuFloatComplex *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -117,7 +117,7 @@ magma_cgetrf_gpu(magma_int_t m, magma_int_t n,
         magma_cgetmatrix( m, n, dA, ldda, work, m );
         lapackf77_cgetrf(&m, &n, work, &m, ipiv, info);
         magma_csetmatrix( m, n, work, m, dA, ldda );
-        free(work);
+        magma_free_cpu(work);
     }
     else {
         /* Use hybrid blocked code. */

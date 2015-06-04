@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-    @generated s Thu Jun 28 12:31:49 2012
+    @generated s Wed Nov 14 22:54:24 2012
 
 */
 
@@ -46,61 +46,77 @@ int main( int argc, char** argv)
     magma_int_t ione     = 1, izero = 0;
     magma_int_t ISEED[4] = {0,0,0,1};
 
-    char *uplo = (char*)MagmaLowerStr;
-    char *jobz = (char*)MagmaVectorsStr;
+    const char *uplo = MagmaLowerStr;
+    const char *jobz = MagmaVectorsStr;
 
     magma_int_t checkres;
     float result[3], eps = lapackf77_slamch( "E" );
 
     if (argc != 1){
         for(i = 1; i<argc; i++){
-            if (strcmp("-N", argv[i])==0)
+            if (strcmp("-N", argv[i])==0) {
                 N = atoi(argv[++i]);
+            }
+            else if ( strcmp("-JV", argv[i]) == 0 ) {
+                jobz = MagmaVectorsStr;
+            }
+            else if ( strcmp("-JN", argv[i]) == 0 ) {
+                jobz = MagmaNoVectorsStr;
+            }
         }
         if (N>0)
-            printf("  testing_ssyevd -N %d\n\n", (int) N);
-        else
-            {
-                printf("\nUsage: \n");
-                printf("  testing_ssyevd -N %d\n\n", (int) N);
-                exit(1);
-            }
+            printf("  testing_ssyevd -N %d [-JV] [-JN]\n\n", (int) N);
+        else {
+            printf("\nUsage: \n");
+            printf("  testing_ssyevd -N %d [-JV] [-JN]\n\n", (int) N);
+            exit(1);
+        }
     }
     else {
         printf("\nUsage: \n");
-        printf("  testing_ssyevd -N %d\n\n", 1024);
+        printf("  testing_ssyevd -N %d [-JV] [-JN]\n\n", 1024);
         N = size[7];
     }
 
-    checkres  = getenv("MAGMA_TESTINGS_CHECK") != NULL;
+    checkres = getenv("MAGMA_TESTINGS_CHECK") != NULL;
+    if ( checkres && jobz[0] == MagmaNoVectors ) {
+        printf( "Cannot check results when vectors are not computed (jobz='N')\n" );
+        checkres = false;
+    }
 
-    n2  = N * N;
+    /* Query for workspace sizes */
+    float      aux_work[1];
+    magma_int_t aux_iwork[1];
+    magma_ssyevd( jobz[0], uplo[0],
+                  N, h_R, N, w1,
+                  aux_work,  -1,
+                  aux_iwork, -1,
+                  &info );
+    magma_int_t lwork, liwork;
+    lwork  = (magma_int_t) aux_work[0];
+    liwork = aux_iwork[0];
 
     /* Allocate host memory for the matrix */
-    TESTING_MALLOC(   h_A, float, n2);
-    TESTING_MALLOC(    w1, float         ,  N);
-    TESTING_MALLOC(    w2, float         ,  N);
-    TESTING_HOSTALLOC(h_R, float, n2);
-
-    magma_int_t nb = magma_get_ssytrd_nb(N);
-    magma_int_t lwork = N*nb + 6*N + 2*N*N; //1 + 6*N*nb + 2*N*N;
-    magma_int_t liwork = 3 + 5*N;
-
-    TESTING_HOSTALLOC(h_work, float,  lwork);
-    TESTING_MALLOC(    iwork,     magma_int_t, liwork);
+    TESTING_MALLOC(    h_A, float, N*N );
+    TESTING_MALLOC(    w1,  float, N   );
+    TESTING_MALLOC(    w2,  float, N   );
+    TESTING_HOSTALLOC( h_R, float, N*N );
+    TESTING_HOSTALLOC( h_work, float,      lwork  );
+    TESTING_MALLOC(    iwork,  magma_int_t, liwork );
     
     printf("  N     CPU Time(s)    GPU Time(s) \n");
     printf("===================================\n");
     for(i=0; i<8; i++){
         if (argc==1){
             N = size[i];
-            n2 = N*N;
         }
+        n2 = N*N;
 
         /* Initialize the matrix */
         lapackf77_slarnv( &ione, ISEED, &n2, h_A );
         lapackf77_slacpy( MagmaUpperLowerStr, &N, &N, h_A, &N, h_R, &N );
 
+        /* warm up run */
         magma_ssyevd(jobz[0], uplo[0],
                      N, h_R, N, w1,
                      h_work, lwork, 
@@ -108,6 +124,20 @@ int main( int argc, char** argv)
                      &info);
         
         lapackf77_slacpy( MagmaUpperLowerStr, &N, &N, h_A, &N, h_R, &N );
+
+        /* query for optimal workspace sizes */
+        magma_ssyevd(jobz[0], uplo[0],
+                     N, h_R, N, w1,
+                     h_work, -1,
+                     iwork,  -1,
+                     &info);
+        int lwork_save  = lwork;
+        int liwork_save = liwork;
+        lwork  = min( lwork,  (magma_int_t) h_work[0] );
+        liwork = min( liwork, iwork[0] );
+        //printf( "lwork %d, query %d, used %d; liwork %d, query %d, used %d\n",
+        //        lwork_save,  (magma_int_t) h_work[0], lwork,
+        //        liwork_save, iwork[0], liwork );
 
         /* ====================================================================
            Performs operation using MAGMA
@@ -121,6 +151,9 @@ int main( int argc, char** argv)
         end = get_current_time();
 
         gpu_time = GetTimerValue(start,end)/1000.;
+
+        lwork  = lwork_save;
+        liwork = liwork_save;
 
         if ( checkres ) {
           /* =====================================================================
@@ -155,7 +188,6 @@ int main( int argc, char** argv)
           result[2] = temp2 / temp1;
         }
 
-
         /* =====================================================================
            Performs operation using LAPACK
            =================================================================== */
@@ -188,12 +220,12 @@ int main( int argc, char** argv)
     }
  
     /* Memory clean up */
-    TESTING_FREE(       h_A);
-    TESTING_FREE(        w1);
-    TESTING_FREE(        w2);
-    TESTING_FREE(     iwork);
-    TESTING_HOSTFREE(h_work);
-    TESTING_HOSTFREE(   h_R);
+    TESTING_FREE(     h_A    );
+    TESTING_FREE(     w1     );
+    TESTING_FREE(     w2     );
+    TESTING_FREE(     iwork  );
+    TESTING_HOSTFREE( h_work );
+    TESTING_HOSTFREE( h_R    );
 
     /* Shutdown */
     TESTING_CUDA_FINALIZE();

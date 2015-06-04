@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -19,11 +19,11 @@ magma_zgesv(     magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *B, magma_int_t ldb, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -110,7 +110,7 @@ magma_zgesv(     magma_int_t n, magma_int_t nrhs,
         dA = NULL;
         goto CPU_INTERFACE;
     }
-    assert( num_gpus == 1 and dA != NULL and dB != NULL );
+    assert( num_gpus == 1 && dA != NULL && dB != NULL );
     magma_zsetmatrix( n, n, A, lda, dA, ldda );
     magma_zgetrf_gpu( n, n, dA, ldda, ipiv, info );
     magma_zgetmatrix( n, n, dA, ldda, A, lda );

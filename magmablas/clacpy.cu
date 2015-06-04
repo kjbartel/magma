@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:16 2012
+       @generated c Wed Nov 14 22:53:46 2012
 
 */
 #include "common_magma.h"
@@ -21,14 +21,14 @@
 */
 __global__ void 
 clacpy_kernel( int m, int n,
-               cuFloatComplex *A, int lda,
-               cuFloatComplex *B, int ldb ) 
+               const cuFloatComplex *A, int lda,
+               cuFloatComplex       *B, int ldb ) 
 { 
     int row = blockIdx.x*64 + threadIdx.x;
     if ( row < m ) {
         A += row;
         B += row;
-        cuFloatComplex *Aend = A + lda*n;
+        const cuFloatComplex *Aend = A + lda*n;
         while( A < Aend ) {
             *B = *A;
             A += lda;
@@ -40,8 +40,8 @@ clacpy_kernel( int m, int n,
 
 extern "C" void 
 magmablas_clacpy( char uplo, magma_int_t m, magma_int_t n,
-                  cuFloatComplex *A, magma_int_t lda,
-                  cuFloatComplex *B, magma_int_t ldb )
+                  const cuFloatComplex *A, magma_int_t lda,
+                  cuFloatComplex       *B, magma_int_t ldb )
 {
 /*
     Note

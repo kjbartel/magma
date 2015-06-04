@@ -1,13 +1,14 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Stan Tomov
+       @author Mark Gates
 
-       @generated s Thu Jun 28 12:30:47 2012
+       @generated s Wed Nov 14 22:53:13 2012
 
 */
 #include "common_magma.h"
@@ -15,18 +16,18 @@
 extern "C" magma_int_t
 magma_sormqr_gpu(char side, char trans,
                  magma_int_t m, magma_int_t n, magma_int_t k,
-                 float *dA,    magma_int_t ldda, 
+                 float *dA,    magma_int_t ldda,
                  float *tau,
                  float *dC,    magma_int_t lddc,
                  float *hwork, magma_int_t lwork,
-                 float *dT,    magma_int_t nb, 
+                 float *dT,    magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -85,24 +86,26 @@ magma_sormqr_gpu(char side, char trans,
             On entry, the M-by-N matrix C.
             On exit, C is overwritten by Q*C or Q**T * C or C * Q**T or C*Q.
 
-    LDDC     (input) INTEGER
+    LDDC    (input) INTEGER
             The leading dimension of the array DC. LDDC >= max(1,M).
 
-    HWORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))
-            On exit, if INFO = 0, HWORK(1) returns the optimal LWORK.
+    HWORK   (workspace/output) REAL array, dimension (MAX(1,LWORK))
+    
+            Currently, sgetrs_gpu assumes that on exit, hwork contains the last
+            block of A and C. This will change and *should not be relied on*!
 
     LWORK   (input) INTEGER
             The dimension of the array HWORK.
-            LWORK >= (M-K+NB)*(N+2*NB) if SIDE = 'L', 
-            and LWORK >= (N-K+NB)*(M+2*NB) if SIDE = 'R', where NB is the 
-            optimal blocksize.
+            LWORK >= (M-K+NB)*(N+NB) + N*NB if SIDE = 'L', and
+            LWORK >= (N-K+NB)*(M+NB) + M*NB if SIDE = 'R',
+            where NB is the optimal blocksize.
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal size of the HWORK array, returns
             this value as the first entry of the HWORK array, and no error
             message related to LWORK is issued by XERBLA.
 
-    DT      (input) REAL array on the GPU that is the output 
+    DT      (input) REAL array on the GPU that is the output
             (the 9th argument) of magma_sgeqrf_gpu.
 
     NB      (input) INTEGER
@@ -114,29 +117,25 @@ magma_sormqr_gpu(char side, char trans,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
-    #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
-    #define c_ref(a_1,a_2) (dC+(a_2)*(lddc) + (a_1))
-    #define t_ref(a_1)     (dT+(a_1)*nb)
+    #define dA(a_1,a_2) (dA + (a_1) + (a_2)*ldda)
+    #define dC(a_1,a_2) (dC + (a_1) + (a_2)*lddc)
+    #define dT(a_1)     (dT + (a_1)*nb)
 
     float c_one = MAGMA_S_ONE;
 
-    char side_[2] = {side, 0};
+    char side_[2]  = {side,  0};
     char trans_[2] = {trans, 0};
 
     float *dwork;
     magma_int_t i, lddwork;
-
-    magma_int_t i1, i2, i3, ib, ic, jc, mi, ni, nq, nw, ret;
+    magma_int_t i1, i2, step, ib, ic, jc, ma, mi, ni, nq, nw;
     int left, notran, lquery;
     magma_int_t lwkopt;
 
     *info = 0;
-    left   = lapackf77_lsame(side_, "L");
+    left   = lapackf77_lsame(side_,  "L");
     notran = lapackf77_lsame(trans_, "N");
     lquery = (lwork == -1);
-
-    if (!left || notran)
-      printf("sormqr_gpu called with arguments not yet supported\n");
 
     /* NQ is the order of Q and NW is the minimum dimension of WORK */
     if (left) {
@@ -146,6 +145,9 @@ magma_sormqr_gpu(char side, char trans,
         nq = n;
         nw = m;
     }
+    lwkopt = (nq - k + nb)*(nw + nb) + nw*nb;
+    hwork[0] = MAGMA_S_MAKE( lwkopt, 0 );
+    
     if ( (!left) && (!lapackf77_lsame(side_, "R")) ) {
         *info = -1;
     } else if ( (!notran) && (!lapackf77_lsame(trans_, MagmaTransStr)) ) {
@@ -160,12 +162,9 @@ magma_sormqr_gpu(char side, char trans,
         *info = -7;
     } else if (lddc < max(1,m)) {
         *info = -10;
-    } else if (lwork < max(1,nw) && ! lquery) {
+    } else if (lwork < lwkopt && ! lquery) {
         *info = -12;
     }
-
-    lwkopt = (m-k+nb)*(n+2*nb);
-    hwork[0] = MAGMA_S_MAKE( lwkopt, 0 );
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
@@ -181,17 +180,23 @@ magma_sormqr_gpu(char side, char trans,
         return *info;
     }
 
-    lddwork= k;
-    dwork  = dT+2*lddwork*nb;
+    lddwork = k;
+    dwork = dT(2*lddwork);
 
-    if ( (left && (! notran)) || ( (!left) && notran ) ) {
+    if ( (left && (! notran)) || ((! left) && notran) ) {
+        // left  trans:    Q^T C
+        // right notrans:  C Q
+        // multiply from first block, i = 0, to next-to-last block, i < k-nb
         i1 = 0;
         i2 = k-nb;
-        i3 = nb;
+        step = nb;
     } else {
-        i1 = (k - 1 - nb) / nb * nb;
+        // left  notrans:  Q C
+        // right trans:    C Q^T
+        // multiply from next-to-last block, i = floor((k-1-nb)/nb)*nb, to first block, i = 0
+        i1 = ((k - 1 - nb) / nb) * nb;
         i2 = 0;
-        i3 = -nb;
+        step = -nb;
     }
 
     if (left) {
@@ -201,59 +206,113 @@ magma_sormqr_gpu(char side, char trans,
         mi = m;
         ic = 0;
     }
+    
+    /* Use unblocked code to multiply last or only block (cases Q*C or C*Q^T). */
+    // workspace left:  A(mi*nb) + C(mi*ni) + work(ni*nb_la) = (m-k-nb)*nb + (m-k-nb)*n + n*nb
+    // workspace right: A(ni*nb) + C(mi*ni) + work(mi*nb_la) = (n-k-nb)*nb + m*(n-k-nb) + m*nb
+    if ( step < 0 ) {
+        // i is beginning of last block
+        i = i1 - step;
+        if ( i >= k ) {
+            i = i1;
+        }
+        ib = k - i;
+        if (left) {
+            // ni=n, jc=0, H or H^T is applied to C(i:m-1,0:n-1)
+            mi = m - i;
+            ma = mi;
+            ic = i;
+        }
+        else {
+            // mi=m, ic=0, H or H^T is applied to C(0:m-1,i:n-1)
+            ni = n - i;
+            ma = ni;
+            jc = i;
+        }
+        
+        float* hA = hwork;
+        float* hC = hwork + ma*ib;
+        float* hW = hwork + ma*ib + mi*ni;
+        magma_int_t lhwork = lwork - (ma*ib + mi*ni);
+        
+        magma_sgetmatrix( ma, ib, dA(i,  i ), ldda, hA, ma );
+        magma_sgetmatrix( mi, ni, dC(ic, jc), lddc, hC, mi );
 
-    if (nb < k)
-    {
-        for (i=i1; i3<0 ? i>i2 : i<i2; i+=i3)
-        {
+        lapackf77_sormqr( side_, trans_,
+                          &mi, &ni, &ib,
+                          hA, &ma, tau+i,
+                          hC, &mi,
+                          hW, &lhwork, info );
+
+        // send the updated part of C back to the GPU
+        magma_ssetmatrix( mi, ni, hC, mi, dC(ic, jc), lddc );
+    }
+
+    /* Use blocked code to multiply blocks */
+    if (nb < k) {
+        for( i=i1; (step<0 ? i>=i2 : i<i2); i+=step ) {
             ib = min(nb, k - i);
-            if (left){
+            if (left) {
+                // ni=n, jc=0, H or H^T is applied to C(i:m-1,0:n-1)
                 mi = m - i;
                 ic = i;
             }
             else {
+                // mi=m, ic=0, H or H^T is applied to C(0:m-1,i:n-1)
                 ni = n - i;
                 jc = i;
             }
-            ret = magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
-                                    mi, ni, ib, 
-                                    a_ref(i,  i ), ldda, t_ref(i), nb, 
-                                    c_ref(ic, jc), lddc, dwork,    nw);
-            if ( ret != MAGMA_SUCCESS )
-              return ret;
+            
+            magma_slarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
+                              mi, ni, ib,
+                              dA(i,  i ), ldda, dT(i), nb,
+                              dC(ic, jc), lddc, dwork, nw );
         }
     }
-    else
-    {
+    else {
         i = i1;
     }
 
-    /* Use unblocked code to multiply the last or only block. */
-    if (i < k) {
-        ib   = k-i;
-        if (left){
+    /* Use unblocked code to multiply the last or only block (cases Q^T*C or C*Q). */
+    if ( step > 0 ) {
+        ib = k-i;
+        if (left) {
+            // ni=n, jc=0, H or H^T is applied to C(i:m-1,0:n-1)
             mi = m - i;
+            ma = mi;
             ic = i;
         }
         else {
+            // mi=m, ic=0, H or H^T is applied to C(0:m-1,i:n-1)
             ni = n - i;
+            ma = ni;
             jc = i;
         }
+        
+        float* hA = hwork;
+        float* hC = hwork + ma*ib;
+        float* hW = hwork + ma*ib + mi*ni;
+        magma_int_t lhwork = lwork - (ma*ib + mi*ni);
+        
+        magma_sgetmatrix( ma, ib, dA(i,  i ), ldda, hA, ma );
+        magma_sgetmatrix( mi, ni, dC(ic, jc), lddc, hC, mi );
 
-        magma_sgetmatrix( mi, ib, a_ref(i,  i ), ldda, hwork, mi );
-        magma_sgetmatrix( mi, ni, c_ref(ic, jc), lddc, hwork+mi*ib, mi );
-
-        magma_int_t lhwork = lwork - mi*(ib + ni);
-        lapackf77_sormqr( MagmaLeftStr, MagmaTransStr, 
-                          &mi, &ni, &ib, 
-                          hwork,       &mi, tau+i, 
-                          hwork+mi*ib, &mi, 
-                          hwork+mi*(ib+ni), &lhwork, info);
-
-        // send the updated part of c back to the GPU
-        magma_ssetmatrix( mi, ni, hwork+mi*ib, mi, c_ref(ic, jc), lddc );
+        lapackf77_sormqr( side_, trans_,
+                          &mi, &ni, &ib,
+                          hA, &ma, tau+i,
+                          hC, &mi,
+                          hW, &lhwork, info );
+        
+        // send the updated part of C back to the GPU
+        magma_ssetmatrix( mi, ni, hC, mi, dC(ic, jc), lddc );
     }
+    
+    // TODO sync. For cases Q*C and C*Q^T, last call is magma_slarfb_gpu,
+    // which is async magma_gemm calls, so sormqr can be unfinished.
 
+    // TODO: sgeqrs_gpu ASSUMES that hwork contains the last block of A and C.
+    // That needs to be fixed, but until then, don't modify hwork[0] here.
+    // In LAPACK: On exit, if INFO = 0, HWORK(1) returns the optimal LWORK.
+    //hwork[0] = MAGMA_S_MAKE( lwkopt, 0 );
     return *info;
-    /* End of MAGMA_SORMQR_GPU */
-}
+}   /* end of magma_sormqr_gpu */

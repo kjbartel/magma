@@ -1,14 +1,18 @@
 ###
 #
-# @file      : CMakeLists.txt
-#
-# @description   : Project MAGMA
-#
-# @version       : 
-# @created by    : Cedric Castagnede
-# @creation date : 19-01-2012
-# @last modified : lun. 11 juin 2012 16:08:54 CEST
-#
+#  @file CMakeLists.txt
+# 
+#  @project MAGMA
+#  MAGMA is a software package provided by:
+#     Inria Bordeaux - Sud-Ouest,
+#     Univ. of Tennessee,
+#     Univ. of California Berkeley,
+#     Univ. of Colorado Denver.
+# 
+#  @version 0.2.0
+#  @author Cedric Castagnede
+#  @date 13-07-2012
+#   
 ###
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -20,10 +24,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 #############################################
 STRING(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" MAGMA_COMPILE_INPLACE)
 IF(MAGMA_COMPILE_INPLACE)
-    MESSAGE(FATAL_ERROR "${PROJECT_NAME} requires an out of source build.
+    MESSAGE(FATAL_ERROR "MAGMA requires an out of source build.
   1/ remove CMakeCache.txt and CMakeFiles in ${CMAKE_SOURCE_DIR}
   2/ do mkdir build && cd build and tape cmake ../")
 ENDIF(MAGMA_COMPILE_INPLACE)
+
 
 #############################################
 #                                           #
@@ -31,6 +36,7 @@ ENDIF(MAGMA_COMPILE_INPLACE)
 #                                           #
 #############################################
 PROJECT(MAGMA Fortran C CXX)
+
 
 #############################################
 #                                           #
@@ -40,32 +46,35 @@ PROJECT(MAGMA Fortran C CXX)
 
 # CMake can find FindFoo.cmake in this directory
 # ----------------------------------------------
-SET(CMAKE_MODULE_PATH
-    ${CMAKE_SOURCE_DIR}/cmake_modules
-    ${CMAKE_SOURCE_DIR}/cmake_modules/info
-    ${CMAKE_SOURCE_DIR}/cmake_modules/find
-    ${CMAKE_SOURCE_DIR}/cmake_modules/install
-    ${CMAKE_SOURCE_DIR}/cmake_modules/generic)
-
-# Set the version of this project
-# -------------------------------
-INCLUDE(VersionMAGMA)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/cmake-2.8-8)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/buildsystem)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/find)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/info)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/source_generator)
 
 # Active cmake options
 # --------------------
-INCLUDE(FortranMangling)
+INCLUDE(BuildSystemTools)
+INCLUDE(CMakeDependentOption)
 INCLUDE(CMakeDetermineSystem)
 INCLUDE(CheckCCompilerFlag)
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckSymbolExists)
 INCLUDE(CheckIncludeFiles)
-INCLUDE(definePACKAGE)
 INCLUDE(Summary)
 
 # Active CTEST
 # ------------
 INCLUDE(CTest)
 ENABLE_TESTING()
+
+
+#############################################
+#                                           #
+#     Definition of the GENERIC options     #
+#                                           #
+#############################################
 
 # Define the default install directory
 # ------------------------------------
@@ -75,16 +84,57 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 # Organize output files in a tree
 # -------------------------------
-#SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${MAGMA_BINARY_DIR}/bin)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${MAGMA_BINARY_DIR}/lib)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${MAGMA_BINARY_DIR}/lib)
 
 # Set the build type
 # ------------------
 IF(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE Release 
-        CACHE STRING "Choose the type of build, options are None, Debug, Release, RelWithDebInfo and MinSizeRel." FORCE)
+    SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+        "Choose the type of build, options are None, Debug, Release, RelWithDebInfo and MinSizeRel." FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
+# Misc options
+# ------------
+OPTION(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
+# Set computed precisions
+# -----------------------
+OPTION(BUILD_SINGLE       "Build MAGMA Single Precision"         ON)
+OPTION(BUILD_DOUBLE       "Build MAGMA Double Precision"         ON)
+OPTION(BUILD_COMPLEX      "Build MAGMA Complex Precision"        ON)
+OPTION(BUILD_COMPLEX16    "Build MAGMA Double Complex Precision" ON)
+CMAKE_DEPENDENT_OPTION(BUILD_MIXEDREAL    "Build MAGMA Mixed Real Precision"    ON
+                                          "BUILD_SINGLE;BUILD_DOUBLE"           OFF)
+CMAKE_DEPENDENT_OPTION(BUILD_MIXEDCOMPLEX "Build MAGMA Mixed Complex Precision" ON
+                                          "BUILD_COMPLEX;BUILD_COMPLEX16"       OFF)
+
+# Define precision supported by MAGMA
+# -----------------------------------
+IF(BUILD_SINGLE)
+    LIST(APPEND MAGMA_PRECISION "s")
+ENDIF()
+
+IF(BUILD_DOUBLE)
+    LIST(APPEND MAGMA_PRECISION "d")
+ENDIF()
+
+IF(BUILD_MIXEDREAL)
+    LIST(APPEND MAGMA_PRECISION "ds")
+ENDIF()
+
+IF(BUILD_COMPLEX)
+    LIST(APPEND MAGMA_PRECISION "c")
+ENDIF()
+
+IF(BUILD_COMPLEX16)
+    LIST(APPEND MAGMA_PRECISION "z")
+ENDIF()
+
+IF(BUILD_MIXEDCOMPLEX)
+    LIST(APPEND MAGMA_PRECISION "zc")
+ENDIF()
+
 
 #############################################
 #                                           #
@@ -92,121 +142,36 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 #                                           #
 #############################################
 
-# Misc options
-# ------------
-OPTION(BUILD_SHARED_LIBS
-       "Build shared libraries" OFF)
-OPTION(BUILD_64bits
-       "Build 64 bits mode" ON)
+OPTION(MAGMA_DEBUG_CMAKE
+       "Enable/disable the verbosity of cmake step" OFF)
+OPTION(MAGMA_ENABLE_TESTING
+       "Enable/disable all the tests in MAGMA" ON)
 
-# Versions of MAGMA which need to be compiled
-# -------------------------------------------
-INCLUDE(ConfigMAGMA)
-#INCLUDE(ConfigMORSE)
+#############################################
+#                                           #
+#      Definition of the Poject library     #
+#                                           #
+#############################################
 
-# MAGMA options
-# -------------
+# MAGMA libraries
+# ---------------
+OPTION(MAGMA "Enable/Disable compilation of MAGMA mono-GPU" ON)
+
+# Define extra options for specific package
+# -----------------------------------------
 OPTION(MAGMA_USE_PLASMA 
-       "Enable/Disable kernels using plasma-like kernels in MAGMA" OFF )
+       "Enable/Disable kernels using plasma-like kernels in MAGMA" OFF)
 OPTION(MAGMA_USE_FERMI   
        "Switch between Tesla (OFF) and Fermi (ON) cards" ON)
+#OPTION(MAGMA_MGPUS_STATIC
+#       "Enable/Disable compilation of MAGMA multi-GPUs static" OFF)
 
-# MORSE options
-# -------------
-OPTION(MORSE_USE_MPI
-       "Enable/Disable distributed version of MORSE" OFF)
-#OPTION(MORSE_USE_MULTICORE
-#  "Enable/Disable multi-threaded kernels in MORSE" OFF)
-#MARK_AS_ADVANCED(MORSE_USE_MULTICORE)
-
-OPTION(MORSE_SCHED_STARPU
-      "Enable/Disable StarPU scheduler in MORSE" ON)
-OPTION(MORSE_SCHED_QUARK
-      "Enable/Disable Quark scheduler in MORSE" OFF)
-
-# MORSE options
-# -------------
-OPTION(MORSE_SEPARATE_PROJECTS
-       "Enable/disable the separation of different projects in the installation tree" OFF)
 
 #############################################
 #                                           #
-#       Check options compatibility         #
+#             Check the system              #
 #                                           #
 #############################################
-
-# Force check for externals libraries
-# -----------------------------------
-IF(MAGMA_MORSE)
-
-    # If MAGMA_MORSE is true, MAGMA_MORSE need to take the priority over MAGMA_1GPU
-    # So MAGMA_1GPU will be activated only if CUDA_FOUND is true
-    SET(MAGMA_1GPU       OFF CACHE BOOL "Enable Build of magma 1gpu lib"      FORCE)
-    SET(MAGMA_USE_PLASMA OFF CACHE BOOL "Enable PLASMA-like kernels in MAGMA" FORCE)
-  
-    # Require PLASMA
-    #SET(REQUIRE_BLAS    ON)
-    #SET(REQUIRE_CBLAS   ON)
-    SET(REQUIRE_LAPACK   ON)
-    #SET(REQUIRE_LAPACKE ON)
-    SET(REQUIRE_HWLOC    ON)
-    #SET(REQUIRE_QUARK   ON)
-    SET(REQUIRE_PLASMA   ON)
-
-  IF(MORSE_USE_CUDA)
-    SET(MAGMA_1GPU       ON CACHE BOOL "Enable Build of magma 1gpu lib"      FORCE)
-    SET(MAGMA_USE_PLASMA ON CACHE BOOL "Enable PLASMA-like kernels in MAGMA" FORCE)
-    SET(REQUIRE_CUDA     ON)
-    ADD_DEFINITIONS(-DMORSE_USE_CUDA)
-  ENDIF(MORSE_USE_CUDA)
-
-  IF(MORSE_USE_MPI)
-    SET(REQUIRE_MPI      ON)
-    ADD_DEFINITIONS(-DMORSE_USE_MPI)
-  ENDIF(MORSE_USE_MPI)
-
-  IF(MORSE_SCHED_STARPU)
-     SET(REQUIRE_HWLOC   ON) 
-     SET(REQUIRE_STARPU  ON) 
-  ENDIF(MORSE_SCHED_STARPU)  
-
-  IF(MORSE_SCHED_QUARK)
-     SET(REQUIRE_HWLOC   ON) 
-     #SET(REQUIRE_QUARK  ON) 
-  ENDIF(MORSE_SCHED_QUARK)  
-
-ENDIF()
-
-IF(MAGMA_1GPU)
-    SET(REQUIRE_CUDA     ON)
-    #SET(REQUIRE_BLAS    ON)
-    SET(REQUIRE_LAPACK   ON)
-ENDIF(MAGMA_1GPU)
-
-
-# PLASMA-like kernels
-# -------------------
-IF(MAGMA_USE_PLASMA)
-    #SET(REQUIRE_BLAS    ON)
-    #SET(REQUIRE_CBLAS   ON)
-    SET(REQUIRE_LAPACK   ON)
-    #SET(REQUIRE_LAPACKE ON)
-    SET(REQUIRE_HWLOC    ON)
-    #SET(REQUIRE_QUARK   ON)
-    SET(REQUIRE_PLASMA   ON)
-
-    ADD_DEFINITIONS(-DMAGMA_WITH_PLASMA)
-ENDIF()
-
-# Define the type of the GPU card
-# -------------------------------
-IF(MAGMA_USE_FERMI)
-	ADD_DEFINITIONS(-DGPUSHMEM=200)
-	SET(MAGMA_GPU_OPTS "-arch=sm_20")
-ELSE(MAGMA_USE_FERMI)
-	ADD_DEFINITIONS(-DGPUSHMEM=130)
-	SET(MAGMA_GPU_OPTS "-arch=sm_13;--generate-code;arch=compute_13,code=compute_13;--generate-code;arch=compute_10,code=compute_10")
-ENDIF(MAGMA_USE_FERMI)
 
 # Detect the system and set specific options
 # ------------------------------------------
@@ -214,13 +179,13 @@ INCLUDE(SystemDetection)
 
 # Define Fortran mangling
 # -----------------------
+INCLUDE(FortranMangling)
 FortranMangling()
 
-#############################################
-#                                           #
-#    Look for the required dependencies     #
-#                                           #
-#############################################
+# Verify if ISO C Binding is available
+# ------------------------------------
+INCLUDE(ISOCBinding)
+ISOCBinding()
 
 # PKG_CONFIG
 # ----------
@@ -235,193 +200,106 @@ ENDIF(PKG_CONFIG_EXECUTABLE)
 # ------
 FIND_PACKAGE(PythonInterp REQUIRED)
 
-# CUDA
-# ----
-IF(REQUIRE_CUDA)
-    MESSAGE(STATUS "Looking for CUDA - required dependency")
-    FIND_PACKAGE(CUDA REQUIRED)
-ELSE()
-    IF("${MORSE_USE_CUDA}" MATCHES "OFF")
-        MESSAGE(STATUS "Looking for CUDA - not asked")
-    ELSE()
-        MESSAGE(STATUS "Looking for CUDA - optional dependency")
-        FIND_PACKAGE(CUDA QUIET)
-        IF(CUDA_FOUND)
-            SET(MORSE_USE_CUDA "ON"
-                CACHE STRING "Enable/Disable CUDA dependency (ON/OFF/<not-defined>)")
-        ELSE(CUDA_FOUND)
-            SET(MORSE_USE_CUDA "OFF"
-                CACHE STRING "Enable/Disable CUDA dependency (ON/OFF/<not-defined>)")
-        ENDIF(CUDA_FOUND)
-    ENDIF()
-ENDIF()
-
-IF(CUDA_FOUND)
-    MESSAGE(STATUS "Looking for CUDA - found")
-    IF(CUDA_VERSION VERSION_LESS "4.0")
-        SET(CUDA_HOST_COMPILATION_CPP OFF)
-    ENDIF(CUDA_VERSION VERSION_LESS "4.0")
-    SET(CUDA_BUILD_EMULATION OFF)
-
-    # Define all flags needed
-    IF(${ARCH_X86_64})
-        LINK_DIRECTORIES(${CUDA_TOOLKIT_ROOT_DIR}/lib64)
-        SET(CUDA_LIBRARY_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64")
-    ELSE()
-        LINK_DIRECTORIES(${CUDA_TOOLKIT_ROOT_DIR}/lib)
-        SET(CUDA_LIBRARY_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib")
-    ENDIF()
-    SET(CUDA_LDFLAGS "-L${CUDA_LIBRARY_PATH} -lcudart -lcuda")
-    SET(CUDA_LIBRARY "${CUDA_CUDART_LIBRARY};${CUDA_CUDA_LIBRARY}")
-    SET(CUDA_INCLUDE_PATH "${CUDA_INCLUDE_DIRS}")
-    INCLUDE_DIRECTORIES(${CUDA_INCLUDE_PATH})
-    LIST(INSERT EXTRA_LIBS 0 ${CUDA_CUDA_LIBRARY})
-    LIST(INSERT EXTRA_LIBS 0 ${CUDA_CUDART_LIBRARY})
-    SET(HAVE_CUDA ON)
-    SET(HAVE_CUBLAS ON)
-
-    # Should move them to a magma_config.h.in 
-    ADD_DEFINITIONS(-DHAVE_CUDA)
-    ADD_DEFINITIONS(-DHAVE_CUBLAS)
-
-    # FIX for MAGMA_MORSE priority
-    IF(MAGMA_MORSE)
-        SET(MAGMA_1GPU       ON CACHE BOOL "Enable Build of magma 1gpu lib"             FORCE)
-        SET(MAGMA_USE_PLASMA ON CACHE BOOL "Enable PLASMA-like kernels in MAGMA"        FORCE)
-        SET(MORSE_USE_CUDA   ON CACHE BOOL "Enable/Disable GPU kernel support in MORSE" FORCE)
-        SET(REQUIRE_CUDA     ON)
-        ADD_DEFINITIONS(-DMORSE_USE_CUDA)
-    
-    ENDIF(MAGMA_MORSE)
-
-ELSE(CUDA_FOUND)
-    MESSAGE(STATUS "Looking for CUDA - not found")
-    SET(HAVE_CUDA OFF)
-
-ENDIF(CUDA_FOUND)
-
-# MPI
-# ---
-IF(REQUIRE_MPI)
-    DEFINE_PACKAGE("MPI" "depends")
-ELSE()
-    DEFINE_PACKAGE("MPI" "recommands")
-ENDIF()
-
-# HWLOC
-# -----
-IF(REQUIRE_HWLOC)
-    DEFINE_PACKAGE("HWLOC" "depends")
-ENDIF(REQUIRE_HWLOC)
-
-# FXT
-# ---
-DEFINE_PACKAGE("FXT" "suggests")
-
-# StarPU
-# ------
-IF(REQUIRE_STARPU)
-    DEFINE_PACKAGE("STARPU" "depends")
-ELSE()
-    DEFINE_PACKAGE("STARPU" "recommands")
-ENDIF()
-
-# PLASMA
-# ------
-IF(REQUIRE_PLASMA)
-    DEFINE_PACKAGE("PLASMA" "depends")
-ENDIF(REQUIRE_PLASMA)
-
-# LAPACK / BLAS
-#--------------
-IF(REQUIRE_LAPACK AND NOT HAVE_LAPACK AND NOT HAVE_PLASMA)
-    DEFINE_PACKAGE("LAPACK" "depends")
-    SET(MAGMA_EXTRA_LDFLAGS "${LAPACK_LDFLAGS} ${BLAS_LDFLAGS}")
-ENDIF()
 
 #############################################
 #                                           #
-#          Define parameters for :          #
-#           * magma.pc                      #
-#           * morse-starpu.pc               #
-#           * magma-quark.pc                #
+#    Look for the required dependencies     #
 #                                           #
 #############################################
-SET(MAGMA_REQUIRED "")
-SET(MORSE_REQUIRED "")
-IF(MAGMA_1GPU)
-    SET(MORSE_REQUIRED "${MORSE_REQUIRED} magma")
-ENDIF()
-IF(REQUIRE_PLASMA)
-    SET(MAGMA_REQUIRED "${MAGMA_REQUIRED} plasma")
-    SET(MORSE_REQUIRED "${MORSE_REQUIRED} plasma")
-ENDIF()
-IF(MORSE_SCHED_STARPU)
-    IF(MPI_FOUND OR DEFINED MPI_BUILD_MODE)
-        SET(MORSE_REQUIRED "${MORSE_REQUIRED} libstarpumpi")
-    ELSE()
-        SET(MORSE_REQUIRED "${MORSE_REQUIRED} libstarpu")
-    ENDIF()
-ENDIF()
-IF(REQUIRE_HWLOC)
-    SET(MAGMA_REQUIRED "${MAGMA_REQUIRED} hwloc")
-    SET(MORSE_REQUIRED "${MORSE_REQUIRED} hwloc")
-ENDIF()
-IF(FXT_FOUND OR DEFINED FXT_BUILD_MODE)
-    SET(MORSE_REQUIRED "${MORSE_REQUIRED} fxt")
-ENDIF()
+
+# Looking for dependencies
+# ------------------------
+INCLUDE(DefineDependencies)
+DEFINE_PACKAGE("CUDA")
+DEFINE_PACKAGE("BLAS")
+DEFINE_PACKAGE("CBLAS")
+DEFINE_PACKAGE("LAPACK")
+IF(MAGMA_ENABLE_TESTING)
+    DEFINE_PACKAGE("BLAS")
+ENDIF(MAGMA_ENABLE_TESTING)
+
 
 #############################################
 #                                           #
 #        Compilation of the MAGMA           #
 #                                           #
 #############################################
+IF(MAGMA)
+    # Create ${CMAKE_BINARY_DIR}/include
+    # ----------------------------------
+    IF(NOT EXISTS ${CMAKE_BINARY_DIR}/include)
+        FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+    ENDIF()
 
-# Define the pointer size for fortran compilation
-# -----------------------------------------------
-ADD_DEFINITIONS(\"-Dmagma_devptr_t=integer\(kind=${SIZEOF_VOID_PTR}\)\")
+    # Set the version of this project
+    # -------------------------------
+    INCLUDE(BuildSystemTools)
+    GET_VERSION("MAGMA" "${CMAKE_CURRENT_SOURCE_DIR}/include/magma.h")
 
-# Define precision supported by MAGMA
-# -----------------------------------
-SET(MAGMA_PRECISION "z;c;d;s;zc;ds")
+    # Define pre-processing variables
+    # -------------------------------
+    ADD_DEFINITIONS(\"-Dmagma_devptr_t=integer\(kind=${SIZEOF_VOID_PTR}\)\") #"
+    IF(MAGMA_USE_PLASMA OR HAVE_PLASMA)
+        ADD_DEFINITIONS(-DMAGMA_WITH_PLASMA)
+    ENDIF(MAGMA_USE_PLASMA OR HAVE_PLASMA)
 
-# Define compilation flags according to the compiler
-# --------------------------------------------------
-IF(CUDA_FOUND)
-    SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};${MAGMA_GPU_OPTS};--compiler-options;-fno-strict-aliasing;-DUNIX")
-ENDIF()
+    # Define the type of the GPU card
+    # -------------------------------
+    UNSET(MAGMA_GPU_OPTS)
+    LIST(APPEND MAGMA_GPU_OPTS "-ccbin=${CMAKE_C_COMPILER}")
 
-# Add MAGMA includes to everything
-# --------------------------------
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include)
+    IF(MAGMA_USE_FERMI)
+        ADD_DEFINITIONS(-DGPUSHMEM=200)
+        LIST(APPEND MAGMA_GPU_OPTS "-arch=sm_20")
 
-# Check for the subdirectories 
-# ----------------------------
-IF(MAGMA_1GPU)
+    ELSE(MAGMA_USE_FERMI)
+        ADD_DEFINITIONS(-DGPUSHMEM=130)
+        LIST(APPEND MAGMA_GPU_OPTS "-arch=sm_13")
+        LIST(APPEND MAGMA_GPU_OPTS "--generate-code")
+        LIST(APPEND MAGMA_GPU_OPTS "arch=compute_13,code=compute_13")
+        LIST(APPEND MAGMA_GPU_OPTS "--generate-code")
+        LIST(APPEND MAGMA_GPU_OPTS "arch=compute_10,code=compute_10")
+
+    ENDIF(MAGMA_USE_FERMI)
+
+    # Define compilation flags according to the compiler
+    # --------------------------------------------------
+    IF(CUDA_FOUND)
+        LIST(APPEND CUDA_NVCC_FLAGS ${MAGMA_GPU_OPTS})
+        LIST(APPEND CUDA_NVCC_FLAGS "--compiler-options")
+        LIST(APPEND CUDA_NVCC_FLAGS "-fno-strict-aliasing")
+        LIST(APPEND CUDA_NVCC_FLAGS "-DUNIX")
+    ENDIF()
+
+    # Add MAGMA includes to everything
+    # --------------------------------
+    INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/control)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/control)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/interface_cuda)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/interface_cuda)
+
+    # Check for the subdirectories 
+    # ----------------------------
     ADD_SUBDIRECTORY(include)
     ADD_SUBDIRECTORY(src)
     ADD_SUBDIRECTORY(magmablas)
-    ADD_SUBDIRECTORY(testing)
+    IF(MAGMA_ENABLE_TESTING)
+        ADD_SUBDIRECTORY(testing)
+    ENDIF()
 
     # Create file magma.pc
     # --------------------
-    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/lib/pkgconfig/magma.pc.in"
-                   "${CMAKE_CURRENT_BINARY_DIR}/lib/pkgconfig/magma.pc"
-                   @ONLY)
+    GET_VERSION("MAGMA" "${CMAKE_CURRENT_SOURCE_DIR}/include/magma.h")
+    GENERATE_PKGCONFIG_FILE("MAGMA" "${CMAKE_CURRENT_SOURCE_DIR}/lib/pkgconfig/magma.pc.in")
 
-    # installation
+    # Installation
     # ------------
-    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/pkgconfig/magma.pc
-            DESTINATION lib/pkgconfig)
+    INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/include
+            DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-ENDIF()
-
-IF(MAGMA_MORSE)
-    #IF(MORSE_SCHED_QUARK AND NOT HAVE_QUARK)
-    #    ADD_SUBDIRECTORY(quark)
-    #ENDIF()
-    ADD_SUBDIRECTORY(multi-gpu-dynamic)
 ENDIF()
 
 #############################################
@@ -431,6 +309,6 @@ ENDIF()
 #############################################
 SUMMARY()
 
-###
-### END CMakeLists.txt
-###
+##
+## @end file CMakeLists.txt
+##

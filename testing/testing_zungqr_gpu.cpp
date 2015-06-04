@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
        
@@ -34,28 +34,28 @@ int main( int argc, char** argv)
 {
     TESTING_CUDA_INIT();
 
-    real_Double_t    gflops, gpu_perf=0., cpu_perf=0., gpu_time=0., cpu_time=0.;
-    double           error=0., work[1];
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    double           error, work[1];
     cuDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex *hA, *hR, *tau, *hwork;
+    magma_int_t ione     = 1;
+    cuDoubleComplex *hA, *hR, *tau, *h_work;
     cuDoubleComplex *dA, *dT;
 
     /* Matrix size */
-    magma_int_t m=0, n=0, k=0;
+    magma_int_t m, n, k;
     magma_int_t n2, lda, ldda, lwork, min_mn, nb;
     const int MAXTESTS = 10;
-    magma_int_t msize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 9984 };
-    magma_int_t nsize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 9984 };
-    magma_int_t ksize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 9984 };
+    magma_int_t msize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
+    magma_int_t nsize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
+    magma_int_t ksize[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
     
     magma_int_t info;
-    magma_int_t ione     = 1;
     magma_int_t iseed[4] = {0,0,0,1};
     
     printf( "Usage: %s -N m,n,k -c\n"
             "    -N can be repeated %d times. m >= n >= k is required.\n"
             "    If only m,n is given, then n=k. If only m is given, then m=n=k.\n"
-            "    -c or setting $MAGMA_TESTINGS_CHECK runs LAPACK and checks result.\n",
+            "    -c or setting $MAGMA_TESTINGS_CHECK runs LAPACK and checks result.\n\n",
             argv[0], MAXTESTS );
 
     int checkres = (getenv("MAGMA_TESTINGS_CHECK") != NULL);
@@ -65,41 +65,32 @@ int main( int argc, char** argv)
     magma_int_t mmax = 0;
     magma_int_t kmax = 0;
     for( int i = 1; i < argc; i++ ) {
-        if ( strcmp("-N", argv[i]) == 0 ) {
-            if ( ++i >= argc ) {
-                printf( "error: -N requires an argument\n" );
-                exit(1);
+        if ( strcmp("-N", argv[i]) == 0 && i+1 < argc ) {
+            magma_assert( ntest < MAXTESTS, "error: -N repeated more than maximum %d tests\n", MAXTESTS );
+            info = sscanf( argv[++i], "%d,%d,%d", &m, &n, &k );
+            if ( info == 3 && m >= n && n >= k && k > 0 ) {
+                msize[ ntest ] = m;
+                nsize[ ntest ] = n;
+                ksize[ ntest ] = k;
             }
-            else if ( ntest == MAXTESTS ) {
-                printf( "error: -N exceeded maximum %d tests\n", MAXTESTS );
-                exit(1);
+            else if ( info == 2 && m >= n && n > 0 ) {
+                msize[ ntest ] = m;
+                nsize[ ntest ] = n;
+                ksize[ ntest ] = n;  // implicitly
+            }
+            else if ( info == 1 && m > 0 ) {
+                msize[ ntest ] = m;
+                nsize[ ntest ] = m;  // implicitly
+                ksize[ ntest ] = m;  // implicitly
             }
             else {
-                info = sscanf( argv[i], "%d,%d,%d", &m, &n, &k );
-                if ( info == 3 and m >= n and n >= k and k > 0 ) {
-                    msize[ ntest ] = m;
-                    nsize[ ntest ] = n;
-                    ksize[ ntest ] = k;
-                }
-                else if ( info == 2 and m >= n and n > 0 ) {
-                    msize[ ntest ] = m;
-                    nsize[ ntest ] = n;
-                    ksize[ ntest ] = n;  // implicitly
-                }
-                else if ( info == 1 and m > 0 ) {
-                    msize[ ntest ] = m;
-                    nsize[ ntest ] = m;  // implicitly
-                    ksize[ ntest ] = m;  // implicitly
-                }
-                else {
-                    printf( "error: -N %s is invalid; ensure m >= n >= k.\n", argv[i] );
-                    exit(1);
-                }
-                mmax = max( mmax, msize[ntest] );
-                nmax = max( nmax, nsize[ntest] );
-                kmax = max( kmax, ksize[ntest] );
-                ntest++;
+                printf( "error: -N %s is invalid; ensure m >= n >= k.\n", argv[i] );
+                exit(1);
             }
+            mmax = max( mmax, msize[ntest] );
+            nmax = max( nmax, nsize[ntest] );
+            kmax = max( kmax, ksize[ntest] );
+            ntest++;
         }
         else if ( strcmp("-c", argv[i]) == 0 ) {
             checkres = true;
@@ -115,31 +106,33 @@ int main( int argc, char** argv)
         mmax = msize[ntest-1];
         kmax = ksize[ntest-1];
     }
-    assert( nmax > 0 and mmax > 0 and kmax > 0 );
+    m = mmax;
+    n = nmax;
+    k = kmax;
+    assert( m > 0 && n > 0 && k > 0 );
     
     // allocate memory for largest problem
-    lda    = mmax;
-    ldda   = ((mmax + 31)/32)*32;
-    n2     = lda * nmax;
-    min_mn = min(mmax, nmax);
-    nb     = magma_get_zgeqrf_nb( mmax );
-    lwork  = (mmax + 2*nmax+nb)*nb;
+    lda    = m;
+    ldda   = ((m + 31)/32)*32;
+    n2     = lda * n;
+    min_mn = min(m, n);
+    nb     = magma_get_zgeqrf_nb( m );
+    lwork  = (m + 2*n+nb)*nb;
 
-    TESTING_HOSTALLOC( hA,    cuDoubleComplex, lda*nmax  );
-    TESTING_HOSTALLOC( hwork, cuDoubleComplex, lwork     );
-    TESTING_MALLOC(    hR,    cuDoubleComplex, lda*nmax  );
+    TESTING_HOSTALLOC( hA,    cuDoubleComplex, lda*n  );
+    TESTING_HOSTALLOC( h_work, cuDoubleComplex, lwork     );
+    TESTING_MALLOC(    hR,    cuDoubleComplex, lda*n  );
     TESTING_MALLOC(    tau,   cuDoubleComplex, min_mn    );
-    TESTING_DEVALLOC(  dA,    cuDoubleComplex, ldda*nmax );
-    TESTING_DEVALLOC(  dT,    cuDoubleComplex, ( 2*min_mn + ((nmax + 31)/32)*32 )*nb );
+    TESTING_DEVALLOC(  dA,    cuDoubleComplex, ldda*n );
+    TESTING_DEVALLOC(  dT,    cuDoubleComplex, ( 2*min_mn + ((n + 31)/32)*32 )*nb );
     
-    printf("\n");
     printf("    m     n     k   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R|| / ||A||\n");
     printf("=========================================================================\n");
     for( int i = 0; i < ntest; ++i ){
         m = msize[i];
         n = nsize[i];
         k = ksize[i];
-        assert( m >= n and n >= k );
+        assert( m >= n && n >= k );
         
         lda  = m;
         ldda = ((m + 31)/32)*32;
@@ -156,13 +149,13 @@ int main( int argc, char** argv)
         magma_zsetmatrix(  m, n, hA, lda, dA, ldda );
         magma_zgeqrf_gpu( m, n, dA, ldda, tau, dT, &info );
         if ( info != 0 )
-            printf("magma_zgeqrf_gpu return error %d\n", info );
+            printf("magma_zgeqrf_gpu returned error %d\n", info);
         
         gpu_time = magma_wtime();
         magma_zungqr_gpu( m, n, k, dA, ldda, tau, dT, nb, &info );
         gpu_time = magma_wtime() - gpu_time;
         if ( info != 0 )
-            printf("magma_zungqr_gpu return error %d\n", info );
+            printf("magma_zungqr_gpu returned error %d\n", info);
         
         // Get dA back to the CPU to compare with the CPU result.
         magma_zgetmatrix( m, n, dA, ldda, hR, lda );
@@ -175,15 +168,15 @@ int main( int argc, char** argv)
         if ( checkres ) {
             error = lapackf77_zlange("f", &m, &n, hA, &lda, work );
             
-            lapackf77_zgeqrf( &m, &n, hA, &lda, tau, hwork, &lwork, &info );
+            lapackf77_zgeqrf( &m, &n, hA, &lda, tau, h_work, &lwork, &info );
             if ( info != 0 )
-                printf("lapackf77_zgeqrf return error %d\n", info );
+                printf("lapackf77_zgeqrf returned error %d\n", info);
             
             cpu_time = magma_wtime();
-            lapackf77_zungqr( &m, &n, &k, hA, &lda, tau, hwork, &lwork, &info );
+            lapackf77_zungqr( &m, &n, &k, hA, &lda, tau, h_work, &lwork, &info );
             cpu_time = magma_wtime() - cpu_time;
             if ( info != 0 )
-                printf("lapackf77_zungqr return error %d\n", info );
+                printf("lapackf77_zungqr returned error %d\n", info);
             
             cpu_perf = gflops / cpu_time;
     
@@ -192,13 +185,19 @@ int main( int argc, char** argv)
             error = lapackf77_zlange("f", &m, &n, hR, &lda, work) / error;
         }
         
-        printf("%5d %5d %5d   %7.1f (%7.2f)   %7.1f (%7.2f)   %8.2e\n",
-               m, n, k, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+        if ( checkres ) {
+            printf("%5d %5d %5d   %7.1f (%7.2f)   %7.1f (%7.2f)   %8.2e\n",
+                   m, n, k, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+        }
+        else {
+            printf("%5d %5d %5d     ---   (  ---  )   %7.1f (%7.2f)     ---  \n",
+                   m, n, k, gpu_perf, gpu_time );
+        }
     }
     
     /* Memory clean up */
     TESTING_HOSTFREE( hA );
-    TESTING_HOSTFREE( hwork );
+    TESTING_HOSTFREE( h_work );
     TESTING_FREE( hR );
     TESTING_FREE( tau );
 

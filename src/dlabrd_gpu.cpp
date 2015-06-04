@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:31:06 2012
+       @generated d Wed Nov 14 22:53:34 2012
 
 */
 #include "common_magma.h"
@@ -26,11 +26,11 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                   double *x, magma_int_t ldx, double *dx, magma_int_t lddx,
                   double *y, magma_int_t ldy, double *dy, magma_int_t lddy)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -556,8 +556,8 @@ magma_dlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
     }
     
     magma_queue_destroy( stream );
-    free(f);
+    magma_free_cpu(f);
     
     return MAGMA_SUCCESS;
-} /* dlabrd_ */
+} /* dlabrd */
 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:43 2012
+       @generated c Wed Nov 14 22:53:09 2012
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
                  cuFloatComplex *hwork, magma_int_t lwork, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -146,7 +146,7 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
     }
     
     magma_free( dT );
-    free(tau);
+    magma_free_cpu(tau);
     return *info;
 }
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     @author Raffaele Solca
     @author Stan Tomov 
@@ -49,61 +49,78 @@ int main( int argc, char** argv)
     magma_int_t ione     = 1, izero = 0;
     magma_int_t ISEED[4] = {0,0,0,1};
 
-    //const char *uplo = MagmaLowerStr;
-    char *uplo = (char*)MagmaLowerStr;
-    //char *uplo = (char*)MagmaUpperStr;
-    char *jobz = (char*)MagmaVectorsStr;
+    const char *uplo = MagmaLowerStr;
+    const char *jobz = MagmaVectorsStr;
 
     magma_int_t checkres;
     double result[3], eps = lapackf77_dlamch( "E" );
 
     if (argc != 1){
         for(i = 1; i<argc; i++){
-            if (strcmp("-N", argv[i])==0)
+            if (strcmp("-N", argv[i])==0) {
                 N = atoi(argv[++i]);
+            }
+            else if ( strcmp("-JV", argv[i]) == 0 ) {
+                jobz = MagmaVectorsStr;
+            }
+            else if ( strcmp("-JN", argv[i]) == 0 ) {
+                jobz = MagmaNoVectorsStr;
+            }
         }
         if (N>0)
-            printf("  testing_zheevd_gpu -N %d\n\n", (int) N);
-        else
-            {
-                printf("\nUsage: \n");
-                printf("  testing_zheevd_gpu -N %d\n\n", (int) N);
-                exit(1);
-            }
+            printf("  testing_zheevd_gpu -N %d [-JV] [-JN]\n\n", (int) N);
+        else {
+            printf("\nUsage: \n");
+            printf("  testing_zheevd_gpu -N %d [-JV] [-JN]\n\n", (int) N);
+            exit(1);
+        }
     }
     else {
         printf("\nUsage: \n");
-        printf("  testing_zheevd_gpu -N %d\n\n", 1024);
+        printf("  testing_zheevd_gpu -N %d [-JV] [-JN]\n\n", 1024);
         N = size[7];
     }
 
-    checkres  = getenv("MAGMA_TESTINGS_CHECK") != NULL;
+    checkres = getenv("MAGMA_TESTINGS_CHECK") != NULL;
+    if ( checkres && jobz[0] == MagmaNoVectors ) {
+        printf( "Cannot check results when vectors are not computed (jobz='N')\n" );
+        checkres = false;
+    }
 
-    n2  = N * N;
+    /* Query for workspace sizes */
+    cuDoubleComplex aux_work[1];
+    double          aux_rwork[1];
+    magma_int_t     aux_iwork[1];
+    magma_zheevd_gpu( jobz[0], uplo[0],
+                      N, d_R, N, w1,
+                      h_R, N,
+                      aux_work,  -1,
+                      aux_rwork, -1,
+                      aux_iwork, -1,
+                      &info );
+    magma_int_t lwork, lrwork, liwork;
+    lwork  = (magma_int_t) MAGMA_Z_REAL( aux_work[0] );
+    lrwork = (magma_int_t) aux_rwork[0];
+    liwork = aux_iwork[0];
 
     /* Allocate host memory for the matrix */
-    TESTING_MALLOC(   h_A, cuDoubleComplex, n2);
-    TESTING_MALLOC(    w1, double         ,  N);
-    TESTING_MALLOC(    w2, double         ,  N);
-    TESTING_HOSTALLOC(h_R, cuDoubleComplex, n2);
-    TESTING_DEVALLOC (d_R, cuDoubleComplex, n2);
-  
-    magma_int_t nb = magma_get_zhetrd_nb(N);
-    magma_int_t lwork = 2*N*nb + N*N;
-    magma_int_t lrwork = 1 + 5*N +2*N*N;
-    magma_int_t liwork = 3 + 5*N;
-
-    TESTING_HOSTALLOC(h_work, cuDoubleComplex,  lwork);
-    TESTING_MALLOC(    rwork,          double, lrwork);
-    TESTING_MALLOC(    iwork,     magma_int_t, liwork);
+    magma_int_t ldda = ((N + 31)/32)*32;
+    TESTING_MALLOC(    h_A, cuDoubleComplex, N*N );
+    TESTING_MALLOC(    w1,  double,          N   );
+    TESTING_MALLOC(    w2,  double,          N   );
+    TESTING_HOSTALLOC( h_R, cuDoubleComplex, N*N );
+    TESTING_DEVALLOC(  d_R, cuDoubleComplex, N*ldda );
+    TESTING_HOSTALLOC( h_work, cuDoubleComplex, lwork  );
+    TESTING_MALLOC(    rwork,  double,          lrwork );
+    TESTING_MALLOC(    iwork,  magma_int_t,     liwork );
     
     printf("  N     CPU Time(s)    GPU Time(s) \n");
     printf("===================================\n");
     for(i=0; i<8; i++){
         if (argc==1){
             N = size[i];
-            n2 = N*N;
         }
+        n2 = N*N;
 
         /* Initialize the matrix */
         lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
@@ -111,36 +128,57 @@ int main( int argc, char** argv)
         {
             MAGMA_Z_SET2REAL(h_A[k*N+k],  MAGMA_Z_REAL(h_A[k*N+k]));
         }
-        magma_zsetmatrix( N, N, h_A, N, d_R, N );
+        magma_zsetmatrix( N, N, h_A, N, d_R, ldda );
 
-        magma_zheevd_gpu(jobz[0], uplo[0],
-                     N, d_R, N, w1,
-                     h_R, N,
-                     h_work, lwork, 
-                     rwork, lrwork, 
-                     iwork, liwork, 
-                     &info);
+        /* warm up run */
+        magma_zheevd_gpu( jobz[0], uplo[0],
+                          N, d_R, ldda, w1,
+                          h_R, N,
+                          h_work, lwork, 
+                          rwork, lrwork, 
+                          iwork, liwork, 
+                          &info );
         
-        magma_zsetmatrix( N, N, h_A, N, d_R, N );
+        magma_zsetmatrix( N, N, h_A, N, d_R, ldda );
+
+        /* query for optimal workspace sizes */
+        magma_zheevd_gpu( jobz[0], uplo[0],
+                          N, d_R, ldda, w1,
+                          h_R, N,
+                          h_work, -1,
+                          rwork,  -1,
+                          iwork,  -1,
+                          &info );
+        int lwork_save  = lwork;
+        int lrwork_save = lrwork;
+        int liwork_save = liwork;
+        lwork  = min( lwork,  (magma_int_t) MAGMA_Z_REAL( h_work[0] ));
+        lrwork = min( lrwork, (magma_int_t) rwork[0] );
+        liwork = min( liwork, iwork[0] );
+        //printf( "lwork %d, query %d, used %d; liwork %d, query %d, used %d\n",
+        //        lwork_save,  (magma_int_t) h_work[0], lwork,
+        //        liwork_save, iwork[0], liwork );
 
         /* ====================================================================
            Performs operation using MAGMA
            =================================================================== */
         start = get_current_time();
-        magma_zheevd_gpu(jobz[0], uplo[0],
-                     N, d_R, N, w1,
-                     h_R, N,
-                     h_work, lwork,
-                     rwork, lrwork,
-                     iwork, liwork,
-                     &info);
-        
+        magma_zheevd_gpu( jobz[0], uplo[0],
+                          N, d_R, ldda, w1,
+                          h_R, N,
+                          h_work, lwork,
+                          rwork, lrwork,
+                          iwork, liwork,
+                          &info );
         end = get_current_time();
 
         gpu_time = GetTimerValue(start,end)/1000.;
 
+        lwork  = lwork_save;
+        lrwork = lrwork_save;
+        liwork = liwork_save;
+        
         if ( checkres ) {
-          magma_zgetmatrix( N, N, d_R, N, h_R, N );
           /* =====================================================================
              Check the results following the LAPACK's [zcds]drvst routine.
              A is factored as A = U S U' and the following 3 tests computed:
@@ -151,6 +189,7 @@ int main( int argc, char** argv)
           double temp1, temp2;
           cuDoubleComplex *tau;
 
+          magma_zgetmatrix( N, N, d_R, ldda, h_R, N );
           lapackf77_zhet21(&ione, uplo, &N, &izero,
                            h_A, &N,
                            w1, w1,
@@ -158,14 +197,14 @@ int main( int argc, char** argv)
                            h_R, &N,
                            tau, h_work, rwork, &result[0]);
           
-          magma_zsetmatrix( N, N, h_A, N, d_R, N );
-          magma_zheevd_gpu('N', uplo[0],
-                       N, d_R, N, w2,
-                       h_R, N,
-                       h_work, lwork,
-                       rwork, lrwork,
-                       iwork, liwork,
-                       &info);
+          magma_zsetmatrix( N, N, h_A, N, d_R, ldda );
+          magma_zheevd_gpu( 'N', uplo[0],
+                            N, d_R, ldda, w2,
+                            h_R, N,
+                            h_work, lwork,
+                            rwork, lrwork,
+                            iwork, liwork,
+                            &info);
 
           temp1 = temp2 = 0;
           for(int j=0; j<N; j++){
@@ -192,7 +231,6 @@ int main( int argc, char** argv)
 
         cpu_time = GetTimerValue(start,end)/1000.;
 
-
         /* =====================================================================
            Print execution time
            =================================================================== */
@@ -210,14 +248,14 @@ int main( int argc, char** argv)
     }
  
     /* Memory clean up */
-    TESTING_FREE(       h_A);
-    TESTING_FREE(        w1);
-    TESTING_FREE(        w2);
-    TESTING_FREE(     rwork);
-    TESTING_FREE(     iwork);
-    TESTING_HOSTFREE(h_work);
-    TESTING_HOSTFREE(   h_R);
-    TESTING_DEVFREE(   d_R);
+    TESTING_FREE(     h_A    );
+    TESTING_FREE(     w1     );
+    TESTING_FREE(     w2     );
+    TESTING_FREE(     rwork  );
+    TESTING_FREE(     iwork  );
+    TESTING_HOSTFREE( h_work );
+    TESTING_HOSTFREE( h_R    );
+    TESTING_DEVFREE(  d_R    );
   
     /* Shutdown */
     TESTING_CUDA_FINALIZE();

@@ -1,12 +1,12 @@
 /*
- *  -- MAGMA (version 1.2.1) --
+ *  -- MAGMA (version 1.3.0) --
  *     Univ. of Tennessee, Knoxville
  *     Univ. of California, Berkeley
  *     Univ. of Colorado, Denver
- *     June 2012
+ *     November 2012
  *
  * @author Mark Gates
- * @generated d Thu Jun 28 12:31:47 2012
+ * @generated d Wed Nov 14 22:54:20 2012
  *
  **/
 
@@ -44,21 +44,21 @@ int main( int argc, char** argv )
     magma_int_t n = 300;
     magma_int_t k = 32;
     for( int i = 1; i < argc; i++ ) {
-        if (strcmp("-M", argv[i]) == 0 and ++i < argc) {
-            m = atoi( argv[i] );
+        if      (strcmp("-M", argv[i]) == 0 && i+1 < argc) {
+            m = atoi( argv[++i] );
         }
-        else if (strcmp("-N", argv[i]) == 0 and ++i < argc) {
-            n = atoi( argv[i] );
+        else if (strcmp("-N", argv[i]) == 0 && i+1 < argc) {
+            n = atoi( argv[++i] );
         }
-        else if (strcmp("-K", argv[i]) == 0 and ++i < argc) {
-            k = atoi( argv[i] );
+        else if (strcmp("-K", argv[i]) == 0 && i+1 < argc) {
+            k = atoi( argv[++i] );
         }
         else {
             printf( "invalid argument: %s\n", argv[i] );
             exit(1);
         }
     }
-    if ( k <= 0 or k > m or k > n ) {
+    if ( k <= 0 || k > m || k > n ) {
         printf( "requires 0 < k <= min(m,n)\n" );
         exit(1);
     }
@@ -88,51 +88,50 @@ int main( int argc, char** argv )
     TESTING_DEVALLOC( dW, double, ldw*k );
     
     magma_int_t size;
-    magma_int_t idist    = 1;
     magma_int_t iseed[4] = { 1, 2, 3, 4 };
     double error, work[1];
     
     // test all combinations of input parameters
-    const char* side[]   = { "Left",    "Right"     };
-    const char* trans[]  = { "NoTrans", "ConjTrans" };
-    const char* direct[] = { "Forward", "Backward"  };
-    const char* storev[] = { "Colwise", "Rowwise"   };
+    const char* side[]   = { MagmaLeftStr,       MagmaRightStr    };
+    const char* trans[]  = { MagmaTransStr,  MagmaNoTransStr  };
+    const char* direct[] = { MagmaForwardStr,    MagmaBackwardStr };
+    const char* storev[] = { MagmaColumnwiseStr, MagmaRowwiseStr  };
 
     printf("    M     N     K  storev     side       direct     trans       ||R||_F / ||HC||_F\n");
     printf("==================================================================================\n");
-    for( int iv = 0; iv < 2; ++iv ) {
-    for( int is = 0; is < 2; ++is ) {
-    for( int id = 0; id < 2; ++id ) {
-    for( int it = 0; it < 2; ++it ) {
+    for( int istor = 0; istor < 2; ++istor ) {
+    for( int iside = 0; iside < 2; ++iside ) {
+    for( int idir  = 0; idir  < 2; ++idir  ) {
+    for( int itran = 0; itran < 2; ++itran ) {
         //printf( "# ----------\n" );
-        //printf( "# %-10s %-10s %-10s %-10s\n", storev[iv], side[is], direct[id], trans[it] );
+        //printf( "# %-10s %-10s %-10s %-10s\n", storev[istor], side[iside], direct[idir], trans[itran] );
         
         // C is full
         size = ldc*n;
-        lapackf77_dlarnv( &idist, iseed, &size, C );
+        lapackf77_dlarnv( &ione, iseed, &size, C );
         //printf( "C=" );  magma_dprint( m, n, C, ldc );
         
         // V is ldv x nv. See larfb docs for description.
-        ldv  = (*side[is] == 'L' ? m : n);
+        ldv  = (*side[iside] == 'L' ? m : n);
         nv   = k;
         size = ldv*nv;
-        lapackf77_dlarnv( &idist, iseed, &size, V );
-        if ( *storev[iv] == 'C' ) {
-            if ( *direct[id] == 'F' ) {
-                lapackf77_dlaset( "Upper", &k, &k, &c_zero, &c_one, V, &ldv );
+        lapackf77_dlarnv( &ione, iseed, &size, V );
+        if ( *storev[istor] == MagmaColumnwise ) {
+            if ( *direct[idir] == MagmaForward ) {
+                lapackf77_dlaset( MagmaUpperStr, &k, &k, &c_zero, &c_one, V, &ldv );
             }
             else {
-                lapackf77_dlaset( "Lower", &k, &k, &c_zero, &c_one, &V[(ldv-k)], &ldv );
+                lapackf77_dlaset( MagmaLowerStr, &k, &k, &c_zero, &c_one, &V[(ldv-k)], &ldv );
             }
         }
         else {
             // rowwise, swap V's dimensions
             std::swap( ldv, nv );
-            if ( *direct[id] == 'F' ) {
-                lapackf77_dlaset( "Lower", &k, &k, &c_zero, &c_one, V, &ldv );
+            if ( *direct[idir] == MagmaForward ) {
+                lapackf77_dlaset( MagmaLowerStr, &k, &k, &c_zero, &c_one, V, &ldv );
             }
             else {
-                lapackf77_dlaset( "Upper", &k, &k, &c_zero, &c_one, &V[(nv-k)*ldv], &ldv );
+                lapackf77_dlaset( MagmaUpperStr, &k, &k, &c_zero, &c_one, &V[(nv-k)*ldv], &ldv );
             }
         }
         //printf( "# ldv %d, nv %d\n", ldv, nv );
@@ -141,25 +140,25 @@ int main( int argc, char** argv )
         // T is upper triangular for forward, and lower triangular for backward
         magma_int_t k1 = k-1;
         size = ldt*k;
-        lapackf77_dlarnv( &idist, iseed, &size, T );
-        if ( *direct[id] == 'F' ) {
-            lapackf77_dlaset( "Lower", &k1, &k1, &c_zero, &c_zero, &T[1], &ldt );
+        lapackf77_dlarnv( &ione, iseed, &size, T );
+        if ( *direct[idir] == MagmaForward ) {
+            lapackf77_dlaset( MagmaLowerStr, &k1, &k1, &c_zero, &c_zero, &T[1], &ldt );
         }
         else {
-            lapackf77_dlaset( "Upper", &k1, &k1, &c_zero, &c_zero, &T[1*ldt], &ldt );
+            lapackf77_dlaset( MagmaUpperStr, &k1, &k1, &c_zero, &c_zero, &T[1*ldt], &ldt );
         }
         //printf( "T=" );  magma_dprint( k, k, T, ldt );
         
-        magma_dsetmatrix( m, n, C, ldc, dC, ldc );
+        magma_dsetmatrix( m,   n,  C, ldc, dC, ldc );
         magma_dsetmatrix( ldv, nv, V, ldv, dV, ldv );
-        magma_dsetmatrix( k, k, T, ldt, dT, ldt );
+        magma_dsetmatrix( k,   k,  T, ldt, dT, ldt );
         
-        lapackf77_dlarfb( side[is], trans[it], direct[id], storev[iv],
+        lapackf77_dlarfb( side[iside], trans[itran], direct[idir], storev[istor],
                           &m, &n, &k,
                           V, &ldv, T, &ldt, C, &ldc, W, &ldw );
         //printf( "HC=" );  magma_dprint( m, n, C, ldc );
         
-        magma_dlarfb_gpu( *side[is], *trans[it], *direct[id], *storev[iv],
+        magma_dlarfb_gpu( *side[iside], *trans[itran], *direct[idir], *storev[istor],
                           m, n, k,
                           dV, ldv, dT, ldt, dC, ldc, dW, ldw );
         magma_dgetmatrix( m, n, dC, ldc, R, ldc );
@@ -171,7 +170,8 @@ int main( int argc, char** argv )
         blasf77_daxpy( &size, &c_neg_one, C, &ione, R, &ione );
         error = lapackf77_dlange( "Fro", &m, &n, R, &ldc, work ) / error;
         printf( "%5d %5d %5d  %-10s %-10s %-10s %-10s  %8.2e\n",
-                (int) m, (int) n, (int) k, storev[iv], side[is], direct[id], trans[it], error );
+                (int) m, (int) n, (int) k,
+                storev[istor], side[iside], direct[idir], trans[itran], error );
     }}}}
     
     // Memory clean up

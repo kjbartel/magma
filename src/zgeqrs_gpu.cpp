@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -18,11 +18,11 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
                  cuDoubleComplex *hwork, magma_int_t lwork, 
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -151,6 +151,10 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     ib   = n-i;
     rows = m-i;
 
+    // TODO: this assumes that, on exit from magma_zunmqr_gpu, hwork contains
+    // the last block of A and B (i.e., C in zunmqr). This should be fixed.
+    // Seems this data should already be on the GPU, so could switch to
+    // magma_ztrsm and drop the zsetmatrix.
     if ( nrhs == 1 ) {
         blasf77_ztrsv( MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr, 
                        &ib, hwork,         &rows, 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated ds Thu Jun 28 12:31:15 2012
+       @generated ds Wed Nov 14 22:53:45 2012
 
 */
 #include "common_magma.h"
@@ -13,7 +13,7 @@
 #define num_threadds 64
 
 __global__ void
-dslaswp_kernel(int n, double *a, int lda, float *sa, int m, magma_int_t *ipiv)
+dslaswp_kernel(int n, double *a, int lda, float *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadds + threadIdx.x;
     int newind;
@@ -34,7 +34,7 @@ dslaswp_kernel(int n, double *a, int lda, float *sa, int m, magma_int_t *ipiv)
 }
 
 __global__ void
-dslaswp_inv_kernel(int n, double *a, int lda, float *sa, int m, magma_int_t *ipiv)
+dslaswp_inv_kernel(int n, double *a, int lda, float *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadds + threadIdx.x;
     int newind;
@@ -58,13 +58,13 @@ dslaswp_inv_kernel(int n, double *a, int lda, float *sa, int m, magma_int_t *ipi
 extern "C" void
 magmablas_dslaswp( magma_int_t n, double *a, magma_int_t lda,
                    float *sa, magma_int_t m,
-                   magma_int_t *ipiv, magma_int_t incx )
+                   const magma_int_t *ipiv, magma_int_t incx )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -104,9 +104,9 @@ magmablas_dslaswp( magma_int_t n, double *a, magma_int_t lda,
     dim3 threads(num_threadds, 1, 1);
 
     if (incx >=0)
-      dslaswp_kernel<<< grid, threads, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
+        dslaswp_kernel<<< grid, threads, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
     else
-      dslaswp_inv_kernel<<< grid, threads, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
+        dslaswp_inv_kernel<<< grid, threads, 0, magma_stream >>>(n, a, lda, sa, m, ipiv);
 }
 
 #undef num_threadds

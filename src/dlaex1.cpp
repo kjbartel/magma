@@ -1,8 +1,8 @@
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
     @author Raffaele Solca
 
@@ -15,7 +15,7 @@
 #define magma_dlaed2 FORTRAN_NAME( magma_dlaed2, MAGMA_DLAED2 )
 
 extern "C" {
-    void magma_dlaed2_(magma_int_t* k, magma_int_t* n, magma_int_t* cutpnt,
+    void magma_dlaed2( magma_int_t* k, magma_int_t* n, magma_int_t* cutpnt,
                        double* d, double* q, magma_int_t* ldq, magma_int_t* indxq,
                        double* rho, double* z,
                        double*  dlmda, double* w, double* q2,
@@ -31,11 +31,11 @@ magma_dlaex1(magma_int_t n, double* d, double* q, magma_int_t ldq,
              magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -196,7 +196,7 @@ magma_dlaex1(magma_int_t n, double* d, double* q, magma_int_t ldq,
 
     //  Deflate eigenvalues.
 
-    magma_dlaed2_(&k, &n, &cutpnt, d, q, &ldq, indxq, &rho, &work[iz],
+    magma_dlaed2(&k, &n, &cutpnt, d, q, &ldq, indxq, &rho, &work[iz],
                  &work[idlmda], &work[iw], &work[iq2],
                  &iwork[indx], &iwork[indxc], &iwork[indxp],
                  &iwork[coltyp], info);

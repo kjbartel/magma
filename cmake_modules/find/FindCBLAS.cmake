@@ -1,13 +1,17 @@
 ###
 #
-# @file      : FindCBLAS.cmake
+#  @file FindCBLAS.cmake
 #
-# @description   : Project MORSE (http://hiepacs.bordeaux.inria.fr/eagullo/morse)
+#  @project MAGMA
+#  MAGMA is a software package provided by:
+#     Inria Bordeaux - Sud-Ouest,
+#     Univ. of Tennessee,
+#     Univ. of California Berkeley,
+#     Univ. of Colorado Denver.
 #
-# @version       :
-# @created by    : Cedric Castagnede
-# @creation date : 19-01-2012
-# @last modified : mer. 04 avril 2012 10:55:10 CEST
+#  @version 0.1.0
+#  @author Cedric Castagnede
+#  @date 13-07-2012
 #
 ###
 #
@@ -34,26 +38,48 @@
 #
 ###
 
+# Early exit if already searched
+IF(CBLAS_FOUND)
+    MESSAGE(STATUS "Looking for CBLAS - already found")
+    RETURN()
+ENDIF(CBLAS_FOUND)
+
+# Load required modules
+INCLUDE(populatePACKAGE)
 INCLUDE(findPACKAGE)
 INCLUDE(infoCBLAS)
 
 # Begin section - Looking for CBLAS
 MESSAGE(STATUS "Looking for CBLAS")
 
-# Define extra directory to look for
-IF(MORSE_SEPARATE_PROJECTS)
-    SET(CBLAS_DIR ${CMAKE_INSTALL_PREFIX}/cblas)
-ELSE(MORSE_SEPARATE_PROJECTS)
-    SET(CBLAS_DIR ${CMAKE_INSTALL_PREFIX})
-ENDIF(MORSE_SEPARATE_PROJECTS)
-
 # Define parameters for FIND_MY_PACKAGE
 CBLAS_INFO_FIND()
+SET(BACKUP_CBLAS_name_library "${CBLAS_name_library}")
 
 # Search for the library
-FIND_MY_PACKAGE("CBLAS"
-                FALSE TRUE TRUE FALSE
-                TRUE FALSE)
+MESSAGE(STATUS "Looking for CBLAS - check only with given ${BLAS_VENDOR} BLAS library")
+SET(CBLAS_name_library "${BLAS_LIBRARIES}")
+FIND_MY_PACKAGE("CBLAS")
+
+# If the BLAS detected implementation do not contains CBLAS,
+# we try to find the Netlib version
+IF(CBLAS_FOUND)
+    SET(CBLAS_VENDOR "${BLAS_VENDOR}")
+
+ELSE(CBLAS_FOUND)
+    # Looking for dependencies
+    FIND_PACKAGE(BLAS QUIET)
+    IF(BLAS_FOUND)
+        POPULATE_COMPILE_SYSTEM("BLAS")
+        SET(CBLAS_FIND_DEPS "BLAS")
+    ENDIF(BLAS_FOUND)
+
+    # Search for the library
+    MESSAGE(STATUS "Looking for CBLAS - check Netlib implementation")
+    SET(CBLAS_name_library "${BACKUP_CBLAS_name_library}")
+    FIND_MY_PACKAGE("CBLAS")
+
+ENDIF(CBLAS_FOUND)
 
 # Begin section - Looking for CBLAS
 IF(CBLAS_FOUND)
@@ -62,6 +88,6 @@ ELSE(CBLAS_FOUND)
     MESSAGE(STATUS "Looking for CBLAS - not found")
 ENDIF(CBLAS_FOUND)
 
-###
-### END FindCBLAS.cmake
-###
+##
+## @end file FindCBLAS.cmake
+##

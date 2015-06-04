@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -171,7 +171,9 @@ magmablas_zlange_64_64_16_4(const cuDoubleComplex *A, double *C,
 }
 
 extern "C" double  
-magmablas_zlange(char norm, magma_int_t M, magma_int_t N , cuDoubleComplex *A, magma_int_t LDA , double *WORK)
+magmablas_zlange(
+    char norm, magma_int_t M, magma_int_t N,
+    const cuDoubleComplex *A, magma_int_t LDA , double *WORK)
 {
 /*
   !!!!!!!!!!!!!!                

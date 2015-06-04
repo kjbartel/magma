@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -12,7 +12,7 @@
 #define PRECISION_z
 #include "commonblas.h"
 
-__global__ void ztranspose_32( cuDoubleComplex *B, int ldb, cuDoubleComplex *A, int lda )
+__global__ void ztranspose_32( cuDoubleComplex *B, int ldb, const cuDoubleComplex *A, int lda )
 {        
         __shared__ cuDoubleComplex a[32][ZSIZE_1SHARED+1];
         
@@ -65,8 +65,8 @@ __global__ void ztranspose_32( cuDoubleComplex *B, int ldb, cuDoubleComplex *A, 
 //             This version works when m and n are divisible by 32.
 //
 extern "C" void 
-magmablas_ztranspose(cuDoubleComplex *odata, magma_int_t ldo, 
-                     cuDoubleComplex *idata, magma_int_t ldi, 
+magmablas_ztranspose(cuDoubleComplex       *odata, magma_int_t ldo, 
+                     const cuDoubleComplex *idata, magma_int_t ldi, 
                      magma_int_t m, magma_int_t n )
 {
         //assert( (m%32) == 0 && (n%32) == 0, "misaligned transpose" );

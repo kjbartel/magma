@@ -31,6 +31,10 @@
 #   CPACK_PACKAGE_VERSION_MINOR         - Package project version (minor)
 #   CPACK_PACKAGE_VERSION_PATCH         - Package project version (patch)
 ###
+#
+# cpack --config CPackConfig_MORSE_full.cmake
+#
+###
 
 # Allow to add a suffix frr the package version 
 SET(SUFFIX_VERSION "")

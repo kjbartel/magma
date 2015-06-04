@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:31:21 2012
+       @generated c Wed Nov 14 22:53:51 2012
 
 */
 #include "common_magma.h"
 #define PRECISION_c
 #include "commonblas.h"
 
-__global__ void ctranspose3_32( cuFloatComplex *B, int ldb, 
-                                cuFloatComplex *A, int lda,
+__global__ void ctranspose3_32( cuFloatComplex       *B, int ldb, 
+                                const cuFloatComplex *A, int lda,
                                 int m, int m32, int n, int n32)
 {
          __shared__ cuFloatComplex a[32][CSIZE_1SHARED+1];
@@ -109,8 +109,8 @@ __global__ void ctranspose3_32( cuFloatComplex *B, int ldb,
 
 
 
-__global__ void ctranspose2_32( cuFloatComplex *B, int ldb, 
-                                cuFloatComplex *A, int lda, 
+__global__ void ctranspose2_32( cuFloatComplex       *B, int ldb, 
+                                const cuFloatComplex *A, int lda, 
                                 int m, int m32, int n, int n32)
 {        
         __shared__ cuFloatComplex a[32][CSIZE_1SHARED+1];
@@ -176,8 +176,8 @@ __global__ void ctranspose2_32( cuFloatComplex *B, int ldb,
 //             Note that ldi >= m and ldo >= n.
 //
 extern "C" void 
-magmablas_ctranspose2(cuFloatComplex *odata, magma_int_t ldo, 
-                      cuFloatComplex *idata, magma_int_t ldi, 
+magmablas_ctranspose2(cuFloatComplex       *odata, magma_int_t ldo, 
+                      const cuFloatComplex *idata, magma_int_t ldi, 
                       magma_int_t m, magma_int_t n )
 {
     /* Quick return */
@@ -192,8 +192,8 @@ magmablas_ctranspose2(cuFloatComplex *odata, magma_int_t ldo,
 }
 
 extern "C" void
-magmablas_ctranspose2s(cuFloatComplex *odata, magma_int_t ldo,
-                       cuFloatComplex *idata, magma_int_t ldi,
+magmablas_ctranspose2s(cuFloatComplex       *odata, magma_int_t ldo,
+                       const cuFloatComplex *idata, magma_int_t ldi,
                        magma_int_t m, magma_int_t n, cudaStream_t *stream )
 {
     /* Quick return */

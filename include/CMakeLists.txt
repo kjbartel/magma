@@ -22,12 +22,13 @@ SET(ZHDR magma_z.h
          magmablas_z.h
          magmablas_zc.h
          magma_zlapack.h
+         magma_zbulge.h
          magma_zbulgeinc.h
      )
 
-precisions_rules_py(MAGMA_HEADERS_GENERATED
-            "${ZHDR}"
-            PRECISIONS "z;c;d;s;zc;ds")
+precisions_rules_py(MAGMA_HEADERS_GENERATED "${ZHDR}"
+                    PRECISIONS "${MAGMA_PRECISION}"
+                    DICTIONARY "MAGMA")
 
 # Define the list of headers
 # --------------------------

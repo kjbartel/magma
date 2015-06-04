@@ -1,23 +1,23 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated c Thu Jun 28 12:30:34 2012
+       @generated c Wed Nov 14 22:53:00 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
 #define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d))
+#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d))
   #define magma_cgemm magmablas_cgemm
   #define magma_ctrsm magmablas_ctrsm
 #endif
 
-#if (GPUSHMEM >= 200)
+#if (GPUSHMEM == 200)
 #if (defined(PRECISION_s))
      #undef  magma_sgemm
      #define magma_sgemm magmablas_sgemm_fermi80
@@ -26,15 +26,10 @@
 // === End defining what BLAS to use ======================================
 
 // ========================================================================
-// definition of a non-GPU-resident interface to a single GPU
-//extern "C" magma_int_t 
-//magma_cpotrf_ooc(char uplo, magma_int_t n, 
-//                cuFloatComplex *a, magma_int_t lda, magma_int_t *info);
-
 // definition of a non-GPU-resident interface to multiple GPUs
 extern "C" magma_int_t
-magma_cpotrf2_ooc(magma_int_t num_gpus, char uplo, magma_int_t n,
-                  cuFloatComplex *a, magma_int_t lda, magma_int_t *info);
+magma_cpotrf_m(magma_int_t num_gpus, char uplo, magma_int_t n,
+               cuFloatComplex *a, magma_int_t lda, magma_int_t *info);
 // ========================================================================
 
 #define A(i, j)  (a   +(j)*lda  + (i))
@@ -44,11 +39,11 @@ extern "C" magma_int_t
 magma_cpotrf(char uplo, magma_int_t n, 
              cuFloatComplex *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -135,15 +130,14 @@ magma_cpotrf(char uplo, magma_int_t n,
     magma_int_t num_gpus = magma_num_gpus();
     if( num_gpus > 1 ) {
       /* call multiple-GPU interface  */
-      return magma_cpotrf2_ooc(num_gpus, uplo, n, a, lda, info);
+      return magma_cpotrf_m(num_gpus, uplo, n, a, lda, info);
     }
 
     ldda = ((n+31)/32)*32;
     
     if (MAGMA_SUCCESS != magma_cmalloc( &work, (n)*ldda )) {
         /* alloc failed so call the non-GPU-resident version */
-        return magma_cpotrf2_ooc(num_gpus, uplo, n, a, lda, info);
-        //return magma_cpotrf_ooc( uplo, n, a, lda, info);
+        return magma_cpotrf_m(num_gpus, uplo, n, a, lda, info);
     }
 
     cudaStream_t stream[2];

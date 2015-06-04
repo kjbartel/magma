@@ -1,55 +1,16 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
        @author Raffaele Solca
 
-       @generated c Thu Jun 28 12:30:52 2012
+       @generated c Wed Nov 14 22:53:19 2012
  
 */
 #include "common_magma.h"
-
-/* These interfaces are used for TAU profiling */
-extern "C" {
-    void Mylapackf77_cstemr(const char *jobz, const char *range, magma_int_t *n, float *d, float *e,
-                            float *vl, float *vu, magma_int_t *il, magma_int_t *iu, 
-                            magma_int_t *m, float *w, cuFloatComplex *z, magma_int_t *ldz,
-                            magma_int_t *nzc, magma_int_t *isuppz, magma_int_t *tryrac,
-                            float *work, magma_int_t *lwork, magma_int_t *iwork, 
-                            magma_int_t *liwork, magma_int_t *info)
-    {
-        lapackf77_cstemr(jobz, range, n, d, e, vl, vu, il, iu, m, w, z, ldz, nzc, 
-                         isuppz, tryrac, work, lwork, iwork, liwork, info);
-    }
-
-    void Mylapackf77_cstein(magma_int_t *n, float *d, float *e, magma_int_t *m, float *w, magma_int_t *iblock,
-                            magma_int_t *isplit, cuFloatComplex *z, magma_int_t *ldz, float *work, 
-                            magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
-    {
-        lapackf77_cstein(n, d, e, m, w, iblock, isplit, z, ldz, work, iwork, ifail, info);
-    }
-  
-    void Mylapackf77_sstebz(const char *range, const char *order, magma_int_t *n, float *vl, 
-                            float *vu, magma_int_t *il, magma_int_t *iu, float *abstol,
-                            float *d, float *e, magma_int_t *m, magma_int_t *nsplit, float *w, 
-                            magma_int_t *iblock, magma_int_t *isplit, float *work, magma_int_t *iwork, magma_int_t *info)
-    {
-        lapackf77_sstebz(range, order, n, vl, vu, il, iu, abstol, d, e, m,
-                         nsplit, w, iblock, isplit, work, iwork,info);
-    }
-}
-
-extern "C" {
-#ifdef ADD_
-#    define lapackf77_ieeeck   ieeeck_
-#elif defined NOCHANGE
-#    define lapackf77_ieeeck   ieeeck
-#endif
-  magma_int_t lapackf77_ieeeck(magma_int_t* ispec, float* zero, float* one);
-}
 
 extern "C" magma_int_t 
 magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n, 
@@ -62,11 +23,11 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
                  float *rwork, magma_int_t lrwork, magma_int_t *iwork, 
                  magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
    
     Purpose   
     =======
@@ -497,7 +458,7 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
     else
       tryrac=0;
     
-    Mylapackf77_cstemr(jobz_, range_, &n, &rwork[indrdd], &rwork[indree], &vl, &vu, &il, 
+    lapackf77_cstemr(jobz_, range_, &n, &rwork[indrdd], &rwork[indree], &vl, &vu, &il, 
                      &iu, m, &w[1], wz, &ldwz, &n, &isuppz[1], &tryrac, &rwork[indrwk],
                      &llrwork, &iwork[1], &liwork, info);
     
@@ -514,10 +475,10 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
     printf("B/I\n");
     *info = 0;
     
-    Mylapackf77_sstebz(range_, "B", &n, &vl, &vu, &il, &iu, &abstol, &rwork[indrd], &rwork[indre], m,
+    lapackf77_sstebz(range_, "B", &n, &vl, &vu, &il, &iu, &abstol, &rwork[indrd], &rwork[indre], m,
                      &nsplit, &w[1], &iwork[indibl], &iwork[indisp], &rwork[indrwk], &iwork[indiwo], info);
     
-    Mylapackf77_cstein(&n, &rwork[indrd], &rwork[indre], m, &w[1], &iwork[indibl], &iwork[indisp],
+    lapackf77_cstein(&n, &rwork[indrd], &rwork[indre], m, &w[1], &iwork[indibl], &iwork[indisp],
                        wz, &ldwz, &rwork[indrwk], &iwork[indiwo], &iwork[indifl], info);
       
       /*        Apply unitary matrix used in reduction to tridiagonal   

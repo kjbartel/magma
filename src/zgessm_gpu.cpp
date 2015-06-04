@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Hatem Ltaief
        @author Mathieu Faverge
@@ -25,26 +25,18 @@ magma_zgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
                   cuDoubleComplex *dA,  magma_int_t ldda, 
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
 
-    SGETRF computes an LU factorization of a general M-by-N matrix A
-    using partial pivoting with row interchanges.
-
-    The factorization has the form
-       A = P * L * U
-    where P is a permutation matrix, L is lower triangular with unit
-    diagonal elements (lower trapezoidal if m > n), and U is upper
-    triangular (upper trapezoidal if m < n).
-
-    This is the right-looking Level 3 BLAS version of the algorithm.
-
+    ZGESSM applies the factors L computed by ZGETRF_INCPIV to
+    a complex M-by-N tile A.
+    
     Arguments
     =========
 
@@ -54,26 +46,31 @@ magma_zgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
     N       (input) INTEGER
             The number of columns of the matrix A.  N >= 0.
 
-    A       (input/output) REAL array on the GPU, dimension (LDA,N).
-            On entry, the M-by-N matrix to be factored.
-            On exit, the factors L and U from the factorization
-            A = P*L*U; the unit diagonal elements of L are not stored.
+    K       (input) INTEGER
+            The number of columns of the matrix L.  K >= 0.
 
-    LDA     (input) INTEGER
-            The leading dimension of the array A.  LDA >= max(1,M).
+    IB      (input) INTEGER
+            The inner-blocking size.  IB >= 0.
 
-    IPIV    (output) INTEGER array, dimension (min(M,N))
-            The pivot indices; for 1 <= i <= min(M,N), row i of the
-            matrix was interchanged with row IPIV(i).
+    IPIV    (input) INTEGER array on the cpu.
+            The pivot indices array of size K as returned by
+            ZGETRF_INCPIV.
 
-    INFO    (output) INTEGER
-            = 0:  successful exit
-            < 0:  if INFO = -i, the i-th argument had an illegal value
-                  or another error occured, such as memory allocation failed.
-            > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
-                  has been completed, but the factor U is exactly
-                  singular, and division by zero will occur if it is used
-                  to solve a system of equations.
+    dL1     (input) DOUBLE COMPLEX array, dimension(LDDL1, N) 
+            The IB-by-K matrix in which is stored L^(-1) as returned by GETRF_INCPIV
+ 
+    LDDL1   (input) INTEGER
+            The leading dimension of the array L1.  LDDL1 >= max(1,2*IB).
+ 
+    dL      (input) DOUBLE COMPLEX array, dimension(LDDL, N) 
+            The M-by-K lower triangular tile on the gpu.
+ 
+    LDDL    (input) INTEGER
+            The leading dimension of the array L.  LDDL >= max(1,M).
+
+    dA      (input/output) DOUBLE COMPLEX array, dimension (LDDA, N)
+            On entry, the M-by-N tile A on the gpu.
+            On exit, updated by the application of L on the gpu.
 
     =====================================================================    */
 

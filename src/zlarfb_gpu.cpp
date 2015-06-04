@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Mark Gates
        @precisions normal z -> s d c
@@ -20,14 +20,14 @@
 extern "C" magma_int_t
 magma_zlarfb_gpu( char side, char trans, char direct, char storev,
                   magma_int_t m, magma_int_t n, magma_int_t k,
-                  cuDoubleComplex *dV,    magma_int_t ldv,
-                  cuDoubleComplex *dT,    magma_int_t ldt,
-                  cuDoubleComplex *dC,    magma_int_t ldc,
-                  cuDoubleComplex *dwork, magma_int_t ldwork)
+                  const cuDoubleComplex *dV,    magma_int_t ldv,
+                  const cuDoubleComplex *dT,    magma_int_t ldt,
+                  cuDoubleComplex *dC,          magma_int_t ldc,
+                  cuDoubleComplex *dwork,       magma_int_t ldwork )
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Univ. of California Berkeley
-       June 2012
+       November 2012
 
     Purpose
     =======

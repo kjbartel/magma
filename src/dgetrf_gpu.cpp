@@ -1,18 +1,18 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:30:37 2012
+       @generated d Wed Nov 14 22:53:03 2012
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
 #define PRECISION_d
-#if (defined(PRECISION_s) || defined(PRECISION_d))
+#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d))
   #define magma_dgemm magmablas_dgemm
   #define magma_dtrsm magmablas_dtrsm
 #endif
@@ -23,11 +23,11 @@ magma_dgetrf_gpu(magma_int_t m, magma_int_t n,
                  double *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose
     =======
@@ -117,7 +117,7 @@ magma_dgetrf_gpu(magma_int_t m, magma_int_t n,
         magma_dgetmatrix( m, n, dA, ldda, work, m );
         lapackf77_dgetrf(&m, &n, work, &m, ipiv, info);
         magma_dsetmatrix( m, n, work, m, dA, ldda );
-        free(work);
+        magma_free_cpu(work);
     }
     else {
         /* Use hybrid blocked code. */

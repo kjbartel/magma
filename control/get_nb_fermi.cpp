@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 */
 
 // ==== Definition of blocking sizes for Nvidia Fermi cards
-#if (GPUSHMEM >= 200)
+#if (GPUSHMEM >= 200 && GPUSHMEM < 300)
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Return nb for potrf based on n
@@ -23,9 +23,9 @@ int magma_get_spotrf_nb(int n) {
 extern "C"
 int magma_get_dpotrf_nb(int n) {
     if (n <= 4256)
-        return 128;
+        return 128+128;
     else 
-        return 256;
+        return 256+256;
 }
 
 extern "C"
@@ -43,22 +43,22 @@ int magma_get_zpotrf_nb(int n) {
 */
 extern "C"
 int magma_get_sgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_dgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_cgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 extern "C"
 int magma_get_zgeqp3_nb(int m) {
-    return 64;
+    return 32;
 }
 
 /* ////////////////////////////////////////////////////////////////////////////
@@ -179,7 +179,7 @@ int magma_get_dgetrf_nb(int m) {
     if (m <= 2048)
         return 64;
     else if (m < 7200)
-        return 192;
+        return 128;
     else
         return 256;
 }

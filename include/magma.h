@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 */
 
 /*#include <quark.h>*/
@@ -29,6 +29,10 @@
 /* ------------------------------------------------------------
  * MAGMA constants
  * --------------------------------------------------------- */
+#define MAGMA_VERSION_MAJOR 1
+#define MAGMA_VERSION_MINOR 3
+#define MAGMA_VERSION_MICRO 0
+
 #define MagmaNoTrans       'N'
 #define MagmaTrans         'T'
 #define MagmaConjTrans     'C'
@@ -75,12 +79,13 @@
 #define MagmaNoVectorsStr  "NoVectors"
 #define MagmaVectorsStr    "Vectors"
 
-#define MagmaMaxGPUs       8
-
 /* ------------------------------------------------------------
- *   Return codes
+ * Return codes
+ * LAPACK argument errors are < 0 but > MAGMA_ERR.
+ * MAGMA errors are < MAGMA_ERR.
  * --------------------------------------------------------- */
 #define MAGMA_SUCCESS                 0
+#define MAGMA_ERR                  -100
 #define MAGMA_ERR_NOT_INITIALIZED  -101
 #define MAGMA_ERR_REINITIALIZED    -102
 #define MAGMA_ERR_NOT_SUPPORTED    -103
@@ -200,6 +205,7 @@ extern "C" {
 // initialization
 void magma_init( void );
 void magma_finalize( void );
+void magma_version( int* major, int* minor, int* micro );
 
 // ========================================
 // memory allocation
@@ -267,6 +273,10 @@ void magma_event_sync( magma_event_t event );
 // blocks queue (but not CPU) until event occurs
 void magma_queue_wait_event( magma_queue_t queue, magma_event_t event );
 
+// magma GPU-complex connection
+int magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][MagmaMaxGPUs+2], magma_int_t *nbcmplx, magma_int_t ngpu);
+
+
 
 // ========================================
 // generic, type-independent routines to copy data.
@@ -314,9 +324,10 @@ void swp2pswp(char trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv
 float getv(float *da);
 
 double magma_wtime( void );
+double magma_sync_wtime( magma_queue_t queue );
 size_t magma_strlcpy(char *dst, const char *src, size_t siz);
 int magma_num_gpus( void );
-int magma_is_devptr( void* A );
+int magma_is_devptr( const void* A );
 
 #ifdef __cplusplus
 }

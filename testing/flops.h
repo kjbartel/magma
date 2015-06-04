@@ -135,8 +135,12 @@
 #define FMULS_GEQRS(__m, __n, __nrhs) ((__nrhs) * ((__n) * ( 2.* (__m) - 0.5 * (__n) + 2.5)))
 #define FADDS_GEQRS(__m, __n, __nrhs) ((__nrhs) * ((__n) * ( 2.* (__m) - 0.5 * (__n) + 0.5)))
 
-//UNMQR, UNMLQ, UNMQL, UNMRQ (Left)
-//UNMQR, UNMLQ, UNMQL, UNMRQ (Right)
+#define FMULS_UNMQR(__m, __n, __k, __side) (( (__side) == MagmaLeft ) \
+    ?  (2.*(__n)*(__m)*(__k) - (__n)*(__k)*(__k) + 2.*(__n)*(__k)) \
+    :  (2.*(__n)*(__m)*(__k) - (__m)*(__k)*(__k) + (__m)*(__k) + (__n)*(__k) - 0.5*(__k)*(__k) + 0.5*(__k)))
+#define FADDS_UNMQR(__m, __n, __k, __side) (( ((__side)) == MagmaLeft ) \
+    ?  (2.*(__n)*(__m)*(__k) - (__n)*(__k)*(__k) + (__n)*(__k)) \
+    :  (2.*(__n)*(__m)*(__k) - (__m)*(__k)*(__k) + (__m)*(__k)))
 
 #define FMULS_TRTRI(__n) ((__n) * ((__n) * ( 1./6. * (__n) + 0.5 ) + 1./3.))
 #define FADDS_TRTRI(__n) ((__n) * ((__n) * ( 1./6. * (__n) - 0.5 ) + 1./3.))
@@ -272,43 +276,28 @@
 
 #define FLOPS_ZUNGQR(__m, __n, __k) (6. * FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
 #define FLOPS_CUNGQR(__m, __n, __k) (6. * FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DUNGQR(__m, __n, __k) (     FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SUNGQR(__m, __n, __k) (     FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_DORGQR(__m, __n, __k) (     FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_SORGQR(__m, __n, __k) (     FMULS_UNGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQR((double)(__m), (double)(__n), (double)(__k)) )
 
 #define FLOPS_ZUNGQL(__m, __n, __k) (6. * FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
 #define FLOPS_CUNGQL(__m, __n, __k) (6. * FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DUNGQL(__m, __n, __k) (     FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SUNGQL(__m, __n, __k) (     FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
-
-#define FLOPS_ZORGQR(__m, __n, __k) (6. * FMULS_ORGQR((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGQR((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_CORGQR(__m, __n, __k) (6. * FMULS_ORGQR((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGQR((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DORGQR(__m, __n, __k) (     FMULS_ORGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGQR((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SORGQR(__m, __n, __k) (     FMULS_ORGQR((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGQR((double)(__m), (double)(__n), (double)(__k)) )
-
-#define FLOPS_ZORGQL(__m, __n, __k) (6. * FMULS_ORGQL((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGQL((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_CORGQL(__m, __n, __k) (6. * FMULS_ORGQL((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGQL((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DORGQL(__m, __n, __k) (     FMULS_ORGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGQL((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SORGQL(__m, __n, __k) (     FMULS_ORGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGQL((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_DORGQL(__m, __n, __k) (     FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_SORGQL(__m, __n, __k) (     FMULS_UNGQL((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGQL((double)(__m), (double)(__n), (double)(__k)) )
 
 #define FLOPS_ZUNGRQ(__m, __n, __k) (6. * FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
 #define FLOPS_CUNGRQ(__m, __n, __k) (6. * FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DUNGRQ(__m, __n, __k) (     FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SUNGRQ(__m, __n, __k) (     FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_DORGRQ(__m, __n, __k) (     FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_SORGRQ(__m, __n, __k) (     FMULS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGRQ((double)(__m), (double)(__n), (double)(__k)) )
 
 #define FLOPS_ZUNGLQ(__m, __n, __k) (6. * FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
 #define FLOPS_CUNGLQ(__m, __n, __k) (6. * FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DUNGLQ(__m, __n, __k) (     FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SUNGLQ(__m, __n, __k) (     FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_DORGLQ(__m, __n, __k) (     FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_SORGLQ(__m, __n, __k) (     FMULS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_UNGLQ((double)(__m), (double)(__n), (double)(__k)) )
 
-#define FLOPS_ZORGRQ(__m, __n, __k) (6. * FMULS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_CORGRQ(__m, __n, __k) (6. * FMULS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DORGRQ(__m, __n, __k) (     FMULS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SORGRQ(__m, __n, __k) (     FMULS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGRQ((double)(__m), (double)(__n), (double)(__k)) )
-
-#define FLOPS_ZORGLQ(__m, __n, __k) (6. * FMULS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_CORGLQ(__m, __n, __k) (6. * FMULS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) + 2.0 * FADDS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_DORGLQ(__m, __n, __k) (     FMULS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) )
-#define FLOPS_SORGLQ(__m, __n, __k) (     FMULS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) +       FADDS_ORGLQ((double)(__m), (double)(__n), (double)(__k)) )
+#define FLOPS_ZUNMQR(__m, __n, __k, __side) (6. * FMULS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) + 2.0 * FADDS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) )
+#define FLOPS_CUNMQR(__m, __n, __k, __side) (6. * FMULS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) + 2.0 * FADDS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) )
+#define FLOPS_DORMQR(__m, __n, __k, __side) (     FMULS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) +       FADDS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) )
+#define FLOPS_SORMQR(__m, __n, __k, __side) (     FMULS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) +       FADDS_UNMQR((double)(__m), (double)(__n), (double)(__k), (__side)) )
 
 #define FLOPS_ZGEQRS(__m, __n, __nrhs) (6. * FMULS_GEQRS((double)(__m), (double)(__n), (double)(__nrhs)) + 2.0 * FADDS_GEQRS((double)(__m), (double)(__n), (double)(__nrhs)) )
 #define FLOPS_CGEQRS(__m, __n, __nrhs) (6. * FMULS_GEQRS((double)(__m), (double)(__n), (double)(__nrhs)) + 2.0 * FADDS_GEQRS((double)(__m), (double)(__n), (double)(__nrhs)) )

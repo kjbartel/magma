@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> c
 
@@ -49,8 +49,8 @@
 
 __global__ void
 magmablas_zhemv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
-                               cuDoubleComplex *A, magma_int_t lda,
-                               cuDoubleComplex *x, magma_int_t incx,
+                               const cuDoubleComplex *A, magma_int_t lda,
+                               const cuDoubleComplex *x, magma_int_t incx,
                                cuDoubleComplex  beta,
                                cuDoubleComplex *y, magma_int_t incy,
                                cuDoubleComplex *WC)
@@ -384,8 +384,8 @@ magmablas_zhemv_200_L_special( magma_int_t n, cuDoubleComplex alpha,
  */
 __global__ void
 magmablas_zhemv_200_L_generic(magma_int_t n, cuDoubleComplex alpha,
-                              cuDoubleComplex *A, magma_int_t lda,
-                              cuDoubleComplex *x, magma_int_t incx,
+                              const cuDoubleComplex *A, magma_int_t lda,
+                              const cuDoubleComplex *x, magma_int_t incx,
                               cuDoubleComplex beta,
                               cuDoubleComplex *y, magma_int_t incy,
                               cuDoubleComplex *WC,
@@ -810,8 +810,8 @@ magmablas_zhemv_200_L_generic(magma_int_t n, cuDoubleComplex alpha,
 
 __global__ void
 magmablas_zhemv_200_L_update(magma_int_t n, cuDoubleComplex alpha,
-                         cuDoubleComplex* A, magma_int_t lda,
-                         cuDoubleComplex *x, magma_int_t incx,
+                         const cuDoubleComplex* A, magma_int_t lda,
+                         const cuDoubleComplex *x, magma_int_t incx,
                          cuDoubleComplex beta,
                          cuDoubleComplex *y, magma_int_t incy,
                          cuDoubleComplex *WC )
@@ -835,8 +835,8 @@ magmablas_zhemv_200_L_update(magma_int_t n, cuDoubleComplex alpha,
 
 extern "C"
 void magmablas_zhemv_200_L(magma_int_t m, cuDoubleComplex alpha,
-                           cuDoubleComplex *A, magma_int_t lda,
-                           cuDoubleComplex *X, magma_int_t incx,
+                           const cuDoubleComplex *A, magma_int_t lda,
+                           const cuDoubleComplex *X, magma_int_t incx,
                            cuDoubleComplex beta,
                            cuDoubleComplex *Y, magma_int_t incy,
                            cuDoubleComplex *dC_work)
@@ -1693,8 +1693,8 @@ extern "C"
 magma_int_t
 magmablas_zhemv_200( char uplo, magma_int_t n,
                      cuDoubleComplex alpha, 
-                     cuDoubleComplex *A, magma_int_t lda,
-                     cuDoubleComplex *X, magma_int_t incx,
+                     const cuDoubleComplex *A, magma_int_t lda,
+                     const cuDoubleComplex *X, magma_int_t incx,
                      cuDoubleComplex beta,  
                      cuDoubleComplex *Y, magma_int_t incy)
 {
@@ -1754,8 +1754,8 @@ extern "C"
 magma_int_t
 magmablas_zhemv2_200( char uplo, magma_int_t n,
                       cuDoubleComplex alpha,
-                      cuDoubleComplex *A, magma_int_t lda,
-                      cuDoubleComplex *X, magma_int_t incx,
+                      const cuDoubleComplex *A, magma_int_t lda,
+                      const cuDoubleComplex *X, magma_int_t incx,
                       cuDoubleComplex beta,
                       cuDoubleComplex *Y, magma_int_t incy,
                       cuDoubleComplex *work, int lwork)

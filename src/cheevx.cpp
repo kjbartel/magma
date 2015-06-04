@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
  
        @author Raffaele Solca
 
-       @generated c Thu Jun 28 12:30:54 2012
+       @generated c Wed Nov 14 22:53:21 2012
        
  */
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_cheevx(char jobz, char range, char uplo, magma_int_t n,
              float *w, cuFloatComplex *z, magma_int_t ldz, cuFloatComplex *work, magma_int_t lwork,
              float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
     Univ. of Tennessee, Knoxville
     Univ. of California, Berkeley
     Univ. of Colorado, Denver
-    June 2012
+    November 2012
    
     Purpose   
     =======   

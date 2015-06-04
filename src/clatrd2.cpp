@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated c Thu Jun 28 12:30:56 2012
+       @generated c Wed Nov 14 22:53:23 2012
 
 */
 #include "common_magma.h"
@@ -43,11 +43,11 @@ magma_clatrd2(char uplo, magma_int_t n, magma_int_t nb,
               cuFloatComplex *dw, magma_int_t lddw,
               cuFloatComplex *dwork, magma_int_t ldwork)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -361,9 +361,9 @@ magma_clatrd2(char uplo, magma_int_t n, magma_int_t nb,
         }
     }
 
-    free(f);
+    magma_free_cpu(f);
     magma_queue_destroy( stream );
 
     return 0;
-} /* clatrd_ */
+} /* clatrd */
 

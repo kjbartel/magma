@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -7,7 +7,7 @@
 
     @author Raffaele Solca
 
-    @generated c Thu Jun 28 12:31:49 2012
+    @generated c Wed Nov 14 22:54:25 2012
 
 */
 
@@ -63,10 +63,8 @@ int main( int argc, char** argv)
 
     float fraction_ev = 0;
 
-    //const char *uplo = MagmaLowerStr;
-    char *uplo = (char*)MagmaLowerStr;
-    //char *uplo = (char*)MagmaUpperStr;
-    char *jobz = (char*)MagmaVectorsStr;
+    const char *uplo = MagmaLowerStr;
+    const char *jobz = MagmaVectorsStr;
     itype = 1;
 
     magma_int_t checkres;
@@ -109,11 +107,11 @@ int main( int argc, char** argv)
                 }
             }
             if (strcmp("-L", argv[i])==0){
-              uplo = (char*)MagmaLowerStr;
+              uplo = MagmaLowerStr;
               printf("  testing_chegvdx -L");
             }
             if (strcmp("-U", argv[i])==0){
-              uplo = (char*)MagmaUpperStr;
+              uplo = MagmaUpperStr;
               printf("  testing_chegvdx -U");
             }
 

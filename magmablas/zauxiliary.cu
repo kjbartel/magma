@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -191,7 +191,10 @@ magmablas_zlaset_identityonly(magma_int_t m, magma_int_t n,
       The function is used for debugging.
 */
 extern "C"
-double cpu_gpu_zdiff(magma_int_t M, magma_int_t N, cuDoubleComplex * a, magma_int_t lda, cuDoubleComplex *da, magma_int_t ldda)
+double cpu_gpu_zdiff(
+    magma_int_t M, magma_int_t N,
+    const cuDoubleComplex *a,  magma_int_t lda,
+    const cuDoubleComplex *da, magma_int_t ldda )
 {
   magma_int_t d_one = 1;
   magma_int_t j;

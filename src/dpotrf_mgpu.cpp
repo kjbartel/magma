@@ -1,45 +1,44 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated d Thu Jun 28 12:30:33 2012
+       @generated d Wed Nov 14 22:52:59 2012
 
 */
 #include "common_magma.h"
 
-/* === Define what BLAS to use ============================================ */
-#define PRECISION_d
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_dgemm magmablas_dgemm
-  #define magma_dtrsm magmablas_dtrsm
-#endif
+/* use two streams; one for comm, and one for comp */
+extern "C" magma_int_t
+magma_dpotrf2_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, 
+                   magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
+                   double **d_lA, magma_int_t ldda, 
+                   double **d_lP, magma_int_t lddp,
+                   double  *a,    magma_int_t lda, magma_int_t h,
+                   cudaStream_t stream[][3], cudaEvent_t event[][5],
+                   magma_int_t *info );
 
-#if (GPUSHMEM >= 200)
-  #if (defined(PRECISION_s))
-     #undef  magma_sgemm
-     #define magma_sgemm magmablas_sgemm_fermi80
-  #endif
-#endif
-/* === End defining what BLAS to use ======================================= */
-
-#define dlA(id, i, j)  (d_lA[id] + (j)*ldda + (i))
-#define dlP(id, i, j)  (d_lP[id] + (j)*ldda + (i))
-
-#define dlAT(id, i, j)  (d_lA[id] + (j)*lddat + (i))
-#define dlPT(id, i, j)  (d_lP[id] + (j)*nb    + (i))
+/* use three streams; seems to be faster on Keeneland, but has problem on Pluto */
+extern "C" magma_int_t
+magma_dpotrf3_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, 
+                   magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
+                   double **d_lA, magma_int_t ldda, 
+                   double **d_lP, magma_int_t lddp,
+                   double  *a,    magma_int_t lda, magma_int_t h,
+                   cudaStream_t stream[][3], cudaEvent_t event[][5],
+                   magma_int_t *info );
 
 extern "C" magma_int_t
 magma_dpotrf_mgpu(int num_gpus, char uplo, magma_int_t n, 
-                 double **d_lA, magma_int_t ldda, magma_int_t *info)
+                  double **d_lA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -88,7 +87,7 @@ magma_dpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
     =====================================================================   */
 
 
-    magma_int_t     j, jb, nb, nb0, nb2, d, id, j_local, j_local2;
+    magma_int_t     j, jb, nb, nb0, nb2, d, id, j_local, j_local2, lddp, h;
     char            uplo_[2] = {uplo, 0};
     double c_one     = MAGMA_D_ONE;
     double c_neg_one = MAGMA_D_NEG_ONE;
@@ -96,366 +95,94 @@ magma_dpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
     double          d_one     =  1.0;
     double          d_neg_one = -1.0;
     int upper = lapackf77_lsame(uplo_, "U");
-    double *d_lP[MagmaMaxGPUs], *dlpanel;
-    magma_int_t n_local[MagmaMaxGPUs], lddat_local[MagmaMaxGPUs], lddat, ldpanel;
-    cudaStream_t stream[MagmaMaxGPUs][4];
+    double *dwork[MagmaMaxGPUs];
+    cudaStream_t    stream[MagmaMaxGPUs][3];
+    cudaEvent_t     event[MagmaMaxGPUs][5];
 
     *info = 0;
+    nb = magma_get_dpotrf_nb(n);
     if ( (! upper) && (! lapackf77_lsame(uplo_, "L")) ) {
         *info = -1;
     } else if (n < 0) {
         *info = -2;
-    } else if (ldda < max(1,n)) {
+    } else if (!upper) {
+        lddp = nb*(n/(nb*num_gpus));
+        if( n%(nb*num_gpus) != 0 ) lddp+=min(nb,n-num_gpus*lddp);
+        if( ldda < lddp ) *info = -4;
+    } else if( ldda < n ) {
         *info = -4;
     }
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
         return *info;
     }
-    nb = magma_get_dpotrf_nb(n);
 
-    if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, n*nb )) {
+    if (num_gpus == 1 && ((nb <= 1) || (nb >= n)) ) {
+      /*  Use unblocked code. */
+      magma_setdevice(0);
+      if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, n*nb )) {
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
-    }
-
-    if ((nb <= 1) || (nb >= n)) {
-      /*  Use unblocked code. */
-          magma_setdevice(0);
-      magma_dgetmatrix( n, n, dlA(0,0,0), ldda, work, n );
+      }
+      magma_dgetmatrix( n, n, d_lA[0], ldda, work, n );
       lapackf77_dpotrf(uplo_, &n, work, &n, info);
-      magma_dsetmatrix( n, n, work, n, dlA(0,0,0), ldda );
+      magma_dsetmatrix( n, n, work, n, d_lA[0], ldda );
+      magma_free_pinned( work );
     } else {
-
+      lddp = 32*((n+31)/32);
       for( d=0; d<num_gpus; d++ ) {
         magma_setdevice(d);
-
-        /* local-n and local-ld */
-        n_local[d] = ((n/nb)/num_gpus)*nb;
-        if (d < (n/nb)%num_gpus)
-          n_local[d] += nb;
-        else if (d == (n/nb)%num_gpus)
-          n_local[d] += n%nb;
-        lddat_local[d] = ((n_local[d]+31)/32)*32;
-        
-        if (MAGMA_SUCCESS != magma_dmalloc( &d_lP[d], nb*ldda )) {
+        if (MAGMA_SUCCESS != magma_dmalloc( &dwork[d], num_gpus*nb*lddp )) {
           for( j=0; j<d; j++ ) {
             magma_setdevice(j);
-            magma_free( d_lP[d] );
+            magma_free( dwork[j] );
           }
           *info = MAGMA_ERR_DEVICE_ALLOC;
           return *info;
         }
-        magma_queue_create( &stream[d][0] );
-        magma_queue_create( &stream[d][1] );
-        magma_queue_create( &stream[d][2] );
-        magma_queue_create( &stream[d][3] );
+        for( j=0; j<3; j++ ) magma_queue_create( &stream[d][j] );
+        for( j=0; j<5; j++ ) magma_event_create( &event[d][j]  );
+      }
+      magma_setdevice(0);
+      h = 1; //num_gpus; //(n+nb-1)/nb;
+      if (MAGMA_SUCCESS != magma_dmalloc_pinned( &work, n*nb*h )) {
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
+      }
+      if (upper) {
+          /* with two streams */
+          //magma_dpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,  
+          //                   h, stream, event, info);
+          /* with three streams */
+          magma_dpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,  
+                             h, stream, event, info);
+      } else {
+          /* with two streams */
+          //magma_dpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h, 
+          //                   h, stream, event, info);
+          /* with three streams */
+          magma_dpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h, 
+                             h, stream, event, info);
       }
 
-      /* Use blocked code. */
-      if (upper) 
-        {     
-          /* Compute the Cholesky factorization A = U'*U. */
-          for (j=0; j<n; j+=nb) {
+      /* clean up */
+      for( d=0; d<num_gpus; d++ ) {
+        magma_setdevice(d);
+        for( j=0; j<3; j++ ) {
+            magma_queue_sync( stream[d][j] );
+            magma_queue_destroy( stream[d][j] ); 
+        }
+        magmablasSetKernelStream(NULL);
 
-            /* Set the GPU number that holds the current panel */
-            id = (j/nb)%num_gpus;
-            magma_setdevice(id);
+        for( j=0; j<5; j++ ) 
+            magma_event_destroy( event[d][j] );
 
-            /* Set the local index where the current panel is */
-            j_local = j/(nb*num_gpus);
-            jb = min(nb, (n-j));
-              
-            if( j>0 && (j+jb)<n) {
-              /* wait for the off-diagonal column off the current diagonal *
-               * and send it to gpus                                       */
-              magma_queue_sync( stream[id][2] );
-              for( d=0; d<num_gpus; d++ ) {
-                magma_setdevice(d);
-                if( d != id )
-                  magma_dsetmatrix_async( j, jb,
-                                          &work[jb],   n,
-                                          dlP(d,jb,0), ldda, stream[d][3] );
-              }
-            }
-            
-            /* Update the current diagonal block */
-            magma_setdevice(id);
-            magma_dsyrk(MagmaUpper, MagmaTrans, jb, j, 
-                        d_neg_one, dlA(id, 0, nb*j_local), ldda, 
-                        d_one,     dlA(id, j, nb*j_local), ldda);
-
-            /* send the diagonal to cpu */
-            magma_dgetmatrix_async( jb, jb,
-                                    dlA(id, j, nb*j_local), ldda,
-                                    work,                   n, stream[id][0] );
-
-            if ( j>0 && (j+jb)<n) {
-              /* Compute the local block column of the panel. */
-              for( d=0; d<num_gpus; d++ ) {
-                magma_setdevice(d);
-                j_local2 = j_local+1;
-                if( d > id ) j_local2 --;
-
-                /* wait for the off-diagonal */
-                if( d != id ) {
-                  //magma_queue_sync( stream[id][3] );
-                  dlpanel = dlP(d, jb, 0);
-                } else {
-                  dlpanel = dlA(d, 0, nb*j_local);
-                }
-                
-                /* update the panel */
-                magma_dgemm(MagmaTrans, MagmaNoTrans, 
-                            jb, (n_local[d]-nb*(j_local2-1)-jb), j, 
-                            c_neg_one, dlpanel,                ldda, 
-                                       dlA(d, 0, nb*j_local2), ldda,
-                            c_one,     dlA(d, j, nb*j_local2), ldda);
-              }
-            }
-          
-            /* factor the diagonal */
-            magma_setdevice(id);
-            magma_queue_sync( stream[id][0] );
-            lapackf77_dpotrf(MagmaUpperStr, &jb, work, &n, info);
-            if (*info != 0) {
-              *info = *info + j;
-              break;
-            }
-
-            /* send the diagonal to gpus */
-            if ( (j+jb) < n) {
-              for( d=0; d<num_gpus; d++ ) {
-                magma_setdevice(d);
-                if( d == id ) dlpanel = dlA(d, j, nb*j_local);
-                else          dlpanel = dlP(d, 0, 0);
-                
-                magma_dsetmatrix_async( jb, jb,
-                                        work,    n,
-                                        dlpanel, ldda, stream[d][1] );
-              }
-            } else {
-              magma_setdevice(id);
-              magma_dsetmatrix_async( jb, jb,
-                                      work,                   n,
-                                      dlA(id, j, nb*j_local), ldda, stream[id][1] );
-            }
-
-            /* panel-factorize the off-diagonal */
-            if ( (j+jb) < n) {
-              for( d=0; d<num_gpus; d++ ) {
-                magma_setdevice(d);
-                
-                /* next column */
-                j_local2 = j_local+1;
-                if( d > id ) j_local2--;
-                if( d == id ) dlpanel = dlA(d, j, nb*j_local);
-                else          dlpanel = dlP(d, 0, 0);
-                nb0 = min(nb, n_local[d]-nb*j_local2 );
-                
-                magma_queue_sync( stream[d][1] );
-                if( d == (j/nb+1)%num_gpus ) {
-                  /* owns the next column, look-ahead the column */
-                  /*
-                  magma_dtrsm( MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit, 
-                               jb, nb0, c_one,
-                               dlpanel,                ldda, 
-                               dlA(d, j, nb*j_local2), ldda);
-                  */
-                  nb2 = n_local[d] - j_local2*nb;
-                  magma_dtrsm( MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit,
-                               jb, nb2, c_one,
-                               dlpanel,                    ldda,
-                               dlA(d, j, nb*j_local2), ldda);
-
-                  
-                  /* send the column to cpu */
-                  if( j+jb+nb0 < n ) {
-                    magma_dgetmatrix_async( (j+jb), nb0,
-                                            dlA(d, 0, nb*j_local2), ldda,
-                                            &work[nb0],             n, stream[d][2] );
-                  }
-
-                  /* update the remaining blocks */
-                  /*
-                  nb2 = n_local[d] - j_local2*nb - nb0;
-                  magma_dtrsm( MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit, 
-                               jb, nb2, c_one,
-                               dlpanel,                    ldda, 
-                               dlA(d, j, nb*j_local2+nb0), ldda);
-                  */
-                } else {
-                  /* update the entire trailing matrix */
-                  nb2 = n_local[d] - j_local2*nb;
-                  magma_dtrsm( MagmaLeft, MagmaUpper, MagmaTrans, MagmaNonUnit, 
-                               jb, nb2, c_one,
-                               dlpanel,                ldda, 
-                               dlA(d, j, nb*j_local2), ldda);
-                }
-              }
-            } /* end of dtrsm */
-          } /* end of for j=1, .., n */
-        } else { 
-            /* Compute the Cholesky factorization A = L*L'. */
-
-            for (j=0; j<n; j+=nb) {
-
-              /* Set the GPU number that holds the current panel */
-              id = (j/nb)%num_gpus;
-              magma_setdevice(id);
-
-              /* Set the local index where the current panel is */
-              j_local = j/(nb*num_gpus);
-          jb = min(nb, (n-j));
-
-                  if( j>0 && (j+jb)<n) {
-                    /* wait for the off-diagonal row off the current diagonal *
-                         * and send it to gpus                                    */
-                magma_queue_sync( stream[id][2] );
-            for( d=0; d<num_gpus; d++ ) {
-                  magma_setdevice(d);
-                      lddat = lddat_local[d];
-                          if( d != id ) 
-                  magma_dsetmatrix_async( jb, j,
-                                          &work[jb*jb], jb,
-                                          dlPT(d,0,jb), nb, stream[d][3] );
-                        }
-                  }
-
-              /* Update the current diagonal block */
-              magma_setdevice(id);
-                  lddat = lddat_local[id];
-                  magma_dsyrk(MagmaLower, MagmaNoTrans, jb, j,
-                              d_neg_one, dlAT(id, nb*j_local, 0), lddat,
-                              d_one,     dlAT(id, nb*j_local, j), lddat);
-
-                  /* send the diagonal to cpu */
-              magma_dgetmatrix_async( jb, jb,
-                                      dlAT(id, nb*j_local, j), lddat,
-                                      work,                    jb, stream[id][0] );
-
-                  if ( j > 0 && (j+jb) < n) {
-                        /* compute the block-rows of the panel */
-                        for( d=0; d<num_gpus; d++ ) {
-                  magma_setdevice(d);
-                          lddat = lddat_local[d];
-                          j_local2 = j_local+1;
-                          if( d > id ) j_local2 --;
-
-                          /* wait for the off-diagonal */
-                  if( d != id ) {
-                                  magma_queue_sync( stream[id][3] );
-                                  dlpanel = dlPT(d, 0, jb);
-                                  ldpanel = nb;
-                          } else {
-                                  dlpanel = dlAT(d, nb*j_local, 0);
-                                  ldpanel = lddat;
-                          }
-
-                          /* update the panel */
-                      magma_dgemm( MagmaNoTrans, MagmaTrans,
-                                   n_local[d]-nb*j_local2, jb, j,
-                                   c_neg_one, dlAT(d, nb*j_local2, 0), lddat,
-                                              dlpanel,                 ldpanel,
-                                   c_one,     dlAT(d, nb*j_local2, j), lddat);
-                        }
-                  }
-
-                  /* factor the diagonal */
-              magma_setdevice(id);
-                  magma_queue_sync( stream[id][0] );
-                  lapackf77_dpotrf(MagmaLowerStr, &jb, work, &jb, info);
-                  if (*info != 0) {
-                     *info = *info + j;
-                     break;
-                  }
-
-                  /* send the diagonal to gpus */
-              if ( (j+jb) < n) {
-                    for( d=0; d<num_gpus; d++ ) {
-                  magma_setdevice(d);
-                          lddat = lddat_local[d];
-                          if( d == id ) {
-                                  dlpanel = dlAT(d, nb*j_local, j);
-                                  ldpanel = lddat;
-                          } else {
-                                  dlpanel = dlPT(d, 0, 0);
-                                  ldpanel = nb;
-                          }
-                      magma_dsetmatrix_async( jb, jb,
-                                              work,    jb,
-                                              dlpanel, ldpanel, stream[d][1] );
-                        }
-                  } else {
-                    magma_dsetmatrix_async( jb, jb,
-                                            work,                    jb,
-                                            dlAT(id, nb*j_local, j), lddat, stream[id][1] );
-                  }
-              if ( (j+jb) < n) {
-                    for( d=0; d<num_gpus; d++ ) {
-                  magma_setdevice(d);
-                          lddat = lddat_local[d];
-
-                          /* next column */
-                          j_local2 = j_local+1;
-                          if( d > id ) j_local2--;
-                          if( d == id ) {
-                                  dlpanel = dlAT(d, nb*j_local, j);
-                                  ldpanel = lddat;
-                          } else {         
-                                  dlpanel = dlPT(d, 0, 0);
-                                  ldpanel = nb;
-                          }
-                          nb0 = min(nb, n_local[d]-nb*j_local2 );
-                          nb0 = min(nb, lddat-nb*j_local2 );
-
-                  magma_queue_sync( stream[d][1] );
-                          if( d == (j/nb+1)%num_gpus ) {
-                            /* owns the next column, look-ahead the column */
-                    magma_dtrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaNonUnit, 
-                                 nb0, jb, c_one,
-                                 dlpanel,                 ldpanel, 
-                                 dlAT(d, nb*j_local2, j), lddat);
-
-                            /* send the column to cpu */
-                                if( j+jb+nb0 < n ) {
-                      magma_dgetmatrix_async( nb0, j+jb,
-                                              dlAT(d, nb*j_local2, 0), lddat,
-                                              &work[nb0*nb0],          nb0, stream[d][2] );
-                                }
-
-                                /* update the remaining blocks */
-                        nb2 = n_local[d] - j_local2*nb - nb0;
-                    magma_dtrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaNonUnit, 
-                                 nb2, jb, c_one,
-                                 dlpanel,                     ldpanel, 
-                                 dlAT(d, nb*j_local2+nb0, j), lddat);
-                          } else {
-                        /* update the entire trailing matrix */
-                        nb2 = n_local[d] - j_local2*nb;
-                    magma_dtrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaNonUnit, 
-                                 nb2, jb, c_one,
-                                 dlpanel,                 ldpanel, 
-                                 dlAT(d, nb*j_local2, j), lddat);
-                          }
-                        }
-                  }
-            }
-          } /* end of else not upper */
-
-          /* clean up */
-          for( d=0; d<num_gpus; d++ ) {
-            magma_free( d_lP[d] );
-            magma_queue_destroy( stream[d][0] );
-            magma_queue_destroy( stream[d][1] );
-            magma_queue_destroy( stream[d][2] );
-            magma_queue_destroy( stream[d][3] );
-          }
-
+        magma_free( dwork[d] );
+      }
+      magma_setdevice(0);
+      magma_free_pinned( work );
     } /* end of not lapack */
 
-        /* free workspace */
-        magma_free_pinned( work );
 
-        return *info;
+    return *info;
 } /* magma_dpotrf_mgpu */

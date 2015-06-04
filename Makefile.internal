@@ -1,13 +1,12 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.1) --
+#   -- MAGMA (version 1.3.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2012
+#      November 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 include $(MAGMA_DIR)/make.inc
--include $(MAGMA_DIR)/make.inc.${MACHINE}
 
 OPTS += -DHAVE_CUBLAS
 
@@ -32,22 +31,22 @@ prefix ?= ./install
 #
 # NVCC options for the different cards
 #
-TESLAOPT = -arch sm_13 -DGPUSHMEM=130 \
-           -gencode arch=compute_13,code=compute_13 \
-           -gencode arch=compute_10,code=compute_10
-
-FERMIOPT = -arch sm_20 -DGPUSHMEM=200
-
 ifeq (${GPU_TARGET}, Tesla)
-	NVOPTS += ${TESLAOPT}
+	NVOPTS += -DGPUSHMEM=130 -arch sm_13 \
+	          -gencode arch=compute_13,code=compute_13 \
+	          -gencode arch=compute_10,code=compute_10
 	OPTS   += -DGPUSHMEM=130
 	LDOPTS += -DGPUSHMEM=130
 else ifeq (${GPU_TARGET}, Fermi)
-	NVOPTS += ${FERMIOPT}
+	NVOPTS += -DGPUSHMEM=200 -arch sm_20
 	OPTS   += -DGPUSHMEM=200
 	LDOPTS += -DGPUSHMEM=200
+else ifeq (${GPU_TARGET}, Kepler)
+        NVOPTS += -DGPUSHMEM=300 -arch sm_35
+	OPTS   += -DGPUSHMEM=300
+        LDOPTS += -DGPUSHMEM=300
 else
-$(error GPU_TARGET, currently ${GPU_TARGET}, must be one of Tesla or Fermi. Please edit your make.inc file)
+$(error GPU_TARGET, currently ${GPU_TARGET}, must be one of Tesla, Fermi, or Kepler. Please edit your make.inc file)
 endif
 
 INC += -I$(MAGMA_DIR)/include
@@ -75,6 +74,9 @@ FOPTS += $(PTROPT)
 # Rules to compile object files
 #
 %.o: %.cpp
+	$(CC) $(OPTS) $(INC) -c $< -o $@
+
+%.o: %.c
 	$(CC) $(OPTS) $(INC) -c $< -o $@
 
 %.cu_o: %.cu

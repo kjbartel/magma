@@ -1,9 +1,9 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
  * @precisions normal z -> s d c
  */
@@ -236,7 +236,7 @@ magma_int_t magma_zgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_i
 magma_int_t magma_zgesv_gpu(  magma_int_t n, magma_int_t nrhs, 
                   cuDoubleComplex *dA, magma_int_t ldda, magma_int_t *ipiv, 
                   cuDoubleComplex *dB, magma_int_t lddb, magma_int_t *info);
-magma_int_t magma_zgetrl_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
+magma_int_t magma_zgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
                               cuDoubleComplex *hA, magma_int_t ldha, cuDoubleComplex *dA, magma_int_t ldda,
                               cuDoubleComplex *hL, magma_int_t ldhl, cuDoubleComplex *dL, magma_int_t lddl,
                               magma_int_t *ipiv, 

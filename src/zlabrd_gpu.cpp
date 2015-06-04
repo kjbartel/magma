@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @precisions normal z -> s d c
 
@@ -26,11 +26,11 @@ magma_zlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                   cuDoubleComplex *x, magma_int_t ldx, cuDoubleComplex *dx, magma_int_t lddx,
                   cuDoubleComplex *y, magma_int_t ldy, cuDoubleComplex *dy, magma_int_t lddy)
 {
-/*  -- MAGMA (version 1.2.1) --
+/*  -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
     Purpose   
     =======   
@@ -556,8 +556,8 @@ magma_zlabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
     }
     
     magma_queue_destroy( stream );
-    free(f);
+    magma_free_cpu(f);
     
     return MAGMA_SUCCESS;
-} /* zlabrd_ */
+} /* zlabrd */
 

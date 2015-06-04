@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
        @author Azzam Haidar
        @author Stan Tomov
@@ -141,7 +141,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
     
     magma_int_t mklth, thread, INFO;
     magma_int_t Vblksiz=-1, blkcnt=-1, LDV=-1, LDT =-1, INgrsiz=1, LDE=-1, BAND=6;
-    Vblksiz = min(NB,48); //NB; //min(NB,64);
+#if (defined(PRECISION_s) || defined(PRECISION_d))
+    Vblksiz = min(NB,48);
+#else
+    Vblksiz = min(NB,32);
+#endif
     LDT     = Vblksiz;
     findVTsiz(N, NB, Vblksiz, &blkcnt, &LDV);
 
@@ -203,7 +207,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
 
 
-    timelpk = get_time_azz();
+    timelpk = magma_wtime();
     /* copy the input matrix into a matrix A2 with band storage */
     cuDoubleComplex *A2    = (cuDoubleComplex *) malloc (N*LDA2*sizeof(cuDoubleComplex));
     memset(A2 , 0, N*LDA2*sizeof(cuDoubleComplex));        
@@ -227,7 +231,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
     for (j = 0; j < N-NB; j++)
        A1[NB+j*LDA1+j] = c_one;
 
-    timelpk = get_time_azz() - timelpk;
+    timelpk = magma_wtime() - timelpk;
     printf("  Finish CONVERT timing= %lf \n" ,timelpk); 
 
     
@@ -245,11 +249,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
        magma_device_sync();
        magma_zsetmatrix( N, LDA1, A1, LDA1, da, LDA1 );
        if(overlapQ1==0){
-           timeaplQ1 = get_time_azz();
+           timeaplQ1 = magma_wtime();
            magma_zungqr_2stage_gpu(N, N, N, da, LDA1, NOTUSED, dT1, NB, &INFO);
            magma_device_sync();
            //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
-           timeaplQ1 = get_time_azz()-timeaplQ1;
+           timeaplQ1 = magma_wtime()-timeaplQ1;
            printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
        }
        /*            
@@ -304,7 +308,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
     //goto ed;
     
-#if defined(LIBMKL)
+#if defined(USEMKL)
     mkl_set_num_threads( 1 );
 #endif
     core_in_all.cores_num = THREADS;
@@ -494,9 +498,9 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
     //                 
     //========================
     
-    timeeigen = get_time_azz();
+    timeeigen = magma_wtime();
     if(WANTZ==0){
-        timelpk = get_time_azz();
+        timelpk = magma_wtime();
         // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
 #if defined(USEMKL)
         mklth=THREADS; //;
@@ -507,7 +511,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 #if defined(USEMKL)
         mkl_set_num_threads( 1 );
 #endif
-        timelpk = get_time_azz()-timelpk;
+        timelpk = magma_wtime()-timelpk;
         printf("  Finish WANTZ %d  eigensolver 'N'    timing= %lf  threads %d \n", (int) WANTZ, timelpk, (int) i);
         /*
         for(i=0;i<10;i++)
@@ -556,12 +560,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
 
         if((WANTZ==1)||(WANTZ==2)||(WANTZ==3)||(WANTZ==4)){
-            timelpk = get_time_azz();
+            timelpk = magma_wtime();
             // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
 #if defined(USEMKL)
             mklth=THREADS; //;
-            //mkl_set_num_threads(mklth);
-            mkl_set_num_threads( 1 );
+            mkl_set_num_threads(mklth);
 #endif
             // call eigensolver for our resulting tridiag [D E] and form E=Q*Z
             //magma_zstedc_withZ('I', N, D2, E2, Z, LDZ);
@@ -569,7 +572,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 #if defined(USEMKL)
             mkl_set_num_threads( 1 );
 #endif
-            timelpk = get_time_azz()-timelpk;
+            timelpk = magma_wtime()-timelpk;
         }
 
        /*
@@ -626,7 +629,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                //
                // way 2 is implemented because of Raffaele
                // NE is the number of eigenvectors we want.
-               timeaplQ2 = get_time_azz();
+               timeaplQ2 = magma_wtime();
                magma_free( dT1 );
                // copy Q1 to CPU
                magma_zgetmatrix( N, LDA1, da, N, A1, LDA1 );
@@ -634,7 +637,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                magma_zbulge_applyQ(WANTZ, 'L', NE, N, NB, Vblksiz, Q2, N, V, TAU, T, &INFO, dV2, dT2, da, 2);
                // free dT2 and allocate dZ and copy Z to dZ
                magma_device_sync();
-               timeaplQ2 = get_time_azz()-timeaplQ2;
+               timeaplQ2 = magma_wtime()-timeaplQ2;
                magma_free( dT2 );
                if(MAGMA_SUCCESS != magma_zmalloc( &dZ, N*N )) { 
                   printf ("!!!! magma_alloc failed for: dZ\n" );       
@@ -652,7 +655,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                 fclose(trace_file);
                 */
 
-               timegemm = get_time_azz();
+               timegemm = magma_wtime();
                // copy the eigenvectors to GPU
                magma_zsetmatrix( N, LDZ, Z, LDZ, dZ, N );
                // make GEMM Q2 * Z --> dV2 = da * dZ
@@ -662,13 +665,13 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                // make GEMM Q1 * (Q2 * Z) --> da = dZ * dV2
                magma_zgemm( MagmaNoTrans, MagmaNoTrans, N, NE, N, c_one, dZ, N, dV2, N, c_zero, da, N);
                magma_zgetmatrix( N, NE, da, N, A1, LDA1 );
-               timegemm = get_time_azz()-timegemm;
+               timegemm = magma_wtime()-timegemm;
            }
            if(WANTZ==2){
                /****************************************************
                 * apply V2 from Right to Q1. da = da*(I-V2*T2*V2')
                 * **************************************************/
-               timeaplQ2 = get_time_azz();
+               timeaplQ2 = magma_wtime();
                /*============================
                 *  use GPU+CPU's
                 *==========================*/             
@@ -682,7 +685,19 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                            N_GPU = (N_GPU/64)*64;
                            N_CPU = NE-N_GPU;
                    }else if(THREADS>10){
-                           N_GPU = (int) (0.6*(double)NE);
+#if (defined(PRECISION_s) || defined(PRECISION_d))
+                           N_GPU = (int) (0.68*(double)NE);
+#else
+                           N_GPU = (int) (0.72*(double)NE);
+#endif
+                           N_GPU = (N_GPU/64)*64;
+                           N_CPU = NE-N_GPU;
+                   }else if(THREADS>5){
+#if (defined(PRECISION_s) || defined(PRECISION_d))
+                           N_GPU = (int) (0.84*(double)NE);
+#else
+                           N_GPU = (int) (0.86*(double)NE);
+#endif
                            N_GPU = (N_GPU/64)*64;
                            N_CPU = NE-N_GPU;
                    }else{
@@ -756,7 +771,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                    magma_device_sync();
                    magma_free( dT2 );
                }
-               timeaplQ2 = get_time_azz()-timeaplQ2;
+               timeaplQ2 = magma_wtime()-timeaplQ2;
 
                /****************************************************
                 * compute the GEMM of Q*Z
@@ -766,13 +781,13 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                   printf ("!!!! magma_alloc failed for: dZ\n" );       
                   exit(-1);                                                           
                }
-               timegemm = get_time_azz();
+               timegemm = magma_wtime();
                // copy the eigenvectors to GPU
                magma_zsetmatrix( N, NE, Z, LDZ, dZ, N );
                //make a gemm of (Q1 * Q2) * Z = da * dZ --> dV2
                magma_zgemm( MagmaNoTrans, MagmaNoTrans, N, NE, N, c_one, da, N, dZ, N, c_zero, dV2, N);
                magma_zgetmatrix( N, NE, dV2, N, A1, LDA1 );
-               timegemm = get_time_azz()-timegemm;
+               timegemm = magma_wtime()-timegemm;
            }
 
            if(WANTZ==3){
@@ -784,7 +799,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                   printf ("!!!! magma_alloc failed for: dZ\n" );       
                   exit(-1);                                                           
                }
-               timeaplQ2 = get_time_azz();
+               timeaplQ2 = magma_wtime();
                /*============================
                 *  use GPU+CPU's
                 *==========================*/             
@@ -798,7 +813,19 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                            N_GPU = (N_GPU/64)*64;
                            N_CPU = NE-N_GPU;
                    }else if(THREADS>10){
-                           N_GPU = (int) (0.6*(double)NE);
+#if (defined(PRECISION_s) || defined(PRECISION_d))
+                           N_GPU = (int) (0.68*(double)NE);
+#else
+                           N_GPU = (int) (0.72*(double)NE);
+#endif
+                           N_GPU = (N_GPU/64)*64;
+                           N_CPU = NE-N_GPU;
+                   }else if(THREADS>5){
+#if (defined(PRECISION_s) || defined(PRECISION_d))
+                           N_GPU = (int) (0.82*(double)NE);
+#else
+                           N_GPU = (int) (0.84*(double)NE);
+#endif
                            N_GPU = (N_GPU/64)*64;
                            N_CPU = NE-N_GPU;
                    }else{
@@ -863,17 +890,17 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                    magma_device_sync();
                }
 
-               timeaplQ2 = get_time_azz()-timeaplQ2;
+               timeaplQ2 = magma_wtime()-timeaplQ2;
                /****************************************************
                 * compute the GEMM of Q1 * (Q2*Z)
                 * **************************************************/
                magma_free( dT2 );
                printf("calling dgemm\n");
-               timegemm = get_time_azz();
+               timegemm = magma_wtime();
                //make a gemm of Q1 * (Q2 * Z) = Q1 * ((I-V2T2V2')*Z) = da * dZ --> dV2
                magma_zgemm( MagmaNoTrans, MagmaNoTrans, N, NE, N, c_one, da, N, dZ, N, c_zero, dV2, N);
                magma_zgetmatrix( N, NE, dV2, N, A1, LDA1 );
-               timegemm = get_time_azz()-timegemm;
+               timegemm = magma_wtime()-timegemm;
            }
 
            if(WANTZ==5){
@@ -881,11 +908,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                    printf("WANTZ=5 is not supported with NE=%d it compute all the eigenvectors meaning that NE=N\n", (int) NE);
                    exit(-2);
                }
-               timeaplQ2 = get_time_azz();
+               timeaplQ2 = magma_wtime();
                magma_zbulge_applyQ(WANTZ, 'R', NE, N, NB, Vblksiz, A1, LDA1, V, TAU, T, &INFO, dV2, dT2, da, 2);
                magma_zgetmatrix( N, LDA1, da, N, A1, LDA1 );
-               timeaplQ2 = get_time_azz()-timeaplQ2;
-               timelpk = get_time_azz();
+               timeaplQ2 = magma_wtime()-timeaplQ2;
+               timelpk = magma_wtime();
                // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
                #if defined(USEMKL)
                mklth=THREADS; //;
@@ -896,7 +923,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                #if defined(USEMKL)
                mkl_set_num_threads( 1 );
                #endif
-               timelpk = get_time_azz()-timelpk;
+               timelpk = magma_wtime()-timelpk;
            }
 
         }
@@ -945,7 +972,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
         }
         // ************************************************
 
-       timeeigen = get_time_azz()-timeeigen;
+       timeeigen = magma_wtime()-timeeigen;
        printf("============================================================================\n");
        printf("  Finish WANTZ %d  computing Q2       timing= %lf \n", (int) WANTZ, timeaplQ2);
        if(WANTZ!=5){
@@ -1018,9 +1045,9 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
         cuDoubleComplex *ALPK    = (cuDoubleComplex *) malloc (N*LDAINIT*sizeof(cuDoubleComplex));
         memcpy(ALPK, AINIT, N*LDAINIT*sizeof(cuDoubleComplex));
 
-        timelpk = get_time_azz();
+        timelpk = magma_wtime();
         lapackf77_zhbtrd("N", "L", &N, &NB, ALPK, &LDAINIT, D1, E1, WORK, &N, WORK, &INFO); 
-        timelpk = get_time_azz() - timelpk;
+        timelpk = magma_wtime() - timelpk;
         printf("\n");                
         printf("  Time ZHBTRD-MKL-LAPACK                      :   %lf    N : %10d    NB : %10d \n\n\n",timelpk, N, NB );
         /* call eigensolver */
@@ -1077,10 +1104,10 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
     magma_free( dV2 );
     magma_free( da );
-    free(A2);
-    free(TAU);
-    free(V);
-    free(T);
+    magma_free_cpu(A2);
+    magma_free_cpu(TAU);
+    magma_free_cpu(V);
+    magma_free_cpu(T);
 
     return 0;
 } /* END ZHETRD_BHE2TRC */
@@ -1130,7 +1157,7 @@ static void *parallel_section(void *thread_id)
 
     // timing
     if (my_core_id == 0){
-       timeall = get_time_azz();
+       timeall = magma_wtime();
     }
 
 
@@ -1167,34 +1194,34 @@ static void *parallel_section(void *thread_id)
              //=========================
              if(overlapQ1==1){
                  magma_device_sync();
-                 timeaplQ1 = get_time_azz();
+                 timeaplQ1 = magma_wtime();
                  magma_zungqr_2stage_gpu(N, N, N, dQ1, N, NOTUSED, dT1, NB, &INFO);
                  magma_device_sync();
                  //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
-                 timeaplQ1 = get_time_azz()-timeaplQ1;
+                 timeaplQ1 = magma_wtime()-timeaplQ1;
                  printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
              }
            
              //=========================
              //    bulge chasing
              //=========================
-             if(my_newcore_id == 0)timeB = get_time_azz();
+             if(my_newcore_id == 0)timeB = magma_wtime();
              tile_bulge_parallel(my_newcore_id);
              barrier(my_newcore_id, locores_num);
              if(my_newcore_id == 0){
-                 timeB = get_time_azz()-timeB;
+                 timeB = magma_wtime()-timeB;
                  printf("  Finish BULGE   timing= %lf \n" ,timeB);
              }
            
              //=========================
              // compute the T's to be used when applying Q2
              //=========================
-             if(my_newcore_id == 0)timeT = get_time_azz();
+             if(my_newcore_id == 0)timeT = magma_wtime();
              tile_bulge_computeT_parallel(my_newcore_id);
              barrier(my_newcore_id, locores_num);
              // timing
              if (my_newcore_id == 0){
-                timeT = get_time_azz()-timeT;
+                timeT = magma_wtime()-timeT;
                 printf("  Finish T's     timing= %lf \n" ,timeT);
              }
          /************************************************
@@ -1224,34 +1251,34 @@ static void *parallel_section(void *thread_id)
                 //    compute Q1 on last newcoreid
                 //=============================================
                 magma_device_sync();
-                timeaplQ1 = get_time_azz();
+                timeaplQ1 = magma_wtime();
                 magma_zungqr_2stage_gpu(N, N, N, dQ1, N, NOTUSED, dT1, NB, &INFO);
                 magma_device_sync();
                 //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
-                timeaplQ1 = get_time_azz()-timeaplQ1;
+                timeaplQ1 = magma_wtime()-timeaplQ1;
                 printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
             /* I am one of the remaining cores*/
             }else{
                 //=========================
                 //    bulge chasing
                 //=========================
-                if(my_newcore_id == 0)timeB = get_time_azz();
+                if(my_newcore_id == 0)timeB = magma_wtime();
                 tile_bulge_parallel(my_newcore_id);
                 barrier(my_newcore_id, locores_num);
                 if(my_newcore_id == 0){
-                    timeB = get_time_azz()-timeB;
+                    timeB = magma_wtime()-timeB;
                     printf("  Finish BULGE   timing= %lf \n" ,timeB);
                 }
                
                 //=========================
                 // compute the T's to be used when applying Q2
                 //=========================
-                if(my_newcore_id == 0)timeT = get_time_azz();
+                if(my_newcore_id == 0)timeT = magma_wtime();
                 tile_bulge_computeT_parallel(my_newcore_id);
                 barrier(my_newcore_id, locores_num);
                 // timing
                 if (my_newcore_id == 0){
-                   timeT = get_time_azz()-timeT;
+                   timeT = magma_wtime()-timeT;
                    printf("  Finish T's     timing= %lf \n" ,timeT);
                 }
             } // END if my_newcore_id==allcores_num-1
@@ -1266,11 +1293,11 @@ static void *parallel_section(void *thread_id)
         //=========================
         //    bulge chasing
         //=========================
-        if(my_newcore_id == 0)timeB = get_time_azz();
+        if(my_newcore_id == 0)timeB = magma_wtime();
         tile_bulge_parallel(my_newcore_id);
         barrier(my_newcore_id, locores_num);
         if(my_newcore_id == 0){
-            timeB = get_time_azz()-timeB;
+            timeB = magma_wtime()-timeB;
             printf("  Finish BULGE   timing= %lf \n" ,timeB);
         }
     }
@@ -1289,7 +1316,7 @@ static void *parallel_section(void *thread_id)
 
     // timing
     if (my_core_id == 0){
-        timeall = get_time_azz()-timeall;
+        timeall = magma_wtime()-timeall;
         *(core_in_all.timeblg) = timeall;     
     }
 
@@ -1373,11 +1400,11 @@ static void *applyQ_parallel_section(void *thread_id)
              //    apply Q2
              //=========================
              if(usemulticpu==1){
-                 timeQgpu = get_time_azz();
+                 timeQgpu = magma_wtime();
                  // here dZ is da and Z=Q1
                  magma_zbulge_applyQ(WANTZ, 'R', NE, N, NB, Vblksiz, NOTUSED, N, V2, TAU2, T2, &INFO, dV2, dT2, dZ, 2);
                  magma_device_sync();
-                 timeQgpu = get_time_azz()-timeQgpu;
+                 timeQgpu = magma_wtime()-timeQgpu;
                  printf("  Finish Q2_GPU GGG timing= %lf \n" ,timeQgpu);
              }
          /************************************************
@@ -1401,10 +1428,10 @@ static void *applyQ_parallel_section(void *thread_id)
                 //   on GPU on last_newcoreid:
                 //    - apply V2*Z(:,1:N_GPU)
                 //=============================================
-                 timeQgpu = get_time_azz();
+                 timeQgpu = magma_wtime();
                  magma_zbulge_applyQ(WANTZ, 'R', N_GPU, N, NB, Vblksiz, NOTUSED, N, V2, TAU2, T2, &INFO, dV2, dT2, dZ, 2);
                  magma_device_sync();
-                 timeQgpu = get_time_azz()-timeQgpu;
+                 timeQgpu = magma_wtime()-timeQgpu;
                  printf("  Finish Q2_GPU GGG timing= %lf \n" ,timeQgpu);
             /* I am one of the remaining cores*/
             }else if(N_CPU>0){
@@ -1412,11 +1439,11 @@ static void *applyQ_parallel_section(void *thread_id)
                 //   on CPU on core 1:last_newcoreid-1
                 //    - apply V2*Z(:,N_GPU+1:N)
                 //=============================================
-                if(my_newcore_id == 0)timeQcpu = get_time_azz();
+                if(my_newcore_id == 0)timeQcpu = magma_wtime();
                 tile_bulge_applyQ_parallel(my_newcore_id);
                 barrier(my_newcore_id, locores_num);
                 if(my_newcore_id == 0){
-                    timeQcpu = get_time_azz()-timeQcpu;
+                    timeQcpu = magma_wtime()-timeQcpu;
                     printf("  Finish Q2_CPU CCC timing= %lf \n" ,timeQcpu);
                 }
 
@@ -1445,10 +1472,10 @@ static void *applyQ_parallel_section(void *thread_id)
              //    apply Q2
              //=========================
              if(usemulticpu==1){
-                 timeQgpu = get_time_azz();
+                 timeQgpu = magma_wtime();
                  magma_zbulge_applyQ(WANTZ, 'L', NE, N, NB, Vblksiz, Z, LDZ, V2, TAU2, T2, &INFO, dV2, dT2, dZ, 3);
                  magma_device_sync();
-                 timeQgpu = get_time_azz()-timeQgpu;
+                 timeQgpu = magma_wtime()-timeQgpu;
                  printf("  Finish Q2_GPU GGG timing= %lf \n" ,timeQgpu);
              }
          /************************************************
@@ -1472,10 +1499,10 @@ static void *applyQ_parallel_section(void *thread_id)
                 //   on GPU on last_newcoreid:
                 //    - apply V2*Z(:,1:N_GPU)
                 //=============================================
-                 timeQgpu = get_time_azz();
+                 timeQgpu = magma_wtime();
                  magma_zbulge_applyQ(WANTZ, 'L', N_GPU, N, NB, Vblksiz, Z, LDZ, V2, TAU2, T2, &INFO, dV2, dT2, dZ, 3);
                  magma_device_sync();
-                 timeQgpu = get_time_azz()-timeQgpu;
+                 timeQgpu = magma_wtime()-timeQgpu;
                  printf("  Finish Q2_GPU GGG timing= %lf \n" ,timeQgpu);
             /* I am one of the remaining cores*/
             }else if(N_CPU>0){
@@ -1483,11 +1510,11 @@ static void *applyQ_parallel_section(void *thread_id)
                 //   on CPU on core 1:last_newcoreid-1
                 //    - apply V2*Z(:,N_GPU+1:N)
                 //=============================================
-                if(my_newcore_id == 0)timeQcpu = get_time_azz();
+                if(my_newcore_id == 0)timeQcpu = magma_wtime();
                 tile_bulge_applyQ_parallel(my_newcore_id);
                 barrier(my_newcore_id, locores_num);
                 if(my_newcore_id == 0){
-                    timeQcpu = get_time_azz()-timeQcpu;
+                    timeQcpu = magma_wtime()-timeQcpu;
                     printf("  Finish Q2_CPU CCC timing= %lf \n" ,timeQcpu);
                 }
 

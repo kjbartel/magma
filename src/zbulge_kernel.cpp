@@ -66,10 +66,10 @@ magma_zlarfxsym(magma_int_t N, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComp
   blasf77_zhemv("L",&N, TAU, A, &LDA, V, &IONE, &Z_ZERO, WORK, &IONE);
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
-   //dtmp = Z_ZERO;
-   //for (j = 0; j < N ; j++)
-   //   dtmp = dtmp + MAGMA_Z_CNJG(WORK[j]) * V[j];
-   cblas_zdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
+   dtmp = Z_ZERO;
+   for (j = 0; j < N ; j++)
+      dtmp = dtmp + MAGMA_Z_CNJG(WORK[j]) * V[j];
+   //cblas_zdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
   dtmp = cblas_zdotc(N, WORK, IONE, V, IONE);
 #endif
@@ -83,7 +83,7 @@ magma_zlarfxsym(magma_int_t N, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComp
   /* performs the symmetric rank 2 operation A := alpha*x*y' + alpha*y*x' + A */
   blasf77_zher2("L",&N,&Z_MONE,WORK,&IONE,V,&IONE,A,&LDA);
   
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ extern "C" void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDo
   magma_zlarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
   //conjtmp = MAGMA_Z_CNJG(*TAU(taupos));
   //lapackf77_zlarfy("L", &len, V(vpos), &IONE, &conjtmp, A(st,st), &LDX, WORK); //&(MAGMA_Z_CNJG(*TAU(taupos)))
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 #undef A
 #undef V
@@ -192,7 +192,7 @@ extern "C" void magma_ztrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDo
   magma_zlarfxsym(len,A(st,st),LDX,V(vpos),TAU(taupos));
   //conjtmp = MAGMA_Z_CNJG(*TAU(taupos));
   //lapackf77_zlarfy("L", &len, V(vpos), &IONE,  &(MAGMA_Z_CNJG(*TAU(taupos))), A(st,st), &LDX, WORK);
-  free(WORK);
+  magma_free_cpu(WORK);
 }
 #undef A
 #undef V

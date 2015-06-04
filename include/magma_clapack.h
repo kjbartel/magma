@@ -1,11 +1,11 @@
 /*
- *   -- MAGMA (version 1.2.1) --
+ *   -- MAGMA (version 1.3.0) --
  *      Univ. of Tennessee, Knoxville
  *      Univ. of California, Berkeley
  *      Univ. of Colorado, Denver
- *      June 2012
+ *      November 2012
  *
- * @generated c Thu Jun 28 12:30:03 2012
+ * @generated c Wed Nov 14 22:52:27 2012
  */
 
 #ifndef MAGMA_CLAPACK_H
@@ -75,13 +75,17 @@ extern "C" {
 #define lapackf77_chetrf   FORTRAN_NAME( chetrf, CHETRF )
 #define lapackf77_chseqr   FORTRAN_NAME( chseqr, CHSEQR )
 #define lapackf77_clabrd   FORTRAN_NAME( clabrd, CLABRD )
+#define lapackf77_cladiv   FORTRAN_NAME( cladiv, ZLADIV )
 #define lapackf77_clacgv   FORTRAN_NAME( clacgv, CLACGV )
 #define lapackf77_clacpy   FORTRAN_NAME( clacpy, CLACPY )
 #define lapackf77_clahef   FORTRAN_NAME( clahef, CLAHEF )
 #define lapackf77_clange   FORTRAN_NAME( clange, CLANGE )
 #define lapackf77_clanhe   FORTRAN_NAME( clanhe, CLANHE )
+#define lapackf77_clanht   FORTRAN_NAME( clanht, CLANHT )
 #define lapackf77_clansy   FORTRAN_NAME( clansy, CLANSY )
+#define lapackf77_slapy3   FORTRAN_NAME( slapy3, DLAPY3 )
 #define lapackf77_claqp2   FORTRAN_NAME( claqp2, CLAQP2 )
+#define lapackf77_clarf    FORTRAN_NAME( clarf,  ZLARF  )
 #define lapackf77_clarfb   FORTRAN_NAME( clarfb, CLARFB )
 #define lapackf77_clarfg   FORTRAN_NAME( clarfg, CLARFG )
 #define lapackf77_clarft   FORTRAN_NAME( clarft, CLARFT )
@@ -490,6 +494,9 @@ void   lapackf77_clabrd( const magma_int_t *m, const magma_int_t *n, const magma
                          cuFloatComplex *X, const magma_int_t *ldx,
                          cuFloatComplex *Y, const magma_int_t *ldy );
 
+void   lapackf77_cladiv( cuFloatComplex *ret_val, cuFloatComplex *x, 
+                         cuFloatComplex *y );
+
 void   lapackf77_clacgv( const magma_int_t *n,
                          cuFloatComplex *x, const magma_int_t *incx );
 
@@ -516,6 +523,9 @@ float lapackf77_clanhe( const char *norm, const char *uplo,
                          const cuFloatComplex *A, const magma_int_t *lda,
                          float * work );
 
+float lapackf77_clanht( const char* norm, const magma_int_t* n,
+                         const float* d, const cuFloatComplex* e );
+
 float lapackf77_clansy( const char *norm, const char *uplo,
                          const magma_int_t *n,
                          const cuFloatComplex *A, const magma_int_t *lda,
@@ -525,6 +535,10 @@ void lapackf77_claqp2 (  magma_int_t *m, magma_int_t *n, magma_int_t *offset,
                          cuFloatComplex *a, magma_int_t *lda, magma_int_t *jpvt, 
                          cuFloatComplex *tau,
                          float *vn1, float *vn2, cuFloatComplex *work);
+
+void lapackf77_clarf  (  char *, magma_int_t *, magma_int_t *,
+                         cuFloatComplex *, magma_int_t *, cuFloatComplex *, cuFloatComplex *,
+                         magma_int_t *, cuFloatComplex *);
 
 void   lapackf77_clarfb( const char *side, const char *trans, const char *direct, const char *storev,
                          const magma_int_t *m, const magma_int_t *n, const magma_int_t *k,
@@ -786,6 +800,8 @@ float lapackf77_slamc3( float* a, float* b );
 void   lapackf77_slamrg( magma_int_t* n1, magma_int_t* n2,
                          float* a,
                          magma_int_t* dtrd1, magma_int_t* dtrd2, magma_int_t* index );
+
+float lapackf77_slapy3(float *, float *, float *);
 
 void   lapackf77_slaed4( magma_int_t* n, magma_int_t* i,
                          float* d,

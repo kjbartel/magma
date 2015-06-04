@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.2.1) --
+#   -- MAGMA (version 1.3.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2012
+#      November 2012
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -32,10 +32,12 @@ ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
 	xerbla.cpp 	\
 	get_nb_tesla.cpp	\
 	get_nb_fermi.cpp	\
+	get_nb_kepler.cpp       \
 	timer.cpp	\
 	trace.cpp	\
 	strlcpy.cpp	\
-	bulge_auxiliary.cpp
+	bulge_auxiliary.cpp \
+	connection_mgpu.cpp
 
 ALLOBJ := $(ALLSRC:.cpp=.o)
 ALLOBJ := $(ALLOBJ:.f90=.o)
@@ -52,11 +54,15 @@ $(PTREXEC): $(PTRFILE)
 	$(CC) $(OPTS) -o $@ $<
 
 clean:
-	rm -f *.cu_o *.o *~ *.linkinfo *.mod sizeptr
+	rm -f *.cu_o *.o *~ *.linkinfo *.mod include/*.mod sizeptr
 
 cleanall: clean
 	rm -f *.a
 	rm -f $(LIBMAGMA)
 
-# Extra dependencies
+# Extra dependencies for .mod files
 magma.o: magma_zfortran.o magma_cfortran.o magma_dfortran.o magma_sfortran.o 
+magma_zfortran.o: magma_param.o
+magma_cfortran.o: magma_param.o
+magma_dfortran.o: magma_param.o
+magma_sfortran.o: magma_param.o

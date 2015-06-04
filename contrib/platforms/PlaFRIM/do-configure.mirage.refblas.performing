@@ -1,0 +1,168 @@
+#!/bin/bash
+
+##################################################
+#    THIS OPTIONS CAN BE MODIFIED BY THE USER    #
+##################################################
+
+# Variable to define MORSE location
+# ---------------------------------
+####
+#
+# here, we suppose that: 
+#   - MORSE build directory is your current location : <path>
+#   - MORSE source directory is : <path>/../cmake
+#
+####
+MORSE_BUILD=`pwd`
+MORSE_SRC=${MORSE_BUILD}/../cmake
+
+# Define users options
+# --------------------
+MORSE_OPTIONS="  -D DEBUG_MORSE_FINDPACKAGE=ON"
+MORSE_OPTIONS+=" -D MAGMA_MORSE=ON"
+MORSE_OPTIONS+=" -D MAGMA_1GPU=ON"
+MORSE_OPTIONS+=" -D MORSE_USE_CUDA=ON"
+MORSE_OPTIONS+=" -D MORSE_USE_BLAS=refblas"
+
+# Load the environment
+# --------------------
+module purge
+module load compiler/intel
+module load gpu/cuda
+module load lib/hwloc
+module load lib/starpu
+module load tools/cmake
+
+# Print the environment
+# ---------------------
+module li
+
+##################################################
+#                 DO NOT MODIFY                  #
+##################################################
+
+# Clean CMake cache
+# -----------------
+rm -rf CMakeCache.txt CMakeFiles
+
+# Analyse the parameter
+# ---------------------
+MORSE_LOG=0
+MORSE_ALL=1
+MORSE_STEP_CONFIGURE=0
+MORSE_STEP_BUILD=0
+MORSE_STEP_TEST=0
+MORSE_STEP_INSTALL=0
+
+for i in $@
+do
+    if [[ "$i" == "--help" ]]; then
+		echo -e "\n"
+        echo "You can call $0 with this following option:"
+        echo "  --log       : Save output of the called steps in a file"
+        echo "  --configure : Launch only the step <configure>"
+        echo "  --build     : Launch only the step <build>"
+        echo "  --test      : Launch only the step <test>"
+        echo "  --install   : Launch only the step <install>"
+		echo -e "\n"
+        exit 0
+    elif [[ "$i" == "--log" ]]; then
+        MORSE_LOG=1
+    elif [[ "$i" == "--configure" ]]; then
+        MORSE_ALL=0
+        MORSE_STEP_CONFIGURE=1
+    elif [[ "$i" == "--build" ]]; then
+        MORSE_ALL=0
+        MORSE_STEP_BUILD=1
+    elif [[ "$i" == "--test" ]]; then
+        MORSE_ALL=0
+        MORSE_STEP_TEST=1
+    elif [[ "$i" == "--install" ]]; then
+        MORSE_ALL=0
+        MORSE_STEP_INSTALL=1
+    else
+		echo -e "\n"
+        echo ">>> ERROR <<<"
+        echo "    --> $0 was called with an unknown parameter: $i"
+        echo ">>> ERROR <<<"
+		echo -e "\n"
+        exit 1
+    fi
+done
+
+# Protection
+# ----------
+if [ $MORSE_ALL = 1 ];then
+    protection () {
+    read -p "Are you sure to do all steps (y/n)?" lock
+    if [[ "$lock" == "y" ]];then
+        echo -e "\n"
+        echo "Good luck!"
+    elif [[ "$lock" == "n" ]];then
+        echo -e "\n"
+        echo "Good choice..."
+        exit 0
+    else
+        protection
+    fi
+    }
+    protection
+fi
+
+# Print build directory
+# ---------------------
+echo -e "\n"
+echo "MORSE build directory is  : ${MORSE_BUILD}"
+echo "MORSE source directory is : ${MORSE_SRC}"
+
+# Test to know if we need to log the step : {configure|make|make test|make install}
+# ---------------------------------------------------------------------------------
+HOSTNAME=`hostname`
+if [ $MORSE_LOG = 1 ]; then
+	echo -e "\n"
+    echo "All the steps will be logged:"
+    echo " --> <cmake>        step in: ${MORSE_BUILD}/log-${HOSTNAME}-cmake.log"
+    echo " --> <make all>     step in: ${MORSE_BUILD}/log-${HOSTNAME}-make.log"
+    echo " --> <ctest -V>     step in: ${MORSE_BUILD}/log-${HOSTNAME}-ctest.log"
+    echo " --> <make install> step in: ${MORSE_BUILD}/log-${HOSTNAME}-install.log"
+    LOG_CONFIGURE=${MORSE_BUILD}/log-${HOSTNAME}-cmake.log
+    LOG_BUILD=${MORSE_BUILD}/log-${HOSTNAME}-make.log
+    LOG_TEST=${MORSE_BUILD}/log-${HOSTNAME}-ctest.log
+    LOG_INSTALL=${MORSE_BUILD}/log-${HOSTNAME}-install.log
+else
+	echo -e "\n"
+    echo "If you want to log all the step, call $0 with {--log} option"
+fi
+
+# Configure step
+# --------------
+if [[ $MORSE_ALL = 1 || $MORSE_STEP_CONFIGURE = 1 ]]; then
+	echo -e "\n"
+    echo "cmake ${MORSE_OPTIONS} ${MORSE_SRC}" 2>&1 | tee ${LOG_CONFIGURE}
+   	cmake ${MORSE_OPTIONS} ${MORSE_SRC} 2>&1 | tee -a ${LOG_CONFIGURE}
+fi
+
+# Build step
+# ----------
+if [[ $MORSE_ALL = 1 || $MORSE_STEP_BUILD = 1 ]]; then
+	echo -e "\n"
+   	echo "VERBOSE=1 make" 2>&1 | tee ${LOG_BUILD}
+    VERBOSE=1 make 2>&1 | tee -a ${LOG_BUILD}
+fi
+
+# Test step
+# ---------
+if [[ $MORSE_ALL = 1 || $MORSE_STEP_TEST = 1 ]]; then
+	echo -e "\n"
+    echo "ctest -V" 2>&1 | tee ${LOG_TEST}
+   	ctest -V 2>&1 | tee -a ${LOG_TEST}
+fi
+
+# Install step
+# ------------
+if [[ $MORSE_ALL = 1 || $MORSE_STEP_INSTALL = 1 ]]; then
+	echo -e "\n"
+    echo "make install" 2>&1 | tee ${LOG_INSTALL}
+   	make install 2>&1 | tee -a ${LOG_INSTALL}
+fi
+

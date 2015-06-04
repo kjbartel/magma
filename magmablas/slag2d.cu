@@ -1,19 +1,19 @@
 /*
-    -- MAGMA (version 1.2.1) --
+    -- MAGMA (version 1.3.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2012
+       November 2012
 
-       @generated ds Thu Jun 28 12:31:16 2012
+       @generated ds Wed Nov 14 22:53:46 2012
 
 */
 #include "common_magma.h"
 
 __global__ void 
 slag2d_generic(int M, int N, 
-               float *SA, int LDSA, 
-               double *A, int LDA ) 
+               const float *SA, int LDSA, 
+               double       *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -44,8 +44,8 @@ slag2d_generic(int M, int N,
 
 __global__ void 
 slag2d_special(int M, int N, 
-               float *SA, int LDSA, 
-               double *A, int LDA ) 
+               const float *SA, int LDSA, 
+               double       *A, int LDA ) 
 { 
     int ibx = blockIdx.x * 64;
 
@@ -67,8 +67,8 @@ slag2d_special(int M, int N,
 
 void 
 magmablas_slag2d_64_64_16_4_v2( int M, int N, 
-                                float *SA, int LDSA, 
-                                double *A, int LDA )
+                                const float *SA, int LDSA, 
+                                double       *A, int LDA )
 {
     if( M == 0 || N==0 ) {
         printf("One of the dimension is ZERO\n");
@@ -85,7 +85,11 @@ magmablas_slag2d_64_64_16_4_v2( int M, int N,
 }
 
 extern "C" void 
-magmablas_slag2d(magma_int_t M, magma_int_t N, float *SA, magma_int_t LDSA, double *A, magma_int_t LDA, magma_int_t *INFO)
+magmablas_slag2d(
+    magma_int_t m, magma_int_t n,
+    const float *SA, magma_int_t ldsa,
+    double       *A, magma_int_t lda,
+    magma_int_t *info)
 {
 /*
   Purpose
@@ -125,6 +129,6 @@ magmablas_slag2d(magma_int_t M, magma_int_t N, float *SA, magma_int_t LDSA, doub
           = 0:  successful exit
   =========
 */
-    *INFO = 0;
-    magmablas_slag2d_64_64_16_4_v2( M, N, SA, LDSA, A, LDA ) ;
+    *info = 0;
+    magmablas_slag2d_64_64_16_4_v2( m, n, SA, ldsa, A, lda );
 }        
