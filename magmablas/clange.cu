@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0) --
+    -- MAGMA (version 1.4.1-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       August 2013
+       December 2013
 
-       @generated c Tue Aug 13 16:45:12 2013
+       @generated c Mon Dec  9 16:19:18 2013
 
 */
 #include "common_magma.h"
@@ -222,14 +222,14 @@ magmablas_clange(
           The number of columns of the matrix A.  N >= 0.  When N = 0,
           CLANGE is set to zero.
 
-  A       (input) DOUBLE PRECISION array, dimension (LDA,N)
+  A       (input) REAL array, dimension (LDA,N)
           The m by n matrix A.
           A is in GPU memory. 
 
   LDA     (input) INTEGER
           The leading dimension of the array A.  LDA >= max(M,1).
 
-  WORK    (workspace) DOUBLE PRECISION array, dimension (MAX(1,LWORK)),
+  WORK    (workspace) REAL array, dimension (MAX(1,LWORK)),
           where LWORK >= M when NORM = 'I'; otherwise, WORK is not
           referenced.
           WORK is in GPU memory. 

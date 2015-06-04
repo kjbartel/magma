@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0) --
+    -- MAGMA (version 1.4.1-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       August 2013
+       December 2013
 
-       @generated d Tue Aug 13 19:15:01 2013
+       @generated d Mon Dec  9 17:05:44 2013
 
 */
 
@@ -71,25 +71,25 @@ int main( int argc, char** argv )
             nb     = magma_get_dgeqrf_nb(M);
             gflops = (FLOPS_DGEQRF( M, N ) + FLOPS_DGEQRS( M, N, nrhs )) / 1e9;
             
-            // query for workspace size
             lworkgpu = (M - N + nb)*(nrhs + nb) + nrhs*nb;
             
+            // query for workspace size
             lhwork = -1;
             lapackf77_dgels( MagmaNoTransStr, &M, &N, &nrhs,
-                             h_A, &lda, h_X, &ldb, tmp, &lhwork, &info );
+                             NULL, &lda, NULL, &ldb, tmp, &lhwork, &info );
             lhwork = (magma_int_t) MAGMA_D_REAL( tmp[0] );
             lhwork = max( lhwork, lworkgpu );
             
-            TESTING_MALLOC(   tau,    double, min_mn    );
-            TESTING_MALLOC(   h_A,    double, lda*N     );
-            TESTING_MALLOC(   h_A2,   double, lda*N     );
-            TESTING_MALLOC(   h_B,    double, ldb*nrhs  );
-            TESTING_MALLOC(   h_X,    double, ldb*nrhs  );
-            TESTING_MALLOC(   h_R,    double, ldb*nrhs  );
-            TESTING_MALLOC(   h_work, double, lhwork    );
+            TESTING_MALLOC_CPU( tau,    double, min_mn    );
+            TESTING_MALLOC_CPU( h_A,    double, lda*N     );
+            TESTING_MALLOC_CPU( h_A2,   double, lda*N     );
+            TESTING_MALLOC_CPU( h_B,    double, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_X,    double, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_R,    double, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_work, double, lhwork    );
             
-            TESTING_DEVALLOC( d_A,    double, ldda*N    );
-            TESTING_DEVALLOC( d_B,    double, lddb*nrhs );
+            TESTING_MALLOC_DEV( d_A,    double, ldda*N    );
+            TESTING_MALLOC_DEV( d_B,    double, lddb*nrhs );
             
             /* Initialize the matrices */
             size = lda*N;
@@ -162,15 +162,16 @@ int main( int argc, char** argv )
             status |= ! (gpu_error < tol);
 
             
-            TESTING_FREE( tau  );
-            TESTING_FREE( h_A  );
-            TESTING_FREE( h_A2 );
-            TESTING_FREE( h_B  );
-            TESTING_FREE( h_X  );
-            TESTING_FREE( h_R  );
-            TESTING_FREE( h_work );
-            TESTING_DEVFREE( d_A );
-            TESTING_DEVFREE( d_B );
+            TESTING_FREE_CPU( tau    );
+            TESTING_FREE_CPU( h_A    );
+            TESTING_FREE_CPU( h_A2   );
+            TESTING_FREE_CPU( h_B    );
+            TESTING_FREE_CPU( h_X    );
+            TESTING_FREE_CPU( h_R    );
+            TESTING_FREE_CPU( h_work );
+            
+            TESTING_FREE_DEV( d_A    );
+            TESTING_FREE_DEV( d_B    );
         }
         if ( opts.niter > 1 ) {
             printf( "\n" );

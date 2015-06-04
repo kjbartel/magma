@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0) --
+    -- MAGMA (version 1.4.1-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       August 2013
+       December 2013
 
-       @generated c Wed Aug 14 12:16:23 2013
+       @generated c Mon Dec  9 17:05:22 2013
 
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_clabrd_gpu( magma_int_t m, magma_int_t n, magma_int_t nb,
                   magmaFloatComplex *x, magma_int_t ldx, magmaFloatComplex *dx, magma_int_t lddx,
                   magmaFloatComplex *y, magma_int_t ldy, magmaFloatComplex *dy, magma_int_t lddy)
 {
-/*  -- MAGMA (version 1.4.0) --
+/*  -- MAGMA (version 1.4.1-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       August 2013
+       December 2013
 
     Purpose
     =======

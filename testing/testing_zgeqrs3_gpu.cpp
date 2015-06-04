@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0) --
+    -- MAGMA (version 1.4.1-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       August 2013
+       December 2013
 
        @precisions normal z -> s d c
 
@@ -72,30 +72,30 @@ int main( int argc, char** argv)
             nb     = magma_get_zgeqrf_nb(M);
             gflops = (FLOPS_ZGEQRF( M, N ) + FLOPS_ZGEQRS( M, N, nrhs )) / 1e9;
             
-            // query for workspace size
             lworkgpu = (M - N + nb)*(nrhs + nb) + nrhs*nb;
             
+            // query for workspace size
             lhwork = -1;
-            lapackf77_zgeqrf(&M, &N, h_A, &M, tau, tmp, &lhwork, &info);
+            lapackf77_zgeqrf(&M, &N, NULL, &M, NULL, tmp, &lhwork, &info);
             lhwork2 = (magma_int_t) MAGMA_Z_REAL( tmp[0] );
             
             lhwork = -1;
             lapackf77_zunmqr( MagmaLeftStr, MagmaConjTransStr,
-                              &M, &nrhs, &min_mn, h_A, &lda, tau,
-                              h_X, &ldb, tmp, &lhwork, &info);
+                              &M, &nrhs, &min_mn, NULL, &lda, NULL,
+                              NULL, &ldb, tmp, &lhwork, &info);
             lhwork = (magma_int_t) MAGMA_Z_REAL( tmp[0] );
             lhwork = max( max( lhwork, lhwork2 ), lworkgpu );
             
-            TESTING_MALLOC( tau,  magmaDoubleComplex, min_mn   );
-            TESTING_MALLOC( h_A,  magmaDoubleComplex, lda*N    );
-            TESTING_MALLOC( h_A2, magmaDoubleComplex, lda*N    );
-            TESTING_MALLOC( h_B,  magmaDoubleComplex, ldb*nrhs );
-            TESTING_MALLOC( h_X,  magmaDoubleComplex, ldb*nrhs );
-            TESTING_MALLOC( h_R,  magmaDoubleComplex, ldb*nrhs );
-            TESTING_MALLOC( h_work, magmaDoubleComplex, lhwork );
+            TESTING_MALLOC_CPU( tau,    magmaDoubleComplex, min_mn    );
+            TESTING_MALLOC_CPU( h_A,    magmaDoubleComplex, lda*N     );
+            TESTING_MALLOC_CPU( h_A2,   magmaDoubleComplex, lda*N     );
+            TESTING_MALLOC_CPU( h_B,    magmaDoubleComplex, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_X,    magmaDoubleComplex, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_R,    magmaDoubleComplex, ldb*nrhs  );
+            TESTING_MALLOC_CPU( h_work, magmaDoubleComplex, lhwork    );
             
-            TESTING_DEVALLOC( d_A, magmaDoubleComplex, ldda*N    );
-            TESTING_DEVALLOC( d_B, magmaDoubleComplex, lddb*nrhs );
+            TESTING_MALLOC_DEV( d_A,    magmaDoubleComplex, ldda*N    );
+            TESTING_MALLOC_DEV( d_B,    magmaDoubleComplex, lddb*nrhs );
             
             /* Initialize the matrices */
             lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
@@ -168,15 +168,16 @@ int main( int argc, char** argv)
             printf("%s\n", (gpu_error < tol ? "" : "  failed"));
             status |= ! (gpu_error < tol);
             
-            TESTING_FREE( tau  );
-            TESTING_FREE( h_A  );
-            TESTING_FREE( h_A2 );
-            TESTING_FREE( h_B  );
-            TESTING_FREE( h_X  );
-            TESTING_FREE( h_R  );
-            TESTING_FREE( h_work );
-            TESTING_DEVFREE( d_A );
-            TESTING_DEVFREE( d_B );
+            TESTING_FREE_CPU( tau    );
+            TESTING_FREE_CPU( h_A    );
+            TESTING_FREE_CPU( h_A2   );
+            TESTING_FREE_CPU( h_B    );
+            TESTING_FREE_CPU( h_X    );
+            TESTING_FREE_CPU( h_R    );
+            TESTING_FREE_CPU( h_work );
+            
+            TESTING_FREE_DEV( d_A    );
+            TESTING_FREE_DEV( d_B    );
         }
         if ( opts.niter > 1 ) {
             printf( "\n" );

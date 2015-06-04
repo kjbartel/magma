@@ -61,16 +61,16 @@
 }
 
 
-#define TESTING_MALLOC( ptr, type, size )                                  \
+#define TESTING_MALLOC_CPU( ptr, type, size )                              \
     if ( MAGMA_SUCCESS !=                                                  \
             magma_malloc_cpu( (void**) &ptr, (size)*sizeof(type) )) {      \
-        fprintf( stderr, "!!!! malloc failed for: %s\n", #ptr );           \
+        fprintf( stderr, "!!!! magma_malloc_cpu failed for: %s\n", #ptr ); \
         magma_finalize();                                                  \
         exit(-1);                                                          \
     }
 
 
-#define TESTING_HOSTALLOC( ptr, type, size )                              \
+#define TESTING_MALLOC_PIN( ptr, type, size )                                  \
     if ( MAGMA_SUCCESS !=                                                     \
             magma_malloc_pinned( (void**) &ptr, (size)*sizeof(type) )) {      \
         fprintf( stderr, "!!!! magma_malloc_pinned failed for: %s\n", #ptr ); \
@@ -79,7 +79,7 @@
     }
 
 
-#define TESTING_DEVALLOC( ptr, type, size )                              \
+#define TESTING_MALLOC_DEV( ptr, type, size )                              \
     if ( MAGMA_SUCCESS !=                                                  \
             magma_malloc( (void**) &ptr, (size)*sizeof(type) )) {          \
         fprintf( stderr, "!!!! magma_malloc failed for: %s\n", #ptr );     \
@@ -88,15 +88,15 @@
     }
 
 
-#define TESTING_FREE( ptr )                                                \
+#define TESTING_FREE_CPU( ptr )                                            \
     magma_free_cpu( ptr )
 
 
-#define TESTING_HOSTFREE( ptr )                                         \
+#define TESTING_FREE_PIN( ptr )                                         \
     magma_free_pinned( ptr )
 
 
-#define TESTING_DEVFREE( ptr )                                            \
+#define TESTING_FREE_DEV( ptr )                                            \
     magma_free( ptr )
 
 
@@ -142,6 +142,7 @@ typedef struct magma_opts
     magma_int_t version;   // hemm_mgpu, hetrd
     double      fraction;  // hegvdx
     double      tolerance;
+    magma_int_t panel_nthread; //first dimension for a 2D big panel
     
     // boolean arguments
     int check;

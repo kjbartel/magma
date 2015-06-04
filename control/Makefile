@@ -1,11 +1,12 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0) --
+#   -- MAGMA (version 1.4.1-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      August 2013
+#      December 2013
 #//////////////////////////////////////////////////////////////////////////////
 
+DIR = control
 MAGMA_DIR = ..
 include ../Makefile.internal
 
@@ -15,6 +16,7 @@ ZSRC := \
 
 ifeq ($(PGIFORTRAN), 0)
 ZSRC += \
+	magma_f77.cpp		\
 	magma_zf77.cpp		\
 	magma_param.f90		\
 	magma_zfortran.F90	\
@@ -24,10 +26,7 @@ ZSRC += \
 	magma_zf77pgi.cpp
 endif
 
--include Makefile.local
--include Makefile.src
-
-ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
+SRC := \
 	auxiliary.cpp		\
 	get_nb.cpp		\
 	timer.cpp		\
@@ -38,7 +37,13 @@ ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
 	connection_mgpu.cpp	\
 	pthread_barrier.cpp	\
 	xerbla.cpp		\
-	magma_threadsetting.cpp \
+	magma_threadsetting.cpp	\
+	magmawinthread.cpp	\
+
+-include Makefile.local
+-include Makefile.src
+
+ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC) $(SRC)
 
 ALLOBJ := $(ALLSRC:.cpp=.o)
 ALLOBJ := $(ALLOBJ:.f90=.o)
@@ -46,6 +51,7 @@ ALLOBJ := $(ALLOBJ:.F90=.o)
 
 .PHONY: all clean cleanall
 
+.DEFAULT_GOAL := all
 all: $(LIBMAGMA)
 
 $(LIBMAGMA): stamp
@@ -62,6 +68,10 @@ clean:
 
 cleanall: clean
 	rm -f $(LIBMAGMA)
+
+wrappers:
+	../tools/fortran_wrappers.pl --wrappers  ../include/magma_z.h -o magma_zf77.cpp
+	../tools/fortran_wrappers.pl --interface ../include/magma_z.h -o magma_zfortran.F90
 
 # Extra dependencies for .mod files
 magma.o: magma_zfortran.o magma_cfortran.o magma_dfortran.o magma_sfortran.o 
