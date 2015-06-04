@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -22,7 +22,7 @@ magma_zlaqps_gpu(magma_int_t m, magma_int_t n, magma_int_t offset,
              magmaDoubleComplex *auxv,
              magmaDoubleComplex *F,  magma_int_t ldf)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

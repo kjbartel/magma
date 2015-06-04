@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -7,7 +7,7 @@
 
        @author Stan Tomov
 
-       @generated c Mon Dec  9 17:05:44 2013
+       @generated c Tue Dec 17 13:18:56 2013
 
 */
 

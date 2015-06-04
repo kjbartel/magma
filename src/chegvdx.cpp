@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -8,7 +8,7 @@
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated c Mon Dec  9 16:19:09 2013
+       @generated c Tue Dec 17 13:18:36 2013
 
 */
 #include "common_magma.h"
@@ -21,7 +21,7 @@ magma_chegvdx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n
               magma_int_t *m, float *w, magmaFloatComplex *work, magma_int_t lwork, float *rwork,
               magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

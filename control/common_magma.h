@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -34,11 +34,14 @@
 
     // functions where Microsoft fails to provide C99 standard
     // (only with Microsoft, not with nvcc on Windows)
+    // in both common_magma.h and testings.h
     #ifndef __NVCC__
     
+        #include <float.h>
         #define copysign(x,y) _copysign(x,y)
-        #define isnan(x) _isnan(x)
-        #define isinf(x) _isinf(x)
+        #define isnan(x)      _isnan(x)
+        #define isinf(x)      ( ! _finite(x) && ! _isnan(x) )
+        #define isfinite(x)   _finite(x)
         // note _snprintf has slightly different semantics than snprintf
         #define snprintf _snprintf
     
@@ -62,16 +65,17 @@
 #include "magma_threadsetting.h"
 
 /** ****************************************************************************
- *  Determine if weak symbols are allowed 
+ *  Determine if weak symbols are allowed
  */
 #if defined(linux) || defined(__linux) || defined(__linux__)
-#if defined(__GNUC_EXCL__) || defined(__GNUC__) 
+#if defined(__GNUC_EXCL__) || defined(__GNUC__)
 #define MAGMA_HAVE_WEAK    1
 #endif
 #endif
 
 /***************************************************************************//**
  *  Global utilities
+ *  in both common_magma.h and testings.h
  **/
 #ifndef max
 #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -85,8 +89,13 @@
 #define roundup(a, b) (b <= 0) ? (a) : (((a) + (b)-1) & ~((b)-1))
 #endif
 
+#ifndef ceildiv
+#define ceildiv(a, b) ((a - 1)/b + 1)
+#endif
+
+
 /** ****************************************************************************
- *  Define magma_[sd]sqrt functions 
+ *  Define magma_[sd]sqrt functions
  *    - sqrt alone cannot be caught by the generation script because of tsqrt
  */
 

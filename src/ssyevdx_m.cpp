@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -9,7 +9,7 @@
        @author Azzam Haidar
        @author Stan Tomov
 
-       @generated s Mon Dec  9 16:19:08 2013
+       @generated s Tue Dec 17 13:18:36 2013
 
 */
 #include "common_magma.h"
@@ -24,7 +24,7 @@ magma_ssyevdx_m(magma_int_t nrgpu, char jobz, char range, char uplo,
                 magma_int_t *iwork, magma_int_t liwork,
                 magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

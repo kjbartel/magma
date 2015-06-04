@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -8,7 +8,7 @@
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated d Mon Dec  9 16:19:09 2013
+       @generated d Tue Dec 17 13:18:36 2013
 */
 #include "common_magma.h"
 #include <cblas.h>
@@ -31,7 +31,7 @@ magma_dsygst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                double *a, magma_int_t lda,
                double *b, magma_int_t ldb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

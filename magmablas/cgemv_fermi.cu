@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated c Mon Dec  9 16:19:18 2013
+       @generated c Tue Dec 17 13:18:45 2013
 */
 #include "common_magma.h"
 #include "commonblas_c.h"
@@ -102,7 +102,7 @@ magmablas_cgemvn_fermi(
     const magmaFloatComplex *x, magmaFloatComplex beta,
     magmaFloatComplex       *y)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -207,7 +207,7 @@ magmablas_cgemvt_fermi(
     const magmaFloatComplex *x, magmaFloatComplex beta,
     magmaFloatComplex       *y)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -311,7 +311,7 @@ magmablas_cgemvc_fermi(
     magmaFloatComplex beta,
     magmaFloatComplex *y)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

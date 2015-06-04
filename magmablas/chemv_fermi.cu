@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated c Mon Dec  9 17:05:32 2013
+       @generated c Tue Dec 17 13:18:45 2013
        Note: [ds] precisions generated from csymv_tesla.cu
 
 */

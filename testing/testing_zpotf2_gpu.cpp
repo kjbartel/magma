@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -51,8 +51,8 @@ int main( int argc, char** argv)
             ldda = ((N+31)/32)*32;
             gflops = FLOPS_ZPOTRF( N ) / 1e9;
             
-            if ( N > 1024 ) {
-                fprintf( stderr, "zpotf2 does not support N > 1024; skipping N=%d.\n", (int) N );
+            if ( N > 512 ) {
+                fprintf( stderr, "zpotf2 does not support N > 512; skipping N=%d.\n", (int) N );
                 continue;
             }
             

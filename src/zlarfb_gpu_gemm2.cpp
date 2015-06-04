@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -20,7 +20,7 @@ magma_zlarfb_gpu_gemm( char side, char trans, char direct, char storev,
                   magmaDoubleComplex *dwork,       magma_int_t ldwork,
                   magmaDoubleComplex *dworkvt,     magma_int_t ldworkvt)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Univ. of California Berkeley
        December 2013
 

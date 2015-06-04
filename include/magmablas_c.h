@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated c Mon Dec  9 17:05:03 2013
+       @generated c Tue Dec 17 13:18:17 2013
 */
 
 #ifndef MAGMABLAS_C_H
@@ -13,7 +13,6 @@
 
 #include "magma_types.h"
 
-#define PRECISION_c
 #define COMPLEX
 
 #ifdef __cplusplus
@@ -1004,7 +1003,6 @@ void magma_ctrsm(
 }
 #endif
 
-#undef PRECISION_c
 #undef COMPLEX
 
 #endif  /* MAGMABLAS_C_H */

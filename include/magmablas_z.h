@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -13,7 +13,6 @@
 
 #include "magma_types.h"
 
-#define PRECISION_z
 #define COMPLEX
 
 #ifdef __cplusplus
@@ -1004,7 +1003,6 @@ void magma_ztrsm(
 }
 #endif
 
-#undef PRECISION_z
 #undef COMPLEX
 
 #endif  /* MAGMABLAS_Z_H */

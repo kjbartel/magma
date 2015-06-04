@@ -1,5 +1,5 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.1-beta2) --
+#   -- MAGMA (version 1.4.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
@@ -92,6 +92,16 @@ FOPTS += $(PTROPT)
 # Rules to compile object files
 #
 .SUFFIXES:
+
+%.i: %.cpp
+	$(CC) $(OPTS) $(INC_MAGMA) -E $< -o $@
+
+%.i: %.c
+	$(CC) $(OPTS) $(INC_MAGMA) -E $< -o $@
+
+# force headers to pre-process as C++
+%.i: %.h
+	$(CXX) $(OPTS) $(INC_MAGMA) -E $< -o $@
 
 %.o: %.cpp
 	$(CC) $(OPTS) $(INC_MAGMA) -c $< -o $@

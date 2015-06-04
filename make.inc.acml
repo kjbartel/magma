@@ -1,5 +1,5 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.1-beta2) --
+#   -- MAGMA (version 1.4.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
@@ -39,7 +39,7 @@ LIB       = -lacml_mp -lacml_mv -lcblas -lcublas -lcudart -lstdc++ -lm
 -include make.check-acml
 -include make.check-cuda
 
-LIBDIR    = -L$(ACMLDIR)/gfortran_mp/lib \
+LIBDIR    = -L$(ACMLDIR)/gfortran64_mp/lib \
             -L$(CBLASDIR)/lib \
             -L$(CUDADIR)/lib64
 

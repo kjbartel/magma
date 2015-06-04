@@ -1,5 +1,5 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.1-beta2) --
+#   -- MAGMA (version 1.4.1) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
@@ -32,6 +32,8 @@ ZSRC := \
 	testing_zgeadd_batched.cpp	\
 	testing_zlacpy.cpp	\
 	testing_zlacpy_batched.cpp	\
+	testing_zlange.cpp	\
+	testing_zlanhe.cpp	\
 	testing_dlarfg.cpp	\
 	testing_zprint.cpp	\
 	testing_zsymmetrize.cpp	\
@@ -87,8 +89,8 @@ ZSRC += \
 	testing_zgeqrf_gpu.cpp	\
 	testing_zgeqr2_gpu.cpp	\
 	testing_zgeqr2x_gpu.cpp	\
-	testing_zgeqrs3_gpu.cpp	\
-	testing_zgeqrs_gpu.cpp	\
+	testing_zgels3_gpu.cpp	\
+	testing_zgels_gpu.cpp	\
 	testing_zlarfb_gpu.cpp	\
 	testing_zungqr_gpu.cpp	\
 	testing_zunmqr_gpu.cpp	\

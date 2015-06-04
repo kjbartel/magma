@@ -42,7 +42,7 @@ endif()
 
 # ----------------------------------------
 # locate CUDA libraries
-option( USE_TESLA OFF )
+set( GPU_TARGET "Tesla Fermi Kepler" CACHE STRING "CUDA architectures to compile for; one or more of Tesla, Fermi, Kepler" )
 find_package( CUDA )
 if ( CUDA_FOUND )
 	message( "-- Found CUDA ${CUDA_VERSION}" )
@@ -51,16 +51,49 @@ if ( CUDA_FOUND )
 	#message( "   CUDA_LIBRARIES: ${CUDA_LIBRARIES}" )
 	#message( "   CUDA_CUBLAS_LIBRARIES: ${CUDA_CUBLAS_LIBRARIES}" )
 	include_directories( ${CUDA_INCLUDE_DIRS} )
-	add_definitions( -DHAVE_CUBLAS )
-	if ( USE_TESLA )
-		message( "-- Generate CUDA code for Tesla (CUDA architecture 1.x). To change, unset USE_TESLA using ccmake." )
-		add_definitions( -DGPUSHMEM=130 )
-		set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_13,code=sm_13 -gencode arch=compute_13,code=compute_13" )
-	else()
-		message( "-- Generate CUDA code for Fermi (CUDA architecture 2.x). To change, set USE_TESLA using ccmake." )
-		add_definitions( -DGPUSHMEM=200 )
-		set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_20,code=sm_20 -gencode arch=compute_20,code=compute_20" )
+
+	# NVCC options for the different cards
+	# sm_xx is binary, compute_xx is PTX for forward compatability
+	# MIN_ARCH is lowest requested version 
+	# NV_SM    accumulates sm_xx for all requested versions
+	# NV_COMP  is compute_xx for highest requested version
+	set( NV_SM    "" )
+	set( NV_COMP  "" )
+	
+	message( "   GPU_TARGET ${GPU_TARGET}" )
+	if ( ${GPU_TARGET} MATCHES Tesla )
+		if ( NOT MIN_ARCH )
+			set( MIN_ARCH 100 )
+		endif()
+		set( NV_SM "${NV_SM} -gencode arch=compute_10,code=compute_10 -gencode arch=compute_13,code=sm_13" )
+		set( NV_COMP        "-gencode arch=compute_13,code=compute_13" )
+		message( "   compile for CUDA arch 1.x (Tesla)" )
 	endif()
+	
+	if ( ${GPU_TARGET} MATCHES Fermi )
+		if ( NOT MIN_ARCH )
+			set( MIN_ARCH 200 )
+		endif()
+		set( NV_SM "${NV_SM} -gencode arch=compute_20,code=sm_20" )
+		set( NV_COMP        "-gencode arch=compute_20,code=compute_20" )
+		message( "   compile for CUDA arch 2.x (Fermi)" )
+	endif()
+	
+	if ( ${GPU_TARGET} MATCHES Kepler )
+		if ( NOT MIN_ARCH )
+			set( MIN_ARCH 300 )
+		endif()
+		set( NV_SM "${NV_SM} -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35" )
+		set( NV_COMP        "-gencode arch=compute_35,code=compute_35" )
+		message( "   compile for CUDA arch 3.x (Kepler)" )
+	endif()
+	
+	if ( NOT MIN_ARCH )
+		message( FATAL_ERROR "GPU_TARGET must contain one or more of Tesla, Fermi, Kepler." )
+	endif()
+	
+	set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -DHAVE_CUBLAS ${NV_SM} ${NV_COMP}" )
+	add_definitions( "-DHAVE_CUBLAS -DMIN_CUDA_ARCH=${MIN_ARCH}" )
 endif()
 
 
@@ -118,6 +151,12 @@ endif()
 include_directories( include )
 include_directories( control )
 
+# Need to check sizeof(void*) after setting flags above;
+# CMAKE_SIZEOF_VOID_P can be wrong.
+include( CheckTypeSize )
+CHECK_TYPE_SIZE( void* SIZEOF_VOID_PTR )
+set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Dmagma_devptr_t=\"integer\(kind=${SIZEOF_VOID_PTR}\)\"" )
+
 message( "-- Flags" )
 message( "   CFLAGS   ${CMAKE_C_FLAGS}" )
 message( "   CXXFLAGS ${CMAKE_CXX_FLAGS}" )
@@ -137,17 +176,51 @@ include( ${CMAKE_SOURCE_DIR}/src/CMake )
 include( ${CMAKE_SOURCE_DIR}/control/CMake )
 include( ${CMAKE_SOURCE_DIR}/magmablas/CMake )
 include( ${CMAKE_SOURCE_DIR}/interface_cuda/CMake )
-cuda_add_library( magma
-	${src_ALLSRC}
-	${control_ALLSRC}
-	${magmablas_ALLSRC}
-	${interface_cuda_ALLSRC}
-)
-target_link_libraries( magma
-	${LAPACK_LIBRARIES}
-	${CUDA_CUDART_LIBRARY}
-	${CUDA_CUBLAS_LIBRARIES}
-)
+
+list( APPEND ALLSRC ${src_ALLSRC} ${control_ALLSRC} ${magmablas_ALLSRC} ${interface_cuda_ALLSRC} )
+
+if ( WIN32 )
+	# Windows seems to have a problem mixing C, CUDA, and Fortran files
+	# Currently ignores .f90 and .F90 files, because it doesn't seem to
+	# understand that .F90 files should be pre-processed.
+	
+	# separate Fortran and C/C++/CUDA files
+	foreach( f ${ALLSRC} )
+		if ( ${f} MATCHES "\\.(f)$" )  # |f90|F90
+			list( APPEND ALLSRC_f   ${f} )
+		elseif ( ${f} MATCHES "\\.(c|cu|cpp)$" )
+			list( APPEND ALLSRC_cpp ${f} )
+		endif()
+	endforeach()
+	#message( "ALLSRC_cpp ${ALLSRC_cpp}" )
+	#message( "ALLSRC_f   ${ALLSRC_f}"   )
+	
+	# on Windows, Fortran files aren't compiled if listed here...
+	cuda_add_library( magma ${ALLSRC_cpp} )
+	target_link_libraries( magma
+		${LAPACK_LIBRARIES}
+		${CUDA_CUDART_LIBRARY}
+		${CUDA_CUBLAS_LIBRARIES}
+	)
+	
+	# ...so make a separate library out of Fortran files. Ugh.
+	add_library( magmaf ${ALLSRC_f} )
+	target_link_libraries( magmaf
+		${LAPACK_LIBRARIES}
+		${CUDA_CUDART_LIBRARY}
+		${CUDA_CUBLAS_LIBRARIES}
+	)
+	set( LIBS test lapacktest magma magmaf )
+else()
+	# Unix doesn't seem to have a problem with mixing C, CUDA, and Fortran files
+	cuda_add_library( magma ${ALLSRC} )
+	target_link_libraries( magma
+		${LAPACK_LIBRARIES}
+		${CUDA_CUDART_LIBRARY}
+		${CUDA_CUBLAS_LIBRARIES}
+	)
+	set( LIBS test lapacktest magma )
+endif()
 
 
 # ----------------------------------------
@@ -177,5 +250,5 @@ foreach( TEST ${testing_ALLSRC} )
 	string( REGEX REPLACE "testing/" "" EXE ${EXE} )
 	#message( "${TEST} --> ${EXE}" )
 	add_executable( ${EXE} ${TEST} )
-	target_link_libraries( ${EXE} test lapacktest magma )
+	target_link_libraries( ${EXE} ${LIBS} )
 endforeach()

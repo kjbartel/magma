@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated s Mon Dec  9 17:05:31 2013
+       @generated s Tue Dec 17 13:18:45 2013
 
 */
 #include "common_magma.h"
@@ -47,7 +47,7 @@ magma_sgeqr2x4_gpu(magma_int_t *m, magma_int_t *n, float *dA,
                    float *dT, float *ddA,
                    float *dwork, magma_int_t *info, magma_queue_t stream)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

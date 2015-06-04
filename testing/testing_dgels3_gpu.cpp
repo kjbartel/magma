@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated d Mon Dec  9 16:19:29 2013
+       @generated d Tue Dec 17 13:18:57 2013
 
 */
 
@@ -26,7 +26,7 @@
 #define PRECISION_d
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Testing dgeqrs
+   -- Testing dgels
 */
 int main( int argc, char** argv)
 {
@@ -127,7 +127,7 @@ int main( int argc, char** argv)
             gpu_time = magma_wtime() - gpu_time;
             gpu_perf = gflops / gpu_time;
             if (info != 0)
-                printf("magma_dgels returned error %d: %s.\n",
+                printf("magma_dgels3_gpu returned error %d: %s.\n",
                        (int) info, magma_strerror( info ));
             
             // Get the solution in h_X

@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -9,7 +9,7 @@
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Mon Dec  9 16:19:08 2013
+       @generated s Tue Dec 17 13:18:36 2013
 
 */
 #include "common_magma.h"
@@ -113,7 +113,7 @@ extern "C" magma_int_t magma_ssytrd_sb2st(magma_int_t threads, char uplo, magma_
                                           float *A, magma_int_t lda, float *D, float *E,
                                           float *V, magma_int_t ldv, float *TAU, magma_int_t compT, float *T, magma_int_t ldt)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

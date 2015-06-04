@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated s Mon Dec  9 16:18:49 2013
+       @generated s Tue Dec 17 13:18:17 2013
 */
 
 #ifndef MAGMABLAS_S_H
@@ -13,7 +13,6 @@
 
 #include "magma_types.h"
 
-#define PRECISION_s
 #define REAL
 
 #ifdef __cplusplus
@@ -1004,7 +1003,6 @@ void magma_strsm(
 }
 #endif
 
-#undef PRECISION_s
 #undef REAL
 
 #endif  /* MAGMABLAS_S_H */

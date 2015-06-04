@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -14,7 +14,6 @@
 #include "magma_types.h"
 #include "magma_mangling.h"
 
-#define PRECISION_z
 #define COMPLEX
 
 #ifdef __cplusplus
@@ -1046,7 +1045,6 @@ void lapackf77_zlatms( magma_int_t *m, magma_int_t *n,
 }
 #endif
 
-#undef PRECISION_z
 #undef COMPLEX
 
 #endif /* MAGMA_ZLAPACK_H */

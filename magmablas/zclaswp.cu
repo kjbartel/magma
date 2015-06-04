@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -60,7 +60,7 @@ magmablas_zclaswp( magma_int_t n, magmaDoubleComplex *a, magma_int_t lda,
                    magmaFloatComplex *sa, magma_int_t m,
                    const magma_int_t *ipiv, magma_int_t incx )
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

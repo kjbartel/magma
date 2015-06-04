@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated c Mon Dec  9 16:19:18 2013
+       @generated c Tue Dec 17 13:18:45 2013
 
 */
 
@@ -345,7 +345,7 @@ magma_claqps3_gpu(magma_int_t m, magma_int_t n, magma_int_t offset,
              magmaFloatComplex *F,  magma_int_t ldf)
 {
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

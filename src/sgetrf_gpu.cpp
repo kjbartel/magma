@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
        @author Stan Tomov
-       @generated s Mon Dec  9 16:19:08 2013
+       @generated s Tue Dec 17 13:18:36 2013
 */
 #include "common_magma.h"
 
@@ -15,7 +15,7 @@ magma_sgetrf_gpu(magma_int_t m, magma_int_t n,
                  float *dA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

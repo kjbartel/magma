@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -264,7 +264,7 @@ typedef double real_Double_t;
 #define MAGMA_VERSION_MICRO 1
 
 // stage is "svn", "beta#", "rc#" (release candidate), or blank ("") for final release
-#define MAGMA_VERSION_STAGE "beta2"
+#define MAGMA_VERSION_STAGE ""
 
 #define MagmaMaxGPUs 8
 
@@ -437,6 +437,12 @@ typedef int magma_precision;
 
 #define MagmaLeftStr       "Left"
 #define MagmaRightStr      "Right"
+
+#define MagmaOneNormStr       "1"
+#define MagmaTwoNormStr       "2"
+#define MagmaFrobeniusNormStr "Fro"
+#define MagmaInfNormStr       "Inf"
+#define MagmaMaxNormStr       "Max"
 
 #define MagmaForwardStr    "Forward"
 #define MagmaBackwardStr   "Backward"

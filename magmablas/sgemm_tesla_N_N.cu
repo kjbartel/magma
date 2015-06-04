@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated s Mon Dec  9 17:05:31 2013
+       @generated s Tue Dec 17 13:18:45 2013
 */
 #include "common_magma.h"
 #include "commonblas_s.h"
@@ -46,7 +46,7 @@ sgemm_kernel_N_N_64_16_16_16_4(
     int lda, int ldb, int ldc,
     float alpha, float beta )
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

@@ -7,14 +7,52 @@
 
 #include "magma.h"
 
-#ifndef min
-#define min(a,b)  (((a)<(b))?(a):(b))
+
+/***************************************************************************//**
+ *  For portability to Windows
+ */
+#if defined( _WIN32 ) || defined( _WIN64 )
+    // functions where Microsoft fails to provide C99 standard
+    // (only with Microsoft, not with nvcc on Windows)
+    // in both common_magma.h and testings.h
+    #ifndef __NVCC__
+    
+        #include <float.h>
+        #define copysign(x,y) _copysign(x,y)
+        #define isnan(x)      _isnan(x)
+        #define isinf(x)      ( ! _finite(x) && ! _isnan(x) )
+        #define isfinite(x)   _finite(x)
+        // note _snprintf has slightly different semantics than snprintf
+        #define snprintf _snprintf
+        
+    #endif
 #endif
 
+
+/***************************************************************************//**
+ *  Global utilities
+ *  in both common_magma.h and testings.h
+ **/
 #ifndef max
-#define max(a,b)  (((a)<(b))?(b):(a))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#ifndef roundup
+#define roundup(a, b) (b <= 0) ? (a) : (((a) + (b)-1) & ~((b)-1))
+#endif
+
+#ifndef ceildiv
+#define ceildiv(a, b) ((a - 1)/b + 1)
+#endif
+
+
+/***************************************************************************//**
+ * Macros to handle error checking.
+ */
 
 #define TESTING_INIT()                                                     \
     magma_init();                                                          \
@@ -70,7 +108,7 @@
     }
 
 
-#define TESTING_MALLOC_PIN( ptr, type, size )                                  \
+#define TESTING_MALLOC_PIN( ptr, type, size )                                 \
     if ( MAGMA_SUCCESS !=                                                     \
             magma_malloc_pinned( (void**) &ptr, (size)*sizeof(type) )) {      \
         fprintf( stderr, "!!!! magma_malloc_pinned failed for: %s\n", #ptr ); \
@@ -131,6 +169,7 @@ typedef struct magma_opts
     
     // scalars
     magma_int_t device;
+    magma_int_t pad;
     magma_int_t nb;
     magma_int_t nrhs;
     magma_int_t nstream;

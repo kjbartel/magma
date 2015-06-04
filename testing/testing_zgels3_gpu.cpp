@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -26,20 +26,20 @@
 #define PRECISION_z
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Testing zgeqrs
+   -- Testing zgels
 */
-int main( int argc, char** argv )
+int main( int argc, char** argv)
 {
     TESTING_INIT();
     
     real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
-    double           gpu_error, cpu_error, Anorm, work[1];
+    double           gpu_error, cpu_error, matnorm, work[1];
     magmaDoubleComplex  c_one     = MAGMA_Z_ONE;
     magmaDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
     magmaDoubleComplex *h_A, *h_A2, *h_B, *h_X, *h_R, *tau, *h_work, tmp[1];
     magmaDoubleComplex *d_A, *d_B;
-    magma_int_t M, N, size, nrhs, lda, ldb, ldda, lddb, min_mn, max_mn, nb, info;
-    magma_int_t lworkgpu, lhwork;
+    magma_int_t M, N, n2, nrhs, lda, ldb, ldda, lddb, min_mn, max_mn, nb, info;
+    magma_int_t lworkgpu, lhwork, lhwork2;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
 
@@ -66,6 +66,7 @@ int main( int argc, char** argv )
             max_mn = max(M, N);
             lda    = M;
             ldb    = max_mn;
+            n2     = lda*N;
             ldda   = ((M+31)/32)*32;
             lddb   = ((max_mn+31)/32)*32;
             nb     = magma_get_zgeqrf_nb(M);
@@ -75,10 +76,15 @@ int main( int argc, char** argv )
             
             // query for workspace size
             lhwork = -1;
-            lapackf77_zgels( MagmaNoTransStr, &M, &N, &nrhs,
-                             NULL, &lda, NULL, &ldb, tmp, &lhwork, &info );
+            lapackf77_zgeqrf(&M, &N, NULL, &M, NULL, tmp, &lhwork, &info);
+            lhwork2 = (magma_int_t) MAGMA_Z_REAL( tmp[0] );
+            
+            lhwork = -1;
+            lapackf77_zunmqr( MagmaLeftStr, MagmaConjTransStr,
+                              &M, &nrhs, &min_mn, NULL, &lda, NULL,
+                              NULL, &ldb, tmp, &lhwork, &info);
             lhwork = (magma_int_t) MAGMA_Z_REAL( tmp[0] );
-            lhwork = max( lhwork, lworkgpu );
+            lhwork = max( max( lhwork, lhwork2 ), lworkgpu );
             
             TESTING_MALLOC_CPU( tau,    magmaDoubleComplex, min_mn    );
             TESTING_MALLOC_CPU( h_A,    magmaDoubleComplex, lda*N     );
@@ -92,18 +98,17 @@ int main( int argc, char** argv )
             TESTING_MALLOC_DEV( d_B,    magmaDoubleComplex, lddb*nrhs );
             
             /* Initialize the matrices */
-            size = lda*N;
-            lapackf77_zlarnv( &ione, ISEED, &size, h_A );
+            lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
             lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_A2, &lda );
             
             // make random RHS
-            size = ldb*nrhs;
-            lapackf77_zlarnv( &ione, ISEED, &size, h_B );
+            n2 = M*nrhs;
+            lapackf77_zlarnv( &ione, ISEED, &n2, h_B );
             lapackf77_zlacpy( MagmaUpperLowerStr, &M, &nrhs, h_B, &ldb, h_R, &ldb );
             
             // make consistent RHS
-            //size = N*nrhs;
-            //lapackf77_zlarnv( &ione, ISEED, &size, h_X );
+            //n2 = N*nrhs;
+            //lapackf77_zlarnv( &ione, ISEED, &n2, h_X );
             //blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N,
             //               &c_one,  h_A, &lda,
             //                        h_X, &ldb,
@@ -117,21 +122,23 @@ int main( int argc, char** argv )
             magma_zsetmatrix( M, nrhs, h_B, ldb, d_B, lddb );
             
             gpu_time = magma_wtime();
-            magma_zgels_gpu( MagmaNoTrans, M, N, nrhs, d_A, ldda,
-                             d_B, lddb, h_work, lworkgpu, &info );
+            magma_zgels3_gpu( MagmaNoTrans, M, N, nrhs, d_A, ldda,
+                              d_B, lddb, h_work, lworkgpu, &info);
             gpu_time = magma_wtime() - gpu_time;
             gpu_perf = gflops / gpu_time;
             if (info != 0)
-                printf("magma_zgels returned error %d: %s.\n",
+                printf("magma_zgels3_gpu returned error %d: %s.\n",
                        (int) info, magma_strerror( info ));
             
-            // compute the residual
+            // Get the solution in h_X
             magma_zgetmatrix( N, nrhs, d_B, lddb, h_X, ldb );
+            
+            // compute the residual
             blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N,
                            &c_neg_one, h_A, &lda,
                                        h_X, &ldb,
-                           &c_one,     h_R, &ldb );
-            Anorm = lapackf77_zlange("f", &M, &N, h_A, &lda, work);
+                           &c_one,     h_R, &ldb);
+            matnorm = lapackf77_zlange("f", &M, &N, h_A, &lda, work);
             
             /* =====================================================================
                Performs operation using LAPACK
@@ -140,7 +147,7 @@ int main( int argc, char** argv )
             
             cpu_time = magma_wtime();
             lapackf77_zgels( MagmaNoTransStr, &M, &N, &nrhs,
-                             h_A, &lda, h_X, &ldb, h_work, &lhwork, &info );
+                             h_A, &lda, h_X, &ldb, h_work, &lhwork, &info);
             cpu_time = magma_wtime() - cpu_time;
             cpu_perf = gflops / cpu_time;
             if (info != 0)
@@ -150,17 +157,16 @@ int main( int argc, char** argv )
             blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N,
                            &c_neg_one, h_A2, &lda,
                                        h_X,  &ldb,
-                           &c_one,     h_B,  &ldb );
+                           &c_one,     h_B,  &ldb);
             
-            cpu_error = lapackf77_zlange("f", &M, &nrhs, h_B, &ldb, work) / (min_mn*Anorm);
-            gpu_error = lapackf77_zlange("f", &M, &nrhs, h_R, &ldb, work) / (min_mn*Anorm);
+            cpu_error = lapackf77_zlange("f", &M, &nrhs, h_B, &ldb, work) / (min_mn*matnorm);
+            gpu_error = lapackf77_zlange("f", &M, &nrhs, h_R, &ldb, work) / (min_mn*matnorm);
             
             printf("%5d %5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e   %8.2e",
                    (int) M, (int) N, (int) nrhs,
                    cpu_perf, cpu_time, gpu_perf, gpu_time, cpu_error, gpu_error );
             printf("%s\n", (gpu_error < tol ? "" : "  failed"));
             status |= ! (gpu_error < tol);
-
             
             TESTING_FREE_CPU( tau    );
             TESTING_FREE_CPU( h_A    );

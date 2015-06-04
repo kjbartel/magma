@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated d Mon Dec  9 17:05:31 2013
+       @generated d Tue Dec 17 13:18:44 2013
 
 */
 #include "common_magma.h"
@@ -109,7 +109,7 @@ magmablas_dgemm_reduce(
     double beta,
     double *d_C, magma_int_t ldc )
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

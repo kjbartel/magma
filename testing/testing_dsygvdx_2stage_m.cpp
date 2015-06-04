@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -8,7 +8,7 @@
     @author Raffaele Solca
     @author Azzam Haidar
 
-    @generated d Mon Dec  9 16:19:29 2013
+    @generated d Tue Dec 17 13:18:56 2013
 
 */
 
@@ -45,7 +45,7 @@ int main( int argc, char** argv)
     magma_int_t lrwork;
 #endif
 
-    double *w1, result;
+    double *w1, result=0;
     magma_int_t *iwork;
     magma_int_t N, n2, info, lwork, liwork;
     double c_zero    = MAGMA_D_ZERO;

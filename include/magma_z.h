@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -14,7 +14,6 @@
 #include "magma_types.h"
 #include "magma_zgehrd_m.h"
 
-#define PRECISION_z
 #define COMPLEX
 
 #ifdef __cplusplus
@@ -41,11 +40,6 @@ magma_int_t magma_get_zbulge_nb( magma_int_t m, magma_int_t nbthreads );
 magma_int_t magma_get_zbulge_nb_mgpu( magma_int_t m );
 magma_int_t magma_zbulge_get_Vblksiz( magma_int_t m, magma_int_t nb, magma_int_t nbthreads );
 magma_int_t magma_get_zbulge_gcperf();
-
-// define this only once
-#if defined(PRECISION_d)
-magma_int_t magma_get_smlsize_divideconquer();
-#endif
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- MAGMA function definitions / Data on CPU
@@ -974,7 +968,6 @@ void zq_to_panel( magma_uplo_t uplo, magma_int_t ib, magmaDoubleComplex *A, magm
 }
 #endif
 
-#undef PRECISION_z
 #undef COMPLEX
 
 #endif /* MAGMA_Z_H */

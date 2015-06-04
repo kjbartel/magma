@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated c Mon Dec  9 16:19:08 2013
+       @generated c Tue Dec 17 13:18:36 2013
 
 */
 #include <math.h>
@@ -20,7 +20,7 @@ magma_cgetrf2_mgpu(magma_int_t num_gpus,
          magmaFloatComplex *d_lAP[], magmaFloatComplex *w, magma_int_t ldw,
          magma_queue_t streaml[][2], magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.1-beta2) --
+/*  -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver

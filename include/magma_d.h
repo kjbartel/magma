@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.1-beta2) --
+    -- MAGMA (version 1.4.1) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
        December 2013
 
-       @generated d Mon Dec  9 16:18:49 2013
+       @generated d Tue Dec 17 13:18:17 2013
 */
 
 #ifndef MAGMA_D_H
@@ -14,7 +14,6 @@
 #include "magma_types.h"
 #include "magma_dgehrd_m.h"
 
-#define PRECISION_d
 #define REAL
 
 #ifdef __cplusplus
@@ -41,11 +40,6 @@ magma_int_t magma_get_dbulge_nb( magma_int_t m, magma_int_t nbthreads );
 magma_int_t magma_get_dbulge_nb_mgpu( magma_int_t m );
 magma_int_t magma_dbulge_get_Vblksiz( magma_int_t m, magma_int_t nb, magma_int_t nbthreads );
 magma_int_t magma_get_dbulge_gcperf();
-
-// define this only once
-#if defined(PRECISION_d)
-magma_int_t magma_get_smlsize_divideconquer();
-#endif
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- MAGMA function definitions / Data on CPU
@@ -974,7 +968,6 @@ void dq_to_panel( magma_uplo_t uplo, magma_int_t ib, double *A, magma_int_t lda,
 }
 #endif
 
-#undef PRECISION_d
 #undef REAL
 
 #endif /* MAGMA_D_H */

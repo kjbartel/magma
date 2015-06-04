@@ -1,11 +1,11 @@
 !
-!   -- MAGMA (version 1.4.1-beta2) --
+!   -- MAGMA (version 1.4.1) --
 !      Univ. of Tennessee, Knoxville
 !      Univ. of California, Berkeley
 !      Univ. of Colorado, Denver
 !      December 2013
 !
-!  @generated c Mon Dec  9 16:19:29 2013
+!  @generated c Tue Dec 17 13:18:57 2013
 !
       program testing_cgetrf_gpu_f
 
