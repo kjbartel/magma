@@ -1,15 +1,13 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
 include ../Makefile.internal
-
-INC += -I$(MAGMA_DIR)/control
 
 # ------------------------------------------------------------
 # Loosely, the order is alphabetic in each section, but mixed precision,
@@ -83,16 +81,22 @@ ZSRC += \
 	zgeqrf2_gpu.cpp		\
 	zgeqrf3_gpu.cpp		\
 	zgeqrf_gpu.cpp		\
-	zgeqr2_gpu.cpp          \
+	zgeqr2x_gpu.cpp         \
+	zgeqr2x_gpu-v2.cpp      \
+	zgeqr2x_gpu-v3.cpp      \
 	zgeqrs3_gpu.cpp		\
 	zgeqrs_gpu.cpp		\
 	zlarfb_gpu.cpp		\
+	zlarfb_gpu_gemm.cpp		\
 	zungqr_gpu.cpp		\
 	zunmql2_gpu.cpp		\
 	zunmqr2_gpu.cpp		\
 	zunmqr_gpu.cpp		\
 	\
 	zgeqrf_mgpu.cpp		\
+	\
+	zgeqp3_gpu.cpp          \
+	zlaqps_gpu.cpp          \
 
 # QR, CPU interface
 ZSRC += \
@@ -108,11 +112,14 @@ ZSRC += \
 	\
 	zgeqp3.cpp		\
 	zlaqps.cpp		\
+	\
+	zungqr_m.cpp		\
 
 # ----------
 # symmetric eigenvalues, GPU interface
 ZSRC += \
 	dsyevd_gpu.cpp		\
+	dsyevdx_gpu.cpp		\
 	zheevd_gpu.cpp		\
 	zheevdx_gpu.cpp		\
 	zheevr_gpu.cpp		\
@@ -140,18 +147,22 @@ ZSRC += \
 	zstedx.cpp		\
 	zungtr.cpp		\
 	zunmtr.cpp		\
+	dmove_eig.cpp		\
 
 # symmetric eigenvalues, multi-GPU 
-#ZSRC += \
-#	zhetrd_mgpu.cpp		\
-#	zlatrd_mgpu.cpp		\
-#	zheevd_m.cpp		\
-#	dlaex0_m.cpp		\
-#	dlaex1_m.cpp		\
-#	dlaex3_m.cpp		\
-#	dstedx_m.cpp		\
-#	zstedx_m.cpp		\
-#	zunmtr_m.cpp		\
+ZSRC += \
+	zhetrd_mgpu.cpp		\
+	zlatrd_mgpu.cpp		\
+	dsyevd_m.cpp		\
+	zheevd_m.cpp		\
+	dsyevdx_m.cpp		\
+	zheevdx_m.cpp		\
+	dlaex0_m.cpp		\
+	dlaex1_m.cpp		\
+	dlaex3_m.cpp		\
+	dstedx_m.cpp		\
+	zstedx_m.cpp		\
+	zunmtr_m.cpp		\
 
 # symmetric eigenvalues 2-stage
 ZSRC += \
@@ -164,18 +175,25 @@ ZSRC += \
 	zhetrd_he2hb.cpp	\
 	zhetrd_hb2st.cpp	\
 	zbulge_back.cpp		\
-	zhetrd_bhe2trc_v3.cpp	\
-	zhetrd_bhe2trc_v5.cpp	\
 	zungqr_2stage_gpu.cpp	\
 	zunmqr_gpu_2stage.cpp	\
+	dsyevdx_2stage.cpp	\
+	dsygvdx_2stage.cpp	\
 	zheevdx_2stage.cpp	\
 	zhegvdx_2stage.cpp	\
-#	zhetrd_he2hb_mgpu.cpp	\
-#	zhetrd_he2hb_mgpu_spec.cpp	\
+	zbulge_back_m.cpp	\
+	zbulge_applyQ_v2_m.cpp	\
+	dsyevdx_2stage_m.cpp	\
+	dsygvdx_2stage_m.cpp	\
+	zheevdx_2stage_m.cpp	\
+	zhegvdx_2stage_m.cpp	\
+	zhetrd_he2hb_mgpu.cpp	\
+	zhetrd_he2hb_mgpu_spec.cpp	\
 
 # generalized symmetric eigenvalues
 ZSRC += \
 	dsygvd.cpp		\
+	dsygvdx.cpp		\
 	zhegst.cpp		\
 	zhegvd.cpp		\
 	zhegvdx.cpp		\
@@ -184,7 +202,10 @@ ZSRC += \
 	zhegst_gpu.cpp		\
 	\
 	zhegst_m.cpp		\
+	dsygvd_m.cpp		\
 	zhegvd_m.cpp		\
+	dsygvdx_m.cpp		\
+	zhegvdx_m.cpp		\
 	ztrsm_m.cpp		\
 
 # ----------
@@ -197,6 +218,15 @@ ZSRC += \
 	zlahr2.cpp		\
 	zlahru.cpp		\
 	zunghr.cpp		\
+
+# non-symmetric eigenvalues, multi-GPU
+ZSRC += \
+	dgeev_m.cpp		\
+	zgeev_m.cpp		\
+	zgehrd_m.cpp		\
+	zlahr2_m.cpp		\
+	zlahru_m.cpp		\
+	zunghr_m.cpp		\
 
 # ----------
 # SVD
@@ -211,11 +241,10 @@ ZSRC += \
 -include Makefile.local
 -include Makefile.src
 
-ALLSRC_F = dlaed2.f \
-           slaed2.f
-
 ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)
-ALLOBJ := $(ALLSRC:.cpp=.o) $(ALLSRC_F:.f=.o)
+ALLOBJ := $(ALLSRC:.cpp=.o)
+
+.PHONY: all clean cleanall
 
 all: $(LIBMAGMA)
 
@@ -227,5 +256,4 @@ clean:
 	rm -f *.o *~ *.linkinfo
 
 cleanall: clean
-	rm -f *.a
 	rm -f $(LIBMAGMA)

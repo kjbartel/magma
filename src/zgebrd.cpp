@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -13,25 +13,18 @@
 #define A(i, j)  (a + (j)*lda  + (i))
 #define dA(i, j) (da+ (j)*ldda + (i))
 
-// === Define what BLAS to use ============================================
-#define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_zgemm magmablas_zgemm
-#endif
-// === End defining what BLAS to use ======================================
-
 extern "C" magma_int_t
 magma_zgebrd(magma_int_t m, magma_int_t n,
-             cuDoubleComplex *a, magma_int_t lda, double *d, double *e,
-             cuDoubleComplex *tauq, cuDoubleComplex *taup, 
-             cuDoubleComplex *work, magma_int_t lwork, 
+             magmaDoubleComplex *a, magma_int_t lda, double *d, double *e,
+             magmaDoubleComplex *tauq, magmaDoubleComplex *taup,
+             magmaDoubleComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -142,9 +135,9 @@ magma_zgebrd(magma_int_t m, magma_int_t n,
     the vector defining G(i).
     =====================================================================    */
 
-    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex c_one     = MAGMA_Z_ONE;
-    cuDoubleComplex *da, *dwork;
+    magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex c_one     = MAGMA_Z_ONE;
+    magmaDoubleComplex *da, *dwork;
 
     magma_int_t ncol, nrow, jmax, nb, ldda;
 
@@ -190,7 +183,7 @@ magma_zgebrd(magma_int_t m, magma_int_t n,
     if (MAGMA_SUCCESS != magma_zmalloc( &da, n*ldda + (m + n)*nb )) {
         fprintf (stderr, "!!!! device memory allocation error in zgebrd\n" );
         *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info; 
+        return *info;
     }
     dwork = da + (n)*ldda;
 
@@ -238,14 +231,14 @@ magma_zgebrd(magma_int_t m, magma_int_t n,
                           work  + (ldwrkx+1)*nb, ldwrky,
                           dwork + (ldwrkx+1)*nb, ldwrky );
 
-        magma_zgemm( MagmaNoTrans, MagmaConjTrans, 
-                     nrow, ncol, nb, 
+        magma_zgemm( MagmaNoTrans, MagmaConjTrans,
+                     nrow, ncol, nb,
                      c_neg_one, dA(i+nb, i   ),      ldda,
                                 dwork+(ldwrkx+1)*nb, ldwrky,
                      c_one,     dA(i+nb, i+nb),      ldda);
 
-        magma_zgemm( MagmaNoTrans, MagmaNoTrans, 
-                     nrow, ncol, nb, 
+        magma_zgemm( MagmaNoTrans, MagmaNoTrans,
+                     nrow, ncol, nb,
                      c_neg_one, dwork+nb,         ldwrkx,
                                 dA( i,    i+nb ), ldda,
                      c_one,     dA( i+nb, i+nb ), ldda);
@@ -274,7 +267,7 @@ magma_zgebrd(magma_int_t m, magma_int_t n,
         magma_zgetmatrix( nrow, ncol, dA(i, i), ldda, A(i, i), lda );
     }
     
-    lapackf77_zgebrd( &nrow, &ncol, 
+    lapackf77_zgebrd( &nrow, &ncol,
                       A(i, i), &lda, d+i, e+i,
                       tauq+i, taup+i, work, &lwork, &iinfo);
     work[0] = MAGMA_Z_MAKE( lwkopt, 0. );

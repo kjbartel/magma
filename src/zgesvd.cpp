@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> c
 
@@ -14,18 +14,18 @@
 
 extern "C" magma_int_t
 magma_zgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
-             cuDoubleComplex *A,    magma_int_t lda, double *s,
-             cuDoubleComplex *U,    magma_int_t ldu,
-             cuDoubleComplex *VT,   magma_int_t ldvt,
-             cuDoubleComplex *work, magma_int_t lwork,
+             magmaDoubleComplex *A,    magma_int_t lda, double *s,
+             magmaDoubleComplex *U,    magma_int_t ldu,
+             magmaDoubleComplex *VT,   magma_int_t ldvt,
+             magmaDoubleComplex *work, magma_int_t lwork,
              double *rwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -150,8 +150,8 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
     char jobu_[2]  = {jobu,  0};
     char jobvt_[2] = {jobvt, 0};
     
-    const cuDoubleComplex c_zero = MAGMA_Z_ZERO;
-    const cuDoubleComplex c_one  = MAGMA_Z_ONE;
+    const magmaDoubleComplex c_zero = MAGMA_Z_ZERO;
+    const magmaDoubleComplex c_one  = MAGMA_Z_ONE;
     const magma_int_t izero      = 0;
     const magma_int_t ione       = 1;
     const magma_int_t ineg_one   = -1;
@@ -162,7 +162,7 @@ magma_zgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
     // Local variables
     magma_int_t i, ie, ir, iu, blk, ncu;
     double dummy[1], eps;
-    cuDoubleComplex cdummy[1];
+    magmaDoubleComplex cdummy[1];
     magma_int_t nru, iscl;
     double anrm;
     magma_int_t ierr, itau, ncvt, nrvt;

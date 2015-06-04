@@ -1,17 +1,12 @@
-/**
- *
- * @file magma_zf77.c
- *
- *  PLASMA computational routines
- *  PLASMA is a software package provided by Univ. of Tennessee,
- *  Univ. of California Berkeley and Univ. of Colorado Denver
- *
- * @version 2.1.0
- * @author Mathieu Faverge
- * @date 2009-11-15
- * @precisions normal z -> c d s
- *
- **/
+/*
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+       
+       @author Mathieu Faverge
+*/
 #include "common_magma.h"
 
 #undef REAL

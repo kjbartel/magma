@@ -1,3 +1,13 @@
+/*
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+ 
+       @precisions normal z -> s d c
+*/
+
 #ifndef MAGMA_LAPACK_H
 #define MAGMA_LAPACK_H
 
@@ -58,11 +68,11 @@ void   lapackf77_slabad( float  *Small, float  *large );
 void   lapackf77_dlabad( double *Small, double *large );
 
 void   lapackf77_zcgesv( const magma_int_t *n, const magma_int_t *nrhs,
-                         cuDoubleComplex *A, const magma_int_t *lda,
+                         magmaDoubleComplex *A, const magma_int_t *lda,
                          magma_int_t *ipiv,
-                         const cuDoubleComplex *B, const magma_int_t *ldb,
-                               cuDoubleComplex *X, const magma_int_t *ldx,
-                         cuDoubleComplex *work, cuFloatComplex *swork, double *rwork,
+                         const magmaDoubleComplex *B, const magma_int_t *ldb,
+                               magmaDoubleComplex *X, const magma_int_t *ldx,
+                         magmaDoubleComplex *work, magmaFloatComplex *swork, double *rwork,
                          magma_int_t *iter,
                          magma_int_t *info );
 
@@ -84,13 +94,13 @@ void   lapackf77_ssterf( const magma_int_t *n,
                          magma_int_t *info );
 
 void   lapackf77_zlag2c( magma_int_t *m, magma_int_t *n,
-                         const cuDoubleComplex *A,  magma_int_t *lda,
-                               cuFloatComplex  *SA, magma_int_t *ldsa,
+                         const magmaDoubleComplex *A,  magma_int_t *lda,
+                               magmaFloatComplex  *SA, magma_int_t *ldsa,
                          magma_int_t *info );
 
 void   lapackf77_clag2z( magma_int_t *m, magma_int_t *n,
-                         const cuFloatComplex  *SA, magma_int_t *ldsa,
-                               cuDoubleComplex *A,  magma_int_t *lda,
+                         const magmaFloatComplex  *SA, magma_int_t *ldsa,
+                               magmaDoubleComplex *A,  magma_int_t *lda,
                          magma_int_t *info );
 
 void   lapackf77_dlag2s( magma_int_t *m, magma_int_t *n,
@@ -110,4 +120,4 @@ float  lapackf77_slapy2( const float  *x, const float  *y );
 }
 #endif
 
-#endif /* MAGMA LAPACK */
+#endif /* MAGMA_LAPACK_H */

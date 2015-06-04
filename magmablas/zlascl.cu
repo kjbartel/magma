@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -14,7 +14,7 @@
 
 
 __global__ void
-l_zlascl (int m, int n, double mul, cuDoubleComplex* A, int lda){
+l_zlascl (int m, int n, double mul, magmaDoubleComplex* A, int lda){
     int ind =  blockIdx.x * zlascl_bs + threadIdx.x ;
 
     int break_d = (ind < n)? ind: n-1;
@@ -26,7 +26,7 @@ l_zlascl (int m, int n, double mul, cuDoubleComplex* A, int lda){
 }
 
 __global__ void
-u_zlascl (int m, int n, double mul, cuDoubleComplex* A, int lda){
+u_zlascl (int m, int n, double mul, magmaDoubleComplex* A, int lda){
     int ind =  blockIdx.x * zlascl_bs + threadIdx.x ;
 
     A += ind;
@@ -40,7 +40,7 @@ extern "C" void
 magmablas_zlascl(char type, magma_int_t kl, magma_int_t ku, 
                  double cfrom, double cto,
                  magma_int_t m, magma_int_t n, 
-                 cuDoubleComplex *A, magma_int_t lda, magma_int_t *info )
+                 magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info )
 {
     int blocks;
     if (m % zlascl_bs==0)

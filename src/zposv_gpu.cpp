@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -11,19 +11,18 @@
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs, 
-                 cuDoubleComplex *dA, magma_int_t ldda, 
-                 cuDoubleComplex *dB, magma_int_t lddb, magma_int_t *info )
+magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
+                 magmaDoubleComplex *dA, magma_int_t ldda,
+                 magmaDoubleComplex *dB, magma_int_t lddb, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
- 
+       June 2013
+
     Purpose
     =======
-
     ZPOSV computes the solution to a complex system of linear equations
        A * X = B,
     where A is an N-by-N Hermitian positive definite matrix and X and B
@@ -37,7 +36,6 @@ magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
 
     Arguments
     =========
- 
     UPLO    (input) CHARACTER*1
             = 'U':  Upper triangle of A is stored;
             = 'L':  Lower triangle of A is stored.
@@ -49,17 +47,17 @@ magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
             The number of right hand sides, i.e., the number of columns
             of the matrix B.  NRHS >= 0.
 
-    dA      (input/output) COMPLEX_16 array on the GPU, dimension (LDDA,N)   
-            On entry, the Hermitian matrix dA.  If UPLO = 'U', the leading   
-            N-by-N upper triangular part of dA contains the upper   
-            triangular part of the matrix dA, and the strictly lower   
-            triangular part of dA is not referenced.  If UPLO = 'L', the   
-            leading N-by-N lower triangular part of dA contains the lower   
-            triangular part of the matrix dA, and the strictly upper   
-            triangular part of dA is not referenced.   
+    dA      (input/output) COMPLEX_16 array on the GPU, dimension (LDDA,N)
+            On entry, the Hermitian matrix dA.  If UPLO = 'U', the leading
+            N-by-N upper triangular part of dA contains the upper
+            triangular part of the matrix dA, and the strictly lower
+            triangular part of dA is not referenced.  If UPLO = 'L', the
+            leading N-by-N lower triangular part of dA contains the lower
+            triangular part of the matrix dA, and the strictly upper
+            triangular part of dA is not referenced.
 
-            On exit, if INFO = 0, the factor U or L from the Cholesky   
-            factorization dA = U**H*U or dA = L*L**H.   
+            On exit, if INFO = 0, the factor U or L from the Cholesky
+            factorization dA = U**H*U or dA = L*L**H.
 
     LDDA    (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,N).
@@ -76,15 +74,15 @@ magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
-    *info = 0 ; 
+    *info = 0 ;
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
-        *info = -1; 
+        *info = -1;
     if( n < 0 )
-        *info = -2; 
-    if( nrhs < 0) 
-        *info = -3; 
+        *info = -2;
+    if( nrhs < 0)
+        *info = -3;
     if ( ldda < max(1, n) )
-        *info = -5; 
+        *info = -5;
     if ( lddb < max(1, n) )
         *info = -7;
     if (*info != 0) {
@@ -101,6 +99,6 @@ magma_zposv_gpu( char uplo, magma_int_t n, magma_int_t nrhs,
     if ( *info == 0 ) {
         magma_zpotrs_gpu( uplo, n, nrhs, dA, ldda, dB, lddb, info );
     }
-    
+
     return *info;
 }

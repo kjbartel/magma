@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:55 2012
+       @generated c Fri Jun 28 19:33:18 2013
 
 */
 #include "common_magma.h"
@@ -13,8 +13,6 @@
 
 /*The version for tesla can be found in chemv_tesla.cu */
 #if (GPUSHMEM >= 200)
-
-
 
 #define chemv_bs         64
 #define thread_x         64
@@ -28,329 +26,314 @@
  */
 
 __global__ void
-magmablas_chemv_200_L_special_mgpu_offset( magma_int_t n, cuFloatComplex alpha,
-                               cuFloatComplex *A, magma_int_t lda,
-                               cuFloatComplex *x, magma_int_t incx,
-                               cuFloatComplex  beta,
-                               cuFloatComplex *y, magma_int_t incy,
-                               cuFloatComplex *WC, 
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb,
-                         magma_int_t the_chosen_block_id,
-                         magma_int_t the_chosen_gpu_id,
-                         magma_int_t kstan)
+magmablas_chemv_200_L_special_mgpu_offset(
+    int n, magmaFloatComplex alpha,
+    magmaFloatComplex *A, int lda,
+    magmaFloatComplex *x, int incx,
+    magmaFloatComplex  beta,
+    magmaFloatComplex *y, int incy,
+    magmaFloatComplex *WC,
+    int my_gpu_id,
+    int num_gpus,
+    int nb,
+    int the_chosen_block_id,
+    int the_chosen_gpu_id,
+    int kstan)
 {
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-    magma_int_t blkc = blockIdx.x ;
+    int tx   = threadIdx.x;
+    int ty   = threadIdx.y;
+    int blkc = blockIdx.x;
 
     if(blkc < my_gpu_id)
     {
-    return;
+        return;
     }
 
-    cuFloatComplex res  = MAGMA_C_ZERO;
-    cuFloatComplex res_ = MAGMA_C_ZERO;
-    cuFloatComplex res1 = MAGMA_C_ZERO;
-    cuFloatComplex res2 = MAGMA_C_ZERO;
+    magmaFloatComplex res  = MAGMA_C_ZERO;
+    magmaFloatComplex res_ = MAGMA_C_ZERO;
+    magmaFloatComplex res1 = MAGMA_C_ZERO;
+    magmaFloatComplex res2 = MAGMA_C_ZERO;
 
-    __shared__ cuFloatComplex la   [quarter_thread_x][thread_x+2];
-    __shared__ cuFloatComplex buff [thread_x];
-    __shared__ cuFloatComplex buff2 [thread_x];
+    __shared__ magmaFloatComplex la   [quarter_thread_x][thread_x+2];
+    __shared__ magmaFloatComplex buff [thread_x];
+    __shared__ magmaFloatComplex buff2 [thread_x];
 
-    cuFloatComplex tr[4];
-    cuFloatComplex b[4];
+    magmaFloatComplex tr[4];
+    magmaFloatComplex b[4];
 
-    magma_int_t break_d   =  thread_x * blkc;
-    const magma_int_t td  = (thread_x * ty ) + tx;
-    magma_int_t       tx_ = td % half_thread_x;
-    magma_int_t       ty_ = td / half_thread_x;
+    int break_d   =  thread_x * blkc;
+    const int td  = (thread_x * ty ) + tx;
+    int       tx_ = td % half_thread_x;
+    int       ty_ = td / half_thread_x;
 
     WC +=  break_d + tx;
     x  += (break_d + tx ) * incx;
-    A  +=  break_d ;
-    A  += ty_* lda + tx_ ;
+    A  +=  break_d;
+    A  += ty_* lda + tx_;
 
     if( ty == 0 )
-   {
-            buff[tx] = x[0];
+    {
+        buff[tx] = x[0];
         if(blkc == the_chosen_block_id && my_gpu_id == the_chosen_gpu_id && tx < kstan)
         {
-                MAGMA_C_SET2REAL(buff[tx], 0.0);
-            }
-    } // obtain the vector x store in buff;
-   // __syncthreads();
-
-    tx = tx_ ; ty = ty_ ;
-
-    magma_int_t flag = 0;
-    
-    
-if ( (blkc % num_gpus) == my_gpu_id)
-{    A += lda * (blkc/num_gpus) * thread_x; // change
-   
-
-   #pragma unroll
-    for(magma_int_t j =0; j<half_thread_x; j +=8)
-        la[0][ bank_shift * (ty_+j) + tx_] =  A[ j * lda];
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(ty_ * 4 + 4)  ; i++){
-        if ( i < tx_ )   {
-            la[0][bank_shift * tx_ + i] = cuConjf( la[0][ i * bank_shift + tx_] ) ;
+            MAGMA_C_SET2REAL(buff[tx], 0.0);
         }
+    } // obtain the vector x store in buff;
+    // __syncthreads();
+
+    tx = tx_; ty = ty_;
+
+    int flag = 0;
+
+    if ( (blkc % num_gpus) == my_gpu_id)
+    {
+        A += lda * (blkc/num_gpus) * thread_x; // change
+
+        #pragma unroll
+        for(int j =0; j < half_thread_x; j += 8)
+            la[0][ bank_shift * (ty_+j) + tx_] =  A[ j * lda];
+        __syncthreads();
+
+        #pragma unroll
+        for(int  i=ty_*4; i < (ty_ * 4 + 4); i++) {
+            if ( i < tx_ ) {
+                la[0][bank_shift * tx_ + i] = cuConjf( la[0][ i * bank_shift + tx_] );
+            }
+            else
+                la[0][bank_shift * tx_ + i] = la[0][ bank_shift * tx_ + i];
+        }
+        __syncthreads();
+
+        #pragma unroll
+        for(int j=0; j < 4; j++)
+            res += cuConjf( la[0][bank_shift * tx_ + j + ty_ * 4] ) * buff[j + ty_ * 4];
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        
+        if( ty_ == 0 )
+            res1 = la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
         else
-            la[0][bank_shift * tx_ + i] = la[0][ bank_shift * tx_ + i]  ;
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res+= cuConjf( la[0][bank_shift * tx_ + j + ty_ * 4] ) * buff[j + ty_ * 4];
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-
-    if( ty_== 0 )
-      res1 = la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
-        +    la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
-        +    la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
-        +    la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
-    else
         {
             MAGMA_C_SET2REAL(res1,0);
         }
-    __syncthreads();
-
-
-    MAGMA_C_SET2REAL(res, 0) ;
-
-    A+= half_thread_x + half_thread_x *lda ;
-
-    #pragma unroll
-    for(magma_int_t j =0; j<half_thread_x; j+=8)
-        la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(4+ty_*4) ; i++){
-        if ( i < tx_ )   {
-            la[0][bank_shift*tx_+i] = cuConjf( la[0][bank_shift*i+tx_] ) ;
+        __syncthreads();
+        
+        MAGMA_C_SET2REAL(res, 0);
+        
+        A += half_thread_x + half_thread_x *lda;
+        
+        #pragma unroll
+        for(int j =0; j < half_thread_x; j += 8)
+            la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
+        __syncthreads();
+        
+        #pragma unroll
+        for(int  i=ty_*4; i < (4+ty_*4); i++) {
+            if ( i < tx_ ) {
+                la[0][bank_shift*tx_+i] = cuConjf( la[0][bank_shift*i+tx_] );
+            }
+            else
+                la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i];
         }
+        __syncthreads();
+        
+        #pragma unroll
+        for(int j=0; j < 4; j++)
+            res += cuConjf( la[0][bank_shift*tx_+j+ty_*4] ) * buff[half_thread_x + j + 4 * ty_];
+        __syncthreads();
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        
+        if( ty_ == 1 )
+            res2 = la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
         else
-            la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i]  ;
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res+= cuConjf( la[0][bank_shift*tx_+j+ty_*4] ) * buff[half_thread_x + j + 4 * ty_];
-    __syncthreads();
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-
-    if( ty_== 1 )
-        res2 = la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
-          +    la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
-          +    la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
-          +    la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
-    else
-    {
-        MAGMA_C_SET2REAL(res2,0);
-    }
-    __syncthreads();
-
-    MAGMA_C_SET2REAL(res,0);
-
-    A-=half_thread_x *lda ;
-
-    MAGMA_C_SET2REAL(res_,0);
-
-    #pragma unroll
-    for(magma_int_t j=0; j<half_thread_x; j+=8)
-        tr[j/8] = A[ j * lda];
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++){
-        res += tr[j] * buff[ j*8 + ty_];
-        la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res_+= cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x +j+ty_*4];
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-    if( ty_ == 1 )
-        res2 = res2 
-            +  la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
-    else
         {
             MAGMA_C_SET2REAL(res2,0);
         }
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res_ ;
-    __syncthreads();
-    if( ty_ == 0 ) {
-        res1 = res1
-            +  la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
-    }
-    else
+        __syncthreads();
+        
+        MAGMA_C_SET2REAL(res,0);
+        
+        A -= half_thread_x *lda;
+        
+        MAGMA_C_SET2REAL(res_,0);
+        
+        #pragma unroll
+        for(int j=0; j < half_thread_x; j += 8)
+            tr[j/8] = A[ j * lda];
+        
+        #pragma unroll
+        for(int j=0; j < 4; j++) {
+            res += tr[j] * buff[ j*8 + ty_];
+            la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
+        }
+        __syncthreads();
+        
+        #pragma unroll
+        for(int j=0; j < 4; j++)
+            res_ += cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x +j+ty_*4];
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        if( ty_ == 1 )
+            res2 = res2
+                 + la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
+        else
+        {
+            MAGMA_C_SET2REAL(res2,0);
+        }
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res_;
+        __syncthreads();
+        if( ty_ == 0 ) {
+            res1 = res1
+                 + la[0][tx_*bank_shift+0]+la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]+la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]+la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]+la[0][tx_*bank_shift+7];
+        }
+        else
         {
             MAGMA_C_SET2REAL(res1,0);
         }
-    __syncthreads();
-    A-=half_thread_x;
+        __syncthreads();
+        A -= half_thread_x;
+        
+        flag = 1;
+        
+        A -= lda * (blkc/num_gpus) * thread_x;
+    }
 
-    flag = 1;
-   
-
-    A -= lda * (blkc/num_gpus) * thread_x; 
-   }
-
-
-
-    
-    tx = threadIdx.x ;
-    ty = threadIdx.y ;
+    tx = threadIdx.x;
+    ty = threadIdx.y;
 
     if( ty_ == 0  && ty == 0  )
-        res = res1 ;
+        res = res1;
     else if( ty_ == 1  && ty == 0  )
-        res = res2 ;
+        res = res2;
     else
-        {
-            MAGMA_C_SET2REAL(res,0);
-        }
+    {
+        MAGMA_C_SET2REAL(res,0);
+    }
 
-    A-=ty_* lda  ;
-    A-=tx_;
+    A -= ty_* lda;
+    A -= tx_;
 
-    x= x - blkc * thread_x  *incx  ;
+    x = x - blkc * thread_x  *incx;
 
-    //x= x- tx*incx;
+    //x = x- tx*incx;
 
-    A+=4 * ty* lda  ;
-    A+=tx;
+    A += 4 * ty* lda;
+    A += tx;
 
-    
-    magma_int_t count = 0 ;
+    int count = 0;
 
-    tx_ = td % quarter_thread_x ;
-    ty_ = td / quarter_thread_x ;
+    tx_ = td % quarter_thread_x;
+    ty_ = td / quarter_thread_x;
 
-    WC-=tx ;
-    WC+=tx_;
+    WC -= tx;
+    WC += tx_;
 
-
-    magma_int_t num_blocks_iters = (blkc +1) /num_gpus - flag;
+    int num_blocks_iters = (blkc +1) /num_gpus - flag;
     
     if( my_gpu_id < ( (blkc+1) % num_gpus) )
     {
-    num_blocks_iters += 1;
+        num_blocks_iters += 1;
     }
 
-    x += (my_gpu_id ) * nb ;
-    magma_int_t wc_c = my_gpu_id ;
+    x += (my_gpu_id ) * nb;
+    int wc_c = my_gpu_id;
 
-    if( blkc > my_gpu_id)
-
-    for(magma_int_t s=0; s<num_blocks_iters; s++)
+    if( blkc > my_gpu_id) {
+        for(int s=0; s < num_blocks_iters; s++)
         {
             MAGMA_C_SET2REAL(res_,0);
-
-        count ++;
-
+    
+            count++;
+    
             if(ty == 0 )
-        {
+            {
                 buff2[tx] = x[0];
-            if(my_gpu_id == the_chosen_gpu_id && tx < kstan && count==1)//
-        {
+                if(my_gpu_id == the_chosen_gpu_id && tx < kstan && count == 1)//
+                {
                     MAGMA_C_SET2REAL(buff2[tx], 0.0);
-        }
+                }
             }
             __syncthreads();
-
-
-
+    
             #pragma unroll
-            for( magma_int_t k=0;k<4;k++)
+            for( int k=0; k < 4; k++)
             {
-
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4; j++)
                     tr[j] = A[j*lda];
-
+            
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4; j++)
                 {
                     res += tr[j] * buff2[ quarter_thread_x * k + ty * 4 + j];
                     la[( j + ty * 4)][tx] = cuConjf(tr[j]) * buff[tx];
-                  //  la[( j + ty * 4)][tx] = cuConjf(tr[j]);
+                    //la[( j + ty * 4)][tx] = cuConjf(tr[j]);
                 }
                 __syncthreads();
-
-
+            
                 MAGMA_C_SET2REAL(res_,0);
-
+            
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4; j++)
                 {
-                //    res_+=la[tx_][ty_*4+j] * b[j] ;
-                    res_+=la[tx_][ty_*4+j]  ;
+                    //res_ += la[tx_][ty_*4+j] * b[j];
+                    res_ += la[tx_][ty_*4+j];
                 }
-                //b[4 + k] = res_ ;
-        b[ k] = res_ ;
+                //b[4 + k] = res_;
+                b[ k] = res_;
                 __syncthreads();
-
-                A += lda * quarter_thread_x ;
+    
+                A += lda * quarter_thread_x;
             }
-
+    
             #pragma unroll
-            for(magma_int_t k=0; k < 4 ; k++){
-                //la[tx_][ty_+quarter_thread_x*k]= b[4+k] ;
-                la[tx_][ty_+quarter_thread_x*k]= b[k] ;
+            for(int k=0; k < 4; k++) {
+                //la[tx_][ty_+quarter_thread_x*k]= b[4+k];
+                la[tx_][ty_+quarter_thread_x*k]= b[k];
             }
             __syncthreads();
             if( ty_ < 4 ) {
-                magma_int_t k = ty_*quarter_thread_x;
+                int k = ty_*quarter_thread_x;
                 res_ = la[tx_][0+k] + la[tx_][1+k]
-                    +  la[tx_][2+k] + la[tx_][3+k]
-                    +  la[tx_][4+k] + la[tx_][5+k]
-                    +  la[tx_][6+k] + la[tx_][7+k]
-                    +  la[tx_][8+k] + la[tx_][9+k]
-                    +  la[tx_][10+k]+ la[tx_][11+k]
-                    +  la[tx_][12+k]+ la[tx_][13+k]
-                    +  la[tx_][14+k]+ la[tx_][15+k];
+                     + la[tx_][2+k] + la[tx_][3+k]
+                     + la[tx_][4+k] + la[tx_][5+k]
+                     + la[tx_][6+k] + la[tx_][7+k]
+                     + la[tx_][8+k] + la[tx_][9+k]
+                     + la[tx_][10+k]+ la[tx_][11+k]
+                     + la[tx_][12+k]+ la[tx_][13+k]
+                     + la[tx_][14+k]+ la[tx_][15+k];
                 WC[k + wc_c*lda ] =   res_;
             }
-
+    
             wc_c += num_gpus;
-        x += num_gpus * nb;
+            x += num_gpus * nb;
             __syncthreads();
-
-
-
         }
+    }
 
+    WC += tx;
+    WC -= tx_;
 
-    WC+=tx ;
-    WC-=tx_;
-
-    la[ty][tx]= res ;// res store the swipe across the row
+    la[ty][tx]= res; // res store the swipe across the row
     __syncthreads();
     if( ty == 0 ) {
         res = la[0][tx]+ la[1][tx]
@@ -363,55 +346,55 @@ if ( (blkc % num_gpus) == my_gpu_id)
  *    Lower case for generic sizes
  */
 __global__ void
-magmablas_chemv_200_L_generic_mgpu_offset(magma_int_t n, cuFloatComplex alpha,
-                              cuFloatComplex *A, magma_int_t lda,
-                              cuFloatComplex *x, magma_int_t incx,
-                              cuFloatComplex beta,
-                              cuFloatComplex *y, magma_int_t incy,
-                              cuFloatComplex *WC,
-                              magma_int_t m_mod_thread_x,
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb,
-                         magma_int_t the_chosen_block_id,
-                         magma_int_t the_chosen_gpu_id,
-                         magma_int_t kstan)
+magmablas_chemv_200_L_generic_mgpu_offset(
+    int n, magmaFloatComplex alpha,
+    magmaFloatComplex *A, int lda,
+    magmaFloatComplex *x, int incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex *y, int incy,
+    magmaFloatComplex *WC,
+    int m_mod_thread_x,
+    int my_gpu_id,
+    int num_gpus,
+    int nb,
+    int the_chosen_block_id,
+    int the_chosen_gpu_id,
+    int kstan)
 {
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-    magma_int_t blkc = blockIdx.x ;
+    int tx   = threadIdx.x;
+    int ty   = threadIdx.y;
+    int blkc = blockIdx.x;
 
     if(blkc < my_gpu_id)
     {
-    return;
+        return;
     }
 
-    cuFloatComplex res  = MAGMA_C_ZERO;
-    cuFloatComplex res_ = MAGMA_C_ZERO;
-    cuFloatComplex res1 = MAGMA_C_ZERO;
-    cuFloatComplex res2 = MAGMA_C_ZERO;
+    magmaFloatComplex res  = MAGMA_C_ZERO;
+    magmaFloatComplex res_ = MAGMA_C_ZERO;
+    magmaFloatComplex res1 = MAGMA_C_ZERO;
+    magmaFloatComplex res2 = MAGMA_C_ZERO;
 
-    __shared__ cuFloatComplex la   [quarter_thread_x][thread_x+2];
-    __shared__ cuFloatComplex buff [thread_x];
-    __shared__ cuFloatComplex buff2 [thread_x];
+    __shared__ magmaFloatComplex la   [quarter_thread_x][thread_x+2];
+    __shared__ magmaFloatComplex buff [thread_x];
+    __shared__ magmaFloatComplex buff2 [thread_x];
 
+    magmaFloatComplex tr[4];
+    magmaFloatComplex b[4];
 
-    cuFloatComplex tr[4];
-    cuFloatComplex b[4];
+    int break_d   =  thread_x * blkc;
+    const int td  = (thread_x * ty ) + tx;
+    int       tx_ = td % half_thread_x;
+    int       ty_ = td / half_thread_x;
 
-    magma_int_t break_d   =  thread_x * blkc;
-    const magma_int_t td  = (thread_x * ty ) + tx;
-    magma_int_t       tx_ = td % half_thread_x;
-    magma_int_t       ty_ = td / half_thread_x;
+    WC +=  break_d + tx;
+    x  += (break_d + tx ) * incx;
+    A  +=  break_d;
+    A  += lda * ty_;
 
-    WC+=  break_d + tx;
-    x += (break_d + tx ) * incx;
-    A +=  break_d ;
-    A += lda * ty_;
-
-    magma_int_t trackA ;
+    int trackA;
     if( blkc == ( gridDim.x - 1 ) ) {
-        if( ty == 0 ){
+        if( ty == 0 ) {
             if( tx > m_mod_thread_x )
             {
                 MAGMA_C_SET2REAL(buff[tx],0);
@@ -423,381 +406,376 @@ magmablas_chemv_200_L_generic_mgpu_offset(magma_int_t n, cuFloatComplex alpha,
             trackA=m_mod_thread_x;
         else
             trackA=tx_;
-        A += trackA ;
+        A += trackA;
     }
-    else{
-        if( ty == 0 ){
+    else {
+        if( ty == 0 ) {
             buff[tx]  = x[0];
         }
         trackA = tx_;
-        A += trackA ;
+        A += trackA;
     }
 
-     if(ty == 0 )
-     { 
-           if(my_gpu_id == 0 && blkc ==0  && tx < kstan)//
-       {
-                 MAGMA_C_SET2REAL(buff[tx], 0.0);
-       }
-     }
+    if(ty == 0 )
+    {
+        if(my_gpu_id == 0 && blkc == 0  && tx < kstan)//
+        {
+            MAGMA_C_SET2REAL(buff[tx], 0.0);
+        }
+    }
 
-    magma_int_t flag = 0;
+    int flag = 0;
     
-    if ( (blkc % num_gpus) == my_gpu_id) 
+    if ( (blkc % num_gpus) == my_gpu_id)
     {
-    A += lda * (blkc/num_gpus) * thread_x; // change
-    // Somehow merging these two if - else creates problem
-    // It could be a potential bug -- from synchronization or from cuda or compiler
-    if( blkc == ( gridDim.x - 1 ) ) {
+        A += lda * (blkc/num_gpus) * thread_x; // change
+        // Somehow merging these two if - else creates problem
+        // It could be a potential bug -- from synchronization or from cuda or compiler
+        if( blkc == ( gridDim.x - 1 ) ) {
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8) {
+                if( ( ty_ + j ) > m_mod_thread_x )
+                {
+                    MAGMA_C_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 9999);
+                }
+                else
+                    la[0][bank_shift*(ty_+j)+tx_] =  A[ j * lda];
+            }
+            A -= trackA;
+        }
+        else {
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8) {
+                la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
+            }
+        }
+        tx = tx_;
+        ty = ty_;
+        __syncthreads();
+        
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            if( ( ty_ + j ) > m_mod_thread_x )
-            {
-                MAGMA_C_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 9999);
+        for(int  i=ty_*4; i < (ty_*4+4); i++) {
+            if ( i < tx_ ) {
+                la[0][bank_shift*tx_+i] = cuConjf(la[0][i*bank_shift+tx_]);
             }
             else
-                la[0][bank_shift*(ty_+j)+tx_] =  A[ j * lda];
+                la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i];
         }
-        A-=trackA;
-    }
-    else {
+        __syncthreads();
+        
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
-        }
-    }
-    tx = tx_ ;
-    ty = ty_ ;
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(ty_*4+4)  ; i++){
-        if ( i < tx_ )   {
-            la[0][bank_shift*tx_+i] = cuConjf(la[0][i*bank_shift+tx_]) ;
-        }
+        for(int j=0; j < 4; j++)
+            res += cuConjf(la[0][bank_shift*tx_+j+ty_*4])* buff[j+ty_*4];
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        if( ty_ == 0 )
+            res1 = la[0][tx_*bank_shift+0]
+                 + la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]
+                 + la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]
+                 + la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]
+                 + la[0][tx_*bank_shift+7];
         else
-            la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i]  ;
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res += cuConjf(la[0][bank_shift*tx_+j+ty_*4])* buff[j+ty_*4];
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-    if( ty_== 0 )
-        res1 = la[0][tx_*bank_shift+0] 
-            +  la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]
-            +  la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]
-            +  la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]
-            +  la[0][tx_*bank_shift+7];
-    else
-    {
-        MAGMA_C_SET2REAL(res1,0);
-    }
-    __syncthreads();
-
-
-    MAGMA_C_SET2REAL(res,0);
-
-    if( blkc == ( gridDim.x - 1 ) ) {
-        if ( (tx_+half_thread_x) > m_mod_thread_x )
-            trackA = m_mod_thread_x;
-        else
-            trackA = tx_ + half_thread_x;
-        A+= trackA+half_thread_x*lda ;
-
+        {
+            MAGMA_C_SET2REAL(res1,0);
+        }
+        __syncthreads();
+        
+        MAGMA_C_SET2REAL(res,0);
+        
+        if( blkc == ( gridDim.x - 1 ) ) {
+            if ( (tx_+half_thread_x) > m_mod_thread_x )
+                trackA = m_mod_thread_x;
+            else
+                trackA = tx_ + half_thread_x;
+            A += trackA+half_thread_x*lda;
+        
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8) {
+                if( ( ty_ + j+half_thread_x ) > m_mod_thread_x )
+                {
+                    MAGMA_C_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 99999);
+                }
+                else
+                    la[0][bank_shift*(ty_+j)+tx_] =  A[ j * lda];
+            }
+        
+            A -= trackA+half_thread_x*lda;
+            A += tx_;
+            A += half_thread_x + half_thread_x *lda;
+        }
+        else {
+            A += half_thread_x + half_thread_x *lda;
+        
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8) {
+                la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
+            }
+        }
+        
+        __syncthreads();
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            if( ( ty_ + j+half_thread_x ) > m_mod_thread_x )
-            {
-                MAGMA_C_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 99999);
+        for(int  i=ty_*4; i < (4+ty_*4); i++) {
+            if ( i < tx_ ) {
+                la[0][bank_shift*tx_+i] = cuConjf(la[0][bank_shift*i+tx_]);
             }
             else
-                la[0][bank_shift*(ty_+j)+tx_] =  A[ j * lda];
+                la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i];
         }
-
-        A-= trackA+half_thread_x*lda ;
-        A+=tx_ ;
-        A+= half_thread_x + half_thread_x *lda ;
-    }
-    else {
-        A+= half_thread_x + half_thread_x *lda ;
-
+        __syncthreads();
+        
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
-            la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
-        }
-    }
-
-    __syncthreads();
-    #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(4+ty_*4) ; i++){
-        if ( i < tx_ )   {
-            la[0][bank_shift*tx_+i] = cuConjf(la[0][bank_shift*i+tx_]) ;
-        }
+        for(int j=0; j < 4; j++)
+            res += cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x + j + 4 * ty_];
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        
+        if( ty_ == 1 )
+            res2 = la[0][tx_*bank_shift+0]
+                 + la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]
+                 + la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]
+                 + la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]
+                 + la[0][tx_*bank_shift+7];
         else
-            la[0][bank_shift*tx_+i] = la[0][bank_shift*tx_+i]  ;
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res+= cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x + j + 4 * ty_];
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-
-    if( ty_== 1 )
-        res2 = la[0][tx_*bank_shift+0]
-            +  la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]
-            +  la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]
-            +  la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]
-            +  la[0][tx_*bank_shift+7];
-    else
-    {
-        MAGMA_C_SET2REAL(res2,0);
-    }
-    __syncthreads();
-
-    MAGMA_C_SET2REAL(res,0);
-    MAGMA_C_SET2REAL(res_,0);
-
-    A-=half_thread_x *lda ;
-    if( blkc == ( gridDim.x - 1 ) ) {
-        A-=tx_;
-        if ( tx_ > m_mod_thread_x )
-            trackA=m_mod_thread_x;
-        else
-            trackA=tx_;
-        A+= trackA ;
-
-        #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8)
-            if( ( ty_ + j ) > m_mod_thread_x )
-            {
-                MAGMA_C_SET2REAL(tr[j/8], 99999);
-            }
+        {
+            MAGMA_C_SET2REAL(res2,0);
+        }
+        __syncthreads();
+        
+        MAGMA_C_SET2REAL(res,0);
+        MAGMA_C_SET2REAL(res_,0);
+        
+        A -= half_thread_x *lda;
+        if( blkc == ( gridDim.x - 1 ) ) {
+            A -= tx_;
+            if ( tx_ > m_mod_thread_x )
+                trackA = m_mod_thread_x;
             else
+                trackA = tx_;
+            A += trackA;
+        
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8)
+                if( ( ty_ + j ) > m_mod_thread_x )
+                {
+                    MAGMA_C_SET2REAL(tr[j/8], 99999);
+                }
+                else
+                    tr[j/8] = A[ j * lda];
+            A -= trackA;
+            A += tx_;
+        }
+        else {
+            #pragma unroll
+            for(int j =0; j < half_thread_x; j += 8)
                 tr[j/8] = A[ j * lda];
-        A-=trackA;
-        A+=tx_;
-    }
-    else {
+        }
+        __syncthreads();
+        
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8)
-            tr[j/8] = A[ j * lda];
-    }
-    __syncthreads();
+        for(int j=0; j < 4; j++) {
+            res += tr[j] * buff[ j*8 + ty_];
+            la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
+        }
+        __syncthreads();
+        
+        #pragma unroll
+        for(int j=0; j < 4; j++)
+            res_ += cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x +j+ty_*4];
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res;
+        __syncthreads();
+        if( ty_ == 1 )
+            res2 = res2
+                 + la[0][tx_*bank_shift+0]
+                 + la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]
+                 + la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]
+                 + la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]
+                 + la[0][tx_*bank_shift+7];
+        else
+        {
+            MAGMA_C_SET2REAL(res2,0);
+        }
+        __syncthreads();
+        
+        la[0][bank_shift*tx_+ty_]= res_;
+        __syncthreads();
+        
+        if( ty_ == 0 ) {
+            res1 = res1
+                 + la[0][tx_*bank_shift+0]
+                 + la[0][tx_*bank_shift+1]
+                 + la[0][tx_*bank_shift+2]
+                 + la[0][tx_*bank_shift+3]
+                 + la[0][tx_*bank_shift+4]
+                 + la[0][tx_*bank_shift+5]
+                 + la[0][tx_*bank_shift+6]
+                 + la[0][tx_*bank_shift+7];
+        }
+        else
+        {
+            MAGMA_C_SET2REAL(res1,0);
+        }
+        A -= half_thread_x;
 
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++){
-        res+= tr[j] * buff[ j*8 + ty_];
-        la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
-    }
-    __syncthreads();
-
-    #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
-        res_+= cuConjf(la[0][bank_shift*tx_+j+ty_*4]) * buff[half_thread_x +j+ty_*4];
-    __syncthreads();
-
-
-    la[0][bank_shift*tx_+ty_]= res ;
-    __syncthreads();
-    if( ty_ == 1 )
-        res2 = res2
-            +  la[0][tx_*bank_shift+0]
-            +  la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]
-            +  la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]
-            +  la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]
-            +  la[0][tx_*bank_shift+7];
-    else
-    {
-        MAGMA_C_SET2REAL(res2,0);
-    }
-    __syncthreads();
-
-    la[0][bank_shift*tx_+ty_]= res_ ;
-    __syncthreads();
-
-    if( ty_ == 0 ) {
-        res1 = res1
-            +  la[0][tx_*bank_shift+0]
-            +  la[0][tx_*bank_shift+1]
-            +  la[0][tx_*bank_shift+2]
-            +  la[0][tx_*bank_shift+3]
-            +  la[0][tx_*bank_shift+4]
-            +  la[0][tx_*bank_shift+5]
-            +  la[0][tx_*bank_shift+6]
-            +  la[0][tx_*bank_shift+7];
-    }
-    else
-    {
-        MAGMA_C_SET2REAL(res1,0);
-    }
-    A-=half_thread_x;
-
-      A -= lda * (blkc/num_gpus) * thread_x; 
-    
-      flag = 1;
+        A -= lda * (blkc/num_gpus) * thread_x;
+        
+        flag = 1;
     }
 
     __syncthreads();
-    tx = threadIdx.x ;
-    ty = threadIdx.y ;
+    tx = threadIdx.x;
+    ty = threadIdx.y;
 
     if( ty_ == 0  && ty == 0  )
-        res = res1 ;
+        res = res1;
     else if( ty_ == 1  && ty == 0  )
-        res = res2 ;
+        res = res2;
     else
     {
         MAGMA_C_SET2REAL(res,0);
     }
 
-    A-=ty_* lda  ;
-    A-=tx_;
+    A -= ty_* lda;
+    A -= tx_;
 
-    x= x - break_d *incx  ;
-    //x= x - tx * incx ;
+    x = x - break_d *incx;
+    //x = x - tx * incx;
 
-    A+=4 * ty* lda  ;
+    A += 4 * ty* lda;
 
     if( blkc  == ( gridDim.x - 1 ) ) {
         if(tx <= m_mod_thread_x )
-            A+=tx;
+            A += tx;
         else
-            A+=m_mod_thread_x;
+            A += m_mod_thread_x;
     }
-    else{
-        A+=tx;
+    else {
+        A += tx;
     }
 
-    magma_int_t wc_c = my_gpu_id ;
-    magma_int_t count = 0 ;
+    int wc_c = my_gpu_id;
+    int count = 0;
 
-    tx_ = td % quarter_thread_x ;
-    ty_ = td / quarter_thread_x ;
+    tx_ = td % quarter_thread_x;
+    ty_ = td / quarter_thread_x;
 
-    WC-=tx ;
-    WC+=tx_;
+    WC -= tx;
+    WC += tx_;
 
-
-    magma_int_t num_blocks_iters = (blkc +1) /num_gpus - flag;
+    int num_blocks_iters = (blkc +1) /num_gpus - flag;
     
     if( my_gpu_id < ( (blkc+1) % num_gpus) )
     {
-    num_blocks_iters += 1;
+        num_blocks_iters += 1;
     }
 
-    x += (my_gpu_id ) * nb ;
+    x += (my_gpu_id ) * nb;
 
-
-    if( blkc > my_gpu_id)
-
-    for(magma_int_t s=0; s<num_blocks_iters; s++)
+    if( blkc > my_gpu_id) {
+        for(int s=0; s < num_blocks_iters; s++)
         {
             MAGMA_C_SET2REAL(res_,0);
             count++;
             
             if(ty == 0 )
-        {
+            {
                 buff2[tx] = x[0];
 
-            if(my_gpu_id == the_chosen_gpu_id && tx < kstan && count==1)//
-        {
+                if(my_gpu_id == the_chosen_gpu_id && tx < kstan && count == 1)//
+                {
                     MAGMA_C_SET2REAL(buff2[tx], 0.0);
-        }
+                }
             }
             __syncthreads();
 
-
             #pragma unroll
-            for( magma_int_t k=0;k<4;k++){
+            for( int k=0; k < 4; k++) {
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
-                    tr[j] = A[j*lda] ;
+                for(int j=0; j < 4; j++)
+                    tr[j] = A[j*lda];
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++){
-                    res+=tr[j] * buff2[ quarter_thread_x*k + ty*4+(j)];
+                for(int j=0; j < 4; j++) {
+                    res += tr[j] * buff2[ quarter_thread_x*k + ty*4+(j)];
                     la[( (j)+ty*4)][tx] = cuConjf(tr[j]) * buff[tx];
                 }
                 __syncthreads();
 
-                MAGMA_C_SET2REAL(res_, 0) ;
+                MAGMA_C_SET2REAL(res_, 0);
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
-                    res_+=la[tx_][ty_*4+j] ;
-                b[k] = res_ ;
+                for(int j=0; j < 4; j++)
+                    res_ += la[tx_][ty_*4+j];
+                b[k] = res_;
                 __syncthreads();
-                A+=lda* quarter_thread_x ;
+                A += lda* quarter_thread_x;
             }
 
             #pragma unroll
-            for(magma_int_t k=0; k < 4 ; k++){
-                la[tx_][ty_+quarter_thread_x*k]= b[k] ;
+            for(int k=0; k < 4; k++) {
+                la[tx_][ty_+quarter_thread_x*k]= b[k];
             }
             __syncthreads();
 
             if( ty_ < 4 ) {
-                magma_int_t k = ty_*quarter_thread_x;
-                res_ = la[tx_][0+k] + la[tx_][1+k] 
-                    +  la[tx_][2+k] + la[tx_][3+k]
-                    +  la[tx_][4+k] + la[tx_][5+k]
-                    +  la[tx_][6+k] + la[tx_][7+k]
-                    +  la[tx_][8+k] + la[tx_][9+k]
-                    +  la[tx_][10+k]+ la[tx_][11+k]
-                    +  la[tx_][12+k]+ la[tx_][13+k]
-                    +  la[tx_][14+k]+ la[tx_][15+k];
+                int k = ty_*quarter_thread_x;
+                res_ = la[tx_][0+k] + la[tx_][1+k]
+                     + la[tx_][2+k] + la[tx_][3+k]
+                     + la[tx_][4+k] + la[tx_][5+k]
+                     + la[tx_][6+k] + la[tx_][7+k]
+                     + la[tx_][8+k] + la[tx_][9+k]
+                     + la[tx_][10+k]+ la[tx_][11+k]
+                     + la[tx_][12+k]+ la[tx_][13+k]
+                     + la[tx_][14+k]+ la[tx_][15+k];
                 WC[k + wc_c*lda ] =   res_;
             }
             
             wc_c += num_gpus;
-        x += num_gpus * nb;
+            x += num_gpus * nb;
 
             __syncthreads();
         }
+    }
 
-
-    WC+=tx ;
-    WC-=tx_;
-    la[ty][tx]= res ;
+    WC += tx;
+    WC -= tx_;
+    la[ty][tx]= res;
     __syncthreads();
-
+        
     if( ty == 0 ) {
-        res=la[0][tx]+ la[1][tx]+ la[2][tx]+ la[3][tx] ;
+        res=la[0][tx]+ la[1][tx]+ la[2][tx]+ la[3][tx];
         WC[0+lda*(blkc)] = res;
     }
 }
 
 __global__ void
-magmablas_chemv_200_L_update_mgpu_offset(magma_int_t n, cuFloatComplex alpha,
-                         cuFloatComplex* A, magma_int_t lda,
-                         cuFloatComplex *x, magma_int_t incx,
-                         cuFloatComplex beta,
-                         cuFloatComplex *y, magma_int_t incy,
-                         cuFloatComplex *WC,
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus, 
-                         magma_int_t nb,
-                         magma_int_t the_chosen_block_id,
-                         magma_int_t the_chosen_gpu_id,
-                         magma_int_t offset)
+magmablas_chemv_200_L_update_mgpu_offset(
+    int n, magmaFloatComplex alpha,
+    magmaFloatComplex *A, int lda,
+    magmaFloatComplex *x, int incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex *y, int incy,
+    magmaFloatComplex *WC,
+    int my_gpu_id,
+    int num_gpus,
+    int nb,
+    int the_chosen_block_id,
+    int the_chosen_gpu_id,
+    int offset)
 {
 /*
     if(blockIdx.x < the_chosen_block_id)
@@ -805,43 +783,40 @@ magmablas_chemv_200_L_update_mgpu_offset(magma_int_t n, cuFloatComplex alpha,
         return;
     }
 */
-    magma_int_t i;
-    magma_int_t tx  = threadIdx.x ;
-    magma_int_t ind = blockIdx.x * thread_x + tx ;
-    cuFloatComplex Ca;
-    
+    int i;
+    int tx  = threadIdx.x;
+    int ind = blockIdx.x * thread_x + tx;
+    magmaFloatComplex Ca;
 
-    MAGMA_C_SET2REAL(Ca, 0) ;
-    WC+= ind + lda * blockIdx.x;
-   
-    for(i = blockIdx.x*thread_x; i<n; i+=thread_x){
-        Ca += WC[0] ;
+    MAGMA_C_SET2REAL(Ca, 0);
+    WC += ind + lda * blockIdx.x;
+    
+    for(i = blockIdx.x*thread_x; i < n; i += thread_x) {
+        Ca += WC[0];
         WC += thread_x;
     }
-           
-    if( ind < n  && ind >= offset)
-        y[ind * incy] = beta * y[ind * incy]  + alpha * Ca ;
     
+    if( ind < n  && ind >= offset)
+        y[ind * incy] = beta * y[ind * incy]  + alpha * Ca;
 }
 
 
 extern "C"
-void magmablas_chemv_200_L_mgpu_offset(magma_int_t m, cuFloatComplex alpha,
-                           cuFloatComplex *A, magma_int_t lda,
-                           cuFloatComplex *X, magma_int_t incx,
-                           cuFloatComplex beta,
-                           cuFloatComplex *Y, magma_int_t incy,
-                           cuFloatComplex *dC_work,
-                         magma_int_t my_gpu_id,
-                         magma_int_t num_gpus,
-                         magma_int_t nb,
-                         magma_int_t offset,
-                                                 magma_int_t num_blocks_skipped )
+void magmablas_chemv_200_L_mgpu_offset(
+    magma_int_t m, magmaFloatComplex alpha,
+    magmaFloatComplex *A, magma_int_t lda,
+    magmaFloatComplex *X, magma_int_t incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex *Y, magma_int_t incy,
+    magmaFloatComplex *dC_work,
+    magma_int_t my_gpu_id,
+    magma_int_t num_gpus,
+    magma_int_t nb,
+    magma_int_t offset,
+    magma_int_t num_blocks_skipped )
 {
-
-        
-    magma_int_t the_chosen_block_id = offset / 64; 
-    magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus; 
+    magma_int_t the_chosen_block_id = offset / 64;
+    magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus;
     magma_int_t kstan = offset % 64;
 
 /*
@@ -853,15 +828,13 @@ void magmablas_chemv_200_L_mgpu_offset(magma_int_t m, cuFloatComplex alpha,
 
 */
 
-
     A += lda * num_blocks_skipped * 64 + the_chosen_block_id * 64;
     X += the_chosen_block_id * 64;
     Y += the_chosen_block_id * 64;
 
-
     magma_int_t blocks;
 
-    if (m % chemv_bs==0)
+    if (m % chemv_bs == 0)
         blocks = m / chemv_bs;
     else
         blocks = m / chemv_bs + 1;
@@ -872,10 +845,8 @@ void magmablas_chemv_200_L_mgpu_offset(magma_int_t m, cuFloatComplex alpha,
     dim3 threads(thread_x, thread_y, 1);
     dim3 threads_u(chemv_bs, 1, 1);
 
-
     the_chosen_block_id = 0;
     the_chosen_gpu_id = 0;
-  
 
     /*
      * If matrix size is multiple of chemv_bs, we use a specific code.
@@ -883,31 +854,21 @@ void magmablas_chemv_200_L_mgpu_offset(magma_int_t m, cuFloatComplex alpha,
      */
     if(m % chemv_bs == 0 ) {
         magmablas_chemv_200_L_special_mgpu_offset <<< grid, threads, 0, magma_stream >>>(
-            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb, 
-              the_chosen_block_id, the_chosen_gpu_id, kstan);
+            m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb,
+            the_chosen_block_id, the_chosen_gpu_id, kstan);
     }
-    else{
+    else {
         magma_int_t m_mod_thread_x = m%chemv_bs - 1;
         
         magmablas_chemv_200_L_generic_mgpu_offset <<< grid, threads, 0, magma_stream >>> (
             m, alpha, A, lda, X, incx ,beta, Y, incy, dC_work, m_mod_thread_x, my_gpu_id, num_gpus, nb,
-              the_chosen_block_id, the_chosen_gpu_id, kstan);
+            the_chosen_block_id, the_chosen_gpu_id, kstan);
     }
 
     magmablas_chemv_200_L_update_mgpu_offset<<< grid, threads_u, 0, magma_stream >>>(
         m, alpha, A, lda, X, incx, beta, Y, incy, dC_work, my_gpu_id, num_gpus, nb,
-              the_chosen_block_id, the_chosen_gpu_id, kstan);
+        the_chosen_block_id, the_chosen_gpu_id, kstan);
 }
-
-extern "C"
-magma_int_t
-magmablas_chemv2( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex *A, magma_int_t lda,
-                      cuFloatComplex *X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex *Y, magma_int_t incy,
-                      cuFloatComplex *work, magma_int_t lwork);
 
 
 /*************************************************************************
@@ -1001,217 +962,108 @@ magmablas_chemv2( char uplo, magma_int_t n,
 
 extern "C"
 magma_int_t
-magmablas_chemv_mgpu_offset( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex **A, magma_int_t lda,
-                      cuFloatComplex **X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex **Y, magma_int_t incy,
-                      cuFloatComplex **work, magma_int_t lwork,
-              magma_int_t num_gpus, 
-              magma_int_t nb,
-              magma_int_t offset,
-              cudaStream_t stream[][10])
-
-{
-    char      uplo_[2] = {uplo, 0};
-    int  upper    = lapackf77_lsame(uplo_, "U");
-
-
-
-    /*
-     * Test the input parameters.
-     */
-    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
-        return -1;
-    } else if ( n < 0 ) {
-        return -2;
-    } else if ( lda < max(1,n) ) {
-        return -5;
-    } else if ( incx == 0 ) {
-        return -7;
-    } else if ( incy == 0 ) {
-        return -10;
-    }
-
-    /*
-     * Quick return if possible.
-     */
-    if ( (n == 0) || ( MAGMA_C_EQUAL(alpha, MAGMA_C_ZERO) && MAGMA_C_EQUAL(beta, MAGMA_C_ONE) ) )
-        return MAGMA_SUCCESS;
-
-    /* TODO: Upper case is not implemented in MAGMA */
-    if ( upper)
-    {
-       printf("Upper case is not implemented on multi GPUs\n");
-       exit(0);
-    }
-    else
-    {
-        magma_int_t blocks    = n / thread_x + (n % thread_x != 0);
-        magma_int_t workspace = lda * (blocks + 1);
-        
-
-        if (lwork < workspace){
-           printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-                  lwork, workspace);
-           exit(1);
-        }
-        if(nb != 64)
-        {
-        printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
-        exit(0);
-        }
-
-        {
-        magma_int_t i = 0;
-        for(i=0; i<num_gpus; i++)
-        {
-             cudaSetDevice(i);
-             magmablasSetKernelStream(stream[i][0]);
-
-             
-             magma_int_t the_chosen_block_id = offset / 64; 
-         magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus; 
-
-        magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
-
-        if(i < the_chosen_gpu_id)     
-            {
-        num_blocks_skipped += 1;
-            }
-              
-             int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
-
-
-
-             magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
-                                         new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);     
-
-        }
-        }
-    }
-    return MAGMA_SUCCESS;
-}
-
-extern "C"
-magma_int_t
-magmablas_chemv2_mgpu_offset( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex **A, magma_int_t lda,
-                      cuFloatComplex **X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex **Y, magma_int_t incy,
-                      cuFloatComplex **work, magma_int_t lwork,
-              magma_int_t num_gpus, 
-              magma_int_t nb,
-              magma_int_t offset)
-
-{
-    char      uplo_[2] = {uplo, 0};
-    long int  upper    = lapackf77_lsame(uplo_, "U");
-
-
-
-    /*
-     * Test the input parameters.
-     */
-    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
-        return -1;
-    } else if ( n < 0 ) {
-        return -2;
-    } else if ( lda < max(1,n) ) {
-        return -5;
-    } else if ( incx == 0 ) {
-        return -7;
-    } else if ( incy == 0 ) {
-        return -10;
-    }
-
-    /*
-     * Quick return if possible.
-     */
-    if ( (n == 0) || ( MAGMA_C_EQUAL(alpha, MAGMA_C_ZERO) && MAGMA_C_EQUAL(beta, MAGMA_C_ONE) ) )
-        return MAGMA_SUCCESS;
-
-    /* TODO: Upper case is not implemented in MAGMA */
-    if ( upper)
-    {
-       printf("Upper case is not implemented on multi GPUs\n");
-       exit(0);
-    }
-    else
-    {
-        magma_int_t blocks    = n / thread_x + (n % thread_x != 0);
-        magma_int_t workspace = lda * (blocks + 1);
-        
-
-        if (lwork < workspace){
-           printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-                  lwork, workspace);
-           exit(1);
-        }
-        if(nb != 64)
-        {
-        printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
-        exit(0);
-        }
-        
-        if(num_gpus == 1)
-        {
-            magmablas_chemv2(uplo, n-offset, alpha, A[0] + offset + lda * offset, lda, X[0] + offset, incx, beta, Y[0] + offset, incy, work[0], workspace); 
-        }
-        else
-      
-        {
-          
-        magma_int_t i = 0; 
-        for(i=0; i<num_gpus; i++)
-        {
-             cudaSetDevice(i);
-             
-
-             
-             magma_int_t the_chosen_block_id = offset / 64; 
-         magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus; 
-
-        magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
-
-        if(i < the_chosen_gpu_id)     
-            {
-        num_blocks_skipped += 1;
-            }
-              
-             int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
-
-
-
-             magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
-                                         new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);     
-
-        }
-        }
-    }
-    return MAGMA_SUCCESS;
-}
-
-extern "C"
-magma_int_t
-magmablas_chemv2_mgpu( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex **A, magma_int_t lda,
-                      cuFloatComplex **X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex **Y, magma_int_t incy,
-                      cuFloatComplex **work, magma_int_t lwork,
-              magma_int_t num_gpus, 
-              magma_int_t nb)
-
+magmablas_chemv_mgpu_offset(
+    char uplo, magma_int_t n,
+    magmaFloatComplex alpha,
+    magmaFloatComplex **A, magma_int_t lda,
+    magmaFloatComplex **X, magma_int_t incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex **Y, magma_int_t incy,
+    magmaFloatComplex **work, magma_int_t lwork,
+    magma_int_t num_gpus,
+    magma_int_t nb,
+    magma_int_t offset,
+    magma_queue_t stream[][10])
 {
     char uplo_[2] = {uplo, 0};
     int  upper    = lapackf77_lsame(uplo_, "U");
 
+    /*
+     * Test the input parameters.
+     */
+    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
+        return -1;
+    } else if ( n < 0 ) {
+        return -2;
+    } else if ( lda < max(1,n) ) {
+        return -5;
+    } else if ( incx == 0 ) {
+        return -7;
+    } else if ( incy == 0 ) {
+        return -10;
+    }
 
+    /*
+     * Quick return if possible.
+     */
+    if ( (n == 0) || ( MAGMA_C_EQUAL(alpha, MAGMA_C_ZERO) && MAGMA_C_EQUAL(beta, MAGMA_C_ONE) ) )
+        return MAGMA_SUCCESS;
+
+    /* TODO: Upper case is not implemented in MAGMA */
+    if ( upper)
+    {
+        printf("Upper case is not implemented on multi GPUs\n");
+        exit(0);
+    }
+    else
+    {
+        magma_int_t blocks    = n / thread_x + (n % thread_x != 0);
+        magma_int_t workspace = lda * (blocks + 1);
+
+        if (lwork < workspace) {
+            printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
+                   lwork, workspace);
+            exit(1);
+        }
+        if(nb != 64)
+        {
+            printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
+            exit(0);
+        }
+
+        {
+            magma_int_t i = 0;
+            for(i=0; i < num_gpus; i++)
+            {
+                magma_setdevice(i);
+                magmablasSetKernelStream(stream[i][0]);
+    
+                magma_int_t the_chosen_block_id = offset / 64;
+                magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus;
+    
+                magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
+    
+                if(i < the_chosen_gpu_id)
+                {
+                    num_blocks_skipped += 1;
+                }
+                
+                int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
+                
+                magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
+                    new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);
+            }
+        }
+    }
+    return MAGMA_SUCCESS;
+}
+
+extern "C"
+magma_int_t
+magmablas_chemv2_mgpu_offset(
+    char uplo, magma_int_t n,
+    magmaFloatComplex alpha,
+    magmaFloatComplex **A, magma_int_t lda,
+    magmaFloatComplex **X, magma_int_t incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex **Y, magma_int_t incy,
+    magmaFloatComplex **work, magma_int_t lwork,
+    magma_int_t num_gpus,
+    magma_int_t nb,
+    magma_int_t offset)
+{
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
 
     /*
      * Test the input parameters.
@@ -1237,67 +1089,127 @@ magmablas_chemv2_mgpu( char uplo, magma_int_t n,
     /* TODO: Upper case is not implemented in MAGMA */
     if ( upper)
     {
-       printf("Upper case is not implemented on multi GPUs\n");
-       exit(0);
+        printf("Upper case is not implemented on multi GPUs\n");
+        exit(0);
     }
     else
     {
         magma_int_t blocks    = n / thread_x + (n % thread_x != 0);
         magma_int_t workspace = lda * (blocks + 1);
-        
 
-        if (lwork < workspace){
-           printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-                  lwork, workspace);
-           exit(1);
+        if (lwork < workspace) {
+            printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
+                   lwork, workspace);
+            exit(1);
         }
         if(nb != 64)
         {
-        printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
-        exit(0);
+            printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
+            exit(0);
         }
-
-        magma_int_t i = 0; 
-        for(i=0; i<num_gpus; i++)
+        
+        if(num_gpus == 1)
         {
-             magma_setdevice(i);
-            
-
-             magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
-                                         i, num_gpus, nb, 0, 0);     
-
+            magmablas_chemv2(uplo, n-offset, alpha, A[0] + offset + lda * offset, lda, X[0] + offset, incx, beta, Y[0] + offset, incy, work[0], workspace);
         }
-     }
-   
+        else
+        {
+            magma_int_t i = 0;
+            for(i=0; i < num_gpus; i++)
+            {
+                magma_setdevice(i);
+    
+                magma_int_t the_chosen_block_id = offset / 64;
+                magma_int_t the_chosen_gpu_id = the_chosen_block_id % num_gpus;
+                
+                magma_int_t  num_blocks_skipped = the_chosen_block_id / num_gpus;
+                
+                if(i < the_chosen_gpu_id)
+                {
+                    num_blocks_skipped += 1;
+                }
+                
+                int new_gpu_id = ( i + num_gpus - the_chosen_gpu_id ) % num_gpus;
+                
+                magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
+                    new_gpu_id, num_gpus, nb, offset, num_blocks_skipped);
+            }
+        }
+    }
     return MAGMA_SUCCESS;
 }
 
 
-
-
-
-__global__ void 
-kernel_fillZero(cuFloatComplex *A, magma_int_t size)
+extern "C"
+magma_int_t
+magmablas_chemv2_mgpu(
+    char uplo, magma_int_t n,
+    magmaFloatComplex alpha,
+    magmaFloatComplex **A, magma_int_t lda,
+    magmaFloatComplex **X, magma_int_t incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex **Y, magma_int_t incy,
+    magmaFloatComplex **work, magma_int_t lwork,
+    magma_int_t num_gpus,
+    magma_int_t nb)
 {
-    magma_int_t id = blockIdx.x * blockDim.x + threadIdx.x;
-    if(id < size)
-    {
-        MAGMA_C_SET2REAL(A[id], 0.0); 
+    char uplo_[2] = {uplo, 0};
+    int  upper    = lapackf77_lsame(uplo_, "U");
+
+    /*
+     * Test the input parameters.
+     */
+    if ((! upper) && (! lapackf77_lsame(uplo_, "L"))) {
+        return -1;
+    } else if ( n < 0 ) {
+        return -2;
+    } else if ( lda < max(1,n) ) {
+        return -5;
+    } else if ( incx == 0 ) {
+        return -7;
+    } else if ( incy == 0 ) {
+        return -10;
     }
-}
 
+    /*
+     * Quick return if possible.
+     */
+    if ( (n == 0) || ( MAGMA_C_EQUAL(alpha, MAGMA_C_ZERO) && MAGMA_C_EQUAL(beta, MAGMA_C_ONE) ) )
+        return MAGMA_SUCCESS;
 
-void fillZero(cuFloatComplex *A, magma_int_t size)
-{
+    /* TODO: Upper case is not implemented in MAGMA */
+    if ( upper)
+    {
+        printf("Upper case is not implemented on multi GPUs\n");
+        exit(0);
+    }
+    else
+    {
+        magma_int_t blocks    = n / thread_x + (n % thread_x != 0);
+        magma_int_t workspace = lda * (blocks + 1);
 
-    magma_int_t blocks = (size-1)/512 + 1;
+        if (lwork < workspace) {
+            printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
+                   lwork, workspace);
+            exit(1);
+        }
+        if(nb != 64)
+        {
+            printf("Error in magmablas_chemv_200_mgpu_offset: nb != 64, program will exit! please reallocate your matrix among GPUs\n");
+            exit(0);
+        }
+
+        magma_int_t i = 0;
+        for(i=0; i < num_gpus; i++)
+        {
+            magma_setdevice(i);
+
+            magmablas_chemv_200_L_mgpu_offset(n, alpha, A[i], lda, X[i], incx, beta, Y[i], incy, work[i],
+                i, num_gpus, nb, 0, 0);
+        }
+    }
     
-    dim3 grid(blocks, 1, 1);
-    dim3 threads(512, 1, 1);
-    
-    kernel_fillZero<<<grid, threads>>>(A, size);
-
+    return MAGMA_SUCCESS;
 }
-
 
 #endif /* (GPUSHMEM >= 200) */

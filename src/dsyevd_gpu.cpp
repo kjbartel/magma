@@ -1,13 +1,14 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Stan Tomov
        @author Raffaele Solca
        @author Mark Gates
+       @author Azzam Haidar
 
        @precisions normal d -> s
 
@@ -24,11 +25,11 @@ magma_dsyevd_gpu(char jobz, char uplo,
                  magma_int_t *iwork, magma_int_t liwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -85,9 +86,9 @@ magma_dsyevd_gpu(char jobz, char uplo,
 
     LWORK   (input) INTEGER
             The length of the array WORK.
-            If N <= 1,                LWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LWORK must be at least 2*N + N*NB.
-            If JOBZ  = 'V' and N > 1, LWORK must be at least 1 + 6*N + 2*N**2.
+            If N <= 1,                LWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LWORK >= 2*N + N*NB.
+            If JOBZ  = 'V' and N > 1, LWORK >= max( 2*N + N*NB, 1 + 6*N + 2*N**2 ).
             NB can be obtained through magma_get_dsytrd_nb(N).
 
             If LWORK = -1, then a workspace query is assumed; the routine
@@ -101,9 +102,9 @@ magma_dsyevd_gpu(char jobz, char uplo,
 
     LIWORK  (input) INTEGER
             The dimension of the array IWORK.
-            If N <= 1,                LIWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.
-            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.
+            If N <= 1,                LIWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LIWORK >= 1.
+            If JOBZ  = 'V' and N > 1, LIWORK >= 3 + 5*N.
 
             If LIWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK and
@@ -134,7 +135,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
     magma_int_t ione = 1;
-    
+
     double d__1;
 
     double eps;
@@ -158,12 +159,12 @@ magma_dsyevd_gpu(char jobz, char uplo,
     double *dwork;
     magma_int_t lddc = ldda;
 
-    wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
+    wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || liwork == -1;
 
     *info = 0;
-    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
+    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -1;
     } else if (! (lower || lapackf77_lsame(uplo_, MagmaUpperStr))) {
         *info = -2;
@@ -179,7 +180,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
         liwmin = 1;
     }
     else if ( wantz ) {
-        lwmin  = 1 + 6*n + 2*n*n;
+        lwmin  = max( 2*n + n*nb, 1 + 6*n + 2*n*n );
         liwmin = 3 + 5*n;
     }
     else {
@@ -221,7 +222,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
         return *info;
     }
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // n*lddc for dsytrd2_gpu
@@ -231,6 +232,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
         // need 3n^2/2 for dstedx
         ldwork = max( ldwork, 3*n*(n/2 + 1));
     }
+
     if (MAGMA_SUCCESS != magma_dmalloc( &dwork, ldwork )) {
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
@@ -257,7 +259,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
     if (iscale == 1) {
         magmablas_dlascl(uplo, 0, 0, 1., sigma, n, n, da, ldda, info);
     }
-    
+
     /* Call DSYTRD to reduce symmetric matrix to tridiagonal form. */
     // dsytrd work: e (n) + tau (n) + llwork (n*nb)  ==>  2n + n*nb
     // dstedx work: e (n) + tau (n) + z (n*n) + llwrk2 (1 + 4*n + n^2)  ==>  1 + 6n + 2n^2
@@ -268,7 +270,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
     llwork = lwork - indwrk;
     llwrk2 = lwork - indwk2;
 
-//#define ENABLE_TIMER
+//
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;
     start = get_current_time();
@@ -286,7 +288,11 @@ magma_dsyevd_gpu(char jobz, char uplo,
 
 #ifdef ENABLE_TIMER
     end = get_current_time();
+    #ifdef FAST_SYMV
+    printf("time dsytrd2 = %6.2f\n", GetTimerValue(start,end)/1000.);
+    #else
     printf("time dsytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
+    #endif
 #endif
 
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call
@@ -300,7 +306,7 @@ magma_dsyevd_gpu(char jobz, char uplo,
 #ifdef ENABLE_TIMER
         start = get_current_time();
 #endif
-        
+
         magma_dstedx('A', n, 0., 0., 0, 0, w, &work[inde],
                      &work[indwrk], n, &work[indwk2],
                      llwrk2, iwork, liwork, dwork, info);
@@ -311,14 +317,14 @@ magma_dsyevd_gpu(char jobz, char uplo,
 #endif
 
         magma_dsetmatrix( n, n, &work[indwrk], n, dwork, lddc );
-        
+
 #ifdef ENABLE_TIMER
         start = get_current_time();
 #endif
 
         magma_dormtr_gpu(MagmaLeft, uplo, MagmaNoTrans, n, n, da, ldda, &work[indtau],
                          dwork, lddc, wa, ldwa, &iinfo);
-        
+
         magma_dcopymatrix( n, n, dwork, lddc, da, ldda );
 
 #ifdef ENABLE_TIMER
@@ -338,6 +344,6 @@ magma_dsyevd_gpu(char jobz, char uplo,
 
     magma_queue_destroy( stream );
     magma_free( dwork );
-    
+
     return *info;
 } /* magma_dsyevd_gpu */

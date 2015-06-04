@@ -1,13 +1,12 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- *  @generated c Wed Nov 14 22:54:12 2012
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @generated c Fri Jun 28 19:33:48 2013
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -37,25 +36,15 @@
 
 #if (GPUSHMEM >= 200)
 
-void fillZero(cuFloatComplex *A, int size);
-extern "C"
-magma_int_t
-magmablas_chemv2( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex *A, magma_int_t lda,
-                      cuFloatComplex *X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex *Y, magma_int_t incy,
-                      cuFloatComplex *work, magma_int_t lwork);
 extern "C"
 magma_int_t
 magmablas_chemv2_mgpu_offset( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex **A, magma_int_t lda,
-                      cuFloatComplex **X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex **Y, magma_int_t incy,
-                      cuFloatComplex **work, magma_int_t lwork,
+                      magmaFloatComplex alpha,
+                      magmaFloatComplex **A, magma_int_t lda,
+                      magmaFloatComplex **X, magma_int_t incx,
+                      magmaFloatComplex beta,
+                      magmaFloatComplex **Y, magma_int_t incy,
+                      magmaFloatComplex **work, magma_int_t lwork,
               magma_int_t num_gpus, 
               magma_int_t nb,
               magma_int_t offset);
@@ -64,12 +53,12 @@ magmablas_chemv2_mgpu_offset( char uplo, magma_int_t n,
 extern "C"
 magma_int_t
 magmablas_chemv2_mgpu_32_offset( char uplo, magma_int_t n,
-                      cuFloatComplex alpha,
-                      cuFloatComplex **A, magma_int_t lda,
-                      cuFloatComplex **X, magma_int_t incx,
-                      cuFloatComplex beta,
-                      cuFloatComplex **Y, magma_int_t incy,
-                      cuFloatComplex **work, magma_int_t lwork,
+                      magmaFloatComplex alpha,
+                      magmaFloatComplex **A, magma_int_t lda,
+                      magmaFloatComplex **X, magma_int_t incx,
+                      magmaFloatComplex beta,
+                      magmaFloatComplex **Y, magma_int_t incy,
+                      magmaFloatComplex **work, magma_int_t lwork,
               magma_int_t num_gpus, 
               magma_int_t nb,
               magma_int_t offset);
@@ -81,14 +70,14 @@ magmablas_chemv2_mgpu_32_offset( char uplo, magma_int_t n,
 int main(int argc, char **argv)
 {        
 #if (GPUSHMEM >= 200)
-    TESTING_CUDA_INIT();
-    cudaSetDevice(0);
+    TESTING_INIT();
+    magma_setdevice(0);
 
     magma_timestr_t  start, end;
     float      flops, magma_perf, cuda_perf, error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magma_int_t n_local[4];
 
     FILE        *fp ; 
@@ -99,16 +88,17 @@ int main(int argc, char **argv)
     magma_int_t incx = 1;
     char        uplo = MagmaLower;
 
-    cuFloatComplex alpha = MAGMA_C_MAKE(1., 0.); // MAGMA_C_MAKE(  1.5, -2.3 );
-    cuFloatComplex beta  = MAGMA_C_MAKE(0., 0.); // MAGMA_C_MAKE( -0.6,  0.8 );
-    cuFloatComplex *A, *X, *Y[4], *Ycublas, *Ymagma;
-    cuFloatComplex *dA, *dX[4], *dY[4], *d_lA[4], *dYcublas ;
+    magmaFloatComplex alpha = MAGMA_C_MAKE(1., 0.); // MAGMA_C_MAKE(  1.5, -2.3 );
+    magmaFloatComplex beta  = MAGMA_C_MAKE(0., 0.); // MAGMA_C_MAKE( -0.6,  0.8 );
+    magmaFloatComplex *A, *X, *Y[4], *Ycublas, *Ymagma;
+    magmaFloatComplex *dA, *dX[4], *dY[4], *d_lA[4], *dYcublas ;
 
-    cudaStream_t stream[4][10];
-    cuFloatComplex *C_work;
-    cuFloatComplex *dC_work[4];
+    magma_queue_t stream[4][10];
+    magmaFloatComplex *C_work;
+    magmaFloatComplex *dC_work[4];
 
-    magma_int_t num_gpus = 1, max_num_gpus, nb;
+    int max_num_gpus;
+    magma_int_t num_gpus = 1, nb;
     magma_int_t blocks, workspace;
     magma_int_t offset;
     
@@ -170,7 +160,7 @@ int main(int argc, char **argv)
     printf("Number of GPUs to be used = %d\n", num_gpus);
     for(int i=0; i< num_gpus; i++)
     {
-      cudaStreamCreate(&stream[i][0]);
+        magma_queue_create(&stream[i][0]);
     }
     
 
@@ -182,18 +172,18 @@ int main(int argc, char **argv)
 
     printf("block size = %d\n", nb);
    
-    TESTING_MALLOC( A, cuFloatComplex, matsize );
-    TESTING_MALLOC( X, cuFloatComplex, vecsize );
-    TESTING_MALLOC( Ycublas, cuFloatComplex, vecsize );
-    TESTING_MALLOC( Ymagma,  cuFloatComplex, vecsize );
+    TESTING_MALLOC( A, magmaFloatComplex, matsize );
+    TESTING_MALLOC( X, magmaFloatComplex, vecsize );
+    TESTING_MALLOC( Ycublas, magmaFloatComplex, vecsize );
+    TESTING_MALLOC( Ymagma,  magmaFloatComplex, vecsize );
     for(i=0; i<num_gpus; i++)
     {     
-    TESTING_MALLOC( Y[i], cuFloatComplex, vecsize );
+    TESTING_MALLOC( Y[i], magmaFloatComplex, vecsize );
     }
 
-    cudaSetDevice(0);
-    TESTING_DEVALLOC( dA, cuFloatComplex, matsize );
-    TESTING_DEVALLOC( dYcublas, cuFloatComplex, vecsize );
+    magma_setdevice(0);
+    TESTING_DEVALLOC( dA, magmaFloatComplex, matsize );
+    TESTING_DEVALLOC( dYcublas, magmaFloatComplex, vecsize );
 
     for(i=0; i<num_gpus; i++)
     {      
@@ -203,16 +193,16 @@ int main(int argc, char **argv)
       else if (i == (N/nb)%num_gpus)
         n_local[i] += N%nb;
 
-      cudaSetDevice(i);
+      magma_setdevice(i);
 
-      TESTING_DEVALLOC( d_lA[i], cuFloatComplex, LDA*n_local[i] );// potentially bugged 
-      TESTING_DEVALLOC( dX[i], cuFloatComplex, vecsize );
-      TESTING_DEVALLOC( dY[i], cuFloatComplex, vecsize );
+      TESTING_DEVALLOC( d_lA[i], magmaFloatComplex, LDA*n_local[i] );// potentially bugged 
+      TESTING_DEVALLOC( dX[i], magmaFloatComplex, vecsize );
+      TESTING_DEVALLOC( dY[i], magmaFloatComplex, vecsize );
       
       printf("device %2d n_local = %4d\n", i, n_local[i]); 
 
     }
-    cudaSetDevice(0);
+    magma_setdevice(0);
 
       
 
@@ -233,14 +223,14 @@ int main(int argc, char **argv)
 
       blocks    = N / nb + (N % nb != 0);
       workspace = LDA * (blocks + 1);
-      TESTING_MALLOC(    C_work, cuFloatComplex, workspace );
+      TESTING_MALLOC(    C_work, magmaFloatComplex, workspace );
       for(i=0; i<num_gpus; i++){
-             cudaSetDevice(i);  
-             TESTING_DEVALLOC( dC_work[i], cuFloatComplex, workspace );
+             magma_setdevice(i);  
+             TESTING_DEVALLOC( dC_work[i], magmaFloatComplex, workspace );
              //fillZero(dC_work[i], workspace);
       }
       
-     cudaSetDevice(0);
+     magma_setdevice(0);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +238,7 @@ int main(int argc, char **argv)
     fp = fopen ("results_chemv_mgpu.csv", "w") ;
     if( fp == NULL ){ printf("Couldn't open output file\n"); exit(1);}
 
-    printf("HEMV cuFloatComplex Precision\n\n");
+    printf("CHEMV magmaFloatComplex precision\n\n");
 
     printf( "   n   CUBLAS,Gflop/s   MAGMABLAS,Gflop/s      \"error\"\n" 
             "==============================================================\n");
@@ -277,9 +267,9 @@ int main(int argc, char **argv)
         /* =====================================================================
            Performs operation using CUDA-BLAS
            =================================================================== */
-        cudaSetDevice(0);
-        magmablas_csetmatrix_1D_bcyclic(m, m, A, LDA, d_lA, lda, num_gpus, nb); 
-        cudaSetDevice(0);
+        magma_setdevice(0);
+        magma_csetmatrix_1D_col_bcyclic(m, m, A, LDA, d_lA, lda, num_gpus, nb); 
+        magma_setdevice(0);
 
     
     
@@ -287,19 +277,16 @@ int main(int argc, char **argv)
         magma_csetvector( m, Y[0], incx, dYcublas, incx );
         
         for(i=0; i<num_gpus; i++){
-            cudaSetDevice(i);
+            magma_setdevice(i);
             magma_csetvector( m, X, incx, dX[i], incx );
             magma_csetvector( m, Y[0], incx, dY[i], incx );
 
 
             blocks    = m / nb + (m % nb != 0);
             magma_csetmatrix( lda, blocks, C_work, LDA, dC_work[i], lda );
-            
-            //cudaMemset(dC_work[i], 0, sizeof( cuFloatComplex) * lda * blocks);
-           
-       }
+        }
 
-        cudaSetDevice(0);
+        magma_setdevice(0);
         start = get_current_time();
         cublasChemv( uplo, m-offset, alpha, dA + offset + offset * lda, lda, dX[0] + offset, incx, beta, dYcublas + offset, incx );
          
@@ -313,7 +300,7 @@ int main(int argc, char **argv)
         fprintf(fp, "%11.2f,", cuda_perf );
        
         
-        cudaSetDevice(0);
+        magma_setdevice(0);
 
         
         start = get_current_time();
@@ -337,7 +324,7 @@ int main(int argc, char **argv)
             
         for(i=1; i<num_gpus; i++)
         {
-           cudaSetDevice(i);
+           magma_setdevice(i);
            cudaDeviceSynchronize();
         }
       
@@ -349,10 +336,10 @@ int main(int argc, char **argv)
 
         for(i=0; i<num_gpus; i++)
         {        
-            cudaSetDevice(i);
+            magma_setdevice(i);
             magma_cgetvector( m, dY[i], incx, Y[i], incx );
         }
-        cudaSetDevice(0);
+        magma_setdevice(0);
 
         
 #ifdef validate        
@@ -405,7 +392,7 @@ int main(int argc, char **argv)
            Computing the Difference Cublas VS Magma
            =================================================================== */
        
-        int nw = m - offset ;
+        magma_int_t nw = m - offset ;
         blasf77_caxpy( &nw, &c_neg_one, Y[0] + offset, &incx, Ycublas + offset, &incx);
         error = lapackf77_clange( "M", &nw, &ione, Ycublas + offset, &nw, work );
             
@@ -448,9 +435,9 @@ int main(int argc, char **argv)
     for(i=0; i<num_gpus; i++)
     { 
         TESTING_FREE( Y[i] );
-        cudaSetDevice(i);
+        magma_setdevice(i);
 
-        TESTING_DEVFREE( d_lA[i] )
+        TESTING_DEVFREE( d_lA[i] );
         TESTING_DEVFREE( dX[i] );
         TESTING_DEVFREE( dY[i] );
 
@@ -459,12 +446,12 @@ int main(int argc, char **argv)
 
     }
 
-    cudaSetDevice(0);
+    magma_setdevice(0);
  ///////////////////////////////////////////////////////////   
       
 
     /* Free device */
-    TESTING_CUDA_FINALIZE();
+    TESTING_FINALIZE();
 #endif
     return 0;
 }        

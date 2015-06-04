@@ -1,33 +1,26 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Mark Gates
-       @generated c Wed Nov 14 22:53:12 2012
+       @generated c Fri Jun 28 19:32:20 2013
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-//  #define magma_cgemm magmablas_cgemm
-#endif
-// === End defining what BLAS to use =======================================
 
 extern "C" magma_int_t
 magma_clarfb_gpu( char side, char trans, char direct, char storev,
                   magma_int_t m, magma_int_t n, magma_int_t k,
-                  const cuFloatComplex *dV,    magma_int_t ldv,
-                  const cuFloatComplex *dT,    magma_int_t ldt,
-                  cuFloatComplex *dC,          magma_int_t ldc,
-                  cuFloatComplex *dwork,       magma_int_t ldwork )
+                  const magmaFloatComplex *dV,    magma_int_t ldv,
+                  const magmaFloatComplex *dT,    magma_int_t ldt,
+                  magmaFloatComplex *dC,          magma_int_t ldc,
+                  magmaFloatComplex *dwork,       magma_int_t ldwork )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Univ. of California Berkeley
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -101,7 +94,6 @@ magma_clarfb_gpu( char side, char trans, char direct, char storev,
 
     Further Details
     ===============
-
     The shape of the matrix V and the storage of the vectors which define
     the H(i) is best illustrated by the following example with n = 5 and
     k = 3.
@@ -125,10 +117,35 @@ magma_clarfb_gpu( char side, char trans, char direct, char storev,
 
     ===================================================================      */
 
-    cuFloatComplex c_zero    = MAGMA_C_ZERO;
-    cuFloatComplex c_one     = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex c_zero    = MAGMA_C_ZERO;
+    magmaFloatComplex c_one     = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
 
+    /* Check input arguments */
+    magma_int_t info = 0;
+    if (m < 0) {
+        info = -5;
+    } else if (n < 0) {
+        info = -6;
+    } else if (k < 0) {
+        info = -7;
+    } else if ( ((storev == 'C' || storev == 'c') && (side == 'L' || side == 'l') && ldv < max(1,m)) ||
+                ((storev == 'C' || storev == 'c') && (side == 'R' || side == 'r') && ldv < max(1,n)) ||
+                ((storev == 'R' || storev == 'r') && ldv < k) ) {
+        info = -9;
+    } else if (ldt < k) {
+        info = -11;
+    } else if (ldc < max(1,m)) {
+        info = -13;
+    } else if ( ((side == 'L' || side == 'l') && ldwork < max(1,n)) ||
+                ((side == 'R' || side == 'r') && ldwork < max(1,m)) ) {
+        info = -15;
+    }
+    if (info != 0) {
+        magma_xerbla( __func__, -(info) );
+        return info;
+    }
+    
     /* Function Body */
     if (m <= 0 || n <= 0) {
         return MAGMA_SUCCESS;

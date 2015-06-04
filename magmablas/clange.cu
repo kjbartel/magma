@@ -1,16 +1,16 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:46 2012
+       @generated c Fri Jun 28 19:33:08 2013
 
 */
 #include "common_magma.h"
 
-extern "C" __global__ void magma_clange_special(const cuFloatComplex *A, float *C, int M, int N, int lda) {
+extern "C" __global__ void magma_clange_special(const magmaFloatComplex *A, float *C, int M, int N, int lda) {
 
         int ibx = blockIdx.x * 64;
 
@@ -22,10 +22,10 @@ extern "C" __global__ void magma_clange_special(const cuFloatComplex *A, float *
         float Cb[4] = {0., 0., 0., 0.};
 
         A+= ibx+idt ;
-        const cuFloatComplex * Aend = A+lda*N;
+        const magmaFloatComplex * Aend = A+lda*N;
 
         
-        cuFloatComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};
+        magmaFloatComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};
         
            C+=ibx+idt;
         __shared__ float Cbb[64];
@@ -62,7 +62,7 @@ This Kernel Will be called when
 */
 
 extern "C" __global__ void 
-magma_clange_generic(const cuFloatComplex *A, float *C, int M, int N, int lda , int N_mod_4) 
+magma_clange_generic(const magmaFloatComplex *A, float *C, int M, int N, int lda , int N_mod_4) 
 {
 
         int ibx = blockIdx.x * 64;
@@ -90,8 +90,8 @@ magma_clange_generic(const cuFloatComplex *A, float *C, int M, int N, int lda , 
         */
         if( N >= 8 ) {
 
-                const cuFloatComplex * Aend = A+lda*N   ;
-                cuFloatComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};        
+                const magmaFloatComplex * Aend = A+lda*N   ;
+                magmaFloatComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};        
         
                 A+=4*lda;
 
@@ -154,7 +154,7 @@ magma_clange_generic(const cuFloatComplex *A, float *C, int M, int N, int lda , 
 }
 
 extern "C" void
-magmablas_clange_64_64_16_4(const cuFloatComplex *A, float *C, 
+magmablas_clange_64_64_16_4(const magmaFloatComplex *A, float *C, 
                             int M, int N, int lda,int tree_depth)
 {
 
@@ -173,7 +173,7 @@ magmablas_clange_64_64_16_4(const cuFloatComplex *A, float *C,
 extern "C" float  
 magmablas_clange(
     char norm, magma_int_t M, magma_int_t N,
-    const cuFloatComplex *A, magma_int_t LDA , float *WORK)
+    const magmaFloatComplex *A, magma_int_t LDA , float *WORK)
 {
 /*
   !!!!!!!!!!!!!!                
@@ -241,6 +241,6 @@ magmablas_clange(
   magmablas_clange_64_64_16_4( A, WORK , M , N ,  LDA , 6 );
   int val = cublasIsamax(N, WORK, 1);
   float retVal[1];
-  cublasGetMatrix( 1, 1, sizeof( cuFloatComplex ), WORK+val-1, 1, retVal, 1 ) ;
+  cublasGetMatrix( 1, 1, sizeof( magmaFloatComplex ), WORK+val-1, 1, retVal, 1 ) ;
   return retVal[0];
 }

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Mark Gates
        @precisions normal z -> s d c
@@ -14,12 +14,12 @@
 // Put 0s in the upper triangular part of a panel and 1s on the diagonal.
 // Stores previous values in work array, to be restored later with zq_to_panel.
 extern "C"
-void zpanel_to_q(char uplo, magma_int_t ib, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *work)
+void zpanel_to_q(char uplo, magma_int_t ib, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *work)
 {
     int i, j, k = 0;
-    cuDoubleComplex *col;
-    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
-    cuDoubleComplex c_one  = MAGMA_Z_ONE;
+    magmaDoubleComplex *col;
+    magmaDoubleComplex c_zero = MAGMA_Z_ZERO;
+    magmaDoubleComplex c_one  = MAGMA_Z_ONE;
     
     if (uplo == 'U' || uplo == 'u'){
         for(i = 0; i < ib; ++i){
@@ -54,10 +54,10 @@ void zpanel_to_q(char uplo, magma_int_t ib, cuDoubleComplex *A, magma_int_t lda,
 // -------------------------
 // Restores a panel, after call to zpanel_to_q.
 extern "C"
-void zq_to_panel(char uplo, magma_int_t ib, cuDoubleComplex *A, magma_int_t lda, cuDoubleComplex *work)
+void zq_to_panel(char uplo, magma_int_t ib, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *work)
 {
     int i, j, k = 0;
-    cuDoubleComplex *col;
+    magmaDoubleComplex *col;
     
     if (uplo == 'U' || uplo == 'u'){
         for(i = 0; i < ib; ++i){

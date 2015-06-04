@@ -7,22 +7,18 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Wed Nov 14 22:53:24 2012
+ *     @generated c Fri Jun 28 19:32:37 2013
  *
  */
 
 #include "common_magma.h"
-//#include "magma_cbulgeinc.h"
-// === Define what BLAS to use ============================================
-
-// === End defining what BLAS to use ======================================
  
 
 //////////////////////////////////////////////////////////////
 //          CSTEDC          Divide and Conquer for tridiag
 //////////////////////////////////////////////////////////////
-extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * E, cuFloatComplex *Z, magma_int_t LDZ) {
-  cuFloatComplex *WORK;
+extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * E, magmaFloatComplex *Z, magma_int_t LDZ) {
+  magmaFloatComplex *WORK;
   float *RWORK;
   magma_int_t *IWORK;
   magma_int_t LWORK, LIWORK, LRWORK;
@@ -46,7 +42,7 @@ extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
   }
 
   RWORK  = (float*) malloc( LRWORK*sizeof( float) );
-  WORK   = (cuFloatComplex*) malloc( LWORK*sizeof( cuFloatComplex) );
+  WORK   = (magmaFloatComplex*) malloc( LWORK*sizeof( magmaFloatComplex) );
   IWORK  = (magma_int_t*) malloc( LIWORK*sizeof( magma_int_t) );
 
   lapackf77_cstedc(&JOBZ, &N, D, E, Z, &LDZ, WORK, &LWORK, RWORK, &LRWORK, IWORK, &LIWORK, &INFO);
@@ -68,7 +64,7 @@ extern "C" void  magma_cstedc_withZ(char JOBZ, magma_int_t N, float *D, float * 
 //////////////////////////////////////////////////////////////
 //          CSTEDC          Divide and Conquer for tridiag
 //////////////////////////////////////////////////////////////
-extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, float * E, cuFloatComplex *Z, magma_int_t LDZ) {
+extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, float * E, magmaFloatComplex *Z, magma_int_t LDZ) {
   float *RWORK;
   float *dwork;
   magma_int_t *IWORK;
@@ -90,10 +86,8 @@ extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
   }
   printf("using magma_cstedx\n");
 
-#define ENABLE_TIMER 
 #ifdef ENABLE_TIMER 
     magma_timestr_t start, end;
-    
     start = get_current_time();
 #endif
 
@@ -113,7 +107,6 @@ extern "C" void  magma_cstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
 
 #ifdef ENABLE_TIMER    
     end = get_current_time();
-    
     printf("time zstevx = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 

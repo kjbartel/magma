@@ -8,25 +8,63 @@ Tesla, Fermi, and GPUs. For more details see the MAGMA 1.3 presentation.
 
 Included are routines for the following algorithms:
 
-    * LU, QR, and Cholesky factorizations in both real and complex
-      arithmetic (single and double);
-    * Hessenberg, bidiagonal, and tridiagonal reductions in both real
-      and complex arithmetic (single and double);
-    * Linear solvers based on LU, QR, and Cholesky in both real and
-      complex arithmetic (single and double);
-    * Eigen and singular value problem solvers in both real and
-      complex arithmetic (single and double);
-    * Generalized Hermitian-definite eigenproblem solver in both
-      real and complex arithmetic (single and double);
-    * Mixed-precision iterative refinement solvers based on LU, QR,
-      and Cholesky in both real and complex arithmetic;
-    * MAGMA BLAS in real arithmetic (single and double), including
-      gemm, gemv, symv, and trsm.
+    * LU, QR, and Cholesky factorizations
+    * Hessenberg, bidiagonal, and tridiagonal reductions
+    * Linear solvers based on LU, QR, and Cholesky
+    * Eigenvalue and singular value problem solvers
+    * Generalized Hermitian-definite eigenproblem solver
+    * Mixed-precision iterative refinement solvers based on LU, QR, and Cholesky
+    * MAGMA BLAS including gemm, gemv, symv, and trsm
+
+Most routines have all four precisions:
+single (s), double (d), single-complex (c), double-complex (z).
+
+ 1.4.0 -
+       - beta 2: June 28, 2013
+       - beta 1: June 19, 2013
+    * Use magma_init() and magma_finalize() to initialize and cleanup MAGMA.
+    * Merge libmagmablas into libmagma to eliminate circular dependencies.
+      Link with just -lmagma now.
+    * Can compile as shared library; see make.inc.mkl-shared and 'make shared'.
+    * Fix required workspace size in gels_gpu, gels3_gpu, geqrs_gpu, geqrs3_gpu.
+    * Fix required workspace size in [zcsd]geqrf.
+    * Fix required workspace size in [he|sy]evd*, [he|sy]gvd*.
+    * [zc|ds]geqrsv no longer segfaults when M > N.
+    * Fix gesv and posv in some situations when GPU memory is close to full.
+    * Fix synchronization in multi-GPU getrf_m and getrf2_mgpu.
+    * Fix multi-GPU geqrf_mgpu for M < N.
+    * Add MAGMA_ILP64 to compile with int being 64-bit. See make.inc.mkl-ilp64.
+    * Add panel factorizations for LU, QR, and Cholesky entirely on the GPU,
+      correspondingly in [zcsd]getf2_gpu, [zcsd]geqr2_gpu, and [zcsd]potf2_gpu.
+    * Add QR with pivoting in GPU interface (functions [zcsd]geqp3_gpu);
+      improve performance for both CPU and GPU interface QR with pivoting.
+    * Add multi-GPU Hessenberg and non-symmetric eigenvalue routines:
+      geev_m, gehrd_m, unghr_m, ungqr_m.
+    * Add multi-GPU symmetric eigenvalue routines (one-stage)
+      ([zhe|che|ssy|dsy]trd_mgpu, 
+       [zhe|che|ssy|dsy]evd_m, [zhe|che|ssy|dsy]evdx_m,
+       [zhe|che|ssy|dsy]gvd_m, [zhe|che|ssy|dsy]gvdx_m ).
+    * Add single and multi-GPU symmetric eigenvalue routines (two-stage)
+      ([zhe|che|ssy|dsy]evdx_2stage,   [zhe|che|ssy|dsy]gvdx_2stage, 
+       [zhe|che|ssy|dsy]evdx_2stage_m, [zhe|che|ssy|dsy]gvdx_2stage_m ).
+    * Add magma_strerror to get error message.
+    * Revised most testers to use common framework and options.
+    * Use CUBLAS gemm in src files, since it has been optimized for Kepler.
+    * Determine block sizes at runtime based on current card's architecture.
+    * In-place transpose now works for arbitrary n-by-n square matrix.
+      This also reduces required memory in zgetrf_gpu.
+    * Update Fortran wrappers with automated script.
+    * Fix Makefile for Kepler (3.0 and 3.5).
 
  1.3.0 - November 12, 2012
     * Add MAGMA_VERSION constants and magma_version() in magma.h.
     * Fix printing complex matrices.
     * Fix documentation and query for heevd/syevd workspace sizes.
+    * Fix singularity check in trtri and trtri_gpu.
+    * Fixes for compiling on Windows (small, __attribute__, magma_free_cpu, etc.)
+    * Implement all 4 cases for zunmqr (QC, Q'C, CQ, CQ') and fix workspace size.
+    * Fix permuting rows for M > 32K.
+    * Check residual ||Ax-b||; faster and uses less memory than ||PA-LU|| check.
 
  1.2.1 - June 29, 2012
     * Fix bug in [zcsd]getrf_gpu.cpp

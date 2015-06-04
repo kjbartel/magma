@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:49 2012
+       @generated c Fri Jun 28 19:33:12 2013
 
 */
 #include "common_magma.h"
@@ -14,11 +14,11 @@
 
 /*********************************************************/
 /*
-*  Blocked version: swap several pair of line
+ *  Blocked version: swap several pairs of lines
  */
 typedef struct {
-    cuFloatComplex *A1;
-    cuFloatComplex *A2;
+    magmaFloatComplex *A1;
+    magmaFloatComplex *A2;
     int n, lda1, lda2, npivots;
     short ipiv[BLOCK_SIZE];
 } magmagpu_cswapblk_params_t;
@@ -28,16 +28,16 @@ __global__ void magmagpu_cswapblkrm( magmagpu_cswapblk_params_t params )
     unsigned int y = threadIdx.x + blockDim.x*blockIdx.x;
     if( y < params.n )
     {
-        cuFloatComplex *A1 = params.A1 + y - params.lda1;
-        cuFloatComplex *A2 = params.A2 + y;
+        magmaFloatComplex *A1 = params.A1 + y - params.lda1;
+        magmaFloatComplex *A2 = params.A2 + y;
       
         for( int i = 0; i < params.npivots; i++ )
         {
             A1 += params.lda1;
             if ( params.ipiv[i] == -1 )
                 continue;
-            cuFloatComplex tmp1  = *A1;
-            cuFloatComplex *tmp2 = A2 + params.ipiv[i]*params.lda2;
+            magmaFloatComplex tmp1  = *A1;
+            magmaFloatComplex *tmp2 = A2 + params.ipiv[i]*params.lda2;
             *A1   = *tmp2;
             *tmp2 = tmp1;
         }
@@ -51,16 +51,16 @@ __global__ void magmagpu_cswapblkcm( magmagpu_cswapblk_params_t params )
     unsigned int offset2 = __mul24( y, params.lda2);
     if( y < params.n )
     {
-        cuFloatComplex *A1 = params.A1 + offset1 - 1;
-        cuFloatComplex *A2 = params.A2 + offset2;
+        magmaFloatComplex *A1 = params.A1 + offset1 - 1;
+        magmaFloatComplex *A2 = params.A2 + offset2;
       
         for( int i = 0; i < params.npivots; i++ )
         {
             A1++;
             if ( params.ipiv[i] == -1 )
                 continue;
-            cuFloatComplex tmp1  = *A1;
-            cuFloatComplex *tmp2 = A2 + params.ipiv[i];
+            magmaFloatComplex tmp1  = *A1;
+            magmaFloatComplex *tmp2 = A2 + params.ipiv[i];
             *A1   = *tmp2;
             *tmp2 = tmp1;
         }
@@ -70,14 +70,14 @@ __global__ void magmagpu_cswapblkcm( magmagpu_cswapblk_params_t params )
 
 extern "C" void 
 magmablas_cswapblk( char storev, magma_int_t n, 
-                    cuFloatComplex *dA1T, magma_int_t lda1,
-                    cuFloatComplex *dA2T, magma_int_t lda2,
+                    magmaFloatComplex *dA1T, magma_int_t lda1,
+                    magmaFloatComplex *dA2T, magma_int_t lda2,
                     magma_int_t i1, magma_int_t i2,
                     const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset )
 {
-    int  blocksize = 64;
+    magma_int_t  blocksize = 64;
     dim3 blocks( (n+blocksize-1) / blocksize, 1, 1);
-    int  k, im;
+    magma_int_t  k, im;
     
     /* Quick return */
     if ( n == 0 )
@@ -86,9 +86,9 @@ magmablas_cswapblk( char storev, magma_int_t n,
     if ( (storev == 'C') || (storev == 'c') ) {
         for( k=(i1-1); k<i2; k+=BLOCK_SIZE )
         {
-            int sb = min(BLOCK_SIZE, i2-k);
+            magma_int_t sb = min(BLOCK_SIZE, i2-k);
             magmagpu_cswapblk_params_t params = { dA1T+k, dA2T, n, lda1, lda2, sb };
-            for( int j = 0; j < sb; j++ )
+            for( magma_int_t j = 0; j < sb; j++ )
             {
                 im = ipiv[(k+j)*inci] - 1;
                 if ( (k+j) == im)
@@ -98,12 +98,13 @@ magmablas_cswapblk( char storev, magma_int_t n,
             }
             magmagpu_cswapblkcm<<< blocks, blocksize, 0, magma_stream >>>( params );
         }
-    }else {
+    }
+    else {
         for( k=(i1-1); k<i2; k+=BLOCK_SIZE )
         {
-            int sb = min(BLOCK_SIZE, i2-k);
+            magma_int_t sb = min(BLOCK_SIZE, i2-k);
             magmagpu_cswapblk_params_t params = { dA1T+k*lda1, dA2T, n, lda1, lda2, sb };
-            for( int j = 0; j < sb; j++ )
+            for( magma_int_t j = 0; j < sb; j++ )
             {
                 im = ipiv[(k+j)*inci] - 1;
                 if ( (k+j) == im)

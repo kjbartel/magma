@@ -1,14 +1,15 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Raffaele Solca
        @author Stan Tomov
+       @author Azzam Haidar
 
-       @generated c Wed Nov 14 22:54:24 2012
+       @generated c Fri Jun 28 19:34:02 2013
 
 */
 
@@ -28,7 +29,7 @@
 
 #define PRECISION_c
 
-// This version uses much faster CHEMV (from MAGMA BLAS) but requires extra space 
+// CHETRD2 uses much faster CHEMV (from MAGMA BLAS) but requires extra space
 // #define USE_CHETRD2
 
 /* ////////////////////////////////////////////////////////////////////////////
@@ -36,207 +37,171 @@
 */
 int main( int argc, char** argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    real_Double_t    gflops, gpu_perf=0., cpu_perf=0., gpu_time=0., cpu_time=0.;
+    real_Double_t    gflops, gpu_perf, cpu_perf, gpu_time, cpu_time;
     float           eps;
-    cuFloatComplex *h_A, *h_R, *d_R, *h_Q, *h_work, *work, *dwork;
-    cuFloatComplex *tau;
-    float          *diag, *offdiag, *rwork;
+    magmaFloatComplex *h_A, *h_R, *d_R, *h_Q, *h_work, *work;
+    magmaFloatComplex *tau;
+    float          *diag, *offdiag;
     float           result[2] = {0., 0.};
-
-    /* Matrix size */
-    magma_int_t N = 0, n2, lda, lwork;
-    const int MAXTESTS = 10;
-    magma_int_t size[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
-
-    magma_int_t i, info, nb, checkres;
+    magma_int_t N, n2, lda, lwork, info, nb;
     magma_int_t ione     = 1;
     magma_int_t itwo     = 2;
     magma_int_t ithree   = 3;
     magma_int_t ISEED[4] = {0,0,0,1};
-    const char *uplo = MagmaLowerStr;
-
-    checkres = getenv("MAGMA_TESTINGS_CHECK") != NULL;
-
-    printf( "\nUsage: %s -N <matrix size> -R <right hand sides> [-L|-U] -c\n", argv[0] );
-    printf( "  -N can be repeated up to %d times\n", MAXTESTS );
-    printf( "  -c or setting $MAGMA_TESTINGS_CHECK checks result.\n\n" );
-    int ntest = 0;
-    for( int i = 1; i < argc; ++i ) {
-        if ( strcmp("-N", argv[i]) == 0 && i+1 < argc ) {
-            magma_assert( ntest < MAXTESTS, "error: -N repeated more than maximum %d tests\n", MAXTESTS );
-            size[ntest] = atoi( argv[++i] );
-            magma_assert( size[ntest] > 0, "error: -N %s is invalid; must be > 0.\n", argv[i] );
-            N = max( N, size[ntest] );
-            ntest++;
-        }
-        else if ( strcmp("-L", argv[i]) == 0 ) {
-            uplo = MagmaLowerStr;
-        }
-        else if ( strcmp("-U", argv[i]) == 0 ) {
-            uplo = MagmaUpperStr;
-        }
-        else if ( strcmp("-c", argv[i]) == 0 ) {
-            checkres = true;
-        }
-        else {
-            printf( "invalid argument: %s\n", argv[i] );
-            exit(1);
-        }
-    }
-    if ( ntest == 0 ) {
-        ntest = MAXTESTS;
-        N = size[ntest-1];
-    }
+    
+    #ifdef USE_CHETRD2
+    magma_int_t ldwork;
+    magmaFloatComplex *dwork;
+    #endif
+    
+    #if defined(PRECISION_z) || defined(PRECISION_c)
+    float *rwork;
+    #endif
 
     eps = lapackf77_slamch( "E" );
-    lda = N;
-    n2  = lda * N;
-    nb  = magma_get_chetrd_nb(N);
-    /* We suppose the magma nb is bigger than lapack nb */
-    lwork = N*nb; 
 
-    magma_int_t ldwork = lda*N/16+32;
-
-    /* Allocate host memory for the matrix */
-    TESTING_MALLOC(    h_A,    cuFloatComplex, lda*N );
-    TESTING_DEVALLOC(  d_R,    cuFloatComplex, lda*N );
-#ifdef USE_CHETRD2
-    TESTING_DEVALLOC(dwork,    cuFloatComplex, lda*N );
-#endif
-    TESTING_HOSTALLOC( h_R,    cuFloatComplex, lda*N );
-    TESTING_HOSTALLOC( h_work, cuFloatComplex, lwork );
-    TESTING_MALLOC(    tau,    cuFloatComplex, N     );
-    TESTING_MALLOC( diag,    float, N   );
-    TESTING_MALLOC( offdiag, float, N-1 );
-
-    /* To avoid uninitialized variable warning */
-    h_Q   = NULL;
-    work  = NULL;
-    rwork = NULL; 
-
-    if ( checkres ) {
-        TESTING_MALLOC( h_Q,  cuFloatComplex, lda*N );
-        TESTING_MALLOC( work, cuFloatComplex, 2*N*N );
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-        TESTING_MALLOC( rwork, float, N );
-#endif
-    }
-
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
+    
     printf("  N     CPU GFlop/s (sec)   GPU GFlop/s (sec)   |A-QHQ'|/N|A|   |I-QQ'|/N\n");
     printf("===========================================================================\n");
-    for( i = 0; i < ntest; ++i ) {
-        N = size[i];
-        lda  = N;
-        n2   = N*lda;
-        gflops = FLOPS_CHETRD( (float)N ) / 1e9;
-
-        /* ====================================================================
-           Initialize the matrix
-           =================================================================== */
-        lapackf77_clarnv( &ione, ISEED, &n2, h_A );
-        magma_chermitian( N, h_A, lda );
-        magma_csetmatrix( N, N, h_A, lda, d_R, lda );
-
-        /* ====================================================================
-           Performs operation using MAGMA
-           =================================================================== */
-        gpu_time = magma_wtime();
-#ifdef USE_CHETRD2
-        magma_chetrd2_gpu(uplo[0], N, d_R, lda, diag, offdiag,
-                         tau, h_R, lda, h_work, lwork, dwork , ldwork, &info);
-#else
-        magma_chetrd_gpu(uplo[0], N, d_R, lda, diag, offdiag,
-                         tau, h_R, lda, h_work, lwork, &info);
-#endif
-        gpu_time = magma_wtime() - gpu_time;
-        if ( info != 0 )
-            printf("magma_chetrd_gpu returned error %d\n", (int) info);
-
-        gpu_perf = gflops / gpu_time;
-
-        /* =====================================================================
-           Check the factorization
-           =================================================================== */
-        if ( checkres ) {
-
-            magma_cgetmatrix( N, N, d_R, lda, h_R, lda );
-            magma_cgetmatrix( N, N, d_R, lda, h_Q, lda );
-            lapackf77_cungtr(uplo, &N, h_Q, &lda, tau, h_work, &lwork, &info);
-
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-            lapackf77_chet21(&itwo, uplo, &N, &ione, 
-                             h_A, &lda, diag, offdiag,
-                             h_Q, &lda, h_R, &lda, 
-                             tau, work, rwork, &result[0]);
-
-            lapackf77_chet21(&ithree, uplo, &N, &ione, 
-                             h_A, &lda, diag, offdiag,
-                             h_Q, &lda, h_R, &lda, 
-                             tau, work, rwork, &result[1]);
-
-#else
-
-            lapackf77_chet21(&itwo, uplo, &N, &ione, 
-                             h_A, &lda, diag, offdiag,
-                             h_Q, &lda, h_R, &lda, 
-                             tau, work, &result[0]);
-
-            lapackf77_chet21(&ithree, uplo, &N, &ione, 
-                             h_A, &lda, diag, offdiag,
-                             h_Q, &lda, h_R, &lda, 
-                             tau, work, &result[1]);
-
-#endif
-        }
-
-        /* =====================================================================
-           Performs operation using LAPACK
-           =================================================================== */
-        cpu_time = magma_wtime();
-        lapackf77_chetrd(uplo, &N, h_A, &lda, diag, offdiag, tau, 
-                         h_work, &lwork, &info);
-        cpu_time = magma_wtime() - cpu_time;
-        if ( info != 0 )
-            printf("lapackf77_chetrd returned error %d\n", (int) info);
-
-        cpu_perf = gflops / cpu_time;
-
-        /* =====================================================================
-           Print performance and error.
-           =================================================================== */
-        if ( checkres ) {
-            printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e        %8.2e\n",
-                   (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
-                   result[0]*eps, result[1]*eps );
-        } else {
-            printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)     ---  \n",
-                   (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time );
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N = opts.nsize[i];
+            lda    = N;
+            n2     = N*lda;
+            nb     = magma_get_chetrd_nb(N);
+            lwork  = N*nb;  /* We suppose the magma nb is bigger than lapack nb */
+            gflops = FLOPS_CHETRD( N ) / 1e9;
+            
+            TESTING_MALLOC(    h_A,     magmaFloatComplex, lda*N );
+            TESTING_DEVALLOC(  d_R,     magmaFloatComplex, lda*N );
+            #ifdef USE_CHETRD2
+            ldwork = lda*N; // was: lda*N/16+32;
+            TESTING_DEVALLOC(  dwork,   magmaFloatComplex, ldwork );
+            #endif
+            TESTING_HOSTALLOC( h_R,     magmaFloatComplex, lda*N );
+            TESTING_HOSTALLOC( h_work,  magmaFloatComplex, lwork );
+            TESTING_MALLOC(    tau,     magmaFloatComplex, N     );
+            TESTING_MALLOC(    diag,    float, N   );
+            TESTING_MALLOC(    offdiag, float, N-1 );
+            
+            if ( opts.check ) {
+                TESTING_MALLOC( h_Q,  magmaFloatComplex, lda*N );
+                TESTING_MALLOC( work, magmaFloatComplex, 2*N*N );
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                TESTING_MALLOC( rwork, float, N );
+                #endif
+            }
+            
+            /* ====================================================================
+               Initialize the matrix
+               =================================================================== */
+            lapackf77_clarnv( &ione, ISEED, &n2, h_A );
+            magma_cmake_hermitian( N, h_A, lda );
+            magma_csetmatrix( N, N, h_A, lda, d_R, lda );
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            gpu_time = magma_wtime();
+            #ifdef USE_CHETRD2
+            magma_chetrd2_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
+                               tau, h_R, lda, h_work, lwork, dwork, ldwork, &info );
+            #else
+            magma_chetrd_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
+                              tau, h_R, lda, h_work, lwork, &info );
+            #endif
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflops / gpu_time;
+            if (info != 0)
+                printf("magma_chetrd_gpu returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            /* =====================================================================
+               Check the factorization
+               =================================================================== */
+            if ( opts.check ) {
+                magma_cgetmatrix( N, N, d_R, lda, h_R, lda );
+                magma_cgetmatrix( N, N, d_R, lda, h_Q, lda );
+                lapackf77_cungtr( &opts.uplo, &N, h_Q, &lda, tau, h_work, &lwork, &info );
+                
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                lapackf77_chet21( &itwo, &opts.uplo, &N, &ione,
+                                  h_A, &lda, diag, offdiag,
+                                  h_Q, &lda, h_R, &lda,
+                                  tau, work, rwork, &result[0] );
+                
+                lapackf77_chet21( &ithree, &opts.uplo, &N, &ione,
+                                  h_A, &lda, diag, offdiag,
+                                  h_Q, &lda, h_R, &lda,
+                                  tau, work, rwork, &result[1] );
+                #else
+                lapackf77_chet21( &itwo, &opts.uplo, &N, &ione,
+                                  h_A, &lda, diag, offdiag,
+                                  h_Q, &lda, h_R, &lda,
+                                  tau, work, &result[0] );
+                
+                lapackf77_chet21( &ithree, &opts.uplo, &N, &ione,
+                                  h_A, &lda, diag, offdiag,
+                                  h_Q, &lda, h_R, &lda,
+                                  tau, work, &result[1] );
+                #endif
+            }
+            
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            if ( opts.lapack ) {
+                cpu_time = magma_wtime();
+                lapackf77_chetrd( &opts.uplo, &N, h_A, &lda, diag, offdiag, tau,
+                                  h_work, &lwork, &info );
+                cpu_time = magma_wtime() - cpu_time;
+                cpu_perf = gflops / cpu_time;
+                if (info != 0)
+                    printf("lapackf77_chetrd returned error %d: %s.\n",
+                           (int) info, magma_strerror( info ));
+            }
+            
+            /* =====================================================================
+               Print performance and error.
+               =================================================================== */
+            if ( opts.lapack ) {
+                printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)",
+                       (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time );
+            } else {
+                printf("%5d     ---   (  ---  )   %7.2f (%7.2f)",
+                       (int) N, gpu_perf, gpu_time );
+            }
+            if ( opts.check ) {
+                printf("   %8.2e        %8.2e\n", result[0]*eps, result[1]*eps );
+            } else {
+                printf("     ---             ---\n" );
+            }
+            
+            TESTING_FREE( h_A );
+            TESTING_FREE( tau );
+            TESTING_FREE( diag );
+            TESTING_FREE( offdiag );
+            TESTING_HOSTFREE( h_R );
+            TESTING_HOSTFREE( h_work );
+            TESTING_DEVFREE ( d_R );
+            #ifdef USE_CHETRD2
+            TESTING_DEVFREE ( dwork );
+            #endif
+            
+            if ( opts.check ) {
+                TESTING_FREE( h_Q );
+                TESTING_FREE( work );
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                TESTING_FREE( rwork );
+                #endif
+            }
         }
     }
 
-    /* Memory clean up */
-    TESTING_FREE( h_A );
-    TESTING_FREE( tau );
-    TESTING_FREE( diag );
-    TESTING_FREE( offdiag );
-    TESTING_HOSTFREE( h_R );
-    TESTING_HOSTFREE( h_work );
-    TESTING_DEVFREE ( d_R ); 
-#ifdef USE_CHETRD2 
-    TESTING_DEVFREE ( dwork );
-#endif
-
-    if ( checkres ) {
-        TESTING_FREE( h_Q );
-        TESTING_FREE( work );
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-        TESTING_FREE( rwork );
-#endif
-    }
-
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
-    return EXIT_SUCCESS;
+    TESTING_FINALIZE();
+    return 0;
 }

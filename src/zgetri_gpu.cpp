@@ -1,100 +1,88 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-// #define PRECISION_z
-// #if (defined(PRECISION_s) || defined(PRECISION_d))
-//   #define magma_zgemm magmablas_zgemm
-//   #define magma_ztrsm magmablas_ztrsm
-// #endif
-// 
-// #if (GPUSHMEM >= 200)
-// #if (defined(PRECISION_s))
-//     #undef  magma_sgemm
-//     #define magma_sgemm magmablas_sgemm_fermi80
-// #endif
-// #endif
-// === End defining what BLAS to use ======================================
+#define PRECISION_z
 
 extern "C" magma_int_t
-magma_zgetri_gpu( magma_int_t n, cuDoubleComplex *dA, magma_int_t lda,
-                  magma_int_t *ipiv, cuDoubleComplex *dwork, magma_int_t lwork,
+magma_zgetri_gpu( magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda,
+                  magma_int_t *ipiv, magmaDoubleComplex *dwork, magma_int_t lwork,
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
-        ZGETRI computes the inverse of a matrix using the LU factorization
-        computed by ZGETRF. This method inverts U and then computes inv(A) by
-        solving the system inv(A)*L = inv(U) for inv(A).
-        
-        Note that it is generally both faster and more accurate to use ZGESV,
-        or ZGETRF and ZGETRS, to solve the system AX = B, rather than inverting
-        the matrix and multiplying to form X = inv(A)*B. Only in special
-        instances should an explicit inverse be computed with this routine.
+    ZGETRI computes the inverse of a matrix using the LU factorization
+    computed by ZGETRF. This method inverts U and then computes inv(A) by
+    solving the system inv(A)*L = inv(U) for inv(A).
+    
+    Note that it is generally both faster and more accurate to use ZGESV,
+    or ZGETRF and ZGETRS, to solve the system AX = B, rather than inverting
+    the matrix and multiplying to form X = inv(A)*B. Only in special
+    instances should an explicit inverse be computed with this routine.
 
     Arguments
     =========
+    N       (input) INTEGER
+            The order of the matrix A.  N >= 0.
 
-        N       (input) INTEGER
-                The order of the matrix A.  N >= 0.
+    dA      (input/output) COMPLEX_16 array on the GPU, dimension (LDDA,N)
+            On entry, the factors L and U from the factorization
+            A = P*L*U as computed by ZGETRF_GPU.
+            On exit, if INFO = 0, the inverse of the original matrix A.
 
-        dA      (input/output) COMPLEX_16 array on the GPU, dimension (LDA,N)
-                On entry, the factors L and U from the factorization
-                A = P*L*U as computed by ZGETRF_GPU.
-                On exit, if INFO = 0, the inverse of the original matrix A.
+    LDDA    (input) INTEGER
+            The leading dimension of the array A.  LDDA >= max(1,N).
 
-        LDA     (input) INTEGER
-                The leading dimension of the array A.  LDA >= max(1,N).
+    IPIV    (input) INTEGER array, dimension (N)
+            The pivot indices from ZGETRF; for 1<=i<=N, row i of the
+            matrix was interchanged with row IPIV(i).
 
-        IPIV    (input) INTEGER array, dimension (N)
-                The pivot indices from ZGETRF; for 1<=i<=N, row i of the
-                matrix was interchanged with row IPIV(i).
+    DWORK   (workspace/output) COMPLEX_16 array on the GPU, dimension (MAX(1,LWORK))
+  
+    LWORK   (input) INTEGER
+            The dimension of the array DWORK.  LWORK >= N*NB, where NB is
+            the optimal blocksize returned by magma_get_zgetri_nb(n).
+            
+            Unlike LAPACK, this version does not currently support a
+            workspace query, because the workspace is on the GPU.
 
-        DWORK    (workspace/output) COMPLEX*16 array on the GPU, dimension (MAX(1,LWORK))
-      
-        LWORK   (input) INTEGER
-                The dimension of the array DWORK.  LWORK >= N*NB, where NB is
-                the optimal blocksize returned by magma_get_zgetri_nb(n).
-                
-                Unlike LAPACK, this version does not currently support a
-                workspace query, because the workspace is on the GPU.
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
+            > 0:  if INFO = i, U(i,i) is exactly zero; the matrix is
+                  singular and its cannot be computed.
 
-        INFO    (output) INTEGER
-                = 0:  successful exit
-                < 0:  if INFO = -i, the i-th argument had an illegal value
-                > 0:  if INFO = i, U(i,i) is exactly zero; the matrix is
-                      singular and its cannot be computed.
+    ===================================================================== */
 
-  ===================================================================== */
-
+    #define dA(i, j)  (dA + (i) + (j)*ldda)
+    #define dL(i, j)  (dL + (i) + (j)*lddl)
+    
     /* Local variables */
-    cuDoubleComplex c_one     = MAGMA_Z_ONE;
-    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex *dL = dwork;
-    magma_int_t     ldl = n;
-    magma_int_t      nb = magma_get_zgetri_nb(n);
+    magmaDoubleComplex c_one     = MAGMA_Z_ONE;
+    magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex *dL = dwork;
+    magma_int_t lddl = n;
+    magma_int_t nb   = magma_get_zgetri_nb(n);
     magma_int_t j, jmax, jb, jp;
     
     *info = 0;
     if (n < 0)
         *info = -1;
-    else if (lda < max(1,n))
+    else if (ldda < max(1,n))
         *info = -3;
     else if ( lwork < n*nb )
         *info = -6;
@@ -109,7 +97,7 @@ magma_zgetri_gpu( magma_int_t n, cuDoubleComplex *dA, magma_int_t lda,
         return *info;
     
     /* Invert the triangular factor U */
-    magma_ztrtri_gpu( MagmaUpper, MagmaNonUnit, n, dA, lda, info );
+    magma_ztrtri_gpu( MagmaUpper, MagmaNonUnit, n, dA, ldda, info );
     if ( *info != 0 )
         return *info;
     
@@ -120,9 +108,9 @@ magma_zgetri_gpu( magma_int_t n, cuDoubleComplex *dA, magma_int_t lda,
         // copy current block column of L to work space,
         // then replace with zeros in A.
         magmablas_zlacpy( MagmaUpperLower, n-j, jb,
-                          &dA[j + j*lda], lda,
-                          &dL[j        ], ldl );
-        magmablas_zlaset( MagmaLower, n-j, jb, &dA[j + j*lda], lda );
+                          dA(j,j), ldda,
+                          dL(j,0), lddl );
+        magmablas_zlaset( MagmaLower, n-j, jb, dA(j,j), ldda );
         
         // compute current block column of Ainv
         // Ainv(:, j:j+jb-1)
@@ -131,21 +119,21 @@ magma_zgetri_gpu( magma_int_t n, cuDoubleComplex *dA, magma_int_t lda,
         // where L(:, j:j+jb-1) is stored in dL.
         if ( j+jb < n ) {
             magma_zgemm( MagmaNoTrans, MagmaNoTrans, n, jb, n-j-jb,
-                         c_neg_one, &dA[(j+jb)*lda], lda,
-                                    &dL[ j+jb     ], ldl,
-                         c_one,     &dA[     j*lda], lda );
+                         c_neg_one, dA(0,j+jb), ldda,
+                                    dL(j+jb,0), lddl,
+                         c_one,     dA(0,j),    ldda );
         }
         magma_ztrsm( MagmaRight, MagmaLower, MagmaNoTrans, MagmaUnit,
                      n, jb, c_one,
-                     &dL[j    ], ldl,
-                     &dA[j*lda], lda );
+                     dL(j,0), lddl,
+                     dA(0,j), ldda );
     }
 
     // Apply column interchanges
     for( j = n-2; j >= 0; --j ) {
         jp = ipiv[j] - 1;
         if ( jp != j ) {
-            magmablas_zswap( n, &dA[ j*lda ], 1, &dA[ jp*lda ], 1 );
+            magmablas_zswap( n, dA(0,j), 1, dA(0,jp), 1 );
         }
     }
     

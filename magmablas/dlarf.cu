@@ -1,17 +1,20 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:47 2012
+       @generated d Fri Jun 28 19:33:08 2013
 
 */
 #include "common_magma.h"
 
 // 512 is maximum number of threads for CUDA capability 1.x
 #define BLOCK_SIZE 512
+
+#define BLOCK_SIZEx  32
+#define BLOCK_SIZEy  16
 
 // ----------------------------------------
 // Does sum reduction of array x, leaving total in x[0].
@@ -40,6 +43,28 @@ __device__ void sum_reduce( /*int n,*/ int i, double* x )
 // end sum_reduce
 
 
+template< int n >
+__device__ void sum_reduce_2d( /*int n,*/ int i, int c, double x[][BLOCK_SIZEy+1] )
+{
+    __syncthreads();
+    if ( n > 1024 ) { if ( i < 1024 && i + 1024 < n ) { x[i][c] += x[i+1024][c]; }  __syncthreads(); }
+    if ( n >  512 ) { if ( i <  512 && i +  512 < n ) { x[i][c] += x[i+ 512][c]; }  __syncthreads(); }
+    if ( n >  256 ) { if ( i <  256 && i +  256 < n ) { x[i][c] += x[i+ 256][c]; }  __syncthreads(); }
+    if ( n >  128 ) { if ( i <  128 && i +  128 < n ) { x[i][c] += x[i+ 128][c]; }  __syncthreads(); }
+    if ( n >   64 ) { if ( i <   64 && i +   64 < n ) { x[i][c] += x[i+  64][c]; }  __syncthreads(); }
+    if ( n >   32 ) { if ( i <   32 && i +   32 < n ) { x[i][c] += x[i+  32][c]; }  __syncthreads(); }
+    // probably don't need __syncthreads for < 16 threads
+    // because of implicit warp level synchronization.
+    if ( n >   16 ) { if ( i <   16 && i +   16 < n ) { x[i][c] += x[i+  16][c]; }  __syncthreads(); }
+    if ( n >    8 ) { if ( i <    8 && i +    8 < n ) { x[i][c] += x[i+   8][c]; }  __syncthreads(); }
+    if ( n >    4 ) { if ( i <    4 && i +    4 < n ) { x[i][c] += x[i+   4][c]; }  __syncthreads(); }
+    if ( n >    2 ) { if ( i <    2 && i +    2 < n ) { x[i][c] += x[i+   2][c]; }  __syncthreads(); }
+    if ( n >    1 ) { if ( i <    1 && i +    1 < n ) { x[i][c] += x[i+   1][c]; }  __syncthreads(); }
+}
+// end sum_reduce
+
+//==============================================================================
+
 __global__
 void magma_dlarf_kernel( int m, double *v, double *tau,
                          double *c, int ldc, double *xnorm )
@@ -49,15 +74,17 @@ void magma_dlarf_kernel( int m, double *v, double *tau,
         double *dc = c + blockIdx.x * ldc;
 
         __shared__ double sum[ BLOCK_SIZE ];
+        double lsum;
 
         /*  w := v' * C  */
-        sum[i] = MAGMA_D_ZERO;
+        lsum = MAGMA_D_ZERO;
         for( int j = i; j < m; j += BLOCK_SIZE ){
             if (j==0)
-               sum[i] += MAGMA_D_MUL( MAGMA_D_ONE, dc[j] );
+               lsum += MAGMA_D_MUL( MAGMA_D_ONE, dc[j] );
             else
-               sum[i] += MAGMA_D_MUL( MAGMA_D_CNJG( v[j] ), dc[j] );
+               lsum += MAGMA_D_MUL( MAGMA_D_CNJG( v[j] ), dc[j] );
         }
+        sum[i] = lsum;
         sum_reduce< BLOCK_SIZE >( i, sum );
 
         /*  C := C - v * w  */
@@ -80,6 +107,79 @@ void magma_dlarf_kernel( int m, double *v, double *tau,
     }
 }
 
+//==============================================================================
+
+__global__
+void magma_dlarf_smkernel( int m, int n, double *v, double *tau,
+                           double *c, int ldc, double *xnorm )
+{
+    if ( !MAGMA_D_EQUAL(*tau, MAGMA_D_ZERO) ) {
+        const int i = threadIdx.x, col= threadIdx.y;
+
+        for( int k = col; k < n; k+= BLOCK_SIZEy)
+        {
+        double *dc = c + k * ldc;
+
+        __shared__ double sum[ BLOCK_SIZEx ][ BLOCK_SIZEy + 1];
+        double lsum;
+
+        /*  w := v' * C  */
+        lsum = MAGMA_D_ZERO;
+        for( int j = i; j < m; j += BLOCK_SIZEx ){
+            if (j==0)
+               lsum += MAGMA_D_MUL( MAGMA_D_ONE, dc[j] );
+            else
+               lsum += MAGMA_D_MUL( MAGMA_D_CNJG( v[j] ), dc[j] );
+        }
+        sum[i][col] = lsum;
+        sum_reduce_2d< BLOCK_SIZEx >( i, col, sum );
+
+        /*  C := C - v * w  */
+        __syncthreads();
+        double z__1 = - MAGMA_D_CNJG(*tau) * sum[0][col];
+        for( int j = m-i-1; j>=0 ; j -= BLOCK_SIZEx ) {
+             if (j==0)
+                dc[j] += z__1;
+             else
+                dc[j] += z__1 * v[j];
+        }
+        __syncthreads();
+
+        /* Adjust the rest of the column norms */
+        if (i==0){
+            double temp = MAGMA_D_ABS( dc[0] ) / xnorm[k];
+            temp = (temp + 1.) * (1. - temp);
+            xnorm[k] = xnorm[k] * sqrt(temp);
+        }
+        }
+    }
+}
+
+//==============================================================================
+
+/*
+    Apply a real elementary reflector H to a real M-by-N
+    matrix C from the left. H is represented in the form
+          H = I - tau * v * v'
+    where tau is a real scalar and v is a real vector.
+    If tau = 0, then H is taken to be the unit matrix.
+
+    To apply H' (the conjugate transpose of H), supply conjg(tau)
+    instead tau.
+
+    This routine uses only one SM (block).
+ */
+extern "C" void
+magma_dlarf_sm(int m, int n, double *v, double *tau,
+               double *c, int ldc, double *xnorm)
+{
+    dim3  blocks( 1 );
+    dim3 threads( BLOCK_SIZEx, BLOCK_SIZEy );
+
+    magma_dlarf_smkernel<<< blocks, threads, 0, magma_stream >>>( m, n, v, tau, c, ldc, xnorm);
+}
+
+//==============================================================================
 /*
     Apply a real elementary reflector H to a real M-by-N
     matrix C from the left. H is represented in the form
@@ -89,13 +189,27 @@ void magma_dlarf_kernel( int m, double *v, double *tau,
 
     To apply H' (the conjugate transpose of H), supply conjg(tau) 
     instead tau.
+
+    The norms of v(:, 1:n) are given as input in xnorm(1:n). On exit, the norms
+    are adjusted to hold the norms of v(2:m,2:n). This is a difference with the 
+    LAPACK's dlarf routine. 
  */
-extern "C" void
-magma_dlarf_gpu(int m, int n, double *v, double *tau,
-                double *c, int ldc, double *xnorm)
+
+extern "C" magma_int_t
+magma_dlarf_gpu(
+    magma_int_t m,  magma_int_t n,
+    double *v, double *tau,
+    double *c,  magma_int_t ldc, double *xnorm)
 {
     dim3  blocks( n );
     dim3 threads( BLOCK_SIZE );
 
-    magma_dlarf_kernel<<< blocks, threads >>>( m, v, tau, c, ldc, xnorm);
+    magma_dlarf_kernel<<< blocks, threads, 0, magma_stream >>>( m, v, tau, c, ldc, xnorm);
+
+    // The computation can be done on 1 SM with the following routine.
+    // magma_dlarf_sm(m, n, v, tau, c, ldc, xnorm);
+
+    return MAGMA_SUCCESS;
 }
+
+//==============================================================================

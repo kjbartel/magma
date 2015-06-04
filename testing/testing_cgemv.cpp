@@ -1,13 +1,12 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- *  @generated c Wed Nov 14 22:54:09 2012
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @generated c Fri Jun 28 19:33:40 2013
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -21,210 +20,131 @@
 #include "testings.h"
 
 #define PRECISION_c
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(m, n) ( 6. * FMULS_GEMV(m, n) + 2. * FADDS_GEMV(m, n))
-#else
-#define FLOPS(m, n) (      FMULS_GEMV(m, n) +      FADDS_GEMV(m, n))
-#endif
 
 int main(int argc, char **argv)
-{        
-    TESTING_CUDA_INIT();
+{
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    float      flops, magma_perf, cuda_perf, error, work[1];
+    real_Double_t   gflops, magma_perf, magma_time, cublas_perf, cublas_time, cpu_perf, cpu_time;
+    float          magma_error, cublas_error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
-
-    FILE        *fp ; 
-    magma_int_t i, lda, Xm, Ym;
-    magma_int_t M, M0 = 0;
-    magma_int_t N, N0 = 0;
-    magma_int_t szeA, szeX, szeY;
-    magma_int_t istart = 64;
-    magma_int_t iend   = 10240;
+    magma_int_t M, N, Xm, Ym, lda, sizeA, sizeX, sizeY;
     magma_int_t incx = 1;
     magma_int_t incy = 1;
-    char        trans = MagmaNoTrans;
-    cuFloatComplex alpha = MAGMA_C_MAKE(1., 0.); // MAGMA_C_MAKE(  1.5, -2.3 );
-    cuFloatComplex beta  = MAGMA_C_MAKE(0., 0.); // MAGMA_C_MAKE( -0.6,  0.8 );
-    cuFloatComplex *A, *X, *Y, *Ycublas, *Ymagma;
-    cuFloatComplex *dA, *dX, *dY;
-        
-    if (argc != 1){
-        for(i=1; i<argc; i++){
-            if ( strcmp("-n", argv[i]) == 0 ){
-                N0 = atoi(argv[++i]);
-            }
-            else if ( strcmp("-m", argv[i]) == 0 ){
-                M0 = atoi(argv[++i]);
-            }
-            else if (strcmp("-N", argv[i])==0){
-                trans = MagmaNoTrans;
-            }
-            else if (strcmp("-T", argv[i])==0){
-                trans = MagmaTrans;
-            }
-#if defined(PRECISION_z) || defined(PRECISION_c)
-            else if (strcmp("-C", argv[i])==0){
-                trans = MagmaConjTrans;
-            }
-#endif
-        }
-    }
-
-    if ( (M0 != 0) && (N0 != 0) )
-        iend = istart + 1;
-
-    M = N = iend;
-    if ( M0 != 0 ) M = M0;
-    if ( N0 != 0 ) N = N0;
-
-    if( trans == MagmaNoTrans ) {
-        Xm = N;
-        Ym = M;
-    }  else {
-        Xm = M;
-        Ym = N;
-    }
-
-    lda = ((M+31)/32)*32;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex alpha = MAGMA_C_MAKE(  1.5, -2.3 );
+    magmaFloatComplex beta  = MAGMA_C_MAKE( -0.6,  0.8 );
+    magmaFloatComplex *A, *X, *Y, *Ycublas, *Ymagma;
+    magmaFloatComplex *dA, *dX, *dY;
     
-    szeA = lda*N;
-    szeX = incx*Xm;
-    szeY = incy*Ym;
-      
-    TESTING_MALLOC( A, cuFloatComplex, szeA );
-    TESTING_MALLOC( X, cuFloatComplex, szeX );
-    TESTING_MALLOC( Y, cuFloatComplex, szeY );
-    TESTING_MALLOC( Ycublas, cuFloatComplex, szeY );
-    TESTING_MALLOC( Ymagma,  cuFloatComplex, szeY );
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
 
-    TESTING_DEVALLOC( dA, cuFloatComplex, szeA );
-    TESTING_DEVALLOC( dX, cuFloatComplex, szeX );
-    TESTING_DEVALLOC( dY, cuFloatComplex, szeY );
+    printf("    M     N   MAGMA Gflop/s (ms)  CUBLAS Gflop/s (ms)   CPU Gflop/s (ms)  MAGMA error  CUBLAS error\n");
+    printf("===================================================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            M = opts.msize[i];
+            N = opts.nsize[i];
+            lda    = ((M+31)/32)*32;
+            gflops = FLOPS_CGEMV( M, N ) / 1e9;
 
-    /* Initialize the matrix */
-    lapackf77_clarnv( &ione, ISEED, &szeA, A );
-    lapackf77_clarnv( &ione, ISEED, &szeX, X );
-    lapackf77_clarnv( &ione, ISEED, &szeY, Y );
+            if ( opts.transA == MagmaNoTrans ) {
+                Xm = N;
+                Ym = M;
+            } else {
+                Xm = M;
+                Ym = N;
+            }
 
-    fp = fopen ("results_cgemv.txt", "w") ;
-    if( fp == NULL ){ printf("Couldn't open output file\n"); exit(1);}
-
-    printf("\nUsage: \n");
-    printf("  testing_cgemv [-N|T|C] [-m %d] [-n %d]\n\n", 1024, 1024);
-
-    printf( "   m    n   CUBLAS,Gflop/s   MAGMABLAS Gflop/s   \"error\"\n" 
-            "==============================================================\n");
-    fprintf(fp, "   m    n   CUBLAS,Gflop/s   MAGMABLAS Gflop/s   \"error\"\n" 
-            "==============================================================\n");
-    
-    for( i=istart; i < iend; i = (int)((i+1)*1.1) )
-    {
-        M = N = i;
-        if ( M0 != 0 ) M = M0;
-        if ( N0 != 0 ) N = N0;
-
-        if( trans == MagmaNoTrans ) {
-            Xm = N;
-            Ym = M;
-        }  else {
-            Xm = M;
-            Ym = N;
-        }
-         
-        lda = ((M+31)/32)*32;
-        flops = FLOPS( (float)M, (float)N ) / 1000000;
-
-        printf(      "%5d %5d ", (int) M, (int) N );
-        fprintf( fp, "%5d %5d ", (int) M, (int) N );
-
-        /* =====================================================================
-           Performs operation using CUDA-BLAS
-           =================================================================== */
-        magma_csetmatrix( M, N, A, lda, dA, lda );
-        magma_csetvector( Xm, X, incx, dX, incx );
-        magma_csetvector( Ym, Y, incy, dY, incy );
-
-        /*
-         * Cublas Version
-         */
-        start = get_current_time();
-        cublasCgemv( trans, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
-        end = get_current_time();
-        
-        magma_cgetvector( Ym, dY, incy, Ycublas, incy );
-        
-        cuda_perf = flops / GetTimerValue(start, end);
-        printf(     "%11.2f", cuda_perf );
-        fprintf(fp, "%11.2f", cuda_perf );
-
-        /*
-         * Magma Version
-         */
-        magma_csetvector( Ym, Y, incy, dY, incy );
-        
-        start = get_current_time();
-        magmablas_cgemv( trans, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
-        end = get_current_time();
-        
-        magma_cgetvector( Ym, dY, incx, Ymagma, incx );
-        
-        magma_perf = flops / GetTimerValue(start, end);
-        printf(     "%11.2f", magma_perf );
-        fprintf(fp, "%11.2f", magma_perf );
-
-        /* =====================================================================
-           Computing the Difference Cublas VS Magma
-           =================================================================== */
-        
-        blasf77_caxpy( &Ym, &c_neg_one, Ymagma, &incy, Ycublas, &incy);
-        error = lapackf77_clange( "M", &Ym, &ione, Ycublas, &Ym, work );
-
-#if 0
-        printf(      "\t\t %8.6e", error / (float)Ym );
-        fprintf( fp, "\t\t %8.6e", error / (float)Ym );
-
-        /*
-         * Blas comparaison
-         */
-        {
-            char *blastrans = MagmaNoTransStr;
-            if ( trans == MagmaConjTrans )
-                blastrans = MagmaConjTransStr;
-            else if ( trans == MagmaTrans )
-                blastrans = MagmaTransStr;
+            sizeA = lda*N;
+            sizeX = incx*Xm;
+            sizeY = incy*Ym;
             
-            blasf77_ccopy( &Ym, Y, &incy, Ycublas, &incy );
-            blasf77_cgemv( blastrans, &M, &N, 
-                           &alpha, A,       &lda, 
-                                   X,       &incx, 
-                           &beta,  Ycublas, &incy );
+            TESTING_MALLOC( A, magmaFloatComplex, sizeA );
+            TESTING_MALLOC( X, magmaFloatComplex, sizeX );
+            TESTING_MALLOC( Y, magmaFloatComplex, sizeY );
+            TESTING_MALLOC( Ycublas, magmaFloatComplex, sizeY );
+            TESTING_MALLOC( Ymagma,  magmaFloatComplex, sizeY );
             
-            blasf77_caxpy( &Ym, &c_neg_one, Ymagma, &incy, Ycublas, &incy);
-            error = lapackf77_clange( "M", &Ym, &ione, Ycublas, &Ym, work );
+            TESTING_DEVALLOC( dA, magmaFloatComplex, sizeA );
+            TESTING_DEVALLOC( dX, magmaFloatComplex, sizeX );
+            TESTING_DEVALLOC( dY, magmaFloatComplex, sizeY );
+            
+            /* Initialize the matrix */
+            lapackf77_clarnv( &ione, ISEED, &sizeA, A );
+            lapackf77_clarnv( &ione, ISEED, &sizeX, X );
+            lapackf77_clarnv( &ione, ISEED, &sizeY, Y );
+            
+            /* =====================================================================
+               Performs operation using CUBLAS
+               =================================================================== */
+            magma_csetmatrix( M, N, A, lda, dA, lda );
+            magma_csetvector( Xm, X, incx, dX, incx );
+            magma_csetvector( Ym, Y, incy, dY, incy );
+            
+            cublas_time = magma_sync_wtime( 0 );
+            cublasCgemv( opts.transA, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
+            cublas_time = magma_sync_wtime( 0 ) - cublas_time;
+            cublas_perf = gflops / cublas_time;
+            
+            magma_cgetvector( Ym, dY, incy, Ycublas, incy );
+            
+            /* =====================================================================
+               Performs operation using MAGMABLAS
+               =================================================================== */
+            magma_csetvector( Ym, Y, incy, dY, incy );
+            
+            magma_time = magma_sync_wtime( 0 );
+            magmablas_cgemv( opts.transA, M, N, alpha, dA, lda, dX, incx, beta, dY, incy );
+            magma_time = magma_sync_wtime( 0 ) - magma_time;
+            magma_perf = gflops / magma_time;
+            
+            magma_cgetvector( Ym, dY, incx, Ymagma, incx );
+            
+            /* =====================================================================
+               Performs operation using CPU BLAS
+               =================================================================== */
+            cpu_time = magma_wtime();
+            blasf77_cgemv( &opts.transA, &M, &N,
+                           &alpha, A, &lda,
+                                   X, &incx,
+                           &beta,  Y, &incy );
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gflops / cpu_time;
+            
+            /* =====================================================================
+               Check the result
+               =================================================================== */
+            blasf77_caxpy( &Ym, &c_neg_one, Y, &incy, Ymagma, &incy );
+            magma_error = lapackf77_clange( "M", &Ym, &ione, Ymagma, &Ym, work ) / Ym;
+            
+            blasf77_caxpy( &Ym, &c_neg_one, Y, &incy, Ycublas, &incy );
+            cublas_error = lapackf77_clange( "M", &Ym, &ione, Ycublas, &Ym, work ) / Ym;
+            
+            printf("%5d %5d   %7.2f (%7.2f)    %7.2f (%7.2f)   %7.2f (%7.2f)    %8.2e     %8.2e\n",
+                   (int) M, (int) N,
+                   magma_perf,  1000.*magma_time,
+                   cublas_perf, 1000.*cublas_time,
+                   cpu_perf,    1000.*cpu_time,
+                   magma_error, cublas_error );
+            
+            TESTING_FREE( A );
+            TESTING_FREE( X );
+            TESTING_FREE( Y );
+            TESTING_FREE( Ycublas );
+            TESTING_FREE( Ymagma );
+            
+            TESTING_DEVFREE( dA );
+            TESTING_DEVFREE( dX );
+            TESTING_DEVFREE( dY );
         }
-#endif
-
-        printf(      "\t\t %8.6e\n", error / (float)Ym );
-        fprintf( fp, "\t\t %8.6e\n", error / (float)Ym );
-
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
     
-    /* Free Memory */
-    TESTING_FREE( A );
-    TESTING_FREE( X );
-    TESTING_FREE( Y );
-    TESTING_FREE( Ycublas );
-    TESTING_FREE( Ymagma );
-
-    TESTING_DEVFREE( dA );
-    TESTING_DEVFREE( dX );
-    TESTING_DEVFREE( dY );
-
-    /* Free device */
-    TESTING_CUDA_FINALIZE();
-    return EXIT_SUCCESS;
+    TESTING_FINALIZE();
+    return 0;
 }

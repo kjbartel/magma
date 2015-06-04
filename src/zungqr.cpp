@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -14,16 +14,16 @@
 
 extern "C" magma_int_t
 magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
-             cuDoubleComplex *A, magma_int_t lda,
-             cuDoubleComplex *tau,
-             cuDoubleComplex *dT, magma_int_t nb,
+             magmaDoubleComplex *A, magma_int_t lda,
+             magmaDoubleComplex *tau,
+             magmaDoubleComplex *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -80,15 +80,15 @@ magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
 #define dA(i,j) (dA + (i) + (j)*ldda)
 #define dT(j)   (dT + (j)*nb)
 
-    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
-    cuDoubleComplex c_one  = MAGMA_Z_ONE;
+    magmaDoubleComplex c_zero = MAGMA_Z_ZERO;
+    magmaDoubleComplex c_one  = MAGMA_Z_ONE;
 
     magma_int_t  m_kk, n_kk, k_kk, mi;
     magma_int_t lwork, ldda;
     magma_int_t i, ib, ki, kk, iinfo;
     magma_int_t lddwork;
-    cuDoubleComplex *dA, *dV, *dW;
-    cuDoubleComplex *work;
+    magmaDoubleComplex *dA, *dV, *dW;
+    magmaDoubleComplex *work;
 
     *info = 0;
     if (m < 0) {
@@ -139,7 +139,7 @@ magma_zungqr(magma_int_t m, magma_int_t n, magma_int_t k,
         return *info;
     }
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // Use unblocked code for the last or only block.

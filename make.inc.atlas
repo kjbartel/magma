@@ -1,18 +1,18 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
-#
 # GPU_TARGET specifies for which GPU you want to compile MAGMA:
-#     "Tesla" (NVIDIA compute capability 1.x cards)
-#     "Fermi" (NVIDIA compute capability 2.x cards)
+#     "Tesla"  (NVIDIA compute capability 1.x cards)
+#     "Fermi"  (NVIDIA compute capability 2.x cards)
+#     "Kepler" (NVIDIA compute capability 3.x cards)
 # See http://developer.nvidia.com/cuda-gpus
 
-GPU_TARGET = Fermi
+GPU_TARGET ?= Fermi
 
 CC        = gcc
 NVCC      = nvcc
@@ -22,18 +22,40 @@ ARCH      = ar
 ARCHFLAGS = cr
 RANLIB    = ranlib
 
-OPTS      = -O3 -DADD_
+OPTS      = -O3 -DADD_ -fopenmp -DMAGMA_SETAFFINITY
 F77OPTS   = -O3 -DADD_
 FOPTS     = -O3 -DADD_ -x f95-cpp-input
-NVOPTS    = -O3 -DADD_ --compiler-options -fno-strict-aliasing -DUNIX
-LDOPTS    = -fPIC -Xlinker -zmuldefs
+NVOPTS    = -O3 -DADD_ -Xcompiler -fno-strict-aliasing
+LDOPTS    = -fopenmp
 
-LIB       = /home/tomov/LIB/lapack-lite-3.1.1/lapack_LINUX64.a \
-            -lf77blas -latlas -lcblas -lf2c -lcublas -lm
+# Depending on how ATLAS and LAPACK were compiled, you may need one or more of:
+# -lifcore -ldl -lf2c -lgfortran
+LIB       = -llapack -lf77blas -latlas -lcblas -lcublas -lcudart -lstdc++ -lm -lgfortran -lifcore
 
-CUDADIR   = /usr/local/cuda-3.0
+# define library directories here or in your environment
+#LAPACKDIR = /opt/lapack
+#ATLASDIR  = /opt/atlas
+#CUDADIR   = /usr/local/cuda
 
-LIBDIR    = -L/home/tomov/LIB/ATLAS/lib/Linux_UNKNOWNSSE2 \
-            -L/home/tomov/LIB/CLAPACK-3.1.1/F2CLIBS/ \
+# check for directories and give user hint how to set them
+ifeq ($(LAPACKDIR),)
+$(error Define $$LAPACKDIR, preferably in your environment, e.g., run "export LAPACKDIR=/opt/lapack" in ~/.bashrc, or "setenv LAPACKDIR /opt/lapack" in ~/.cshrc)
+endif
+
+ifeq ($(ATLASDIR),)
+$(error Define $$ATLASDIR, preferably in your environment, e.g., run "export ATLASDIR=/opt/atlas" in ~/.bashrc, or "setenv ATLASDIR /opt/atlas" in ~/.cshrc)
+endif
+
+ifeq ($(CUDADIR),)
+    cuda := $(shell which nvcc | perl -pe 's|/bin/nvcc||')
+    ifeq ($(cuda),)
+        cuda := /usr/local/cuda
+    endif
+$(error Define $$CUDADIR, preferably in your environment, e.g., run "export CUDADIR=$(cuda)" in ~/.bashrc, or "setenv CUDADIR $(cuda)" in ~/.cshrc)
+endif
+
+LIBDIR    = -L$(LAPACKDIR) \
+            -L$(ATLASDIR)/lib \
             -L$(CUDADIR)/lib64
+
 INC       = -I$(CUDADIR)/include

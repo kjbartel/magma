@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Stan Tomov
        @author Mark Gates
 
-       @generated d Wed Nov 14 22:53:13 2012
+       @generated d Fri Jun 28 19:32:21 2013
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_dormqr_gpu(char side, char trans,
                  double *dT,    magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -98,7 +98,7 @@ magma_dormqr_gpu(char side, char trans,
             The dimension of the array HWORK.
             LWORK >= (M-K+NB)*(N+NB) + N*NB if SIDE = 'L', and
             LWORK >= (N-K+NB)*(M+NB) + M*NB if SIDE = 'R',
-            where NB is the optimal blocksize.
+            where NB is the given blocksize.
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal size of the HWORK array, returns

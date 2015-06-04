@@ -1,36 +1,31 @@
-/**
- *
- * @file common.cpp
- *
- *  MAGMA (version 1.3.0) --
- *  Univ. of Tennessee, Knoxville
- *  Univ. of California, Berkeley
- *  Univ. of Colorado, Denver
- *  November 2012
- *
- **/
-#include "common_magma.h"
-
-cudaStream_t magma_stream = 0;
-
-cublasStatus_t magmablasSetKernelStream( cudaStream_t stream )
-{
-/*  -- MAGMA (version 1.3.0) --
+/*
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
+*/
+
+#include "common_magma.h"
+
+magma_queue_t magma_stream = 0;
+
+cublasStatus_t magmablasSetKernelStream( magma_queue_t stream )
+{
+/*  -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
     Purpose
     =======
-
     magmablasSetKernelStream sets the CUDA stream that all MAGMA BLAS and
     CUBLAS routines use.
 
     Arguments
     =========
-
-    stream  (input) cudaStream_t
+    stream  (input) magma_queue_t
             The CUDA stream.
 
     =====================================================================   */
@@ -39,24 +34,22 @@ cublasStatus_t magmablasSetKernelStream( cudaStream_t stream )
 }
 
 
-cublasStatus_t magmablasGetKernelStream( cudaStream_t *stream )
+cublasStatus_t magmablasGetKernelStream( magma_queue_t *stream )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     magmablasSetKernelStream gets the CUDA stream that all MAGMA BLAS
     routines use.
 
     Arguments
     =========
-
-    stream  (output) cudaStream_t
+    stream  (output) magma_queue_t
             The CUDA stream.
 
     =====================================================================   */

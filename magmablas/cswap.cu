@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:48 2012
+       @generated c Fri Jun 28 19:33:12 2013
 
 */
 #include "common_magma.h"
@@ -21,8 +21,8 @@
  *  First version: line per line
  */
 typedef struct {
-    cuFloatComplex *A1;
-    cuFloatComplex *A2;
+    magmaFloatComplex *A1;
+    magmaFloatComplex *A2;
     int n, lda1, lda2;
 } magmagpu_cswap_params_t;
 
@@ -33,19 +33,19 @@ __global__ void magmagpu_cswap( magmagpu_cswap_params_t params )
     unsigned int offset2 = __mul24( x, params.lda2);
     if( x < params.n )
     {
-        cuFloatComplex *A1  = params.A1 + offset1;
-        cuFloatComplex *A2  = params.A2 + offset2;
-        cuFloatComplex temp = *A1;
+        magmaFloatComplex *A1  = params.A1 + offset1;
+        magmaFloatComplex *A2  = params.A2 + offset2;
+        magmaFloatComplex temp = *A1;
         *A1 = *A2;
         *A2 = temp;
     }
 }
 
 extern "C" void 
-magmablas_cswap( magma_int_t n, cuFloatComplex *dA1T, magma_int_t lda1, 
-                 cuFloatComplex *dA2T, magma_int_t lda2)
+magmablas_cswap( magma_int_t n, magmaFloatComplex *dA1T, magma_int_t lda1, 
+                 magmaFloatComplex *dA2T, magma_int_t lda2)
 {
-    int  blocksize = 64;
+    int blocksize = 64;
     dim3 blocks( (n+blocksize-1) / blocksize, 1, 1);
     magmagpu_cswap_params_t params = { dA1T, dA2T, n, lda1, lda2 };
     magmagpu_cswap<<< blocks, blocksize, 0, magma_stream >>>( params );

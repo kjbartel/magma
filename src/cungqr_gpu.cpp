@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:12 2012
-       
+       @generated c Fri Jun 28 19:32:20 2013
+
        @author Stan Tomov
        @author Mark Gates
 */
@@ -16,16 +16,16 @@
 
 extern "C" magma_int_t
 magma_cungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
-                 cuFloatComplex *dA, magma_int_t ldda,
-                 cuFloatComplex *tau,
-                 cuFloatComplex *dT, magma_int_t nb,
+                 magmaFloatComplex *dA, magma_int_t ldda,
+                 magmaFloatComplex *tau,
+                 magmaFloatComplex *dT, magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -87,8 +87,8 @@ magma_cungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     magma_int_t lwork, lpanel;
     magma_int_t i, ib, ki, kk, iinfo;
     magma_int_t lddwork;
-    cuFloatComplex *dV, *dW;
-    cuFloatComplex *work, *panel;
+    magmaFloatComplex *dV, *dW;
+    magmaFloatComplex *work, *panel;
 
     *info = 0;
     if (m < 0) {
@@ -142,7 +142,7 @@ magma_cungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     lddwork = min(m,n);
     dW = dT + 2*lddwork*nb;
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // Use unblocked code for the last or only block.

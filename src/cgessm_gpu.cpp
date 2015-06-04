@@ -1,45 +1,39 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated c Wed Nov 14 22:53:07 2012
+       @generated c Fri Jun 28 19:32:14 2013
 
 */
 #include "common_magma.h"
 
-#define magma_cgemm magmablas_cgemm
-//#define magma_ctrsm magmablas_ctrsm
-//#define magma_ctrmm magmablas_ctrmm
-
 extern "C" magma_int_t
-magma_cgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magma_int_t ib, 
-                  magma_int_t *ipiv, 
-                  cuFloatComplex *dL1, magma_int_t lddl1, 
-                  cuFloatComplex *dL,  magma_int_t lddl, 
-                  cuFloatComplex *dA,  magma_int_t ldda, 
+magma_cgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magma_int_t ib,
+                  magma_int_t *ipiv,
+                  magmaFloatComplex *dL1, magma_int_t lddl1,
+                  magmaFloatComplex *dL,  magma_int_t lddl,
+                  magmaFloatComplex *dA,  magma_int_t ldda,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CGESSM applies the factors L computed by CGETRF_INCPIV to
     a complex M-by-N tile A.
     
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -56,15 +50,15 @@ magma_cgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
             The pivot indices array of size K as returned by
             CGETRF_INCPIV.
 
-    dL1     (input) DOUBLE COMPLEX array, dimension(LDDL1, N) 
+    dL1     (input) DOUBLE COMPLEX array, dimension(LDDL1, N)
             The IB-by-K matrix in which is stored L^(-1) as returned by GETRF_INCPIV
- 
+
     LDDL1   (input) INTEGER
             The leading dimension of the array L1.  LDDL1 >= max(1,2*IB).
- 
-    dL      (input) DOUBLE COMPLEX array, dimension(LDDL, N) 
+
+    dL      (input) DOUBLE COMPLEX array, dimension(LDDL, N)
             The M-by-K lower triangular tile on the gpu.
- 
+
     LDDL    (input) INTEGER
             The leading dimension of the array L.  LDDL >= max(1,M).
 
@@ -78,11 +72,11 @@ magma_cgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
 #define L(i,j)  (dL  + (i)      + (j)*lddl )
 #define dL1(j)  (dL1            + (j)*lddl1)
 
-    cuFloatComplex c_one     = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex c_one     = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
 
     int i, s, sb;
-    cuFloatComplex *dAT;
+    magmaFloatComplex *dAT;
 
     /* Check arguments */
     *info = 0;
@@ -115,22 +109,22 @@ magma_cgessm_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t k, magm
         magmablas_claswp( n, dAT, ldda, i+1, i+sb, ipiv, 1 );
 
 #ifndef WITHOUTTRTRI
-        magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
-                     n, sb, 
+        magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit,
+                     n, sb,
                      c_one, dL1(i),   lddl1,
                             AT(i, 0), ldda);
 #else
-        magma_ctrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
-                     n, sb, 
+        magma_ctrsm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit,
+                     n, sb,
                      c_one, L( i, i), lddl,
                             AT(i, 0), ldda);
 #endif
 
         if ( (i+sb) < m) {
-            magma_cgemm( MagmaNoTrans, MagmaTrans, 
-                         n, m-(i+sb), sb, 
+            magma_cgemm( MagmaNoTrans, MagmaTrans,
+                         n, m-(i+sb), sb,
                          c_neg_one, AT(i,    0), ldda,
-                                    L( i+sb, i), lddl, 
+                                    L( i+sb, i), lddl,
                          c_one,     AT(i+sb, 0), ldda );
         }
     }

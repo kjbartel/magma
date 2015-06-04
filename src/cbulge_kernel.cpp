@@ -7,20 +7,14 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Wed Nov 14 22:53:25 2012
+ *     @generated c Fri Jun 28 19:32:37 2013
  *
  */
 
 #include "common_magma.h"
 #include <cblas.h>
 
-//#include "magma_cbulgeinc.h"
-// === Define what BLAS to use ============================================
 #define PRECISION_c
-
-// === End defining what BLAS to use ======================================
- 
-
  
 #ifdef __cplusplus
 extern "C" {
@@ -33,14 +27,14 @@ void findVTsiz(magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magma_int_t *
 magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
 
 void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, 
-                                cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, 
+                                magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, 
                                 magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
 
-void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
    
-void magma_ctrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+void magma_ctrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
 
-void magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU);
+void magma_clarfxsym(magma_int_t N, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU);
 
 #ifdef __cplusplus
 }
@@ -50,15 +44,15 @@ void magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatC
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C" void 
-magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU) {
+magma_clarfxsym(magma_int_t N, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU) {
   magma_int_t j, IONE=1; 
-  cuFloatComplex dtmp;
-  cuFloatComplex Z_ZERO =  MAGMA_C_ZERO;
-  cuFloatComplex Z_ONE  =  MAGMA_C_ONE;
-  cuFloatComplex Z_MONE =  MAGMA_C_NEG_ONE;
-  cuFloatComplex Z_HALF =  MAGMA_C_HALF;
-  //cuFloatComplex WORK[N];
-  cuFloatComplex *WORK  = (cuFloatComplex *) malloc( N * sizeof(cuFloatComplex) );
+  magmaFloatComplex dtmp;
+  magmaFloatComplex Z_ZERO =  MAGMA_C_ZERO;
+  magmaFloatComplex Z_ONE  =  MAGMA_C_ONE;
+  magmaFloatComplex Z_MONE =  MAGMA_C_NEG_ONE;
+  magmaFloatComplex Z_HALF =  MAGMA_C_HALF;
+  //magmaFloatComplex WORK[N];
+  magmaFloatComplex *WORK  = (magmaFloatComplex *) malloc( N * sizeof(magmaFloatComplex) );
 
   /* apply left and right on A(st:ed,st:ed)*/
   //magma_clarfxsym(len,A(st,st),LDX,V(st),TAU(st));
@@ -93,13 +87,13 @@ magma_clarfxsym(magma_int_t N, cuFloatComplex *A, magma_int_t LDA, cuFloatComple
 #define A(m,n)   &(A[((m)-(n)) + LDA*((n)-1)])
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
-extern "C" void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
+extern "C" void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, J3, len, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  cuFloatComplex conjtmp;
-  cuFloatComplex Z_ONE  =  MAGMA_C_ONE;
-  cuFloatComplex *WORK  = (cuFloatComplex *) malloc( N * sizeof(cuFloatComplex) );
+  magmaFloatComplex conjtmp;
+  magmaFloatComplex Z_ONE  =  MAGMA_C_ONE;
+  magmaFloatComplex *WORK  = (magmaFloatComplex *) malloc( N * sizeof(magmaFloatComplex) );
 
 
   findVTpos(N,NB,Vblksiz,sweep-1,st-1, &vpos, &taupos, &tpos, &blkid);
@@ -107,8 +101,8 @@ extern "C" void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
   LDX     = LDA-1;
   len     = ed-st+1;
   *V(vpos)  = Z_ONE;
-  memcpy(V(vpos+1), A(st+1, st-1), (len-1)*sizeof(cuFloatComplex));
-  memset(A(st+1, st-1), 0, (len-1)*sizeof(cuFloatComplex));
+  memcpy(V(vpos+1), A(st+1, st-1), (len-1)*sizeof(magmaFloatComplex));
+  memset(A(st+1, st-1), 0, (len-1)*sizeof(magmaFloatComplex));
   /* Eliminate the col  at st-1 */
   lapackf77_clarfg( &len, A(st, st-1), V(vpos+1), &IONE, TAU(taupos) );
   /* apply left and right on A(st:ed,st:ed)*/
@@ -129,14 +123,14 @@ extern "C" void magma_ctrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
 #define A(m,n)   &(A[((m)-(n)) + LDA*((n)-1)])
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
-extern "C" void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
+extern "C" void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, len, lem, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  cuFloatComplex conjtmp;
-  cuFloatComplex Z_ONE  =  MAGMA_C_ONE;
-  //cuFloatComplex WORK[NB];
-  cuFloatComplex *WORK  = (cuFloatComplex *) malloc( NB * sizeof(cuFloatComplex) );
+  magmaFloatComplex conjtmp;
+  magmaFloatComplex Z_ONE  =  MAGMA_C_ONE;
+  //magmaFloatComplex WORK[NB];
+  magmaFloatComplex *WORK  = (magmaFloatComplex *) malloc( NB * sizeof(magmaFloatComplex) );
 
 
   findVTpos(N,NB,Vblksiz,sweep-1,st-1, &vpos, &taupos, &tpos, &blkid);
@@ -153,8 +147,8 @@ extern "C" void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
      findVTpos(N,NB,Vblksiz,sweep-1,J1-1, &vpos, &taupos, &tpos, &blkid);
      /* remove the first column of the created bulge */
      *V(vpos)  = Z_ONE;
-     memcpy(V(vpos+1), A(J1+1, st), (lem-1)*sizeof(cuFloatComplex));
-     memset(A(J1+1, st),0,(lem-1)*sizeof(cuFloatComplex));
+     memcpy(V(vpos+1), A(J1+1, st), (lem-1)*sizeof(magmaFloatComplex));
+     memset(A(J1+1, st),0,(lem-1)*sizeof(magmaFloatComplex));
      /* Eliminate the col at st */
      lapackf77_clarfg( &lem, A(J1, st), V(vpos+1), &IONE, TAU(taupos) );
      /* apply left on A(J1:J2,st+1:ed) */
@@ -176,12 +170,12 @@ extern "C" void magma_ctrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFl
 #define A(m,n)   &(A[((m)-(n)) + LDA*((n)-1)])
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
-extern "C" void magma_ctrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuFloatComplex *A, magma_int_t LDA, cuFloatComplex *V, cuFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
+extern "C" void magma_ctrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaFloatComplex *A, magma_int_t LDA, magmaFloatComplex *V, magmaFloatComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, J3, len, LDX;
   magma_int_t    i, j, IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  cuFloatComplex conjtmp;
-  cuFloatComplex *WORK  = (cuFloatComplex *) malloc( N * sizeof(cuFloatComplex) );
+  magmaFloatComplex conjtmp;
+  magmaFloatComplex *WORK  = (magmaFloatComplex *) malloc( N * sizeof(magmaFloatComplex) );
 
 
   findVTpos(N,NB,Vblksiz,sweep-1,st-1, &vpos, &taupos, &tpos, &blkid);

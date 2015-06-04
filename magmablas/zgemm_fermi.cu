@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z
 
@@ -194,15 +194,15 @@
 
 extern "C" void
 magmablas_zgemm_fermi( char TRANSA, char TRANSB, magma_int_t m, magma_int_t n, magma_int_t k,
-                       cuDoubleComplex alpha, const cuDoubleComplex *d_A, magma_int_t lda,
-                                              const cuDoubleComplex *d_B, magma_int_t ldb,
-                       cuDoubleComplex beta,        cuDoubleComplex *d_C, magma_int_t ldc )
+                       magmaDoubleComplex alpha, const magmaDoubleComplex *d_A, magma_int_t lda,
+                                              const magmaDoubleComplex *d_B, magma_int_t ldb,
+                       magmaDoubleComplex beta,        magmaDoubleComplex *d_C, magma_int_t ldc )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
    Purpose
    =======
@@ -348,9 +348,9 @@ magmablas_zgemm_fermi( char TRANSA, char TRANSB, magma_int_t m, magma_int_t n, m
         tex_ref_B.addressMode[0] = cudaAddressModeClamp;
 
         // Bind A and B to texture references
-        assert(cudaBindTexture(&offsetA, tex_ref_A, d_A, sizeA*sizeof(cuDoubleComplex)) 
+        assert(cudaBindTexture(&offsetA, tex_ref_A, d_A, sizeA*sizeof(magmaDoubleComplex)) 
                    == cudaSuccess);
-        assert(cudaBindTexture(&offsetB, tex_ref_B, d_B, sizeB*sizeof(cuDoubleComplex))
+        assert(cudaBindTexture(&offsetB, tex_ref_B, d_B, sizeB*sizeof(magmaDoubleComplex))
                    == cudaSuccess);
     #endif
 

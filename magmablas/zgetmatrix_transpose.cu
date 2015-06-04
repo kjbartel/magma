@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -23,9 +23,9 @@
 //
 extern "C" void 
 magmablas_zgetmatrix_transpose( magma_int_t m, magma_int_t n,
-                                const cuDoubleComplex *dat, magma_int_t ldda,
-                                cuDoubleComplex       *ha,  magma_int_t lda,
-                                cuDoubleComplex       *dB,  magma_int_t lddb, magma_int_t nb )
+                                const magmaDoubleComplex *dat, magma_int_t ldda,
+                                magmaDoubleComplex       *ha,  magma_int_t lda,
+                                magmaDoubleComplex       *dB,  magma_int_t lddb, magma_int_t nb )
 {
     magma_int_t i = 0, j = 0, ib;
 
@@ -38,7 +38,7 @@ magmablas_zgetmatrix_transpose( magma_int_t m, magma_int_t n,
         return;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -47,7 +47,7 @@ magmablas_zgetmatrix_transpose( magma_int_t m, magma_int_t n,
        ib   = min(n-i, nb);
 
        //magmablas_ztranspose2 ( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m);
-       magmablas_ztranspose2s( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m, &stream[j%2]);
+       magmablas_ztranspose2s( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m, stream[j%2]);
        magma_zgetmatrix_async( m, ib,
                                dB + (j%2) * nb * lddb, lddb,
                                ha+i*lda,               lda, stream[j%2] );
@@ -67,10 +67,10 @@ magmablas_zgetmatrix_transpose( magma_int_t m, magma_int_t n,
 //===========================================================================
 extern "C" void
 magmablas_zgetmatrix_transpose2( magma_int_t m, magma_int_t n,
-                                 const cuDoubleComplex **dat, magma_int_t *ldda,
-                                 cuDoubleComplex         *ha, magma_int_t  lda,
-                                 cuDoubleComplex        **dB, magma_int_t  lddb, magma_int_t nb,
-                                 magma_int_t num_gpus, cudaStream_t stream[][2] )
+                                 const magmaDoubleComplex **dat, magma_int_t *ldda,
+                                 magmaDoubleComplex         *ha, magma_int_t  lda,
+                                 magmaDoubleComplex        **dB, magma_int_t  lddb, magma_int_t nb,
+                                 magma_int_t num_gpus, magma_queue_t stream[][2] )
 {
     magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k;
 
@@ -94,7 +94,7 @@ magmablas_zgetmatrix_transpose2( magma_int_t m, magma_int_t n,
        //                       dat[k]+i/(nb*num_gpus)*nb, ldda[k], ib, m);
        magmablas_ztranspose2s(dB[k] + (j[k]%2)*nb*lddb, lddb,
                               dat[k]+i/(nb*num_gpus)*nb, ldda[k], 
-                              ib, m, &stream[k][j[k]%2]);
+                              ib, m, stream[k][j[k]%2]);
        magma_zgetmatrix_async( m, ib,
                                dB[k] + (j[k]%2) * nb * lddb, lddb,
                                ha+i*lda,                     lda, stream[k][j[k]%2] );

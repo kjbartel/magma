@@ -1,11 +1,11 @@
 /*
-  -- MAGMA (version 1.3.0) --
-  Univ. of Tennessee, Knoxville
-  Univ. of California, Berkeley
-  Univ. of Colorado, Denver
-  November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-  @precisions mixed zc -> ds
+       @precisions mixed zc -> ds
 
 */
 #include "common_magma.h"
@@ -23,8 +23,8 @@ __device__ int flag = 0;
 __global__ void
 l_zlat2c_special(
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     magma_int_t *info, double RMAX, int ldsa )
 {
     double mRMAX = - RMAX;
@@ -32,7 +32,7 @@ l_zlat2c_special(
     int ty  = threadIdx.y ;
     int ind = blockIdx.x*  dgemv_bs + tx ;
 
-    __shared__ cuDoubleComplex la[dgemv_bs][dgemv_bs+1];
+    __shared__ magmaDoubleComplex la[dgemv_bs][dgemv_bs+1];
 
     A  += ind;
     SA += ind;
@@ -40,7 +40,7 @@ l_zlat2c_special(
     SA += ty * ldsa;
 
     int break_d  =   blockIdx.x* dgemv_bs ;
-    cuDoubleComplex temp ;
+    magmaDoubleComplex temp ;
     for(int  i=0; i<break_d; i += dgemv_bs ){
         #pragma unroll 8
         for(int j=0; j < dgemv_bs; j+=4){
@@ -101,8 +101,8 @@ l_zlat2c_special(
 __global__ void
 l_zlat2c_generic(
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     double mRMAX = - RMAX;
@@ -112,9 +112,9 @@ l_zlat2c_generic(
     int ind = blockIdx.x*  dgemv_bs + tx ;
 
 
-    __shared__ cuDoubleComplex la   [dgemv_bs][dgemv_bs+1];
+    __shared__ magmaDoubleComplex la   [dgemv_bs][dgemv_bs+1];
 
-    cuDoubleComplex temp ;
+    magmaDoubleComplex temp ;
 
     if( blockIdx.x == m_full_block ) {
         /************************************************************************
@@ -310,8 +310,8 @@ l_zlat2c_generic(
 __global__ void
 u_zlat2c_generic(
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     double mRMAX = - RMAX;
@@ -321,9 +321,9 @@ u_zlat2c_generic(
     int ind = blockIdx.x*  dgemv_bs + tx ;
 
 
-    __shared__ cuDoubleComplex la   [dgemv_bs][dgemv_bs+1];
+    __shared__ magmaDoubleComplex la   [dgemv_bs][dgemv_bs+1];
     int blockIdxx =  blockIdx.x ;
-    cuDoubleComplex temp ;
+    magmaDoubleComplex temp ;
     if( blockIdx.x == m_full_block ) {
 
         /************************************************************************
@@ -527,8 +527,8 @@ u_zlat2c_generic(
 __global__ void
 u_zlat2c_special (
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     magma_int_t *info, double RMAX, int ldsa )
 {
     double mRMAX = - RMAX;
@@ -545,7 +545,7 @@ u_zlat2c_special (
     A+= lda*(n-1) ;
     SA+= ldsa*(n-1) ;
 
-    __shared__ cuDoubleComplex la   [dgemv_bs][dgemv_bs+1];
+    __shared__ magmaDoubleComplex la   [dgemv_bs][dgemv_bs+1];
 
     A += ind;
     SA += ind;
@@ -553,7 +553,7 @@ u_zlat2c_special (
     A-= ty * lda  ;
     SA-= ty * ldsa  ;
 
-    cuDoubleComplex temp ;
+    magmaDoubleComplex temp ;
     int break_d  = (n / dgemv_bs -   blockIdx.x-1 )* dgemv_bs ;
 
     for(int  i=0; i<break_d; i += dgemv_bs ){
@@ -624,8 +624,8 @@ u_zlat2c_special (
 extern "C" void
 mzlat2c(
     char uplo, magma_int_t m,
-    const cuDoubleComplex *A,  magma_int_t lda,
-    cuFloatComplex        *SA, magma_int_t ldsa,
+    const magmaDoubleComplex *A,  magma_int_t lda,
+    magmaFloatComplex        *SA, magma_int_t ldsa,
     magma_int_t *info)
 {
     /*
@@ -672,8 +672,8 @@ mzlat2c(
 extern "C" void
 magmablas_zlat2c(
     char uplo, magma_int_t n,
-    const cuDoubleComplex *A,  magma_int_t lda,
-    cuFloatComplex        *SA, magma_int_t ldsa,
+    const magmaDoubleComplex *A,  magma_int_t lda,
+    magmaFloatComplex        *SA, magma_int_t ldsa,
     magma_int_t *info)
 {
     /*
@@ -692,8 +692,8 @@ magmablas_zlat2c(
 __global__ void
 l_zlat2c_special (
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     magma_int_t *info, double RMAX, int ldsa )
 {
     int tx  = threadIdx.x ;
@@ -721,8 +721,8 @@ l_zlat2c_special (
 __global__ void
 l_zlat2c_generic(
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     int tx = threadIdx.x ;
@@ -821,8 +821,8 @@ l_zlat2c_generic(
 __global__ void
 u_zlat2c_generic(
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA,
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA,
     int m_full_block, int m_mod_32, magma_int_t *info, double RMAX, int ldsa)
 {
     int tx = threadIdx.x ;
@@ -930,8 +930,8 @@ u_zlat2c_generic(
 __global__ void
 u_zlat2c_special (
     int n,
-    const cuDoubleComplex *A, int lda,
-    cuFloatComplex        *SA, 
+    const magmaDoubleComplex *A, int lda,
+    magmaFloatComplex        *SA, 
     magma_int_t *info, double RMAX, int ldsa )
 {
     int tx = threadIdx.x ;
@@ -968,8 +968,8 @@ u_zlat2c_special (
 extern "C" void
 mzlat2c(
     char uplo, magma_int_t m,
-    const cuDoubleComplex *A,  magma_int_t lda,
-    cuFloatComplex        *SA, magma_int_t ldsa,
+    const magmaDoubleComplex *A,  magma_int_t lda,
+    magmaFloatComplex        *SA, magma_int_t ldsa,
     magma_int_t *info)
 {
     /*
@@ -1016,8 +1016,8 @@ mzlat2c(
 extern "C" void
 magmablas_zlat2c(
     char uplo, magma_int_t n,
-    const cuDoubleComplex *A,  magma_int_t lda,
-    cuFloatComplex        *SA, magma_int_t ldsa,
+    const magmaDoubleComplex *A,  magma_int_t lda,
+    magmaFloatComplex        *SA, magma_int_t ldsa,
     magma_int_t *info)
 {
     /*

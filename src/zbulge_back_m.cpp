@@ -1,43 +1,34 @@
 /*
- -- MAGMA (version 1.3.0) --
- Univ. of Tennessee, Knoxville
- Univ. of California, Berkeley
- Univ. of Colorado, Denver
- November 2012
-
- @author Azzam Haidar
- @author Stan Tomov
-
- @precisions normal z -> s d c
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+       
+       @author Azzam Haidar
+       @author Stan Tomov
+       @author Raffaele Solca
+       
+       @precisions normal z -> s d c
 
  */
 #include "common_magma.h"
 #include "magma_bulge.h"
+#include "magma_zbulge.h"
 #include <cblas.h>
 
-#if defined(USEMKL)
-#include <mkl_service.h>
+#ifdef SETAFFINITY
+#include "affinity.h"
 #endif
-#if defined(USEACML)
-#include <omp.h>
-#endif
-// === Define what BLAS to use ============================================
-#define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-#define magma_zgemm magmablas_zgemm
-#endif
-// === End defining what BLAS to use =======================================
-extern "C" {
-    magma_int_t magma_zbulge_applyQ_v2_m(magma_int_t nrgpu, char side, magma_int_t NE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, cuDoubleComplex *E,
-                                         magma_int_t lde, cuDoubleComplex *V, magma_int_t ldv, cuDoubleComplex *T, magma_int_t ldt, magma_int_t *info);
 
-}
+
+#define PRECISION_z
 
 static void *magma_zapplyQ_m_parallel_section(void *arg);
 
-static void magma_ztile_bulge_applyQ(char side, magma_int_t n_loc, magma_int_t n, magma_int_t nb, magma_int_t Vblksiz,
-                                     cuDoubleComplex *E, magma_int_t lde, cuDoubleComplex *V, magma_int_t ldv,
-                                     cuDoubleComplex *TAU, cuDoubleComplex *T, magma_int_t ldt);
+static void magma_ztile_bulge_applyQ(magma_int_t core_id, char side, magma_int_t n_loc, magma_int_t n, magma_int_t nb, magma_int_t Vblksiz,
+                                     magmaDoubleComplex *E, magma_int_t lde, magmaDoubleComplex *V, magma_int_t ldv,
+                                     magmaDoubleComplex *TAU, magmaDoubleComplex *T, magma_int_t ldt);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,9 +37,9 @@ class magma_zapplyQ_m_data {
 public:
 
     magma_zapplyQ_m_data(magma_int_t nrgpu_, magma_int_t threads_num_, magma_int_t n_, magma_int_t ne_, magma_int_t n_gpu_,
-                         magma_int_t nb_, magma_int_t Vblksiz_, cuDoubleComplex *E_, magma_int_t lde_,
-                         cuDoubleComplex *V_, magma_int_t ldv_, cuDoubleComplex *TAU_,
-                         cuDoubleComplex *T_, magma_int_t ldt_)
+                         magma_int_t nb_, magma_int_t Vblksiz_, magmaDoubleComplex *E_, magma_int_t lde_,
+                         magmaDoubleComplex *V_, magma_int_t ldv_, magmaDoubleComplex *TAU_,
+                         magmaDoubleComplex *T_, magma_int_t ldt_)
     :
     nrgpu(nrgpu_),
     threads_num(threads_num_),
@@ -84,12 +75,12 @@ public:
     const magma_int_t n_gpu;
     const magma_int_t nb;
     const magma_int_t Vblksiz;
-    cuDoubleComplex* const E;
+    magmaDoubleComplex* const E;
     const magma_int_t lde;
-    cuDoubleComplex* const V;
+    magmaDoubleComplex* const V;
     const magma_int_t ldv;
-    cuDoubleComplex* const TAU;
-    cuDoubleComplex* const T;
+    magmaDoubleComplex* const TAU;
+    magmaDoubleComplex* const T;
     const magma_int_t ldt;
     pthread_barrier_t barrier;
 
@@ -118,35 +109,33 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-extern "C" magma_int_t magma_zbulge_back_m(magma_int_t nrgpu, magma_int_t threads, char uplo, magma_int_t n, magma_int_t nb, magma_int_t ne, magma_int_t Vblksiz,
-                                           cuDoubleComplex *Z, magma_int_t ldz,
-                                           cuDoubleComplex *V, magma_int_t ldv, cuDoubleComplex *TAU, cuDoubleComplex *T, magma_int_t ldt, magma_int_t* info)
+extern "C" magma_int_t 
+magma_zbulge_back_m(magma_int_t nrgpu, magma_int_t threads, char uplo, 
+                        magma_int_t n, magma_int_t nb, 
+                        magma_int_t ne, magma_int_t Vblksiz,
+                        magmaDoubleComplex *Z, magma_int_t ldz,
+                        magmaDoubleComplex *V, magma_int_t ldv, 
+                        magmaDoubleComplex *TAU, 
+                        magmaDoubleComplex *T, magma_int_t ldt, 
+                        magma_int_t* info)
 {
-    magma_int_t mklth = threads;
+    magma_setlapack_numthreads(1);
 
     double timeaplQ2=0.0;
-
-#if defined(USEMKL)
-    mkl_set_num_threads(1);
-#endif
-#if defined(USEACML)
-    omp_set_num_threads(1);
-#endif
 
     double f= 1.;
     magma_int_t n_gpu = ne;
 
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-    double gpu_cpu_perf = 0;  // to be defined //gpu over cpu performance
+#if defined(PRECISION_s) || defined(PRECISION_d)
+    double gpu_cpu_perf = 32; //gpu over cpu performance
 #else
-//    double gpu_cpu_perf = 27.5;  // gpu over cpu performance  //100% ev
-    double gpu_cpu_perf = 17.5;  // gpu over cpu performance   //10% ev
+    double gpu_cpu_perf = 32;  // gpu over cpu performance
 #endif
 
     double perf_temp= .85;
     double perf_temp2= perf_temp;
     for (magma_int_t itmp=1; itmp<nrgpu; ++itmp)
-        perf_temp2*=perf_temp; 
+        perf_temp2*=perf_temp;
 
     if(threads>1){
         f = 1. / (1. + (double)(threads-1)/ (gpu_cpu_perf*(1.-perf_temp2)/(1.-perf_temp)));
@@ -162,19 +151,22 @@ extern "C" magma_int_t magma_zbulge_back_m(magma_int_t nrgpu, magma_int_t thread
     /*============================
      *  use GPU+CPU's
      *==========================*/
-
+//n_gpu = ne;
     if(n_gpu < ne)
     {
 
         // define the size of Q to be done on CPU's and the size on GPU's
         // note that GPU use Q(1:N_GPU) and CPU use Q(N_GPU+1:N)
-
+        #ifdef ENABLE_DEBUG
         printf("---> calling GPU + CPU(if N_CPU>0) to apply V2 to Z with NE %d     N_GPU %d   N_CPU %d\n",ne, n_gpu, ne-n_gpu);
-
+        #endif
         magma_zapplyQ_m_data data_applyQ(nrgpu, threads, n, ne, n_gpu, nb, Vblksiz, Z, ldz, V, ldv, TAU, T, ldt);
 
-        magma_zapplyQ_m_id_data* arg = new magma_zapplyQ_m_id_data[threads];
-        pthread_t* thread_id = new pthread_t[threads];
+        magma_zapplyQ_m_id_data* arg;
+        magma_malloc_cpu((void**) &arg, threads*sizeof(magma_zapplyQ_m_id_data));
+
+        pthread_t* thread_id;
+        magma_malloc_cpu((void**) &thread_id, threads*sizeof(pthread_t));
 
         pthread_attr_t thread_attr;
 
@@ -202,8 +194,8 @@ extern "C" magma_int_t magma_zbulge_back_m(magma_int_t nrgpu, magma_int_t thread
             pthread_join(thread_id[thread], &exitcodep);
         }
 
-        delete[] thread_id;
-        delete[] arg;
+        magma_free_cpu(thread_id);
+        magma_free_cpu(arg);
 
         /*============================
          *  use only GPU
@@ -215,13 +207,7 @@ extern "C" magma_int_t magma_zbulge_back_m(magma_int_t nrgpu, magma_int_t thread
 
     timeaplQ2 = magma_wtime()-timeaplQ2;
 
-#if defined(USEMKL)
-    mkl_set_num_threads(mklth);
-#endif
-#if defined(USEACML)
-    omp_set_num_threads(mklth);
-#endif
-
+    magma_setlapack_numthreads(threads);
     return MAGMA_SUCCESS;
 }
 
@@ -239,12 +225,12 @@ static void *magma_zapplyQ_m_parallel_section(void *arg)
     magma_int_t n_gpu          = data -> n_gpu;
     magma_int_t nb             = data -> nb;
     magma_int_t Vblksiz        = data -> Vblksiz;
-    cuDoubleComplex *E         = data -> E;
+    magmaDoubleComplex *E         = data -> E;
     magma_int_t lde            = data -> lde;
-    cuDoubleComplex *V         = data -> V;
+    magmaDoubleComplex *V         = data -> V;
     magma_int_t ldv            = data -> ldv;
-    cuDoubleComplex *TAU       = data -> TAU;
-    cuDoubleComplex *T         = data -> T;
+    magmaDoubleComplex *TAU       = data -> TAU;
+    magmaDoubleComplex *T         = data -> T;
     magma_int_t ldt            = data -> ldt;
     pthread_barrier_t* barrier = &(data -> barrier);
 
@@ -254,11 +240,30 @@ static void *magma_zapplyQ_m_parallel_section(void *arg)
 
     magma_int_t n_cpu = ne - n_gpu;
 
-#if defined(SETAFFINITY)
-    cpu_set_t set;
-    CPU_ZERO( &set );
-    CPU_SET( my_core_id, &set );
-    sched_setaffinity( 0, sizeof(set), &set) ;
+#ifdef SETAFFINITY
+    //#define PRINTAFFINITY
+#ifdef PRINTAFFINITY
+    affinity_set print_set;
+    print_set.print_affinity(my_core_id, "starting affinity");
+#endif
+    affinity_set original_set;
+    affinity_set new_set(my_core_id);
+    int check  = 0;
+    int check2 = 0;
+    // bind threads
+    check = original_set.get_affinity();
+    if (check == 0) {
+        check2 = new_set.set_affinity();
+        if (check2 != 0)
+            printf("Error in sched_setaffinity (single cpu)\n");
+    }
+    else
+    {
+        printf("Error in sched_getaffinity\n");
+    }
+#ifdef PRINTAFFINITY
+    print_set.print_affinity(my_core_id, "set affinity");
+#endif
 #endif
 
     if(my_core_id==0)
@@ -267,44 +272,53 @@ static void *magma_zapplyQ_m_parallel_section(void *arg)
         //   on GPU on thread 0:
         //    - apply V2*Z(:,1:N_GPU)
         //=============================================
+        #ifdef ENABLE_TIMER
         timeQgpu = magma_wtime();
+        #endif
 
         magma_zbulge_applyQ_v2_m(nrgpu, 'L', n_gpu, n, nb, Vblksiz, E, lde, V, ldv, T, ldt, &info);
-
         magma_device_sync();
+
+        #ifdef ENABLE_TIMER
         timeQgpu = magma_wtime()-timeQgpu;
         printf("  Finish Q2_GPU GGG timing= %lf \n" ,timeQgpu);
-
+        #endif
     }else{
         //=============================================
         //   on CPU on threads 1:allcores_num-1:
         //    - apply V2*Z(:,N_GPU+1:NE)
         //=============================================
+        #ifdef ENABLE_TIMER
         if(my_core_id == 1)
             timeQcpu = magma_wtime();
+        #endif
 
         magma_int_t n_loc = magma_ceildiv(n_cpu, allcores_num-1);
-        cuDoubleComplex* E_loc = E + (n_gpu+ n_loc * (my_core_id-1))*lde;
+        magmaDoubleComplex* E_loc = E + (n_gpu+ n_loc * (my_core_id-1))*lde;
         n_loc = min(n_loc,n_cpu - n_loc * (my_core_id-1));
 
-        magma_ztile_bulge_applyQ('L', n_loc, n, nb, Vblksiz, E_loc, lde, V, ldv, TAU, T, ldt);
+        magma_ztile_bulge_applyQ(my_core_id, 'L', n_loc, n, nb, Vblksiz, E_loc, lde, V, ldv, TAU, T, ldt);
         pthread_barrier_wait(barrier);
+
+        #ifdef ENABLE_TIMER
         if(my_core_id == 1){
             timeQcpu = magma_wtime()-timeQcpu;
             printf("  Finish Q2_CPU CCC timing= %lf \n" ,timeQcpu);
         }
+        #endif
 
     } // END if my_core_id
 
-
-#if defined(SETAFFINITY)
+#ifdef SETAFFINITY
     // unbind threads
-    magma_int_t sys_corenbr = 1;
-    sys_corenbr = sysconf(_SC_NPROCESSORS_ONLN);
-    CPU_ZERO( &set );
-    for(magma_int_t i=0; i<sys_corenbr; i++)
-        CPU_SET( i, &set );
-    sched_setaffinity( 0, sizeof(set), &set) ;
+    if (check == 0){
+        check2 = original_set.set_affinity();
+        if (check2 != 0)
+            printf("Error in sched_setaffinity (restore cpu list)\n");
+    }
+#ifdef PRINTAFFINITY
+    print_set.print_affinity(my_core_id, "restored_affinity");
+#endif
 #endif
 
     return 0;
@@ -316,9 +330,9 @@ static void *magma_zapplyQ_m_parallel_section(void *arg)
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 #define T(m)     &(T[(m)])
-static void magma_ztile_bulge_applyQ(char side, magma_int_t n_loc, magma_int_t n, magma_int_t nb, magma_int_t Vblksiz,
-                                     cuDoubleComplex *E, magma_int_t lde, cuDoubleComplex *V, magma_int_t ldv,
-                                     cuDoubleComplex *TAU, cuDoubleComplex *T, magma_int_t ldt)//, magma_int_t* info)
+static void magma_ztile_bulge_applyQ(magma_int_t core_id, char side, magma_int_t n_loc, magma_int_t n, magma_int_t nb, magma_int_t Vblksiz,
+                                     magmaDoubleComplex *E, magma_int_t lde, magmaDoubleComplex *V, magma_int_t ldv,
+                                     magmaDoubleComplex *TAU, magmaDoubleComplex *T, magma_int_t ldt)//, magma_int_t* info)
 {
     //%===========================
     //%   local variables
@@ -355,7 +369,7 @@ static void magma_ztile_bulge_applyQ(char side, magma_int_t n_loc, magma_int_t n
     magma_int_t nb_loc = 128; //$$$$$$$$
 
     magma_int_t     lwork = 2*nb_loc*max(Vblksiz,64);
-    cuDoubleComplex *work, *work2;
+    magmaDoubleComplex *work, *work2;
 
     magma_zmalloc_cpu(&work, lwork);
     magma_zmalloc_cpu(&work2, lwork);
@@ -370,8 +384,11 @@ static void magma_ztile_bulge_applyQ(char side, magma_int_t n_loc, magma_int_t n
      *            each q_i consist of applying V to a block of col E(:, col_i,:) and the applies are overlapped meaning
      *            that q_i+1 overlap a portion of the E(:, col_i).
      *            IN parallel E is splitten in horizontal block over the threads  */
-
-    //printf("  APPLY Q2   N %d  N_loc %d  nbchunk %d  NB %d  Vblksiz %d  SIDE %c \n", n, n_loc, nbchunk, nb, Vblksiz, side);
+    #ifdef ENABLE_DEBUG
+    if((core_id==0)||(core_id==1))
+        printf("  APPLY Q2_cpu zbulge_back_m   N %d  N_loc %d  nbchunk %d  NB %d  Vblksiz %d  SIDE %c \n", n, n_loc, nbchunk, nb, Vblksiz, side);
+    #endif
+   
     for (magma_int_t i = 0; i<nbchunk; i++)
     {
         magma_int_t ib_loc = min(nb_loc, (n_loc - i*nb_loc));

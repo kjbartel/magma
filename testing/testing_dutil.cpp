@@ -1,15 +1,16 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- * @generated d Wed Nov 14 22:54:12 2012
- *
- * Utilities for testing.
- * @author Mark Gates
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @generated d Fri Jun 28 19:33:47 2013
+
+       @author Mark Gates
+
+       Utilities for testing.
+*/
 
 #include "testings.h"
 
@@ -18,9 +19,9 @@
 // --------------------
 // Make a matrix symmetric/symmetric.
 // Makes diagonal real.
-// Sets Aji = conj( Aij ) for j < i, that is, copy lower triangle to upper triangle.
+// Sets Aji = ( Aij ) for j < i, that is, copy lower triangle to upper triangle.
 extern "C"
-void magma_dhermitian( magma_int_t N, double* A, magma_int_t lda )
+void magma_dmake_symmetric( magma_int_t N, double* A, magma_int_t lda )
 {
     magma_int_t i, j;
     for( i=0; i<N; ++i ) {
@@ -35,9 +36,9 @@ void magma_dhermitian( magma_int_t N, double* A, magma_int_t lda )
 // --------------------
 // Make a matrix symmetric/symmetric positive definite.
 // Increases diagonal by N, and makes it real.
-// Sets Aji = conj( Aij ) for j < i, that is, copy lower triangle to upper triangle.
+// Sets Aji = ( Aij ) for j < i, that is, copy lower triangle to upper triangle.
 extern "C"
-void magma_dhpd( magma_int_t N, double* A, magma_int_t lda )
+void magma_dmake_hpd( magma_int_t N, double* A, magma_int_t lda )
 {
     magma_int_t i, j;
     for( i=0; i<N; ++i ) {

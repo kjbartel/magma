@@ -1,11 +1,11 @@
 /*
-  -- MAGMA (version 1.3.0) --
-  Univ. of Tennessee, Knoxville
-  Univ. of California, Berkeley
-  Univ. of Colorado, Denver
-  November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-  @generated ds Wed Nov 14 22:54:17 2012
+       @generated ds Fri Jun 28 19:33:55 2013
 
 */
 
@@ -23,215 +23,196 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-// Flops formula
 #define PRECISION_d
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS_GEQRF(m, n      ) ( 6.*FMULS_GEQRF(m, n      ) + 2.*FADDS_GEQRF(m, n      ) )
-#define FLOPS_GEQRS(m, n, nrhs) ( 6.*FMULS_GEQRS(m, n, nrhs) + 2.*FADDS_GEQRS(m, n, nrhs) )
-#else
-#define FLOPS_GEQRF(m, n      ) (    FMULS_GEQRF(m, n      ) +    FADDS_GEQRF(m, n      ) )
-#define FLOPS_GEQRS(m, n, nrhs) (    FMULS_GEQRS(m, n, nrhs) +    FADDS_GEQRS(m, n, nrhs) )
-#endif
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dsgeqrsv
 */
 int main( int argc, char** argv)
 {
-  /*
-#if defined(PRECISION_z) && (GPUSHMEM < 200)
-    fprintf(stderr, "This functionnality is not available in MAGMA for this precisions actually\n");
-    return EXIT_SUCCESS;
-#else
-  */
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    double      flops, gpu_perf, cpu_perf;
-    double      gpu_perfd, gpu_perfs;
-    double      Rnorm, Anorm, work[1];
+    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf, cpu_time, gpu_perfd, gpu_perfs;
+    double           gpu_error, cpu_error, Anorm, work[1];
     double c_one     = MAGMA_D_ONE;
     double c_neg_one = MAGMA_D_NEG_ONE;
-    double *h_A, *h_B, *h_X, *h_R;
+    double *h_A, *h_A2, *h_B, *h_X, *h_R;
     double *d_A, *d_B, *d_X, *d_T;
     float  *d_SA, *d_SB, *d_ST;
     double *h_workd, *tau, tmp[1];
     float  *h_works, *tau_s;
-    magma_int_t lda,  ldb,  ldx, lhwork;
+    magma_int_t lda,  ldb, lhwork, lworkgpu;
     magma_int_t ldda, lddb, lddx;
-    magma_int_t i, iter, info, size, min_mn, nb;
-    magma_int_t M        = 0;
-    magma_int_t N        = 0;
+    magma_int_t M, N, nrhs, qrsv_iters, info, size, min_mn, max_mn, nb;
     magma_int_t ione     = 1;
-    magma_int_t NRHS     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    magma_int_t sizetest[10] = {1024,2048,3072,4032,5184,6016,7040,7520,8064,8192};
-        
-    if (argc != 1){
-        for(i = 1; i<argc; i++){        
-            if (strcmp("-N", argv[i])==0)
-                N = atoi(argv[++i]);
-            else if (strcmp("-M", argv[i])==0)
-                M = atoi(argv[++i]);
-            else if (strcmp("-nrhs", argv[i])==0)
-                NRHS = atoi(argv[++i]);
-        }
-        if (N>0) sizetest[0] = sizetest[9] = N;
-        else exit(1);
-    }
-    else {
-        printf("\nUsage: \n");
-        printf("  testing_dsgeqrsv_gpu -M %d -N %d -nrhs %d\n\n", 1024, 1024, (int) NRHS);
-    }
+
     printf("Epsilon(double): %8.6e\n"
-           "Epsilon(single): %8.6e\n\n", 
+           "Epsilon(single): %8.6e\n\n",
            lapackf77_dlamch("Epsilon"), lapackf77_slamch("Epsilon") );
 
-    N = sizetest[9];
-    if (M == 0) M = N;
-    ldb  = lda = M;
-    ldx  = N;
-    ldda = ((M+31)/32)*32;
-    lddb = ldda;
-    lddx = ((N+31)/32)*32;    
-    nb = max( magma_get_dgeqrf_nb( M ), magma_get_sgeqrf_nb( M ) );
-    min_mn = min( M, N );
-
-    TESTING_MALLOC( h_A, double, lda*N    );
-    TESTING_MALLOC( h_B, double, ldb*NRHS );
-    TESTING_MALLOC( h_X, double, ldx*NRHS );
-    TESTING_MALLOC( h_R, double, ldb*NRHS );
-    TESTING_MALLOC( tau, double, min_mn   );
-
-    TESTING_DEVALLOC( d_A, double, ldda*N      );
-    TESTING_DEVALLOC( d_B, double, lddb*NRHS   );
-    TESTING_DEVALLOC( d_X, double, lddx*NRHS   );
-    TESTING_DEVALLOC( d_T, double, ( 2*min_mn+ (N+31)/32*32 )*nb );
-    tau_s = (float*)tau;
-    d_ST  = (float*)d_T;
-
-    lhwork = -1;
-    lapackf77_dgels( MagmaNoTransStr, &M, &N, &NRHS,
-                     h_A, &lda, h_B, &ldb, tmp, &lhwork, &info);
-    lhwork = (magma_int_t)MAGMA_D_REAL( tmp[0] );
-    lhwork = max( lhwork, (nb * max((M-N+nb+2*(NRHS)), 1) ) );
-
-    TESTING_MALLOC( h_workd, double, lhwork );
-    h_works = (float*)h_workd;
-
-    printf("        CPU GFlop/s         G P U  GFlop/s   \n");
-    printf("  N         DP          DP       SP       MP    ||b-Ax||/||A||  NumIter\n");
-    printf("=======================================================================\n");
-
-    for(i=0; i<8; i++){
-        M = N = sizetest[i];
-        lda = ldb = M;
-        ldx = N;
-        ldda = lddb = ((M+31)/32) * 32;
-        lddx = ((N+31)/32) * 32;
-
-        flops = ( FLOPS_GEQRF( (double)M, (double)N ) 
-                  + FLOPS_GEQRS( (double)M, (double)N, (double)NRHS ) ) / 1000000;
-
-        /* Initialize matrices */
-        size = lda*N;
-        lapackf77_dlarnv( &ione, ISEED, &size, h_A );
-        size = ldb*NRHS;
-        lapackf77_dlarnv( &ione, ISEED, &size, h_B );
-        lapackf77_dlacpy( MagmaUpperLowerStr, &M, &NRHS, h_B, &ldb, h_R, &ldb );
-
-        magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
-        magma_dsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
-
-        //=====================================================================
-        //              Mixed Precision Iterative Refinement - GPU
-        //=====================================================================
-        start = get_current_time();
-        magma_dsgeqrsv_gpu( M, N, NRHS, 
-                            d_A, ldda, d_B, lddb, 
-                            d_X, lddx, &iter, &info );
-        end = get_current_time();
-        if (info < 0)
-          printf("Argument %d of magma_dsgeqrsv had an illegal value.\n", (int) -info);
-        gpu_perf = flops / GetTimerValue(start, end);
-        
-        //=====================================================================
-        //                 Error Computation
-        //=====================================================================
-        magma_dgetmatrix( N, NRHS, d_X, lddx, h_X, ldx );
-        blasf77_dgemm( MagmaNoTransStr, MagmaNoTransStr,
-                       &M, &NRHS, &N,
-                       &c_neg_one, h_A, &lda, 
-                                   h_X, &ldx, 
-                       &c_one,     h_R, &ldb);
-        Anorm = lapackf77_dlange("f", &M, &N,    h_A, &lda, work);
-        Rnorm = lapackf77_dlange("f", &N, &NRHS, h_R, &ldb, work);
-
-        //=====================================================================
-        //                 Double Precision Solve
-        //=====================================================================
-        magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
-        magma_dsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
-
-        start = get_current_time();
-        magma_dgels_gpu( MagmaNoTrans, M, N, NRHS, d_A, ldda, 
-                         d_B, lddb, h_workd, lhwork, &info);
-        end = get_current_time();
-        gpu_perfd = flops / GetTimerValue(start, end);
-
-
-        //=====================================================================
-        //                 Single Precision Solve
-        //=====================================================================
-        magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
-        magma_dsetmatrix( M, NRHS, h_B, ldb, d_B, lddb );
-
-        /* The allocation of d_SA and d_SB is done here to avoid 
-           to double the memory used on GPU with dsgeqrsv */
-        TESTING_DEVALLOC( d_SA, float, ldda*N      );
-        TESTING_DEVALLOC( d_SB, float, lddb*NRHS   );
-        magmablas_dlag2s(M, N,    d_A, ldda, d_SA, ldda, &info);
-        magmablas_dlag2s(N, NRHS, d_B, lddb, d_SB, lddb, &info);
-
-        start = get_current_time();
-        magma_sgels_gpu( MagmaNoTrans, M, N, NRHS, d_SA, ldda, 
-                         d_SB, lddb, h_works, lhwork, &info);
-        end = get_current_time();
-        gpu_perfs = flops / GetTimerValue(start, end);
-        TESTING_DEVFREE( d_SA );
-        TESTING_DEVFREE( d_SB );
-
-        /* =====================================================================
-           Performs operation using LAPACK
-           =================================================================== */
-        start = get_current_time();
-        lapackf77_dgels( MagmaNoTransStr, &M, &N, &NRHS,
-                         h_A, &lda, h_B, &ldb, h_workd, &lhwork, &info);
-        end = get_current_time();
-        cpu_perf = flops / GetTimerValue(start, end);
-
-        printf("%5d  %8.2f   %9.2f   %6.2f   %6.2f    %e    %2d\n",
-               (int) sizetest[i], cpu_perf, gpu_perfd, gpu_perfs, gpu_perf, Rnorm / Anorm, (int) iter );
-
-        if (argc != 1)
-            break;
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
+    
+    nrhs = opts.nrhs;
+    
+    printf("                    CPU Gflop/s   GPU  Gflop/s                  ||b-Ax|| / (N||A||)\n");
+    printf("    M     N  NRHS    double        double    single     mixed   CPU        GPU        Iter\n");
+    printf("==============================================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            M = opts.msize[i];
+            N = opts.nsize[i];
+            if ( M < N ) {
+                printf( "skipping M=%d, N=%d because M < N is not yet supported.\n", M, N );
+                continue;
+            }
+            min_mn = min(M, N);
+            max_mn = max(M, N);
+            lda    = M;
+            ldb    = max_mn;
+            ldda   = ((M+31)/32) * 32;
+            lddb   = ((max_mn+31)/32)*32;
+            lddx   = ((N+31)/32) * 32;
+            nb     = max( magma_get_dgeqrf_nb( M ), magma_get_sgeqrf_nb( M ) );
+            gflops = (FLOPS_DGEQRF( M, N ) + FLOPS_DGEQRS( M, N, nrhs )) / 1e9;
+            
+            // query for workspace size
+            lworkgpu = (M - N + nb)*(nrhs + nb) + nrhs*nb;
+            
+            lhwork = -1;
+            lapackf77_dgels( MagmaNoTransStr, &M, &N, &nrhs,
+                             h_A, &lda, h_X, &ldb, tmp, &lhwork, &info );
+            lhwork = (magma_int_t) MAGMA_D_REAL( tmp[0] );
+            lhwork = max( lhwork, lworkgpu );
+            
+            TESTING_MALLOC( tau,     double, min_mn   );
+            TESTING_MALLOC( h_A,     double, lda*N    );
+            TESTING_MALLOC( h_A2,    double, lda*N    );
+            TESTING_MALLOC( h_B,     double, ldb*nrhs );
+            TESTING_MALLOC( h_X,     double, ldb*nrhs );
+            TESTING_MALLOC( h_R,     double, ldb*nrhs );
+            TESTING_MALLOC( h_workd, double, lhwork   );
+            tau_s   = (float*)tau;
+            h_works = (float*)h_workd;
+            
+            TESTING_DEVALLOC( d_A, double, ldda*N      );
+            TESTING_DEVALLOC( d_B, double, lddb*nrhs   );
+            TESTING_DEVALLOC( d_X, double, lddx*nrhs   );
+            TESTING_DEVALLOC( d_T, double, ( 2*min_mn + (N+31)/32*32 )*nb );
+            d_ST = (float*)d_T;
+            
+            /* Initialize the matrices */
+            size = lda*N;
+            lapackf77_dlarnv( &ione, ISEED, &size, h_A );
+            lapackf77_dlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_A2, &lda );
+            
+            // make random RHS
+            size = ldb*nrhs;
+            lapackf77_dlarnv( &ione, ISEED, &size, h_B );
+            lapackf77_dlacpy( MagmaUpperLowerStr, &M, &nrhs, h_B, &ldb, h_R, &ldb );
+            
+            magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
+            magma_dsetmatrix( M, nrhs, h_B, ldb, d_B, lddb );
+            
+            //=====================================================================
+            //              Mixed Precision Iterative Refinement - GPU
+            //=====================================================================
+            gpu_time = magma_wtime();
+            magma_dsgeqrsv_gpu( M, N, nrhs,
+                                d_A, ldda, d_B, lddb,
+                                d_X, lddx, &qrsv_iters, &info );
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflops / gpu_time;
+            if (info != 0)
+                printf("magma_dsgeqrsv returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            // compute the residual
+            magma_dgetmatrix( N, nrhs, d_X, lddx, h_X, ldb );
+            blasf77_dgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N,
+                           &c_neg_one, h_A, &lda,
+                                       h_X, &ldb,
+                           &c_one,     h_R, &ldb);
+            Anorm = lapackf77_dlange("f", &M, &N,    h_A, &lda, work);
+            
+            //=====================================================================
+            //                 Double Precision Solve
+            //=====================================================================
+            magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
+            magma_dsetmatrix( M, nrhs, h_B, ldb, d_B, lddb );
+            
+            gpu_time = magma_wtime();
+            magma_dgels_gpu( MagmaNoTrans, M, N, nrhs, d_A, ldda,
+                             d_B, lddb, h_workd, lworkgpu, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfd = gflops / gpu_time;
+            
+            //=====================================================================
+            //                 Single Precision Solve
+            //=====================================================================
+            magma_dsetmatrix( M, N,    h_A, lda, d_A, ldda );
+            magma_dsetmatrix( M, nrhs, h_B, ldb, d_B, lddb );
+            
+            /* The allocation of d_SA and d_SB is done here to avoid
+             * to double the memory used on GPU with dsgeqrsv */
+            TESTING_DEVALLOC( d_SA, float, ldda*N    );
+            TESTING_DEVALLOC( d_SB, float, lddb*nrhs );
+            magmablas_dlag2s( M, N,    d_A, ldda, d_SA, ldda, &info );
+            magmablas_dlag2s( N, nrhs, d_B, lddb, d_SB, lddb, &info );
+            
+            gpu_time = magma_wtime();
+            magma_sgels_gpu( MagmaNoTrans, M, N, nrhs, d_SA, ldda,
+                             d_SB, lddb, h_works, lhwork, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfs = gflops / gpu_time;
+            TESTING_DEVFREE( d_SA );
+            TESTING_DEVFREE( d_SB );
+            
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            lapackf77_dlacpy( MagmaUpperLowerStr, &M, &nrhs, h_B, &ldb, h_X, &ldb );
+            
+            cpu_time = magma_wtime();
+            lapackf77_dgels( MagmaNoTransStr, &M, &N, &nrhs,
+                             h_A, &lda, h_X, &ldb, h_workd, &lhwork, &info );
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gflops / cpu_time;
+            if (info != 0)
+                printf("lapackf77_dgels returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            blasf77_dgemm( MagmaNoTransStr, MagmaNoTransStr, &M, &nrhs, &N,
+                           &c_neg_one, h_A2, &lda,
+                                       h_X,  &ldb,
+                           &c_one,     h_B,  &ldb );
+            
+            cpu_error = lapackf77_dlange("f", &M, &nrhs, h_B, &ldb, work) / (min_mn*Anorm);
+            gpu_error = lapackf77_dlange("f", &M, &nrhs, h_R, &ldb, work) / (min_mn*Anorm);
+            
+            printf("%5d %5d %5d   %7.2f       %7.2f   %7.2f   %7.2f   %8.2e   %8.2e   %3d\n",
+                   (int) M, (int) N, (int) nrhs,
+                   cpu_perf, gpu_perfd, gpu_perfs, gpu_perf, cpu_error, gpu_error,
+                   (int) qrsv_iters );
+            
+            TESTING_FREE( tau  );
+            TESTING_FREE( h_A  );
+            TESTING_FREE( h_A2 );
+            TESTING_FREE( h_B  );
+            TESTING_FREE( h_X  );
+            TESTING_FREE( h_R  );
+            TESTING_FREE( h_workd );
+            TESTING_DEVFREE( d_A );
+            TESTING_DEVFREE( d_B );
+            TESTING_DEVFREE( d_X );
+            TESTING_DEVFREE( d_T );
+        }
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
-
-    /* Memory clean up */
-    TESTING_FREE( h_A );
-    TESTING_FREE( h_B );
-    TESTING_FREE( h_X );
-    TESTING_FREE( h_R );
-    TESTING_FREE( tau );
-    TESTING_FREE( h_workd );
-
-    TESTING_DEVFREE( d_A );
-    TESTING_DEVFREE( d_B );
-    TESTING_DEVFREE( d_X );
-    TESTING_DEVFREE( d_T );
-
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
-
-    //#endif /*defined(PRECISION_z) && (GPUSHMEM < 200)*/
+    
+    TESTING_FINALIZE();
+    return 0;
 }

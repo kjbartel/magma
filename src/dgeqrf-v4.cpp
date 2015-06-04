@@ -1,26 +1,26 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:15 2012
+       @generated d Fri Jun 28 19:32:24 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n, 
-              double *a,    magma_int_t lda, double *tau, 
+magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
+              double *a,    magma_int_t lda, double *tau,
               double *work, magma_int_t lwork,
               magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -30,10 +30,10 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
 
     Arguments
     =========
-    NUM_GPUS 
+    NUM_GPUS
             (input) INTEGER
             The number of GPUs to be used for the factorization.
- 
+
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -94,7 +94,7 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     and tau in TAU(i).
     =====================================================================    */
 
-    double *da[4];
+    double *da[MagmaMaxGPUs];
     double c_one = MAGMA_D_ONE;
 
     int i, k, ldda;
@@ -131,7 +131,7 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
 
     ldda    = ((m+31)/32)*32;
 
-    magma_int_t  n_local[4];
+    magma_int_t  n_local[MagmaMaxGPUs];
     for(i=0; i<num_gpus; i++){
         n_local[i] = ((n/nb)/num_gpus)*nb;
         if (i < (n/nb)%num_gpus)
@@ -151,18 +151,16 @@ magma_dgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     if (m > nb && n > nb) {
 
         /* Copy the matrix to the GPUs in 1D block cyclic distribution */
-        magmablas_dsetmatrix_1D_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
+        magma_dsetmatrix_1D_col_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
 
         /* Factor using the GPU interface */
         magma_dgeqrf2_mgpu( num_gpus, m, n, da, ldda, tau, info);
 
         /* Copy the matrix back from the GPUs to the CPU */
-        magmablas_dgetmatrix_1D_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
-
-    } else {
-
-      lapackf77_dgeqrf(&m, &n, a, &lda, tau, work, &lwork, info);
-
+        magma_dgetmatrix_1D_col_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
+    }
+    else {
+        lapackf77_dgeqrf(&m, &n, a, &lda, tau, work, &lwork, info);
     }
 
 

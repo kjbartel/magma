@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 */
 
 #include "common_magma.h"
@@ -44,7 +44,7 @@ void magma_version( int* major, int* minor, int* micro )
 // On 2.0 cards with unified addressing, CUDA can tell if this is a device pointer.
 // For malloc'd host pointers, cudaPointerGetAttributes returns error.
 // @author Mark Gates
-int magma_is_devptr( const void* A )
+magma_int_t magma_is_devptr( const void* A )
 {
     cudaError_t err;
     cudaDeviceProp prop;
@@ -80,10 +80,10 @@ int magma_is_devptr( const void* A )
    @author Mark Gates
 */
 extern "C"
-int magma_num_gpus( void )
+magma_int_t magma_num_gpus( void )
 {
     const char *ngpu_str = getenv("MAGMA_NUM_GPUS");
-    int ngpu = 1;
+    magma_int_t ngpu = 1;
     if ( ngpu_str != NULL ) {
         char* endptr;
         ngpu = strtol( ngpu_str, &endptr, 10 );
@@ -107,44 +107,17 @@ int magma_num_gpus( void )
 
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Print the available GPU devices
-   @author Mark Gates
-*/
-extern "C"
-void printout_devices( )
-{
-    int major, minor, micro;
-    magma_version( &major, &minor, &micro );
-    printf( "MAGMA %d.%d.%d\n", major, minor, micro );
-    
-    int ndevices;
-    cudaGetDeviceCount( &ndevices );
-    for( int idevice = 0; idevice < ndevices; idevice++ ) {
-        cudaDeviceProp prop;
-        cudaGetDeviceProperties( &prop, idevice );
-        printf( "device %d: %s, %.1f MHz clock, %.1f MB memory, capability %d.%d\n",
-                idevice,
-                prop.name,
-                prop.clockRate / 1000.,
-                prop.totalGlobalMem / (1024.*1024.),
-                prop.major,
-                prop.minor );
-    }
-}
-
-
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Auxiliary function: ipiv(i) indicates that row i has been swapped with 
+   -- Auxiliary function: ipiv(i) indicates that row i has been swapped with
       ipiv(i) from top to bottom. This function rearranges ipiv into newipiv
       where row i has to be moved to newipiv(i). The new pivoting allows for
       parallel processing vs the original one assumes a specific ordering and
       has to be done sequentially.
 */
 extern "C"
-void swp2pswp(char trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv){
-  int i, newind, ind;
-  char            trans_[2] = {trans, 0};
-  int    notran = lapackf77_lsame(trans_, "N");
+void swp2pswp( magma_trans_t trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv)
+{
+  magma_int_t i, newind, ind;
+  magma_int_t    notran = (trans == 'N' || trans == 'n');
 
   for(i=0; i<n; i++)
     newipiv[i] = -1;
@@ -222,40 +195,58 @@ void swp2pswp(char trans, magma_int_t n, magma_int_t *ipiv, magma_int_t *newipiv
   }
 }
 
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Auxiliary function: used for debugging. Given a pointer to floating
-      point number on the GPU memory, the function returns the value
-      at that location.
-*/
-extern "C"
-float getv(float *da){
-  float res[1];
-  cublasGetVector(1, sizeof(float), da, 1, res, 1);
-  return res[0];
-}
+// --------------------
+// Convert global indices [j0, j1) to local indices [dj0, dj1) on GPU dev,
+// according to 1D block cyclic distribution.
+// Note j0 and dj0 are inclusive, while j1 and dj1 are exclusive.
+// This is consistent with the C++ container notion of first and last.
+//
+// Example with n = 75, nb = 10, ngpu = 3
+// local dj:                0- 9, 10-19, 20-29
+// -------------------------------------------
+// gpu 0: 2  blocks, cols:  0- 9, 30-39, 60-69
+// gpu 1: 1+ blocks, cols: 10-19, 40-49, 70-74 (partial)
+// gpu 2: 1  block , cols: 20-29, 50-59
+//
+// j0 = 15, j0dev = 1
+// j1 = 70, j1dev = 0
+// gpu 0: dj0 = 10, dj1 = 30
+// gpu 1: dj0 =  5, dj1 = 20
+// gpu 2: dj0 =  0, dj1 = 20
+//
+// @author Mark Gates
 
-/* ////////////////////////////////////////////////////////////////////////////
-   -- Auxiliary function sp_cat
-*/
 extern "C"
-int sp_cat(char *lp, char *rpp[], magma_int_t *rnp, magma_int_t*np, magma_int_t ll)
+void magma_indices_1D_bcyclic( magma_int_t nb, magma_int_t ngpu, magma_int_t dev,
+                               magma_int_t j0, magma_int_t j1,
+                               magma_int_t* dj0, magma_int_t* dj1 )
 {
-  magma_int_t i, n, nc;
-  char *f__rp;
-
-  n = (int)*np;
-  for(i = 0 ; i < n ; ++i)
-    {
-      nc = ll;
-      if(rnp[i] < nc)
-        nc = rnp[i];
-      ll -= nc;
-      f__rp = rpp[i];
-      while(--nc >= 0)
-        *lp++ = *f__rp++;
+    // on GPU jdev, which contains j0, dj0 maps to j0.
+    // on other GPUs, dj0 is start of the block on that GPU after j0's block.
+    magma_int_t jblock = (j0 / nb) / ngpu;
+    magma_int_t jdev   = (j0 / nb) % ngpu;
+    if ( dev < jdev ) {
+        jblock += 1;
     }
-  while(--ll >= 0)
-    *lp++ = ' ';
-
-  return 0;
+    *dj0 = jblock*nb;
+    if ( dev == jdev ) {
+        *dj0 += (j0 % nb);
+    }
+    
+    // on GPU jdev, which contains j1-1, dj1 maps to j1.
+    // on other GPUs, dj1 is end of the block on that GPU before j1's block.
+    // j1 points to element after end (e.g., n), so subtract 1 to get last
+    // element, compute index, then add 1 to get just after that index again.
+    j1 -= 1;
+    jblock = (j1 / nb) / ngpu;
+    jdev   = (j1 / nb) % ngpu;
+    if ( dev > jdev ) {
+        jblock -= 1;
+    }
+    if ( dev == jdev ) {
+        *dj1 = jblock*nb + (j1 % nb) + 1;
+    }
+    else {
+        *dj1 = jblock*nb + nb;
+    }
 }

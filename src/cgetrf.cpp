@@ -1,47 +1,39 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:06 2012
+       @generated c Fri Jun 28 19:32:12 2013
 
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_c
-#if (GPUSHMEM <= 200) && (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_cgemm magmablas_cgemm
-  #define magma_ctrsm magmablas_ctrsm
-#endif
-// === End defining what BLAS to use =======================================
 
 
 // =========================================================================
 // definitions of non-GPU-resident multi-GPU subroutines
 /* non-gpu-resident interface to multiple GPUs */
 extern "C" magma_int_t
-magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
+magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatComplex *a, magma_int_t lda,
                magma_int_t *ipiv, magma_int_t *info);
 
 /* to apply pivoting from the previous big panel on CPU */
 extern "C" magma_int_t
-magma_cgetrf_piv(magma_int_t num_gpus, magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
+magma_cgetrf_piv(magma_int_t num_gpus, magma_int_t m, magma_int_t n, magmaFloatComplex *a, magma_int_t lda,
                  magma_int_t *ipiv, magma_int_t *info);
 // =========================================================================
 
 
 extern "C" magma_int_t
-magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda, 
+magma_cgetrf(magma_int_t m, magma_int_t n, magmaFloatComplex *a, magma_int_t lda,
              magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -94,9 +86,9 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
 
 #define inAT(i,j) (dAT + (i)*nb*ldda + (j)*nb)
 
-    cuFloatComplex *dAT, *dA, *da, *work;
-    cuFloatComplex c_one     = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex *dAT, *dA, *da, *work;
+    magmaFloatComplex c_one     = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magma_int_t     iinfo, nb;
 
     *info = 0;
@@ -129,10 +121,10 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
         
         magma_int_t num_gpus = magma_num_gpus();
         if ( num_gpus > 1 ) {
-          /* call multi-GPU non-GPU-resident interface  */
-          magma_int_t rval = magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
-          if( *info >= 0 ) magma_cgetrf_piv(num_gpus, m, n, a, lda, ipiv, info);
-          return *info;
+            /* call multi-GPU non-GPU-resident interface  */
+            magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
+            if( *info >= 0 ) magma_cgetrf_piv(num_gpus, m, n, a, lda, ipiv, info);
+            return *info;
         }
 
         maxm = ((m + 31)/32)*32;
@@ -142,11 +134,11 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
         ldda = maxn;
         work = a;
 
-        if (maxdim*maxdim < 2*maxm*maxn)
-        {
+        if (maxdim*maxdim < 2*maxm*maxn) {
+            // if close to square, allocate square matrix and transpose in-place
             if (MAGMA_SUCCESS != magma_cmalloc( &dA, nb*maxm + maxdim*maxdim )) {
-                        /* alloc failed so call non-GPU-resident version */ 
-                        magma_int_t rval = magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
+                        /* alloc failed so call non-GPU-resident version */
+                        magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
                         if( *info >= 0 ) magma_cgetrf_piv(num_gpus, m, n, a, lda, ipiv, info);
                         return *info;
             }
@@ -156,13 +148,13 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
             magma_csetmatrix( m, n, a, lda, da, ldda );
             
             dAT = da;
-            magmablas_cinplace_transpose( dAT, ldda, ldda );
+            magmablas_ctranspose_inplace( ldda, dAT, ldda );
         }
-        else
-        {
+        else {
+            // if very rectangular, allocate dA and dAT and transpose out-of-place
             if (MAGMA_SUCCESS != magma_cmalloc( &dA, (nb + maxn)*maxm )) {
                         /* alloc failed so call non-GPU-resident version */
-                        magma_int_t rval = magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
+                        magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
                         if( *info >= 0 ) magma_cgetrf_piv(num_gpus, m, n, a, lda, ipiv, info);
                         return *info;
             }
@@ -173,7 +165,7 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
             if (MAGMA_SUCCESS != magma_cmalloc( &dAT, maxm*maxn )) {
                         /* alloc failed so call non-GPU-resident version */
                         magma_free( dA );
-                        magma_int_t rval = magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
+                        magma_cgetrf_m(num_gpus, m, n, a, lda, ipiv, info);
                         if( *info >= 0 ) magma_cgetrf_piv(num_gpus, m, n, a, lda, ipiv, info);
                         return *info;
             }
@@ -195,14 +187,14 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
                 // make sure that gpu queue is empty
                 magma_device_sync();
                 
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
-                             n - (i+1)*nb, nb, 
-                             c_one, inAT(i-1,i-1), ldda, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
+                             n - (i+1)*nb, nb,
+                             c_one, inAT(i-1,i-1), ldda,
                                     inAT(i-1,i+1), ldda );
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
-                             n-(i+1)*nb, m-i*nb, nb, 
-                             c_neg_one, inAT(i-1,i+1), ldda, 
-                                        inAT(i,  i-1), ldda, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
+                             n-(i+1)*nb, m-i*nb, nb,
+                             c_neg_one, inAT(i-1,i+1), ldda,
+                                        inAT(i,  i-1), ldda,
                              c_one,     inAT(i,  i+1), ldda );
 
                 // do the cpu part
@@ -219,25 +211,25 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
 
             // do the small non-parallel computations
             if (s > (i+1)){
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
-                             nb, nb, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
+                             nb, nb,
                              c_one, inAT(i, i  ), ldda,
                                     inAT(i, i+1), ldda);
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
-                             nb, m-(i+1)*nb, nb, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
+                             nb, m-(i+1)*nb, nb,
                              c_neg_one, inAT(i,   i+1), ldda,
-                                        inAT(i+1, i  ), ldda, 
+                                        inAT(i+1, i  ), ldda,
                              c_one,     inAT(i+1, i+1), ldda );
             }
             else{
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
                              n-s*nb, nb,
                              c_one, inAT(i, i  ), ldda,
                                     inAT(i, i+1), ldda);
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
                              n-(i+1)*nb, m-(i+1)*nb, nb,
                              c_neg_one, inAT(i,   i+1), ldda,
-                                        inAT(i+1, i  ), ldda, 
+                                        inAT(i+1, i  ), ldda,
                              c_one,     inAT(i+1, i+1), ldda );
             }
         }
@@ -262,14 +254,14 @@ magma_cgetrf(magma_int_t m, magma_int_t n, cuFloatComplex *a, magma_int_t lda,
             magma_csetmatrix( rows, nb0, work, lda, dA, cols );
             magmablas_ctranspose2( inAT(s,s), ldda, dA, cols, rows, nb0);
     
-            magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
+            magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
                          n-s*nb-nb0, nb0,
-                         c_one, inAT(s, s),     ldda, 
+                         c_one, inAT(s, s),     ldda,
                                 inAT(s, s)+nb0, ldda);
         }
         
-        if (maxdim*maxdim< 2*maxm*maxn){
-            magmablas_cinplace_transpose( dAT, ldda, ldda );
+        if (maxdim*maxdim < 2*maxm*maxn) {
+            magmablas_ctranspose_inplace( ldda, dAT, ldda );
             magma_cgetmatrix( m, n, da, ldda, a, lda );
         } else {
             magmablas_ctranspose2( da, maxm, dAT, ldda, n, m );

@@ -1,41 +1,40 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Raffaele Solca
        @author Stan Tomov
        @author Mark Gates
+       @author Azzam Haidar
 
-       @generated c Wed Nov 14 22:53:18 2012
+       @generated c Fri Jun 28 19:32:28 2013
 
 */
 #include "common_magma.h"
 
 // === Define what BLAS to use ============================================
-
 //#define FAST_HEMV
-
 // === End defining what BLAS to use ======================================
 
 extern "C" magma_int_t
 magma_cheevd_gpu(char jobz, char uplo,
                  magma_int_t n,
-                 cuFloatComplex *da, magma_int_t ldda,
+                 magmaFloatComplex *da, magma_int_t ldda,
                  float *w,
-                 cuFloatComplex *wa,  magma_int_t ldwa,
-                 cuFloatComplex *work, magma_int_t lwork,
+                 magmaFloatComplex *wa,  magma_int_t ldwa,
+                 magmaFloatComplex *work, magma_int_t lwork,
                  float *rwork, magma_int_t lrwork,
                  magma_int_t *iwork, magma_int_t liwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -92,9 +91,9 @@ magma_cheevd_gpu(char jobz, char uplo,
 
     LWORK   (input) INTEGER
             The length of the array WORK.
-            If N <= 1,                LWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LWORK must be at least N + N*NB.
-            If JOBZ  = 'V' and N > 1, LWORK must be at least 2*N + N**2.
+            If N <= 1,                LWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LWORK >= N + N*NB.
+            If JOBZ  = 'V' and N > 1, LWORK >= max( N + N*NB, 2*N + N**2 ).
             NB can be obtained through magma_get_chetrd_nb(N).
 
             If LWORK = -1, then a workspace query is assumed; the routine
@@ -108,9 +107,9 @@ magma_cheevd_gpu(char jobz, char uplo,
 
     LRWORK  (input) INTEGER
             The dimension of the array RWORK.
-            If N <= 1,                LRWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LRWORK must be at least N.
-            If JOBZ  = 'V' and N > 1, LRWORK must be at least 1 + 5*N + 2*N**2.
+            If N <= 1,                LRWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LRWORK >= N.
+            If JOBZ  = 'V' and N > 1, LRWORK >= 1 + 5*N + 2*N**2.
 
             If LRWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK, RWORK
@@ -123,9 +122,9 @@ magma_cheevd_gpu(char jobz, char uplo,
 
     LIWORK  (input) INTEGER
             The dimension of the array IWORK.
-            If N <= 1,                LIWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.
-            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.
+            If N <= 1,                LIWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LIWORK >= 1.
+            If JOBZ  = 'V' and N > 1, LIWORK >= 3 + 5*N.
 
             If LIWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK, RWORK
@@ -180,15 +179,15 @@ magma_cheevd_gpu(char jobz, char uplo,
     magma_int_t lquery;
 
     float *dwork;
-    cuFloatComplex *dc;
+    magmaFloatComplex *dc;
     magma_int_t lddc = ldda;
 
-    wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
+    wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || lrwork == -1 || liwork == -1;
 
     *info = 0;
-    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
+    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -1;
     } else if (! (lower || lapackf77_lsame(uplo_, MagmaUpperStr))) {
         *info = -2;
@@ -207,7 +206,7 @@ magma_cheevd_gpu(char jobz, char uplo,
         liwmin = 1;
     }
     else if ( wantz ) {
-        lwmin  = 2*n + n*n;
+        lwmin  = max( n + n*nb, 2*n + n*n );
         lrwmin = 1 + 5*n + 2*n*n;
         liwmin = 3 + 5*n;
     }
@@ -217,7 +216,7 @@ magma_cheevd_gpu(char jobz, char uplo,
         liwmin = 1;
     }
     // multiply by 1+eps to ensure length gets rounded up,
-    // if it cannot be exactly represented in floating point.    
+    // if it cannot be exactly represented in floating point.
     work[0]  = MAGMA_C_MAKE( lwmin * (1. + lapackf77_slamch("Epsilon")), 0.);
     rwork[0] = lrwmin * (1. + lapackf77_slamch("Epsilon"));
     iwork[0] = liwmin;
@@ -244,7 +243,7 @@ magma_cheevd_gpu(char jobz, char uplo,
     }
 
     if (n == 1) {
-        cuFloatComplex tmp;
+        magmaFloatComplex tmp;
         magma_cgetvector( 1, da, 1, &tmp, 1 );
         w[0] = MAGMA_C_REAL(tmp);
         if (wantz) {
@@ -254,7 +253,7 @@ magma_cheevd_gpu(char jobz, char uplo,
         return *info;
     }
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // dc and dwork are never used together, so use one buffer for both;
@@ -271,7 +270,7 @@ magma_cheevd_gpu(char jobz, char uplo,
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
     }
-    dc = (cuFloatComplex*) dwork;
+    dc = (magmaFloatComplex*) dwork;
 
     /* Get machine constants. */
     safmin = lapackf77_slamch("Safe minimum");
@@ -301,7 +300,7 @@ magma_cheevd_gpu(char jobz, char uplo,
     inde   = 0;
     indrwk = inde + n;
     llrwk  = lrwork - indrwk;
-    
+
     // chetrd work: tau (n) + llwork (n*nb)  ==>  n + n*nb
     // cstedx work: tau (n) + z (n^2)
     // cunmtr work: tau (n) + z (n^2) + llwrk2 (n or n*nb)  ==>  2n + n^2, or n + n*nb + n^2
@@ -311,7 +310,7 @@ magma_cheevd_gpu(char jobz, char uplo,
     llwork = lwork - indwrk;
     llwrk2 = lwork - indwk2;
 
-//#define ENABLE_TIMER
+//
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;
     start = get_current_time();
@@ -362,7 +361,7 @@ magma_cheevd_gpu(char jobz, char uplo,
                          dc, lddc, wa, ldwa, &iinfo);
 
         magma_ccopymatrix( n, n, dc, lddc, da, ldda );
-        
+
 #ifdef ENABLE_TIMER
         end = get_current_time();
         printf("time cunmtr_gpu + copy = %6.2f\n", GetTimerValue(start,end)/1000.);

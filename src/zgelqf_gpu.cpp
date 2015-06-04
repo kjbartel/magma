@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -11,19 +11,18 @@
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_zgelqf_gpu( magma_int_t m, magma_int_t n, 
-                  cuDoubleComplex *dA,    magma_int_t lda,   cuDoubleComplex *tau, 
-                  cuDoubleComplex *work, magma_int_t lwork, magma_int_t *info)
+magma_zgelqf_gpu( magma_int_t m, magma_int_t n,
+                  magmaDoubleComplex *dA,    magma_int_t lda,   magmaDoubleComplex *tau,
+                  magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     ZGELQF computes an LQ factorization of a COMPLEX_16 M-by-N matrix dA:
     dA = L * Q.
 
@@ -73,7 +72,6 @@ magma_zgelqf_gpu( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -89,8 +87,8 @@ magma_zgelqf_gpu( magma_int_t m, magma_int_t n,
 
     #define  a_ref(a_1,a_2) ( dA+(a_2)*(lda) + (a_1))
 
-    cuDoubleComplex *dAT;
-    cuDoubleComplex c_one = MAGMA_Z_ONE;
+    magmaDoubleComplex *dAT;
+    magmaDoubleComplex c_one = MAGMA_Z_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo;
     int lquery;
@@ -131,27 +129,27 @@ magma_zgelqf_gpu( magma_int_t m, magma_int_t n,
 
     dAT = dA;
     
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
+    if ( m == n ) {
         ldat = lda;
-        magmablas_zinplace_transpose( dAT, lda, maxm );
+        magmablas_ztranspose_inplace( m, dAT, lda );
     }
     else {
-      if (MAGMA_SUCCESS != magma_zmalloc( &dAT, maxm*maxn ) ){
-        *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info;
-      }
-      
-      magmablas_ztranspose2( dAT, ldat, dA, lda, m, n );
+        if (MAGMA_SUCCESS != magma_zmalloc( &dAT, maxm*maxn ) ){
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
+        
+        magmablas_ztranspose2( dAT, ldat, dA, lda, m, n );
     }
     
     magma_zgeqrf2_gpu(n, m, dAT, ldat, tau, &iinfo);
 
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
-      magmablas_zinplace_transpose( dAT, ldat, maxm );
+    if ( m == n ) {
+        magmablas_ztranspose_inplace( m, dAT, ldat );
     }
     else {
-      magmablas_ztranspose2( dA, lda, dAT, ldat, n, m );
-      magma_free( dAT );
+        magmablas_ztranspose2( dA, lda, dAT, ldat, n, m );
+        magma_free( dAT );
     }
 
     return *info;

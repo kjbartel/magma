@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:10 2012
+       @generated s Fri Jun 28 19:32:16 2013
 
 */
 #include "common_magma.h"
@@ -13,20 +13,23 @@
 extern "C" magma_int_t
 magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
                    float *dA, magma_int_t ldda,
-                   float *tau, 
+                   float *tau,
                    magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     SGEQRF computes a QR factorization of a real M-by-N matrix A:
     A = Q * R.
+    
+    This version has LAPACK-complaint arguments.
+    Other versions (magma_sgeqrf_gpu and magma_sgeqrf3_gpu) store the
+    intermediate T matrices.
 
     Arguments
     =========
@@ -37,7 +40,7 @@ magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
             The number of columns of the matrix A.  N >= 0.
 
     dA      (input/output) REAL array on the GPU, dimension (LDDA,N)
-            On entry, the M-by-N matrix dA.
+            On entry, the M-by-N matrix A.
             On exit, the elements on and above the diagonal of the array
             contain the min(M,N)-by-N upper trapezoidal matrix R (R is
             upper triangular if m >= n); the elements below the diagonal,
@@ -61,7 +64,6 @@ magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(1) H(2) . . . H(k), where k = min(m,n).
@@ -119,7 +121,7 @@ magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -153,8 +155,8 @@ magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
             lapackf77_sgeqrf(&rows, &ib, work_ref(i), &ldwork, tau+i, hwork, &lhwork, info);
             /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
-            lapackf77_slarft( MagmaForwardStr, MagmaColumnwiseStr, 
-                              &rows, &ib, 
+            lapackf77_slarft( MagmaForwardStr, MagmaColumnwiseStr,
+                              &rows, &ib,
                               work_ref(i), &ldwork, tau+i, hwork, &ib);
 
             spanel_to_q( MagmaUpper, ib, work_ref(i), ldwork, hwork+ib*ib );
@@ -164,16 +166,17 @@ magma_sgeqrf2_gpu( magma_int_t m, magma_int_t n,
             if (i + ib < n) {
                 magma_ssetmatrix( ib, ib, hwork, ib, dwork, lddwork );
 
-                if (i+nb < k-nx)
+                if (i+nb < k-nx) {
                     /* Apply H' to A(i:m,i+ib:i+2*ib) from the left */
                     magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
-                                      rows, ib, ib, 
-                                      dA(i, i   ), ldda, dwork,    lddwork, 
+                                      rows, ib, ib,
+                                      dA(i, i   ), ldda, dwork,    lddwork,
                                       dA(i, i+ib), ldda, dwork+ib, lddwork);
+                }
                 else {
                     magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
-                                      rows, n-i-ib, ib, 
-                                      dA(i, i   ), ldda, dwork,    lddwork, 
+                                      rows, n-i-ib, ib,
+                                      dA(i, i   ), ldda, dwork,    lddwork,
                                       dA(i, i+ib), ldda, dwork+ib, lddwork);
                     magma_ssetmatrix( ib, ib,
                                       work_ref(i), ldwork,

@@ -1,41 +1,34 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:03 2012
+       @generated d Fri Jun 28 19:32:10 2013
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_d
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_dgemm magmablas_dgemm
-  #define magma_dtrsm magmablas_dtrsm
-#endif
-// === End defining what BLAS to use =======================================
 
 extern "C" magma_int_t
 magma_dgetrf_nopiv(magma_int_t *m, magma_int_t *n, double *a,
                    magma_int_t *lda, magma_int_t *info);
 
 extern "C" magma_int_t
-magma_dgetrf_nopiv_gpu(magma_int_t m, magma_int_t n, 
+magma_dgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
                        double *dA, magma_int_t ldda,
                        magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-    DGETRF_NOPIV_GPU computes an LU factorization of a general M-by-N 
+    DGETRF_NOPIV_GPU computes an LU factorization of a general M-by-N
     matrix A without any pivoting.
 
     The factorization has the form
@@ -129,8 +122,7 @@ magma_dgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
             return *info;
         }
 
-        for( i=0; i<s; i++ )
-          {
+        for( i=0; i<s; i++ ) {
             // download i-th panel
             cols = maxm - i*nb;
             magma_dgetmatrix( m-i*nb, nb, inA(i,i), ldda, work, lddwork );
@@ -139,47 +131,47 @@ magma_dgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
             magma_device_sync();
             
             if ( i>0 ){
-              magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
-                           nb, n - (i+1)*nb, 
-                           c_one, inA(i-1,i-1), ldda, 
-                           inA(i-1,i+1), ldda );
-              magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
-                           m-i*nb, n-(i+1)*nb, nb, 
-                           c_neg_one, inA(i,  i-1), ldda, inA(i-1,i+1), ldda,
-                           c_one,     inA(i,  i+1), ldda );
+                magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,
+                             nb, n - (i+1)*nb,
+                             c_one, inA(i-1,i-1), ldda,
+                             inA(i-1,i+1), ldda );
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans,
+                             m-i*nb, n-(i+1)*nb, nb,
+                             c_neg_one, inA(i,  i-1), ldda, inA(i-1,i+1), ldda,
+                             c_one,     inA(i,  i+1), ldda );
             }
 
             // do the cpu part
             rows = m - i*nb;
             magma_dgetrf_nopiv(&rows, &nb, work, &lddwork, &iinfo);
             if ( (*info == 0) && (iinfo > 0) )
-              *info = iinfo + i*nb;
+                *info = iinfo + i*nb;
 
             // upload i-th panel
             magma_dsetmatrix( m-i*nb, nb, work, lddwork, inA(i, i), ldda );
             
             // do the small non-parallel computations
             if ( s > (i+1) ) {
-              magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
-                           nb, nb, 
-                           c_one, inA(i, i  ), ldda,
-                           inA(i, i+1), ldda);
-              magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
-                           m-(i+1)*nb, nb, nb, 
-                           c_neg_one, inA(i+1, i  ), ldda, inA(i,   i+1), ldda,
-                           c_one,     inA(i+1, i+1), ldda );
+                magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,
+                             nb, nb,
+                             c_one, inA(i, i  ), ldda,
+                             inA(i, i+1), ldda);
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans,
+                             m-(i+1)*nb, nb, nb,
+                             c_neg_one, inA(i+1, i  ), ldda, inA(i,   i+1), ldda,
+                             c_one,     inA(i+1, i+1), ldda );
             }
             else {
-              magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
-                           nb, n-s*nb,  
-                           c_one, inA(i, i  ), ldda,
-                           inA(i, i+1), ldda);
-              magma_dgemm( MagmaNoTrans, MagmaNoTrans, 
-                           m-(i+1)*nb, n-(i+1)*nb, nb,
-                           c_neg_one, inA(i+1, i  ), ldda, inA(i,   i+1), ldda,
-                           c_one,     inA(i+1, i+1), ldda );
+                magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,
+                             nb, n-s*nb,
+                             c_one, inA(i, i  ), ldda,
+                             inA(i, i+1), ldda);
+                magma_dgemm( MagmaNoTrans, MagmaNoTrans,
+                             m-(i+1)*nb, n-(i+1)*nb, nb,
+                             c_neg_one, inA(i+1, i  ), ldda, inA(i,   i+1), ldda,
+                             c_one,     inA(i+1, i+1), ldda );
             }
-          }
+        }
 
         magma_int_t nb0 = min(m - s*nb, n - s*nb);
         rows = m - s*nb;
@@ -197,9 +189,9 @@ magma_dgetrf_nopiv_gpu(magma_int_t m, magma_int_t n,
         // upload i-th panel
         magma_dsetmatrix( rows, nb0, work, lddwork, inA(s,s), ldda );
 
-        magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit, 
-                     nb0, n-s*nb-nb0, 
-                     c_one, inA(s,s),     ldda, 
+        magma_dtrsm( MagmaLeft, MagmaLower, MagmaNoTrans, MagmaUnit,
+                     nb0, n-s*nb-nb0,
+                     c_one, inA(s,s),     ldda,
                             inA(s,s)+nb0, ldda);
 
         magma_free_pinned( work );

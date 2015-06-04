@@ -1,35 +1,33 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:15 2012
+       @generated d Fri Jun 28 19:32:23 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_dgeqlf(magma_int_t m, magma_int_t n, 
-             double *a,    magma_int_t lda, double *tau, 
+magma_dgeqlf(magma_int_t m, magma_int_t n,
+             double *a,    magma_int_t lda, double *tau,
              double *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     SGEQLF computes a QL factorization of a DOUBLE_PRECISION M-by-N matrix A:
     A = Q * L.
 
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -79,7 +77,6 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -147,7 +144,7 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
     }
     dwork = da + ldda*(n);
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -198,8 +195,8 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
             if (cols > 0) {
                 /* Form the triangular factor of the block reflector
                    H = H(i+ib-1) . . . H(i+1) H(i) */
-                lapackf77_dlarft( MagmaBackwardStr, MagmaColumnwiseStr, 
-                                  &rows, &ib, 
+                lapackf77_dlarft( MagmaBackwardStr, MagmaColumnwiseStr,
+                                  &rows, &ib,
                                   a_ref(0, cols), &lda, tau + i, work, &ib);
 
                 dpanel_to_q( MagmaLower, ib, a_ref(rows-ib,cols), lda, work+ib*ib);
@@ -241,7 +238,7 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
 
     /* Use unblocked code to factor the last or only block */
     if (mu > 0 && nu > 0)
-      lapackf77_dgeqlf(&mu, &nu, a_ref(0,0), &lda, tau, work, &lwork, &iinfo);
+        lapackf77_dgeqlf(&mu, &nu, a_ref(0,0), &lda, tau, work, &lwork, &iinfo);
 
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );

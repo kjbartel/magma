@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
        @author Mark Gates
@@ -23,18 +23,18 @@
     if so, rows outside the matrix (i >= m) are disabled.
 */
 __global__ void
-zsymmetrize_tiles_lower( int m, cuDoubleComplex *dA, int ldda, int mstride, int nstride )
+zsymmetrize_tiles_lower( int m, magmaDoubleComplex *dA, int ldda, int mstride, int nstride )
 {
     // shift dA to tile's top-left corner
     dA += blockIdx.x*(mstride + nstride*ldda);
     
     // dA iterates across row i and dAT iterates down column i.
     int i = blockIdx.y*NB + threadIdx.x;
-    cuDoubleComplex *dAT = dA;
+    magmaDoubleComplex *dAT = dA;
     if ( i < m ) {
         dA  += i;
         dAT += i*ldda;
-        cuDoubleComplex *dAend = dA + i*ldda;
+        magmaDoubleComplex *dAend = dA + i*ldda;
         while( dA < dAend ) {
             *dAT = cuConj(*dA);  // upper := lower
             dA  += ldda;
@@ -46,18 +46,18 @@ zsymmetrize_tiles_lower( int m, cuDoubleComplex *dA, int ldda, int mstride, int 
 
 // only difference with _lower version is direction dA=dAT instead of dAT=dA.
 __global__ void
-zsymmetrize_tiles_upper( int m, cuDoubleComplex *dA, int ldda, int mstride, int nstride )
+zsymmetrize_tiles_upper( int m, magmaDoubleComplex *dA, int ldda, int mstride, int nstride )
 {
     // shift dA to tile's top-left corner
     dA += blockIdx.x*(mstride + nstride*ldda);
     
     // dA iterates across row i and dAT iterates down column i.
     int i = blockIdx.y*NB + threadIdx.x;
-    cuDoubleComplex *dAT = dA;
+    magmaDoubleComplex *dAT = dA;
     if ( i < m ) {
         dA  += i;
         dAT += i*ldda;
-        cuDoubleComplex *dAend = dA + i*ldda;
+        magmaDoubleComplex *dAend = dA + i*ldda;
         while( dA < dAend ) {
             *dA  = cuConj(*dAT);  // lower := upper
             dA  += ldda;
@@ -68,7 +68,7 @@ zsymmetrize_tiles_upper( int m, cuDoubleComplex *dA, int ldda, int mstride, int 
 
 
 extern "C" void
-magmablas_zsymmetrize_tiles( char uplo, magma_int_t m, cuDoubleComplex *dA, magma_int_t ldda,
+magmablas_zsymmetrize_tiles( char uplo, magma_int_t m, magmaDoubleComplex *dA, magma_int_t ldda,
                              magma_int_t ntile, magma_int_t mstride, magma_int_t nstride )
 {
 /*

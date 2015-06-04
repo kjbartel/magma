@@ -7,20 +7,14 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated d Wed Nov 14 22:53:25 2012
+ *     @generated d Fri Jun 28 19:32:37 2013
  *
  */
 
 #include "common_magma.h"
 #include <cblas.h>
 
-//#include "magma_dbulgeinc.h"
-// === Define what BLAS to use ============================================
 #define PRECISION_d
-
-// === End defining what BLAS to use ======================================
- 
-
  
 #ifdef __cplusplus
 extern "C" {

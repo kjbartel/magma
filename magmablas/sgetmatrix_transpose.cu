@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:52 2012
+       @generated s Fri Jun 28 19:33:15 2013
 
 */
 #include "common_magma.h"
@@ -38,7 +38,7 @@ magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
         return;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -47,7 +47,7 @@ magmablas_sgetmatrix_transpose( magma_int_t m, magma_int_t n,
        ib   = min(n-i, nb);
 
        //magmablas_stranspose2 ( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m);
-       magmablas_stranspose2s( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m, &stream[j%2]);
+       magmablas_stranspose2s( dB + (j%2)*nb*lddb, lddb, dat+i, ldda, ib, m, stream[j%2]);
        magma_sgetmatrix_async( m, ib,
                                dB + (j%2) * nb * lddb, lddb,
                                ha+i*lda,               lda, stream[j%2] );
@@ -70,7 +70,7 @@ magmablas_sgetmatrix_transpose2( magma_int_t m, magma_int_t n,
                                  const float **dat, magma_int_t *ldda,
                                  float         *ha, magma_int_t  lda,
                                  float        **dB, magma_int_t  lddb, magma_int_t nb,
-                                 magma_int_t num_gpus, cudaStream_t stream[][2] )
+                                 magma_int_t num_gpus, magma_queue_t stream[][2] )
 {
     magma_int_t i = 0, j[4] = {0, 0, 0, 0}, ib, k;
 
@@ -94,7 +94,7 @@ magmablas_sgetmatrix_transpose2( magma_int_t m, magma_int_t n,
        //                       dat[k]+i/(nb*num_gpus)*nb, ldda[k], ib, m);
        magmablas_stranspose2s(dB[k] + (j[k]%2)*nb*lddb, lddb,
                               dat[k]+i/(nb*num_gpus)*nb, ldda[k], 
-                              ib, m, &stream[k][j[k]%2]);
+                              ib, m, stream[k][j[k]%2]);
        magma_sgetmatrix_async( m, ib,
                                dB[k] + (j[k]%2) * nb * lddb, lddb,
                                ha+i*lda,                     lda, stream[k][j[k]%2] );

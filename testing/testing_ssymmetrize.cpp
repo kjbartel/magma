@@ -1,11 +1,13 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:54:11 2012
+       @generated s Fri Jun 28 19:33:46 2013
+       @author Mark Gates
+
 */
 
 // includes, system
@@ -15,136 +17,105 @@
 #include <math.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
-#include <cblas.h>
 
 // includes, project
-#include "flops.h"
 #include "magma.h"
 #include "magma_lapack.h"
 #include "testings.h"
 
-int main( int argc, char** argv) 
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Testing ssymmetrize
+   Code is very similar to testing_stranspose.cpp
+*/
+int main( int argc, char** argv)
 {
-    #define hA(i,j) (hA + (i) + (j)*lda)
-    
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    float c_zero = MAGMA_S_ZERO;
-    float c_one  = MAGMA_S_ONE;
+    real_Double_t    gbytes, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    float           error, work[1];
+    float  c_neg_one = MAGMA_S_NEG_ONE;
+    float *h_A, *h_R;
+    float *d_A;
+    magma_int_t N, size, lda, ldda;
+    magma_int_t ione     = 1;
     
-    float *hA, *hR, *dA;
-    //real_Double_t   gpu_time, gpu_perf;
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
+    
+    printf("    N   CPU GByte/s (sec)   GPU GByte/s (sec)   check\n");
+    printf("=====================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N = opts.nsize[i];
+            lda    = N;
+            ldda   = ((N+31)/32)*32;
+            size   = lda*N;
+            // load strictly lower triangle, save strictly upper triangle
+            gbytes = sizeof(float) * 1.*N*(N-1) / 1e9;
+    
+            TESTING_MALLOC(   h_A, float, size   );
+            TESTING_MALLOC(   h_R, float, size   );
+            TESTING_DEVALLOC( d_A, float, ldda*N );
+            
+            /* Initialize the matrix */
+            for( int j = 0; j < N; ++j ) {
+                for( int i = 0; i < N; ++i ) {
+                    h_A[i + j*lda] = MAGMA_S_MAKE( i + j/10000., j );
+                }
+            }
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            magma_ssetmatrix( N, N, h_A, lda, d_A, ldda );
+            
+            gpu_time = magma_sync_wtime( 0 );
+            //magmablas_ssymmetrize( opts.uplo, N-2, d_A+1+ldda, ldda );  // inset by 1 row & col
+            magmablas_ssymmetrize( opts.uplo, N, d_A, ldda );
+            gpu_time = magma_sync_wtime( 0 ) - gpu_time;
+            gpu_perf = gbytes / gpu_time;
+            
+            /* =====================================================================
+               Performs operation using naive in-place algorithm
+               (LAPACK doesn't implement symmetrize)
+               =================================================================== */
+            cpu_time = magma_wtime();
+            //for( int j = 1; j < N-1; ++j ) {    // inset by 1 row & col
+            //    for( int i = 1; i < j; ++i ) {
+            for( int j = 0; j < N; ++j ) {
+                for( int i = 0; i < j; ++i ) {
+                    if ( opts.uplo == MagmaLower ) {
+                        h_A[i + j*lda] = MAGMA_S_CNJG( h_A[j + i*lda] );
+                    }
+                    else {
+                        h_A[j + i*lda] = MAGMA_S_CNJG( h_A[i + j*lda] );
+                    }
+                }
+            }
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gbytes / cpu_time;
+            
+            /* =====================================================================
+               Check the result
+               =================================================================== */
+            magma_sgetmatrix( N, N, d_A, ldda, h_R, lda );
+            
+            blasf77_saxpy(&size, &c_neg_one, h_A, &ione, h_R, &ione);
+            error = lapackf77_slange("f", &N, &N, h_R, &lda, work);
 
-    //int ione     = 1;
-    //int ISEED[4] = {0, 0, 0, 1};
-    
-    int nsize[] = { 32, 64, 96, 256, 100, 200, 512 };
-    int ntest = sizeof(nsize) / sizeof(int);
-    int n   = nsize[ntest-1];
-    int lda = ((n + 31)/32)*32;
-    int ntile, nb;
-    
-    TESTING_MALLOC   ( hA, float, lda*n );
-    TESTING_MALLOC   ( hR, float, lda*n );
-    TESTING_DEVALLOC ( dA, float, lda*n );
-    
-    for( int t = 0; t < ntest; ++t ) {
-        n = nsize[t];
-        lda = ((n + 31)/32)*32;
-        
-        // initialize matrices; entries are (i.j) for A
-        float nf = 100.;
-        for( int j = 0; j < n; ++j ) {
-            // upper
-            for( int i = 0; i < j; ++i ) {
-                *hA(i,j) = MAGMA_S_MAKE( (i + j/nf)/nf, 0. );
-            }
-            // lower
-            for( int i = j; i < n; ++i ) {
-                *hA(i,j) = MAGMA_S_MAKE( i + j/nf, 0. );
-            }
+            printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %s\n",
+                   (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
+                   (error == 0. ? "okay" : "fail") );
+            
+            TESTING_FREE( h_A );
+            TESTING_FREE( h_R );
+            TESTING_DEVFREE( d_A );
         }
-        printf( "A%d = ", n );
-        magma_sprint( n, n, hA, lda );
-        
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize( MagmaLower, n, dA, lda );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d = ", n );
-        magma_sprint( n, n, hR, lda );
-        
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize( MagmaUpper, n, dA, lda );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "U%d = ", n );
-        magma_sprint( n, n, hR, lda );
-        
-        // -----
-        //lapackf77_slaset( "u", &n, &n, &c_zero, &c_one, hA, &lda );
-        
-        nb = 64;
-        ntile = n / nb;
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        nb = 32;
-        ntile = n / nb;
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        ntile = (n - nb < 0 ? 0 : (n - nb) / (2*nb) + 1);
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, 2*nb, nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d_2m = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        nb = 25;
-        ntile = n / nb;
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        nb = 25;
-        ntile = (n - nb < 0 ? 0 : (n - nb) / (3*nb) + 1);
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, 3*nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d_3n = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        nb = 100;
-        ntile = n / nb;
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaLower, nb, dA, lda, ntile, nb, nb );
-        magmablas_ssymmetrize( MagmaLower, n%nb, &dA[ ntile*nb*(1+lda) ], lda );  // last partial block
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "L%d_%d = ", n, nb );
-        magma_sprint( n, n, hR, lda );
-        
-        // -----
-        nb = 64;
-        ntile = n / nb;
-        magma_ssetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_ssymmetrize_tiles( MagmaUpper, nb, dA, lda, ntile, nb, nb );
-        magma_sgetmatrix( n, n, dA, lda, hR, lda );
-        printf( "U%d_%d = ", n, nb );
-        magma_sprint( n, n, hR, lda );
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
-    
-    TESTING_FREE( hA );
-    TESTING_FREE( hR );
-    TESTING_DEVFREE( dA );
-    
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
+
+    TESTING_FINALIZE();
     return 0;
 }

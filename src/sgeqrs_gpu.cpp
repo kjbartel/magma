@@ -1,28 +1,28 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:11 2012
+       @generated s Fri Jun 28 19:32:19 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
-                 float *dA,    magma_int_t ldda, 
-                 float *tau,   float *dT, 
-                 float *dB,    magma_int_t lddb, 
-                 float *hwork, magma_int_t lwork, 
+                 float *dA,    magma_int_t ldda,
+                 float *tau,   float *dT,
+                 float *dB,    magma_int_t lddb,
+                 float *hwork, magma_int_t lwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -59,11 +59,11 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     DT      (input) REAL array that is the output (the 6th argument)
             of magma_sgeqrf_gpu of size
-            2*MIN(M, N)*NB + ((N+31)/32*32 )* MAX(NB, NRHS). 
-            The array starts with a block of size MIN(M,N)*NB that stores 
-            the triangular T matrices used in the QR factorization, 
-            followed by MIN(M,N)*NB block storing the diagonal block 
-            inverses for the R matrix, followed by work space of size 
+            2*MIN(M, N)*NB + ((N+31)/32*32 )* MAX(NB, NRHS).
+            The array starts with a block of size MIN(M,N)*NB that stores
+            the triangular T matrices used in the QR factorization,
+            followed by MIN(M,N)*NB block storing the diagonal block
+            inverses for the R matrix, followed by work space of size
             ((N+31)/32*32 )* MAX(NB, NRHS).
 
     LDDB    (input) INTEGER
@@ -73,9 +73,9 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
     LWORK   (input) INTEGER
-            The dimension of the array WORK, LWORK >= max(1,NRHS).
-            For optimum performance LWORK >= (M-N+NB)*(NRHS + 2*NB), where 
-            NB is the blocksize given by magma_get_sgeqrf_nb( M ).
+            The dimension of the array WORK,
+            LWORK >= (M - N + NB)*(NRHS + NB) + NRHS*NB,
+            where NB is the blocksize given by magma_get_sgeqrf_nb( M ).
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal size of the HWORK array, returns
@@ -86,8 +86,8 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
-   #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
-   #define d_ref(a_1)     (dT+(lddwork+(a_1))*nb)
+    #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
+    #define d_ref(a_1)     (dT+(lddwork+(a_1))*nb)
 
     float c_zero    = MAGMA_S_ZERO;
     float c_one     = MAGMA_S_ONE;
@@ -97,7 +97,7 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     magma_int_t ione = 1;
 
     magma_int_t nb     = magma_get_sgeqrf_nb(m);
-    magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
+    magma_int_t lwkopt = (m - n + nb)*(nrhs + nb) + nrhs*nb;
     int lquery = (lwork == -1);
 
     hwork[0] = MAGMA_S_MAKE( (float)lwkopt, 0. );
@@ -112,9 +112,9 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     else if (ldda < max(1,m))
         *info = -5;
     else if (lddb < max(1,m))
-        *info = -8;
+        *info = -9;
     else if (lwork < lwkopt && ! lquery)
-        *info = -10;
+        *info = -11;
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
@@ -130,9 +130,9 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     }
 
     /* B := Q' * B */
-    magma_sormqr_gpu( MagmaLeft, MagmaTrans, 
+    magma_sormqr_gpu( MagmaLeft, MagmaTrans,
                       m, nrhs, n,
-                      a_ref(0,0), ldda, tau, 
+                      a_ref(0,0), ldda, tau,
                       dB, lddb, hwork, lwork, dT, nb, info );
     if ( *info != 0 ) {
         return *info;
@@ -156,30 +156,30 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     // Seems this data should already be on the GPU, so could switch to
     // magma_strsm and drop the ssetmatrix.
     if ( nrhs == 1 ) {
-        blasf77_strsv( MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr, 
-                       &ib, hwork,         &rows, 
+        blasf77_strsv( MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr,
+                       &ib, hwork,         &rows,
                             hwork+rows*ib, &ione);
     } else {
-        blasf77_strsm( MagmaLeftStr, MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr, 
-                       &ib, &nrhs, 
-                       &c_one, hwork,         &rows, 
+        blasf77_strsm( MagmaLeftStr, MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr,
+                       &ib, &nrhs,
+                       &c_one, hwork,         &rows,
                                hwork+rows*ib, &rows);
     }
-      
+    
     // update the solution vector
     magma_ssetmatrix( ib, nrhs, hwork+rows*ib, rows, dwork+i, lddwork );
 
     // update c
     if (nrhs == 1)
-        magma_sgemv( MagmaNoTrans, i, ib, 
+        magma_sgemv( MagmaNoTrans, i, ib,
                      c_neg_one, a_ref(0, i), ldda,
-                                dwork + i,   1, 
+                                dwork + i,   1,
                      c_one,     dB,           1);
     else
-        magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
-                     i, nrhs, ib, 
+        magma_sgemm( MagmaNoTrans, MagmaNoTrans,
+                     i, nrhs, ib,
                      c_neg_one, a_ref(0, i), ldda,
-                                dwork + i,   lddwork, 
+                                dwork + i,   lddwork,
                      c_one,     dB,           lddb);
 
     int start = i-nb;
@@ -189,30 +189,28 @@ magma_sgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             rows = m -i;
 
             if (i + ib < n) {
-                if (nrhs == 1)
-                    {
-                        magma_sgemv( MagmaNoTrans, ib, ib, 
-                                     c_one,  d_ref(i), ib,
-                                             dB+i,      1, 
-                                     c_zero, dwork+i,  1);
-                        magma_sgemv( MagmaNoTrans, i, ib, 
-                                     c_neg_one, a_ref(0, i), ldda,
-                                                dwork + i,   1, 
-                                     c_one,     dB,           1);
-                    }
-                else
-                    {
-                        magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
-                                     ib, nrhs, ib, 
-                                     c_one,  d_ref(i), ib,
-                                             dB+i,      lddb, 
-                                     c_zero, dwork+i,  lddwork);
-                        magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
-                                     i, nrhs, ib, 
-                                     c_neg_one, a_ref(0, i), ldda,
-                                                dwork + i,   lddwork, 
-                                     c_one,     dB,          lddb);
-                    }
+                if (nrhs == 1) {
+                    magma_sgemv( MagmaNoTrans, ib, ib,
+                                 c_one,  d_ref(i), ib,
+                                         dB+i,      1,
+                                 c_zero, dwork+i,  1);
+                    magma_sgemv( MagmaNoTrans, i, ib,
+                                 c_neg_one, a_ref(0, i), ldda,
+                                            dwork + i,   1,
+                                 c_one,     dB,           1);
+                }
+                else {
+                    magma_sgemm( MagmaNoTrans, MagmaNoTrans,
+                                 ib, nrhs, ib,
+                                 c_one,  d_ref(i), ib,
+                                         dB+i,      lddb,
+                                 c_zero, dwork+i,  lddwork);
+                    magma_sgemm( MagmaNoTrans, MagmaNoTrans,
+                                 i, nrhs, ib,
+                                 c_neg_one, a_ref(0, i), ldda,
+                                            dwork + i,   lddwork,
+                                 c_one,     dB,          lddb);
+                }
             }
         }
     }

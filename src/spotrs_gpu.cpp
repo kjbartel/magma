@@ -1,43 +1,34 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:52:57 2012
+       @generated s Fri Jun 28 19:32:04 2013
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_s
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_strsm magmablas_strsm
-#endif
-// === End defining what BLAS to use =======================================
-
 extern "C" magma_int_t
-magma_spotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs, 
-                 float *dA, magma_int_t ldda, 
+magma_spotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
+                 float *dA, magma_int_t ldda,
                  float *dB, magma_int_t lddb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
- 
+       June 2013
+
     Purpose
     =======
-
     SPOTRS solves a system of linear equations A*X = B with a symmetric
     positive definite matrix A using the Cholesky factorization
     A = U**T*U or A = L*L**T computed by SPOTRF.
 
     Arguments
     =========
- 
     UPLO    (input) CHARACTER*1
             = 'U':  Upper triangle of A is stored;
             = 'L':  Lower triangle of A is stored.
@@ -69,16 +60,16 @@ magma_spotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
     =====================================================================   */
 
     float c_one = MAGMA_S_ONE;
-    
-    *info = 0 ; 
+
+    *info = 0 ;
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
-        *info = -1; 
+        *info = -1;
     if( n < 0 )
-        *info = -2; 
-    if( nrhs < 0) 
-        *info = -3; 
+        *info = -2;
+    if( nrhs < 0)
+        *info = -3;
     if ( ldda < max(1, n) )
-        *info = -5; 
+        *info = -5;
     if ( lddb < max(1, n) )
         *info = -7;
     if (*info != 0) {

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:49 2012
+       @generated s Fri Jun 28 19:33:12 2013
 
 */
 #include "common_magma.h"
@@ -18,12 +18,12 @@
  */
 
 __global__ void 
-magmagpu_sswapdblk(magma_int_t nb,
-                   float *dA1, magma_int_t ldda1, magma_int_t inca1,
-                   float *dA2, magma_int_t ldda2, magma_int_t inca2 )
+magmagpu_sswapdblk(int nb,
+                   float *dA1, int ldda1, int inca1,
+                   float *dA2, int ldda2, int inca2 )
 {
-    const magma_int_t tx = threadIdx.x;
-    const magma_int_t bx = blockIdx.x;
+    const int tx = threadIdx.x;
+    const int bx = blockIdx.x;
 
     dA1 += tx + bx * nb * (ldda1 + inca1);
     dA2 += tx + bx * nb * (ldda2 + inca2);
@@ -31,7 +31,7 @@ magmagpu_sswapdblk(magma_int_t nb,
     float tmp;
 
     #pragma unroll
-    for( magma_int_t i = 0; i < nb; i++ ){
+    for( int i = 0; i < nb; i++ ){
         tmp = dA1[i*ldda1];
         dA1[i*ldda1] = dA2[i*ldda2];
         dA2[i*ldda2] = tmp;
@@ -44,11 +44,11 @@ magmablas_sswapdblk(magma_int_t n, magma_int_t nb,
                     float *dA1, magma_int_t ldda1, magma_int_t inca1,
                     float *dA2, magma_int_t ldda2, magma_int_t inca2 )
 {
-/* -- MAGMA (version 1.3.0) --
+/* -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======

@@ -1,103 +1,84 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:52:59 2012
+       @generated c Fri Jun 28 19:32:05 2013
 
 */
 #include "common_magma.h"
 
-/* use two streams; one for comm, and one for comp */
-extern "C" magma_int_t
-magma_cpotrf2_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, 
-                   magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-                   cuFloatComplex **d_lA, magma_int_t ldda, 
-                   cuFloatComplex **d_lP, magma_int_t lddp,
-                   cuFloatComplex  *a,    magma_int_t lda, magma_int_t h,
-                   cudaStream_t stream[][3], cudaEvent_t event[][5],
-                   magma_int_t *info );
-
-/* use three streams; seems to be faster on Keeneland, but has problem on Pluto */
-extern "C" magma_int_t
-magma_cpotrf3_mgpu(int num_gpus, char uplo, magma_int_t m, magma_int_t n, 
-                   magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-                   cuFloatComplex **d_lA, magma_int_t ldda, 
-                   cuFloatComplex **d_lP, magma_int_t lddp,
-                   cuFloatComplex  *a,    magma_int_t lda, magma_int_t h,
-                   cudaStream_t stream[][3], cudaEvent_t event[][5],
-                   magma_int_t *info );
 
 extern "C" magma_int_t
-magma_cpotrf_mgpu(int num_gpus, char uplo, magma_int_t n, 
-                  cuFloatComplex **d_lA, magma_int_t ldda, magma_int_t *info)
+magma_cpotrf_mgpu(magma_int_t num_gpus, char uplo, magma_int_t n,
+                  magmaFloatComplex **d_lA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
-    CPOTRF computes the Cholesky factorization of a complex Hermitian   
-    positive definite matrix dA.   
+    Purpose
+    =======
+    CPOTRF computes the Cholesky factorization of a complex Hermitian
+    positive definite matrix dA.
 
-    The factorization has the form   
-       dA = U**H * U,  if UPLO = 'U', or   
-       dA = L  * L**H,  if UPLO = 'L',   
-    where U is an upper triangular matrix and L is lower triangular.   
+    The factorization has the form
+       dA = U**H * U,  if UPLO = 'U', or
+       dA = L  * L**H,  if UPLO = 'L',
+    where U is an upper triangular matrix and L is lower triangular.
 
-    This is the block version of the algorithm, calling Level 3 BLAS.   
+    This is the block version of the algorithm, calling Level 3 BLAS.
 
-    Arguments   
-    =========   
-    UPLO    (input) CHARACTER*1   
-            = 'U':  Upper triangle of dA is stored;   
-            = 'L':  Lower triangle of dA is stored.   
+    Arguments
+    =========
+    UPLO    (input) CHARACTER*1
+            = 'U':  Upper triangle of dA is stored;
+            = 'L':  Lower triangle of dA is stored.
 
-    N       (input) INTEGER   
-            The order of the matrix dA.  N >= 0.   
+    N       (input) INTEGER
+            The order of the matrix dA.  N >= 0.
 
-    dA      (input/output) COMPLEX array on the GPU, dimension (LDDA,N)   
-            On entry, the Hermitian matrix dA.  If UPLO = 'U', the leading   
-            N-by-N upper triangular part of dA contains the upper   
-            triangular part of the matrix dA, and the strictly lower   
-            triangular part of dA is not referenced.  If UPLO = 'L', the   
-            leading N-by-N lower triangular part of dA contains the lower   
-            triangular part of the matrix dA, and the strictly upper   
-            triangular part of dA is not referenced.   
+    dA      (input/output) COMPLEX array on the GPU, dimension (LDDA,N)
+            On entry, the Hermitian matrix dA.  If UPLO = 'U', the leading
+            N-by-N upper triangular part of dA contains the upper
+            triangular part of the matrix dA, and the strictly lower
+            triangular part of dA is not referenced.  If UPLO = 'L', the
+            leading N-by-N lower triangular part of dA contains the lower
+            triangular part of the matrix dA, and the strictly upper
+            triangular part of dA is not referenced.
 
-            On exit, if INFO = 0, the factor U or L from the Cholesky   
-            factorization dA = U**H * U or dA = L * L**H.   
+            On exit, if INFO = 0, the factor U or L from the Cholesky
+            factorization dA = U**H * U or dA = L * L**H.
 
-    LDDA     (input) INTEGER   
+    LDDA     (input) INTEGER
             The leading dimension of the array dA.  LDDA >= max(1,N).
             To benefit from coalescent memory accesses LDDA must be
             dividable by 16.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
-            > 0:  if INFO = i, the leading minor of order i is not   
-                  positive definite, and the factorization could not be   
-                  completed.   
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
+            > 0:  if INFO = i, the leading minor of order i is not
+                  positive definite, and the factorization could not be
+                  completed.
     =====================================================================   */
 
 
     magma_int_t     j, jb, nb, nb0, nb2, d, id, j_local, j_local2, lddp, h;
     char            uplo_[2] = {uplo, 0};
-    cuFloatComplex c_one     = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
-    cuFloatComplex *work;
+    magmaFloatComplex c_one     = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex *work;
     float          d_one     =  1.0;
     float          d_neg_one = -1.0;
     int upper = lapackf77_lsame(uplo_, "U");
-    cuFloatComplex *dwork[MagmaMaxGPUs];
-    cudaStream_t    stream[MagmaMaxGPUs][3];
-    cudaEvent_t     event[MagmaMaxGPUs][5];
+    magmaFloatComplex *dwork[MagmaMaxGPUs];
+    magma_queue_t    stream[MagmaMaxGPUs][3];
+    magma_event_t     event[MagmaMaxGPUs][5];
 
     *info = 0;
     nb = magma_get_cpotrf_nb(n);
@@ -118,71 +99,73 @@ magma_cpotrf_mgpu(int num_gpus, char uplo, magma_int_t n,
     }
 
     if (num_gpus == 1 && ((nb <= 1) || (nb >= n)) ) {
-      /*  Use unblocked code. */
-      magma_setdevice(0);
-      if (MAGMA_SUCCESS != magma_cmalloc_pinned( &work, n*nb )) {
-        *info = MAGMA_ERR_HOST_ALLOC;
-        return *info;
-      }
-      magma_cgetmatrix( n, n, d_lA[0], ldda, work, n );
-      lapackf77_cpotrf(uplo_, &n, work, &n, info);
-      magma_csetmatrix( n, n, work, n, d_lA[0], ldda );
-      magma_free_pinned( work );
-    } else {
-      lddp = 32*((n+31)/32);
-      for( d=0; d<num_gpus; d++ ) {
-        magma_setdevice(d);
-        if (MAGMA_SUCCESS != magma_cmalloc( &dwork[d], num_gpus*nb*lddp )) {
-          for( j=0; j<d; j++ ) {
-            magma_setdevice(j);
-            magma_free( dwork[j] );
-          }
-          *info = MAGMA_ERR_DEVICE_ALLOC;
-          return *info;
+        /*  Use unblocked code. */
+        magma_setdevice(0);
+        if (MAGMA_SUCCESS != magma_cmalloc_pinned( &work, n*nb )) {
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
         }
-        for( j=0; j<3; j++ ) magma_queue_create( &stream[d][j] );
-        for( j=0; j<5; j++ ) magma_event_create( &event[d][j]  );
-      }
-      magma_setdevice(0);
-      h = 1; //num_gpus; //(n+nb-1)/nb;
-      if (MAGMA_SUCCESS != magma_cmalloc_pinned( &work, n*nb*h )) {
-        *info = MAGMA_ERR_HOST_ALLOC;
-        return *info;
-      }
-      if (upper) {
-          /* with two streams */
-          //magma_cpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,  
-          //                   h, stream, event, info);
-          /* with three streams */
-          magma_cpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,  
-                             h, stream, event, info);
-      } else {
-          /* with two streams */
-          //magma_cpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h, 
-          //                   h, stream, event, info);
-          /* with three streams */
-          magma_cpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h, 
-                             h, stream, event, info);
-      }
-
-      /* clean up */
-      for( d=0; d<num_gpus; d++ ) {
-        magma_setdevice(d);
-        for( j=0; j<3; j++ ) {
-            magma_queue_sync( stream[d][j] );
-            magma_queue_destroy( stream[d][j] ); 
+        magma_cgetmatrix( n, n, d_lA[0], ldda, work, n );
+        lapackf77_cpotrf(uplo_, &n, work, &n, info);
+        magma_csetmatrix( n, n, work, n, d_lA[0], ldda );
+        magma_free_pinned( work );
+    }
+    else {
+        lddp = 32*((n+31)/32);
+        for( d=0; d<num_gpus; d++ ) {
+            magma_setdevice(d);
+            if (MAGMA_SUCCESS != magma_cmalloc( &dwork[d], num_gpus*nb*lddp )) {
+                for( j=0; j<d; j++ ) {
+                    magma_setdevice(j);
+                    magma_free( dwork[j] );
+                }
+                *info = MAGMA_ERR_DEVICE_ALLOC;
+                return *info;
+            }
+            for( j=0; j<3; j++ )
+                magma_queue_create( &stream[d][j] );
+            for( j=0; j<5; j++ )
+                magma_event_create( &event[d][j]  );
         }
-        magmablasSetKernelStream(NULL);
+        magma_setdevice(0);
+        h = 1; //num_gpus; //(n+nb-1)/nb;
+        if (MAGMA_SUCCESS != magma_cmalloc_pinned( &work, n*nb*h )) {
+            *info = MAGMA_ERR_HOST_ALLOC;
+            return *info;
+        }
+        if (upper) {
+            /* with two streams */
+            //magma_cpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,
+            //                   h, stream, event, info);
+            /* with three streams */
+            magma_cpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, n,
+                               h, stream, event, info);
+        } else {
+            /* with two streams */
+            //magma_cpotrf2_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h,
+            //                   h, stream, event, info);
+            /* with three streams */
+            magma_cpotrf3_mgpu(num_gpus, uplo, n, n, 0, 0, nb, d_lA, ldda, dwork, lddp, work, nb*h,
+                               h, stream, event, info);
+        }
 
-        for( j=0; j<5; j++ ) 
-            magma_event_destroy( event[d][j] );
-
-        magma_free( dwork[d] );
-      }
-      magma_setdevice(0);
-      magma_free_pinned( work );
+        /* clean up */
+        for( d=0; d<num_gpus; d++ ) {
+            magma_setdevice(d);
+            for( j=0; j<3; j++ ) {
+                magma_queue_sync( stream[d][j] );
+                magma_queue_destroy( stream[d][j] );
+            }
+            magmablasSetKernelStream(NULL);
+            
+            for( j=0; j<5; j++ )
+                magma_event_destroy( event[d][j] );
+            
+            magma_free( dwork[d] );
+        }
+        magma_setdevice(0);
+        magma_free_pinned( work );
     } /* end of not lapack */
-
 
     return *info;
 } /* magma_cpotrf_mgpu */

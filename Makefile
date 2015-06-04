@@ -1,40 +1,46 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = .
 include ./Makefile.internal
+-include Makefile.local
+
+.PHONY: all lib libmagma libmagmablas test clean cleanall install shared
 
 all: lib test
 
 lib: libmagma libmagmablas
 
-# add dependencies so src, control, and interface_cuda directories
-# don't all update libmagma.a at the same time
-libmagma: libmagma_control libmagma_interface
+# libmagmablas is not a true dependency, but adding it forces parallel make
+# to do one directory at a time, making output less confusing.
+libmagma: libmagmablas
+	@echo ======================================== src
 	( cd src            && $(MAKE) )
-
-libmagma_control:
+	@echo ======================================== control
 	( cd control        && $(MAKE) )
-
-libmagma_interface: libmagma_control
+	@echo ======================================== interface
 	( cd interface_cuda && $(MAKE) )
 
 libmagmablas:
+	@echo ======================================== magmablas
 	( cd magmablas      && $(MAKE) )
 
 libquark:
+	@echo ======================================== quark
 	( cd quark          && $(MAKE) )
 
 lapacktest:
+	@echo ======================================== lapacktest
 	( cd testing/matgen && $(MAKE) )
 	( cd testing/lin    && $(MAKE) )
 
 test: lib
+	@echo ======================================== test
 	( cd testing        && $(MAKE) )
 
 clean:
@@ -45,7 +51,7 @@ clean:
 	( cd testing/lin    && $(MAKE) clean )
 	( cd magmablas      && $(MAKE) clean ) 
 #	( cd quark          && $(MAKE) clean )
-	-rm -f $(LIBMAGMA) $(LIBMAGMABLAS)
+	-rm -f $(LIBMAGMA)
 
 cleanall:
 	( cd control        && $(MAKE) cleanall )
@@ -58,7 +64,7 @@ cleanall:
 #	( cd quark          && $(MAKE) cleanall )
 	$(MAKE) cleanall2
 
-# cleanall2 is a dummy rule to run cleangen at the *end* of make cleanall, so
+# cleanall2 is a dummy rule to run cleanmkgen at the *end* of make cleanall, so
 # .Makefile.gen files aren't deleted and immediately re-created. see Makefile.gen
 cleanall2:
 	@echo
@@ -73,7 +79,6 @@ install: lib dir
 #       MAGMA
 	cp $(MAGMA_DIR)/include/*.h  $(prefix)/include
 	cp $(LIBMAGMA)               $(prefix)/lib
-	cp $(LIBMAGMABLAS)           $(prefix)/lib
 #       QUARK
 #	cp $(QUARKDIR)/include/quark.h             $(prefix)/include
 #	cp $(QUARKDIR)/include/quark_unpack_args.h $(prefix)/include
@@ -85,3 +90,23 @@ install: lib dir
 	    sed -e s:\__PREFIX:"$(prefix)":     | \
 	    sed -e s:\__LIBEXT:"$(LIBEXT)":       \
 	    > $(prefix)/lib/pkgconfig/magma.pc
+
+# ========================================
+# This is a crude manner of creating shared libraries.
+# First create objects (with -fPIC) and static .a libraries,
+# then assume all objects in these directories go into the shared libraries.
+# Better solution would be to use non-recursive make, so make knows all the
+# objects in each subdirectory, or use libtool, or put rules for, e.g., the
+# control directory in src/Makefile (as done in src/CMakeLists.txt)
+LIBMAGMA_SO     = $(LIBMAGMA:.a=.so)
+
+shared: lib
+	$(MAKE) $(LIBMAGMA_SO)
+
+$(LIBMAGMA_SO): src/*.o control/*.o interface_cuda/*.o magmablas/*.cu_o
+	@echo ======================================== libmagma.so
+	$(CC) $(LDOPTS) -shared -o $(LIBMAGMA_SO) \
+	src/*.o control/*.o \
+	interface_cuda/*.o magmablas/*.cu_o magmablas/*.o \
+	$(LIBDIR) \
+	$(LIB)

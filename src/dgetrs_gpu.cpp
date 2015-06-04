@@ -1,38 +1,36 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:04 2012
+       @generated d Fri Jun 28 19:32:11 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs, 
+magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                  double *dA, magma_int_t ldda,
-                 magma_int_t *ipiv, 
-                 double *dB, magma_int_t lddb, 
+                 magma_int_t *ipiv,
+                 double *dB, magma_int_t lddb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     Solves a system of linear equations
       A * X = B  or  A' * X = B
     with a general N-by-N matrix A using the LU factorization computed by DGETRF_GPU.
 
     Arguments
     =========
-
     TRANS   (input) CHARACTER*1
             Specifies the form of the system of equations:
             = 'N':  A * X = B  (No transpose)
@@ -79,8 +77,8 @@ magma_dgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
     magma_int_t i1, i2, inc;
 
     *info = 0;
-    if ( (! notran) && 
-         (! lapackf77_lsame(trans_, "T")) && 
+    if ( (! notran) &&
+         (! lapackf77_lsame(trans_, "T")) &&
          (! lapackf77_lsame(trans_, "C")) ) {
         *info = -1;
     } else if (n < 0) {

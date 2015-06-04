@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:54:26 2012
+       @generated d Fri Jun 28 19:34:06 2013
 
 */
 
@@ -23,181 +23,145 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-// Flops formula
 #define PRECISION_d
-#define CHECK_ERROR
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_GEHRD(n) + 2. * FADDS_GEHRD(n))
-#else
-#define FLOPS(n) (      FMULS_GEHRD(n) +      FADDS_GEHRD(n))
-#endif
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dgehrd2
 */
 int main( int argc, char** argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    magma_timestr_t       start, end;
-    double           eps, flops, gpu_perf, cpu_perf;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
     double *h_A, *h_R, *h_Q, *h_work, *tau, *twork, *dT;
-    double          *rwork;
-    double           result[2] = {0., 0.};
-
-    /* Matrix size */
-    magma_int_t N=0, n2, lda, nb, lwork, ltwork, once = 0;
-    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
-
-    magma_int_t i, info, checkres;
+    #if defined(PRECISION_z) || defined(PRECISION_c)
+    double      *rwork;
+    #endif
+    double      eps, result[2];
+    magma_int_t N, n2, lda, nb, lwork, ltwork, info;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     
-    if (argc != 1){
-        for(i = 1; i<argc; i++){
-            if (strcmp("-N", argv[i])==0) {
-                N = atoi(argv[++i]);
-                once = true;
-            }
-        }
-        if ( N > 0 )
-            printf("  testing_dgehrd -N %d\n\n", (int) N);
-        else
-        {
-            printf("\nUsage: \n");
-            printf("  testing_dgehrd -N %d\n\n", 1024);
-            exit(1);
-        }
-    }
-    else {
-        printf("\nUsage: \n");
-        printf("  testing_dgehrd -N %d\n\n", 1024);
-        N = size[9];
-    }
-
-    checkres = getenv("MAGMA_TESTINGS_CHECK") != NULL;
-
     eps   = lapackf77_dlamch( "E" );
-    lda   = N;
-    n2    = N*lda;
-    nb    = magma_get_dgehrd_nb(N);
-    /* We suppose the magma nb is bigger than lapack nb */
-    lwork = N*nb;
     
-    TESTING_MALLOC   ( h_A   , double, n2    );
-    TESTING_MALLOC   ( tau   , double, N     );
-    TESTING_HOSTALLOC( h_R   , double, n2    );
-    TESTING_HOSTALLOC( h_work, double, lwork );
-    TESTING_DEVALLOC ( dT    , double, nb*N  );
-
-    /* To avoid uninitialized variable warning */
-    h_Q   = NULL;
-    twork = NULL;
-    rwork = NULL; 
-
-    if ( checkres ) {
-        ltwork = 2*(N*N);
-        TESTING_HOSTALLOC( h_Q,   double, lda*N  );
-        TESTING_MALLOC(    twork, double, ltwork );
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-        TESTING_MALLOC(    rwork, double,          N      );
-#endif
-    }
-
-    printf("  N    CPU GFlop/s    GPU GFlop/s   |A-QHQ'|/N|A|  |I-QQ'|/N \n");
-    printf("=============================================================\n");
-    for(i=0; i<10; i++){
-        if ( !once ) {
-            N = size[i];
-        }
-        lda = N;
-        n2  = lda*N;
-        flops = FLOPS( (double)N ) / 1e6;
-
-        /* Initialize the matrices */
-        lapackf77_dlarnv( &ione, ISEED, &n2, h_A );
-        lapackf77_dlacpy( MagmaUpperLowerStr, &N, &N, h_A, &lda, h_R, &lda );
-
-        /* ====================================================================
-           Performs operation using MAGMA
-           =================================================================== */
-        start = get_current_time();
-        magma_dgehrd ( N, ione, N, h_R, lda, tau, h_work, lwork, dT, &info);
-        end = get_current_time();
-        if ( info < 0 )
-            printf("Argument %d of magma_dgehrd had an illegal value\n", (int) -info);
-
-        gpu_perf = flops / GetTimerValue(start,end);
-
-        /* =====================================================================
-           Check the factorization
-           =================================================================== */
-        if ( checkres ) {
-
-            lapackf77_dlacpy(MagmaUpperLowerStr, &N, &N, h_R, &lda, h_Q, &lda);
-            { 
-                int i, j;
-                for(j=0; j<N-1; j++)
-                    for(i=j+2; i<lda; i++)
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
+    
+    printf("    N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   |A-QHQ'|/N|A|   |I-QQ'|/N\n");
+    printf("=========================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N = opts.nsize[i];
+            lda    = N;
+            n2     = lda*N;
+            nb     = magma_get_dgehrd_nb(N);
+            /* We suppose the magma nb is bigger than lapack nb */
+            lwork  = N*nb;
+            gflops = FLOPS_DGEHRD( N ) / 1e9;
+            
+            TESTING_MALLOC   ( h_A,    double, n2    );
+            TESTING_MALLOC   ( tau,    double, N     );
+            TESTING_HOSTALLOC( h_R,    double, n2    );
+            TESTING_HOSTALLOC( h_work, double, lwork );
+            TESTING_DEVALLOC ( dT,     double, nb*N  );
+            
+            /* Initialize the matrices */
+            lapackf77_dlarnv( &ione, ISEED, &n2, h_A );
+            lapackf77_dlacpy( MagmaUpperLowerStr, &N, &N, h_A, &lda, h_R, &lda );
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            gpu_time = magma_wtime();
+            magma_dgehrd( N, ione, N, h_R, lda, tau, h_work, lwork, dT, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflops / gpu_time;
+            if (info != 0)
+                printf("magma_dgehrd returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            /* =====================================================================
+               Check the factorization
+               =================================================================== */
+            if ( opts.check ) {
+                ltwork = 2*(N*N);
+                TESTING_HOSTALLOC( h_Q,   double, lda*N  );
+                TESTING_MALLOC(    twork, double, ltwork );
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                TESTING_MALLOC(    rwork, double,          N      );
+                #endif
+                
+                lapackf77_dlacpy(MagmaUpperLowerStr, &N, &N, h_R, &lda, h_Q, &lda);
+                for( int j = 0; j < N-1; ++j )
+                    for( int i = j+2; i < N; ++i )
                         h_R[i+j*lda] = MAGMA_D_ZERO;
+                
+                magma_dorghr(N, ione, N, h_Q, lda, tau, dT, nb, &info);
+                if (info != 0) {
+                    printf("magma_dorghr returned error %d: %s.\n",
+                           (int) info, magma_strerror( info ));
+                    exit(1);
+                }
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                lapackf77_dhst01(&N, &ione, &N,
+                                 h_A, &lda, h_R, &lda,
+                                 h_Q, &lda, twork, &ltwork, rwork, result);
+                #else
+                lapackf77_dhst01(&N, &ione, &N,
+                                 h_A, &lda, h_R, &lda,
+                                 h_Q, &lda, twork, &ltwork, result);
+                #endif
+                
+                TESTING_HOSTFREE( h_Q );
+                TESTING_FREE( twork );
+                #if defined(PRECISION_z) || defined(PRECISION_c)
+                TESTING_FREE( rwork );
+                #endif
             }
-
-            nb = magma_get_dgehrd_nb(N);
-            magma_dorghr(N, ione, N, h_Q, lda, tau, dT, nb, &info);
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-            lapackf77_dhst01(&N, &ione, &N, 
-                             h_A, &lda, h_R, &lda, 
-                             h_Q, &lda, twork, &ltwork, rwork, result);
-#else
-            lapackf77_dhst01(&N, &ione, &N, 
-                             h_A, &lda, h_R, &lda, 
-                             h_Q, &lda, twork, &ltwork, result);
-#endif
+            
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            if ( opts.lapack ) {
+                cpu_time = magma_wtime();
+                lapackf77_dgehrd(&N, &ione, &N, h_R, &lda, tau, h_work, &lwork, &info);
+                cpu_time = magma_wtime() - cpu_time;
+                cpu_perf = gflops / cpu_time;
+                if (info != 0)
+                    printf("lapack_dgehrd returned error %d: %s.\n",
+                           (int) info, magma_strerror( info ));
+            }
+            
+            /* =====================================================================
+               Print performance and error.
+               =================================================================== */
+            if ( opts.lapack ) {
+                printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)",
+                       (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time );
+            }
+            else {
+                printf("%5d     ---   (  ---  )   %7.2f (%7.2f)",
+                       (int) N, gpu_perf, gpu_time );
+            }
+            if ( opts.check ) {
+                printf("   %8.2e        %8.2e\n",
+                       result[0]*eps, result[1]*eps );
+            }
+            else {
+                printf("     ---             ---\n");
+            }
+            
+            TESTING_FREE    ( h_A  );
+            TESTING_FREE    ( tau  );
+            TESTING_HOSTFREE( h_work);
+            TESTING_HOSTFREE( h_R  );
+            TESTING_DEVFREE ( dT   );
         }
-
-        /* =====================================================================
-           Performs operation using LAPACK
-           =================================================================== */
-        start = get_current_time();
-        lapackf77_dgehrd(&N, &ione, &N, h_R, &lda, tau, h_work, &lwork, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of lapack_dgehrd had an illegal value.\n", (int) -info);
-
-        cpu_perf = flops / GetTimerValue(start,end);
-
-        /* =====================================================================
-           Print performance and error.
-           =================================================================== */
-        if ( checkres ) {
-            printf("%5d    %6.2f         %6.2f      %e %e\n",
-                   (int) N, cpu_perf, gpu_perf,
-                   result[0]*eps, result[1]*eps );
-        } else {
-            printf("%5d    %6.2f         %6.2f\n",
-                   (int) N, cpu_perf, gpu_perf );
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
         }
-
-        if ( once )
-            break;
     }
-
-    /* Memory clean up */
-    TESTING_FREE    ( h_A  );
-    TESTING_FREE    ( tau  );
-    TESTING_HOSTFREE( h_work);
-    TESTING_HOSTFREE( h_R  );
-    TESTING_DEVFREE ( dT   );
-
-    if ( checkres ) {
-        TESTING_HOSTFREE( h_Q );
-        TESTING_FREE( twork );
-#if defined(PRECISION_z) || defined(PRECISION_c) 
-        TESTING_FREE( rwork );
-#endif
-    }
-
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
-    return EXIT_SUCCESS;
+    
+    TESTING_FINALIZE();
+    return 0;
 }

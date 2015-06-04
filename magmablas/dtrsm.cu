@@ -1,11 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
-
-       @precisions normal d -> d
+       June 2013
        
        @author Peng Du
 */
@@ -1833,11 +1831,11 @@ extern "C"
 void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
                       double alpha, const double* A, magma_int_t lda, double* b, magma_int_t ldb)
 {
-        /*  -- MAGMA (version 1.3.0) --
+        /*  -- MAGMA (version 1.4.0-beta2) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                November 2012
+                June 2013
 
                 Purpose
                 =======
@@ -1954,7 +1952,6 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
            
            
             Level 3 Blas routine.
-                *
     ===================================================================== */
 
         int i;
@@ -1969,8 +1966,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                 /* invert the diagonals
                  * Allocate device memory for the inversed diagonal blocks, size=m*NB
                  */
-                cudaMalloc((void**)&d_dinvA, NB*((M/NB)+(M%NB!=0))*NB*sizeof(double));
-                cudaMalloc((void**)&d_x, N*M*sizeof(double));
+                magma_dmalloc( &d_dinvA, NB*((M/NB)+(M%NB!=0))*NB );
+                magma_dmalloc( &d_x,     N*M );
                 cudaMemset(d_x,     0, N*M*sizeof(double));
                 cudaMemset(d_dinvA, 0, NB*((M/NB)+(M%NB!=0))*NB*sizeof(double));
                 diag_dtrtri (M, uplo, diag, A, d_dinvA, lda);
@@ -1990,8 +1987,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (NB>=M)
                                 {
                                         b_copy();
-                                        cudaFree(d_dinvA);
-                                        cudaFree(d_x);
+                                        magma_free(d_dinvA);
+                                        magma_free(d_x);
                                         return;
                                 }
 
@@ -2021,8 +2018,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        cudaFree(d_dinvA);
-                                        cudaFree(d_x);
+                                        magma_free(d_dinvA);
+                                        magma_free(d_x);
                                         return;
                                 }
 
@@ -2056,8 +2053,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        cudaFree(d_dinvA);
-                                        cudaFree(d_x);
+                                        magma_free(d_dinvA);
+                                        magma_free(d_x);
                                         return;
                                 }
 
@@ -2085,8 +2082,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (NB>=M)
                                 {
                                         b_copy();
-                                        cudaFree(d_dinvA);
-                                        cudaFree(d_x);
+                                        magma_free(d_dinvA);
+                                        magma_free(d_x);
                                         return;
                                 }
 
@@ -2112,10 +2109,10 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                 /* invert the diagonals
                  * Allocate device memory for the inversed diagonal blocks, size=N*BLOCK_SIZE 
                  */
-                cudaMalloc((void**)&d_dinvA, NB*((N/NB)+(N%NB!=0))*NB*sizeof(double));
-                cudaMalloc((void**)&d_x, N*M*sizeof(double));
-                cudaMemset(d_x, 0, N*M*sizeof(double));
-                cudaMemset (d_dinvA, 0, NB*((N/NB)+(N%NB!=0))*NB*sizeof(double));
+                magma_dmalloc( &d_dinvA, NB*((N/NB)+(N%NB!=0))*NB );
+                magma_dmalloc( &d_x,     N*M );
+                cudaMemset(d_x,     0, N*M*sizeof(double));
+                cudaMemset(d_dinvA, 0, NB*((N/NB)+(N%NB!=0))*NB*sizeof(double));
                 diag_dtrtri (N, uplo, diag, A, d_dinvA, lda);
 
                 if (tran == 'N' || tran == 'n')
@@ -2133,8 +2130,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        cudaFree(d_x);
-                                        cudaFree(d_dinvA);
+                                        magma_free(d_x);
+                                        magma_free(d_dinvA);
                                         return;
                                 }
 
@@ -2162,8 +2159,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (NB>=N)
                                 {
                                         b_copy();
-                                        cudaFree(d_x);
-                                        cudaFree(d_dinvA);
+                                        magma_free(d_x);
+                                        magma_free(d_dinvA);
                                         return;
                                 }
 
@@ -2196,8 +2193,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (NB>=N)
                                 {
                                         b_copy();
-                                        cudaFree(d_x);
-                                        cudaFree(d_dinvA);
+                                        magma_free(d_x);
+                                        magma_free(d_dinvA);
                                         return;
                                 }
 
@@ -2227,8 +2224,8 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        cudaFree(d_x);
-                                        cudaFree(d_dinvA);
+                                        magma_free(d_x);
+                                        magma_free(d_dinvA);
                                         return;
                                 }
 
@@ -2249,7 +2246,7 @@ void magmablas_dtrsm( char side, char uplo, char tran, char diag, magma_int_t M,
         }
                 
         b_copy();
-        cudaFree(d_dinvA);
-        cudaFree(d_x);
+        magma_free(d_dinvA);
+        magma_free(d_x);
 }
 

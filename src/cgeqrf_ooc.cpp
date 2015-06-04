@@ -1,26 +1,26 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:16 2012
+       @generated c Fri Jun 28 19:32:25 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_cgeqrf_ooc(magma_int_t m, magma_int_t n, 
-                 cuFloatComplex *a,    magma_int_t lda, cuFloatComplex *tau, 
-                 cuFloatComplex *work, magma_int_t lwork,
+magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
+                 magmaFloatComplex *a,    magma_int_t lda, magmaFloatComplex *tau,
+                 magmaFloatComplex *work, magma_int_t lwork,
                  magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -96,8 +96,8 @@ magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
     #define  a_ref(a_1,a_2) ( a+(a_2)*(lda) + (a_1))
     #define da_ref(a_1,a_2) (da+(a_2)*ldda  + (a_1))
 
-    cuFloatComplex *da, *dwork;
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    magmaFloatComplex *da, *dwork;
+    magmaFloatComplex c_one = MAGMA_C_ONE;
 
     int  k, lddwork, ldda;
 
@@ -126,13 +126,13 @@ magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
     /* Check how much memory do we have */
     size_t freeMem, totalMem;
     cudaMemGetInfo( &freeMem, &totalMem );
-    freeMem /= sizeof(cuFloatComplex);
+    freeMem /= sizeof(magmaFloatComplex);
     
     magma_int_t IB, NB = (magma_int_t)(0.8*freeMem/m);
     NB = (NB / nb) * nb;
 
     if (NB >= n)
-      return magma_cgeqrf(m, n, a, lda, tau, work, lwork, info);
+        return magma_cgeqrf(m, n, a, lda, tau, work, lwork, info);
 
     k = min(m,n);
     if (k == 0) {
@@ -148,18 +148,17 @@ magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
     //   magmablasSetKernelStream(stream[1]);
 
-    cuFloatComplex *ptr = da + ldda * NB;
+    magmaFloatComplex *ptr = da + ldda * NB;
     dwork = da + ldda*(NB + nb);
 
     /* start the main loop over the blocks that fit in the GPU memory */
-    for(int i=0; i<n; i+=NB)
-      { 
+    for(int i=0; i<n; i+=NB) {
         IB = min(n-i, NB);
         //printf("Processing %5d columns -- %5d to %5d ... \n", IB, i, i+IB);
 
@@ -170,8 +169,7 @@ magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
         magma_queue_sync( stream[0] );
 
         /* 2. Update it with the previous transformations */
-        for(int j=0; j<min(i,k); j+=nb)
-          {
+        for(int j=0; j<min(i,k); j+=nb) {
             magma_int_t ib = min(k-j, nb);
 
             /* Get a panel in ptr.                                           */
@@ -200,17 +198,17 @@ magma_cgeqrf_ooc(magma_int_t m, magma_int_t n,
                               da_ref(j, 0), ldda, dwork+ib, lddwork);
 
             cq_to_panel(MagmaUpper, ib, a_ref(j,j), lda, work+ib*ib);
-          }
+        }
 
         /* 3. Do a QR on the current part */
         if (i<k)
-          magma_cgeqrf2_gpu(m-i, IB, da_ref(i,0), ldda, tau+i, info);
+            magma_cgeqrf2_gpu(m-i, IB, da_ref(i,0), ldda, tau+i, info);
 
         /* 4. Copy the current part back to the CPU */
         magma_cgetmatrix_async( (m), IB,
                                 da_ref(0,0), ldda,
                                 a_ref(0,i),  lda, stream[0] );
-      }
+    }
 
     magma_queue_sync( stream[0] );
 

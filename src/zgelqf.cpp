@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -11,25 +11,23 @@
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_zgelqf( magma_int_t m, magma_int_t n, 
-              cuDoubleComplex *a,    magma_int_t lda,   cuDoubleComplex *tau, 
-              cuDoubleComplex *work, magma_int_t lwork, magma_int_t *info)
+magma_zgelqf( magma_int_t m, magma_int_t n,
+              magmaDoubleComplex *a,    magma_int_t lda,   magmaDoubleComplex *tau,
+              magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     ZGELQF computes an LQ factorization of a COMPLEX_16 M-by-N matrix A:
     A = L * Q.
 
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -77,7 +75,6 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -93,8 +90,8 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
 
     #define  a_ref(a_1,a_2) ( a+(a_2)*(lda) + (a_1))
 
-    cuDoubleComplex *dA, *dAT;
-    cuDoubleComplex c_one = MAGMA_Z_ONE;
+    magmaDoubleComplex *dA, *dAT;
+    magmaDoubleComplex c_one = MAGMA_Z_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo, ldda;
     int lquery;
@@ -143,7 +140,7 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
 
             magma_zsetmatrix( m, n, a, lda, dA, ldda );
             dAT = dA;
-            magmablas_zinplace_transpose( dAT, ldda, ldda );
+            magmablas_ztranspose_inplace( ldda, dAT, ldda );
         }
     else
         {
@@ -162,8 +159,8 @@ magma_zgelqf( magma_int_t m, magma_int_t n,
 
     magma_zgeqrf2_gpu(n, m, dAT, ldda, tau, &iinfo);
 
-    if (maxdim*maxdim< 2*maxm*maxn){
-        magmablas_zinplace_transpose( dAT, ldda, ldda );
+    if (maxdim*maxdim < 2*maxm*maxn) {
+        magmablas_ztranspose_inplace( ldda, dAT, ldda );
         magma_zgetmatrix( m, n, dA, ldda, a, lda );
     } else {
         magmablas_ztranspose2( dA, maxm, dAT, ldda, n, m );

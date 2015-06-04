@@ -1,20 +1,18 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- *  @precisions normal z -> c
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @precisions normal z -> c
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
-#include <cblas.h>
 
 #include "flops.h"
 #include "magma.h"
@@ -22,135 +20,101 @@
 #include "testings.h"
 
 #define PRECISION_z
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(n) ( 6. * FMULS_SYMV(n) + 2. * FADDS_SYMV(n))
-#else
-#define FLOPS(n) (      FMULS_SYMV(n) +      FADDS_SYMV(n))
-#endif
 
 int main(int argc, char **argv)
-{        
-    TESTING_CUDA_INIT();
+{
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    double      flops, magma_perf, error, work[1];
+    real_Double_t   gflops, magma_perf, magma_time, cpu_perf, cpu_time;
+    double          magma_error, work[1];
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
-
-    FILE        *fp ; 
-    magma_int_t N, m, i, lda, LDA;
-    magma_int_t matsize;
-    magma_int_t vecsize;
-    magma_int_t istart = 64;
+    magma_int_t N, lda, sizeA, sizeX, sizeY;
     magma_int_t incx = 1;
-    char        uplo = MagmaLower;
-    cuDoubleComplex alpha = MAGMA_Z_MAKE(  1.5, -2.3 );
-    cuDoubleComplex beta  = MAGMA_Z_MAKE( -0.6,  0.8 );
-    cuDoubleComplex *A, *X, *Y, *Ycublas, *Ymagma;
-    cuDoubleComplex *dA, *dX, *dY;
+    magma_int_t incy = 1;
+    magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex alpha = MAGMA_Z_MAKE(  1.5, -2.3 );
+    magmaDoubleComplex beta  = MAGMA_Z_MAKE( -0.6,  0.8 );
+    magmaDoubleComplex *A, *X, *Y, *Ymagma;
+    magmaDoubleComplex *dA, *dX, *dY;
     
-    fp = fopen ("results_zsymv.txt", "w") ;
-    if( fp == NULL ){ printf("Couldn't open output file\n"); exit(1);}
-
-    printf("SYMV cuDoubleComplex Precision\n\n"
-           "Usage\n\t\t testing_zsymv U|L N\n\n");
-
-    N = 8*1024+64;
-    if( argc > 1 ) {
-      uplo = argv[1][0];
-    }
-    if( argc > 2 ) {
-      istart = N = atoi( argv[2] );
-    }
-    LDA = ((N+31)/32)*32;
-    matsize = N*LDA;
-    vecsize = N*incx;
-
-    TESTING_MALLOC( A, cuDoubleComplex, matsize );
-    TESTING_MALLOC( X, cuDoubleComplex, vecsize );
-    TESTING_MALLOC( Y, cuDoubleComplex, vecsize );
-    TESTING_MALLOC( Ycublas, cuDoubleComplex, vecsize );
-    TESTING_MALLOC( Ymagma,  cuDoubleComplex, vecsize );
-
-    TESTING_DEVALLOC( dA, cuDoubleComplex, matsize );
-    TESTING_DEVALLOC( dX, cuDoubleComplex, vecsize );
-    TESTING_DEVALLOC( dY, cuDoubleComplex, vecsize );
-
-    /* Initialize the matrix */
-    lapackf77_zlarnv( &ione, ISEED, &matsize, A );
-    /* Make A symmetric */
-    { 
-        magma_int_t i, j;
-        for(i=0; i<N; i++) {
-            for(j=0; j<i; j++)
-                A[i*LDA+j] = A[j*LDA+i];
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
+    
+    printf("    N   MAGMA Gflop/s (ms)  CPU Gflop/s (ms)  MAGMA error\n");
+    printf("=========================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N = opts.nsize[i];
+            lda    = ((N+31)/32)*32;
+            sizeA  = N*lda;
+            sizeX  = N*incx;
+            sizeY  = N*incy;
+            gflops = FLOPS_ZSYMV( N ) / 1e9;
+            
+            TESTING_MALLOC( A,       magmaDoubleComplex, sizeA );
+            TESTING_MALLOC( X,       magmaDoubleComplex, sizeX );
+            TESTING_MALLOC( Y,       magmaDoubleComplex, sizeY );
+            TESTING_MALLOC( Ymagma,  magmaDoubleComplex, sizeY );
+            
+            TESTING_DEVALLOC( dA, magmaDoubleComplex, sizeA );
+            TESTING_DEVALLOC( dX, magmaDoubleComplex, sizeX );
+            TESTING_DEVALLOC( dY, magmaDoubleComplex, sizeY );
+            
+            /* Initialize the matrix */
+            lapackf77_zlarnv( &ione, ISEED, &sizeA, A );
+            magma_zmake_hermitian( N, A, lda );
+            lapackf77_zlarnv( &ione, ISEED, &sizeX, X );
+            lapackf77_zlarnv( &ione, ISEED, &sizeY, Y );
+            
+            /* Note: CUBLAS does not implement zsymv */
+            
+            /* =====================================================================
+               Performs operation using MAGMA BLAS
+               =================================================================== */
+            magma_zsetvector( N, Y, incy, dY, incy );
+            
+            magma_time = magma_sync_wtime( 0 );
+            magmablas_zsymv( opts.uplo, N, alpha, dA, lda, dX, incx, beta, dY, incy );
+            magma_time = magma_sync_wtime( 0 ) - magma_time;
+            magma_perf = gflops / magma_time;
+            
+            magma_zgetvector( N, dY, incy, Ymagma, incy );
+            
+            /* =====================================================================
+               Performs operation using CPU BLAS
+               =================================================================== */
+            cpu_time = magma_wtime();
+            lapackf77_zsymv( &opts.uplo, &N, &alpha, A, &lda, X, &incx, &beta, Y, &incy );
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gflops / cpu_time;
+            
+            /* =====================================================================
+               Check the result
+               =================================================================== */
+            blasf77_zaxpy( &N, &c_neg_one, Y, &incy, Ymagma, &incy);
+            magma_error = lapackf77_zlange( "M", &N, &ione, Ymagma, &N, work ) / N;
+            
+            printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
+                   (int) N,
+                   magma_perf,  1000.*magma_time,
+                   cpu_perf,    1000.*cpu_time,
+                   magma_error );
+            
+            TESTING_FREE( A );
+            TESTING_FREE( X );
+            TESTING_FREE( Y );
+            TESTING_FREE( Ymagma );
+            
+            TESTING_DEVFREE( dA );
+            TESTING_DEVFREE( dX );
+            TESTING_DEVFREE( dY );
+        }
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
         }
     }
-        
-    printf( "   n      MAGMABLAS,Gflop/s      \"error\"\n" 
-            "==============================================================\n");
-    fprintf(fp, "   n      MAGMABLAS,Gflop/s      \"error\"\n" 
-            "==============================================================\n");
-    
-    for( i = istart; i<N+1; i = (int)((i+1)*1.1) )
-    {
-        m = i;
-        lda = ((m+31)/32)*32;
-        flops = FLOPS( (double)m ) / 1e6;
 
-        printf(      "%5d ", (int) m );
-        fprintf( fp, "%5d ", (int) m );
-
-        vecsize = m * incx;
-        lapackf77_zlarnv( &ione, ISEED, &vecsize, X );
-        lapackf77_zlarnv( &ione, ISEED, &vecsize, Y );
-
-        /* =====================================================================
-           Performs operation using MAGMA
-           =================================================================== */
-        magma_zsetmatrix( m, m, A, LDA, dA, lda );
-        magma_zsetvector( m, X, incx, dX, incx );
-        magma_zsetvector( m, Y, incx, dY, incx );
-
-        start = get_current_time();
-        magmablas_zsymv( uplo, m, alpha, dA, lda, dX, incx, beta, dY, incx );
-        end = get_current_time();
-        
-        magma_zgetvector( m, dY, incx, Ymagma, incx );
-        
-        magma_perf = flops /  GetTimerValue(start,end);
-        printf(     "%11.2f", magma_perf );
-        fprintf(fp, "%11.2f", magma_perf );
-
-        /* =====================================================================
-           Computing the Difference Lapack VS Magma
-           =================================================================== */
-        
-        blasf77_zcopy( &m, Y, &incx, Ycublas, &incx );
-        lapackf77_zsymv( MagmaLowerStr, &m, &alpha, A, &LDA, X, &incx, &beta, Ycublas, &incx );
-
-        blasf77_zaxpy( &m, &c_neg_one, Ymagma, &incx, Ycublas, &incx);
-        error = lapackf77_zlange( "M", &m, &ione, Ycublas, &m, work );
-
-        printf(      "\t\t %8.6e\n", error / m );
-        fprintf( fp, "\t\t %8.6e\n", error / m );
-    }
-    
-    fclose( fp ) ; 
-
-    /* Free Memory */
-    TESTING_FREE( A );
-    TESTING_FREE( X );
-    TESTING_FREE( Y );
-    TESTING_FREE( Ycublas );
-    TESTING_FREE( Ymagma );
-
-    TESTING_DEVFREE( dA );
-    TESTING_DEVFREE( dX );
-    TESTING_DEVFREE( dY );
-
-    /* Free device */
-    TESTING_CUDA_FINALIZE();
+    TESTING_FINALIZE();
     return 0;
-}        
+}

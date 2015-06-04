@@ -93,7 +93,7 @@ FRC:
 	@FRC=$(FRC)
 
 clean:
-	rm -f *.o
+	rm -f *.o $(TMGLIB)
 
 #slaran.o: slaran.f
 #	$(FORT) $(NOOPT) -c $<

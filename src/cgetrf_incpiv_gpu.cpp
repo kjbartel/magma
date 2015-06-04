@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Hatem Ltaief
        @author Mathieu Faverge
 
-       @generated c Wed Nov 14 22:53:07 2012
+       @generated c Fri Jun 28 19:32:14 2013
 
 */
 #ifdef MAGMA_WITH_PLASMA
@@ -17,43 +17,37 @@
 #include <core_blas.h>
 #include "common_magma.h"
 
-#define magma_cgemm magmablas_cgemm
-//#define magma_ctrsm magmablas_ctrsm
-//#define magma_ctrmm magmablas_ctrmm
-
 extern "C" magma_int_t
 magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t ib,
-                         cuFloatComplex *hA, magma_int_t ldha, cuFloatComplex *dA, magma_int_t ldda,
-                         cuFloatComplex *hL, magma_int_t ldhl, cuFloatComplex *dL, magma_int_t lddl,
-                         magma_int_t *ipiv, 
-                         cuFloatComplex *dwork, magma_int_t lddwork,
+                         magmaFloatComplex *hA, magma_int_t ldha, magmaFloatComplex *dA, magma_int_t ldda,
+                         magmaFloatComplex *hL, magma_int_t ldhl, magmaFloatComplex *dL, magma_int_t lddl,
+                         magma_int_t *ipiv,
+                         magmaFloatComplex *dwork, magma_int_t lddwork,
                          magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CGETRF_INCPIV computes an LU factorization of a general M-by-N tile A
     using partial pivoting with row interchanges.
-  
+
     The factorization has the form
-  
+
       A = P * L * U
-  
+
     where P is a permutation matrix, L is lower triangular with unit
     diagonal elements (lower trapezoidal if m > n), and U is upper
     triangular (upper trapezoidal if m < n).
-  
+
     This is the right-looking Level 2.5 BLAS version of the algorithm.
 
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -66,41 +60,41 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
     hA      (input,output) DOUBLE COMPLEX array, dimension(LDHA, N), on cpu.
             On entry, only the M-by-IB first panel needs to be identical to dA(1..M, 1..IB).
             On exit, the content is incomplete. Shouldn't be used.
- 
+
     LDHA    (input) INTEGER
             The leading dimension of the array hA.  LDHA >= max(1,M).
- 
+
     dA      (input,output) DOUBLE COMPLEX array, dimension(LDDA, N) , on gpu.
             On entry, the M-by-N tile to be factored.
             On exit, the factors L and U from the factorization
             A = P*L*U; the unit diagonal elements of L are not stored.
- 
+
     LDDA    (input) INTEGER
             The leading dimension of the array dA.  LDDA >= max(1,M).
- 
+
     hL      (output) DOUBLE COMPLEX array, dimension(LDHL, min(M,N)), on vpu.
             On exit, contains in the upper part the IB-by-K lower triangular tile,
             and in the lower part IB-by-min(M,N) the inverse of the top part.
- 
+
     LDHL    (input) INTEGER
             The leading dimension of the array hL.  LDHL >= max(1,2*IB).
- 
+
     dL      (output) DOUBLE COMPLEX array, dimension(LDDL, K), on gpu.
             On exit, contains in the upper part the IB-by-min(M,N) lower triangular tile,
             and in the lower part IB-by-min(M,N) the inverse of the top part.
- 
+
     LDDL    (input) INTEGER
             The leading dimension of the array dL.  LDDL >= max(1,2*IB).
- 
+
     IPIV    (output) INTEGER array, dimension min(M,N), on the cpu.
             The pivot indices array.
- 
+
     dWORK   (output) DOUBLE COMPLEX array, dimension(LDDWORK, 2*IB), on gpu.
             Workspace.
 
     LDDWORK (input) INTEGER
             The leading dimension of the array dWORK.  LDDWORK >= max(NB, 1).
- 
+
     INFO    (output) INTEGER
             - PLASMA_SUCCESS successful exit
             - < 0 if INFO = -k, the k-th argument had an illegal value
@@ -108,7 +102,7 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
                 has been completed, but the factor U is exactly
                 singular, and division by zero will occur if it is used
                 to solve a system of equations.
-           
+
     =====================================================================    */
 
 #define AT(i,j) (dAT + (i)*ib*ldda + (j)*ib)
@@ -118,16 +112,16 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
 #define dL(j)   (dL  + (j)*ib*lddl         )
 #define dL2(j)  (dL2 + (j)*ib*lddl         )
 
-    cuFloatComplex c_one     = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex c_one     = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
 
     magma_int_t iinfo;
     magma_int_t maxm, mindim;
     magma_int_t i, rows, cols, s, ii, sb;
-    cuFloatComplex *dAT;
+    magmaFloatComplex *dAT;
 #ifndef WITHOUTTRTRI
-    cuFloatComplex *dL2 = dL + ib;
-    cuFloatComplex *hL2 = hL + ib;
+    magmaFloatComplex *dL2 = dL + ib;
+    magmaFloatComplex *hL2 = hL + ib;
 #endif
 
     /* Check arguments */
@@ -157,19 +151,19 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
         lapackf77_cgetrf(&m, &n, hA, &ldha, ipiv, info);
 
 #ifndef WITHOUTTRTRI
-        CORE_clacpy(PlasmaUpperLower, mindim, mindim, 
-                    (PLASMA_Complex32_t*)hA, ldha, 
+        CORE_clacpy(PlasmaUpperLower, mindim, mindim,
+                    (PLASMA_Complex32_t*)hA, ldha,
                     (PLASMA_Complex32_t*)hL2, ldhl );
 
-        CORE_ctrtri( PlasmaLower, PlasmaUnit, mindim, 
+        CORE_ctrtri( PlasmaLower, PlasmaUnit, mindim,
                      (PLASMA_Complex32_t*)hL2, ldhl, info );
         if (*info != 0 ) {
-          fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
-        }          
+            fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
+        }
 
         magma_csetmatrix( mindim, mindim, hL2, ldhl, dL2, lddl );
 #endif
-            
+
         if ( (storev == 'R') || (storev == 'r') ) {
             magma_csetmatrix( m, n, hA, ldha, dwork, lddwork );
             magmablas_ctranspose( dA, ldda, dwork, lddwork, m, n );
@@ -186,7 +180,7 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
         } else {
             dAT = dA;
         }
-            
+
         for( i=0; i<s; i++ )
         {
             ii = i * ib;
@@ -197,24 +191,24 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
                 // download i-th panel
                 magmablas_ctranspose( dwork, maxm, AT(0, i), ldda, sb, m );
                 magma_cgetmatrix( m, sb, dwork, maxm, hA(0, i), ldha );
-                
+
                 // make sure that gpu queue is empty
                 //magma_device_sync();
 #ifndef WITHOUTTRTRI
-                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
-                             n - (ii+sb), ib, 
-                             c_one, dL2(i-1),    lddl, 
+                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit,
+                             n - (ii+sb), ib,
+                             c_one, dL2(i-1),    lddl,
                                     AT(i-1,i+1), ldda );
 #else
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
-                             n - (ii+sb), ib, 
-                             c_one, AT(i-1,i-1), ldda, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
+                             n - (ii+sb), ib,
+                             c_one, AT(i-1,i-1), ldda,
                                     AT(i-1,i+1), ldda );
 #endif
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
-                             n-(ii+sb), m-ii, ib, 
-                             c_neg_one, AT(i-1,i+1), ldda, 
-                                        AT(i,  i-1), ldda, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
+                             n-(ii+sb), m-ii, ib,
+                             c_neg_one, AT(i-1,i+1), ldda,
+                                        AT(i,  i-1), ldda,
                              c_one,     AT(i,  i+1), ldda );
             }
 
@@ -224,7 +218,7 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
             if ( (*info == 0) && (iinfo > 0) )
                 *info = iinfo + ii;
 
-            { 
+            {
                 int j;
                 int fin = ii + sb;
                 for(j=ii ; j <fin; j++) {
@@ -234,14 +228,14 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
             magmablas_claswp( n-ii, AT(0, i), ldda, ii+1, ii+sb, ipiv, 1 );
 
 #ifndef WITHOUTTRTRI
-            CORE_clacpy(PlasmaLower, sb, sb, 
-                        (PLASMA_Complex32_t*)hA(i, i), ldha, 
+            CORE_clacpy(PlasmaLower, sb, sb,
+                        (PLASMA_Complex32_t*)hA(i, i), ldha,
                         (PLASMA_Complex32_t*)hL2(i), ldhl );
-            
-            CORE_ctrtri( PlasmaLower, PlasmaUnit, sb, 
+
+            CORE_ctrtri( PlasmaLower, PlasmaUnit, sb,
                          (PLASMA_Complex32_t*)hL2(i), ldhl, info );
             if (*info != 0 ) {
-              fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
+                fprintf(stderr, "ERROR, trtri returned with info = %d\n", *info);
             }
             magma_csetmatrix( sb, sb, hL2(i), ldhl, dL2(i), lddl );
 #endif
@@ -252,40 +246,40 @@ magma_cgetrf_incpiv_gpu( char storev, magma_int_t m, magma_int_t n, magma_int_t 
             // do the small non-parallel computations
             if ( s > (i+1) ) {
 #ifndef WITHOUTTRTRI
-                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
-                             sb, sb, 
+                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit,
+                             sb, sb,
                              c_one, dL2(i),     lddl,
                                     AT(i, i+1), ldda);
 #else
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
-                             sb, sb, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
+                             sb, sb,
                              c_one, AT(i, i  ), ldda,
                                     AT(i, i+1), ldda);
 #endif
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
-                             sb, m-(ii+sb), sb, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
+                             sb, m-(ii+sb), sb,
                              c_neg_one, AT(i,   i+1), ldda,
-                                        AT(i+1, i  ), ldda, 
+                                        AT(i+1, i  ), ldda,
                              c_one,     AT(i+1, i+1), ldda );
             }
             else {
                 /* Update of the last panel */
 #ifndef WITHOUTTRTRI
-                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit, 
-                             n-mindim, sb, 
+                magma_ctrmm( MagmaRight, MagmaLower, MagmaTrans, MagmaUnit,
+                             n-mindim, sb,
                              c_one, dL2(i),     lddl,
                                     AT(i, i+1), ldda);
 #else
-                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit, 
-                             n-mindim, sb, 
+                magma_ctrsm( MagmaRight, MagmaUpper, MagmaNoTrans, MagmaUnit,
+                             n-mindim, sb,
                              c_one, AT(i, i  ), ldda,
                                     AT(i, i+1), ldda);
 #endif
                 /* m-(ii+sb) should be always 0 */
-                magma_cgemm( MagmaNoTrans, MagmaNoTrans, 
+                magma_cgemm( MagmaNoTrans, MagmaNoTrans,
                              n-mindim, m-(ii+sb), sb,
                              c_neg_one, AT(i,   i+1), ldda,
-                                        AT(i+1, i  ), ldda, 
+                                        AT(i+1, i  ), ldda,
                              c_one,     AT(i+1, i+1), ldda );
             }
         }

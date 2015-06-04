@@ -1,11 +1,11 @@
 /*
-   -- MAGMA (version 1.3.0) --
-   Univ. of Tennessee, Knoxville
-   Univ. of California, Berkeley
-   Univ. of Colorado, Denver
-   November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-   @precisions normal z -> s d c
+       @precisions normal z -> s d c
 
 */
 
@@ -17,19 +17,18 @@
 extern "C" magma_int_t
 magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
              magma_int_t nb, magma_int_t *kb,
-             cuDoubleComplex *A,  magma_int_t lda,
-             cuDoubleComplex *dA, magma_int_t ldda,
-             magma_int_t *jpvt, cuDoubleComplex *tau, double *vn1, double *vn2,
-             cuDoubleComplex *auxv,
-             cuDoubleComplex *F,  magma_int_t ldf,
-             cuDoubleComplex *dF, magma_int_t lddf)
+             magmaDoubleComplex *A,  magma_int_t lda,
+             magmaDoubleComplex *dA, magma_int_t ldda,
+             magma_int_t *jpvt, magmaDoubleComplex *tau, double *vn1, double *vn2,
+             magmaDoubleComplex *auxv,
+             magmaDoubleComplex *F,  magma_int_t ldf,
+             magmaDoubleComplex *dF, magma_int_t lddf)
 {
-/*
-    -- MAGMA (version 1.3.0) --
-    Univ. of Tennessee, Knoxville
-    Univ. of California, Berkeley
-    Univ. of Colorado, Denver
-    November 2012
+/*  -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
     Purpose
     =======
@@ -62,7 +61,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
     KB      (output) INTEGER
             The number of columns actually factorized.
 
-    A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+    A       (input/output) COMPLEX_16 array, dimension (LDA,N)
             On entry, the M-by-N matrix A.
             On exit, block A(OFFSET+1:M,1:KB) is the triangular
             factor obtained and block A(1:OFFSET,1:N) has been
@@ -77,7 +76,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
             JPVT(I) = K <==> Column K of the full matrix A has been
             permuted into position I in AP.
 
-    TAU     (output) COMPLEX*16 array, dimension (KB)
+    TAU     (output) COMPLEX_16 array, dimension (KB)
             The scalar factors of the elementary reflectors.
 
     VN1     (input/output) DOUBLE PRECISION array, dimension (N)
@@ -86,10 +85,10 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
     VN2     (input/output) DOUBLE PRECISION array, dimension (N)
             The vector with the exact column norms.
 
-    AUXV    (input/output) COMPLEX*16 array, dimension (NB)
+    AUXV    (input/output) COMPLEX_16 array, dimension (NB)
             Auxiliar vector.
 
-    F       (input/output) COMPLEX*16 array, dimension (LDF,NB)
+    F       (input/output) COMPLEX_16 array, dimension (LDF,NB)
             Matrix F' = L*Y'*A.
 
     LDF     (input) INTEGER
@@ -102,17 +101,17 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
 #define  F(i, j) (F  + (i) + (j)*(ldf ))
 #define dF(i, j) (dF + (i) + (j)*(lddf))
 
-    cuDoubleComplex c_zero    = MAGMA_Z_MAKE( 0.,0.);
-    cuDoubleComplex c_one     = MAGMA_Z_MAKE( 1.,0.);
-    cuDoubleComplex c_neg_one = MAGMA_Z_MAKE(-1.,0.);
+    magmaDoubleComplex c_zero    = MAGMA_Z_MAKE( 0.,0.);
+    magmaDoubleComplex c_one     = MAGMA_Z_MAKE( 1.,0.);
+    magmaDoubleComplex c_neg_one = MAGMA_Z_MAKE(-1.,0.);
     magma_int_t ione = 1;
     
     magma_int_t i__1, i__2;
     double d__1;
-    cuDoubleComplex z__1;
+    magmaDoubleComplex z__1;
     
     magma_int_t j, k, rk;
-    cuDoubleComplex Akk;
+    magmaDoubleComplex Akk;
     magma_int_t pvt;
     double temp, temp2, tol3z;
     magma_int_t itemp;
@@ -123,7 +122,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
     lastrk = min( m, n + offset );
     tol3z = magma_dsqrt( lapackf77_dlamch("Epsilon"));
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     lsticc = 0;
@@ -134,7 +133,6 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
         /* Determine ith pivot column and swap if necessary */
         // Fortran: pvt, k, idamax are all 1-based; subtract 1 from k.
         // C:       pvt, k, idamax are all 0-based; don't subtract 1.
-        //pvt = k - 1 + idamax_( n-k+1, &vn1[k], &ione);
         pvt = k + cblas_idamax( n-k, &vn1[k], ione );
         
         if (pvt != k) {
@@ -156,7 +154,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
             vn2[pvt] = vn2[k];
 
             if (pvt < nb){
-                /* no need of transfer if pivot is within the panel */ 
+                /* no need of transfer if pivot is within the panel */
                 blasf77_zswap( &m, A(0, pvt), &ione, A(0, k), &ione );
             }
             else {
@@ -177,7 +175,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
            A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)'.
            Optimization: multiply with beta=0; wait for vector and subtract */
         if (k > 0) {
-            #if (defined(PRECISION_c) || defined(PRECISION_z))
+            #if defined(PRECISION_c) || defined(PRECISION_z)
             for (j = 0; j < k; ++j){
                 *F(k,j) = MAGMA_Z_CNJG( *F(k,j) );
             }
@@ -190,7 +188,7 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
                                        F(k,  0), &ldf,
                            &c_one,     A(rk, k), &ione );
 
-            #if (defined(PRECISION_c) || defined(PRECISION_z))
+            #if defined(PRECISION_c) || defined(PRECISION_z)
             for (j = 0; j < k; ++j) {
                 *F(k,j) = MAGMA_Z_CNJG( *F(k,j) );
             }
@@ -341,9 +339,9 @@ magma_zlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
             double r1, r2;
             
             r1 = cblas_dznrm2(nb-k, A(rk + 1, lsticc), ione);
-            r2 = cublasDznrm2(m-offset-nb, dA(offset + nb + 1, lsticc), ione);
+            r2 = magma_dznrm2(m-offset-nb, dA(offset + nb + 1, lsticc), ione);
             
-            //vn1[lsticc] = cublasDznrm2(i__1, dA(rk + 1, lsticc), ione);
+            //vn1[lsticc] = magma_dznrm2(i__1, dA(rk + 1, lsticc), ione);
             vn1[lsticc] = magma_dsqrt(r1*r1+r2*r2);
         }
         

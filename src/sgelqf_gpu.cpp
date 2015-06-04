@@ -1,29 +1,28 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:08 2012
+       @generated s Fri Jun 28 19:32:15 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_sgelqf_gpu( magma_int_t m, magma_int_t n, 
-                  float *dA,    magma_int_t lda,   float *tau, 
+magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
+                  float *dA,    magma_int_t lda,   float *tau,
                   float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     SGELQF computes an LQ factorization of a REAL M-by-N matrix dA:
     dA = L * Q.
 
@@ -73,7 +72,6 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -131,27 +129,27 @@ magma_sgelqf_gpu( magma_int_t m, magma_int_t n,
 
     dAT = dA;
     
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
+    if ( m == n ) {
         ldat = lda;
-        magmablas_sinplace_transpose( dAT, lda, maxm );
+        magmablas_stranspose_inplace( m, dAT, lda );
     }
     else {
-      if (MAGMA_SUCCESS != magma_smalloc( &dAT, maxm*maxn ) ){
-        *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info;
-      }
-      
-      magmablas_stranspose2( dAT, ldat, dA, lda, m, n );
+        if (MAGMA_SUCCESS != magma_smalloc( &dAT, maxm*maxn ) ){
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
+        
+        magmablas_stranspose2( dAT, ldat, dA, lda, m, n );
     }
     
     magma_sgeqrf2_gpu(n, m, dAT, ldat, tau, &iinfo);
 
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
-      magmablas_sinplace_transpose( dAT, ldat, maxm );
+    if ( m == n ) {
+        magmablas_stranspose_inplace( m, dAT, ldat );
     }
     else {
-      magmablas_stranspose2( dA, lda, dAT, ldat, n, m );
-      magma_free( dAT );
+        magmablas_stranspose2( dA, lda, dAT, ldat, n, m );
+        magma_free( dAT );
     }
 
     return *info;

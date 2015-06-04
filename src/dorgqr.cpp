@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:16 2012
+       @generated d Fri Jun 28 19:32:25 2013
 
        @author Stan Tomov
        @author Mark Gates
@@ -19,11 +19,11 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
              double *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -139,7 +139,7 @@ magma_dorgqr(magma_int_t m, magma_int_t n, magma_int_t k,
         return *info;
     }
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // Use unblocked code for the last or only block.

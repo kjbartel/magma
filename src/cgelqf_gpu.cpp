@@ -1,29 +1,28 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:09 2012
+       @generated c Fri Jun 28 19:32:15 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_cgelqf_gpu( magma_int_t m, magma_int_t n, 
-                  cuFloatComplex *dA,    magma_int_t lda,   cuFloatComplex *tau, 
-                  cuFloatComplex *work, magma_int_t lwork, magma_int_t *info)
+magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
+                  magmaFloatComplex *dA,    magma_int_t lda,   magmaFloatComplex *tau,
+                  magmaFloatComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CGELQF computes an LQ factorization of a COMPLEX M-by-N matrix dA:
     dA = L * Q.
 
@@ -73,7 +72,6 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -89,8 +87,8 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
 
     #define  a_ref(a_1,a_2) ( dA+(a_2)*(lda) + (a_1))
 
-    cuFloatComplex *dAT;
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    magmaFloatComplex *dAT;
+    magmaFloatComplex c_one = MAGMA_C_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo;
     int lquery;
@@ -131,27 +129,27 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
 
     dAT = dA;
     
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
+    if ( m == n ) {
         ldat = lda;
-        magmablas_cinplace_transpose( dAT, lda, maxm );
+        magmablas_ctranspose_inplace( m, dAT, lda );
     }
     else {
-      if (MAGMA_SUCCESS != magma_cmalloc( &dAT, maxm*maxn ) ){
-        *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info;
-      }
-      
-      magmablas_ctranspose2( dAT, ldat, dA, lda, m, n );
+        if (MAGMA_SUCCESS != magma_cmalloc( &dAT, maxm*maxn ) ){
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            return *info;
+        }
+        
+        magmablas_ctranspose2( dAT, ldat, dA, lda, m, n );
     }
     
     magma_cgeqrf2_gpu(n, m, dAT, ldat, tau, &iinfo);
 
-    if ((m == n) && (m % 32 == 0) && (lda%32 == 0)){
-      magmablas_cinplace_transpose( dAT, ldat, maxm );
+    if ( m == n ) {
+        magmablas_ctranspose_inplace( m, dAT, ldat );
     }
     else {
-      magmablas_ctranspose2( dA, lda, dAT, ldat, n, m );
-      magma_free( dAT );
+        magmablas_ctranspose2( dA, lda, dAT, ldat, n, m );
+        magma_free( dAT );
     }
 
     return *info;

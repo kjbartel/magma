@@ -1,124 +1,124 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
-  
+       June 2013
+
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated c Wed Nov 14 22:53:13 2012
+       @generated c Fri Jun 28 19:32:21 2013
 
 */
 #include "common_magma.h"
 
 extern"C"{
-  void magmablas_csetdiag1subdiag0(char uplo, int k, int nb, cuFloatComplex *A, int lda);
+  void magmablas_csetdiag1subdiag0(char uplo, int k, int nb, magmaFloatComplex *A, int lda);
 }
 
 extern "C" magma_int_t
-magma_cunmqr2_gpu(const char side, const char trans, 
-                  magma_int_t m, magma_int_t n, magma_int_t k, 
-                  cuFloatComplex *da,   magma_int_t ldda,
-                  cuFloatComplex *tau, 
-                  cuFloatComplex *dc,    magma_int_t lddc,
-                  cuFloatComplex *wa,    magma_int_t ldwa, 
+magma_cunmqr2_gpu(const char side, const char trans,
+                  magma_int_t m, magma_int_t n, magma_int_t k,
+                  magmaFloatComplex *da,   magma_int_t ldda,
+                  magmaFloatComplex *tau,
+                  magmaFloatComplex *dc,    magma_int_t lddc,
+                  magmaFloatComplex *wa,    magma_int_t ldwa,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
-    CUNMQR overwrites the general complex M-by-N matrix C with   
+    Purpose
+    =======
+    CUNMQR overwrites the general complex M-by-N matrix C with
 
-                    SIDE = 'L'     SIDE = 'R'   
-    TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q**H * C     C * Q**H   
+                    SIDE = 'L'     SIDE = 'R'
+    TRANS = 'N':      Q * C          C * Q
+    TRANS = 'T':      Q**H * C     C * Q**H
 
-    where Q is a complex orthogonal matrix defined as the product of k   
-    elementary reflectors   
+    where Q is a complex orthogonal matrix defined as the product of k
+    elementary reflectors
 
-          Q = H(1) H(2) . . . H(k)   
+          Q = H(1) H(2) . . . H(k)
 
-    as returned by CGEQRF. Q is of order M if SIDE = 'L' and of order N   
-    if SIDE = 'R'.   
+    as returned by CGEQRF. Q is of order M if SIDE = 'L' and of order N
+    if SIDE = 'R'.
 
-    Arguments   
-    =========   
-    SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q**H from the Left;   
-            = 'R': apply Q or Q**H from the Right.   
+    Arguments
+    =========
+    SIDE    (input) CHARACTER*1
+            = 'L': apply Q or Q**H from the Left;
+            = 'R': apply Q or Q**H from the Right.
 
-    TRANS   (input) CHARACTER*1   
-            = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q**H.   
+    TRANS   (input) CHARACTER*1
+            = 'N':  No transpose, apply Q;
+            = 'T':  Transpose, apply Q**H.
 
-    M       (input) INTEGER   
-            The number of rows of the matrix C. M >= 0.   
+    M       (input) INTEGER
+            The number of rows of the matrix C. M >= 0.
 
-    N       (input) INTEGER   
-            The number of columns of the matrix C. N >= 0.   
+    N       (input) INTEGER
+            The number of columns of the matrix C. N >= 0.
 
-    K       (input) INTEGER   
-            The number of elementary reflectors whose product defines   
-            the matrix Q.   
-            If SIDE = 'L', M >= K >= 0;   
-            if SIDE = 'R', N >= K >= 0.   
+    K       (input) INTEGER
+            The number of elementary reflectors whose product defines
+            the matrix Q.
+            If SIDE = 'L', M >= K >= 0;
+            if SIDE = 'R', N >= K >= 0.
 
-    DA      (input) COMPLEX array, dimension (LDA,K)   
-            The i-th column must contain the vector which defines the   
-            elementary reflector H(i), for i = 1,2,...,k, as returned by   
+    DA      (input) COMPLEX array, dimension (LDA,K)
+            The i-th column must contain the vector which defines the
+            elementary reflector H(i), for i = 1,2,...,k, as returned by
             CGEQRF in the first k columns of its array argument A.
             The diagonal and the upper part
             are destroyed, the reflectors are not modified.
 
-    LDDA    (input) INTEGER   
-            The leading dimension of the array DA.   
-            LDDA >= max(1,M) if SIDE = 'L'; LDDA >= max(1,N) if SIDE = 'R'.     
+    LDDA    (input) INTEGER
+            The leading dimension of the array DA.
+            LDDA >= max(1,M) if SIDE = 'L'; LDDA >= max(1,N) if SIDE = 'R'.
 
-    TAU     (input) COMPLEX array, dimension (K)   
-            TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by CGEQRF.   
+    TAU     (input) COMPLEX array, dimension (K)
+            TAU(i) must contain the scalar factor of the elementary
+            reflector H(i), as returned by CGEQRF.
 
-    DC      (device input/output) COMPLEX array, dimension (LDDC,N)   
-            On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.   
+    DC      (device input/output) COMPLEX array, dimension (LDDC,N)
+            On entry, the M-by-N matrix C.
+            On exit, C is overwritten by (Q*C) or (Q**H * C) or (C * Q**H) or (C*Q).
 
-    LDDC    (input) INTEGER   
-            The leading dimension of the array C. LDDC >= max(1,M). 
+    LDDC    (input) INTEGER
+            The leading dimension of the array C. LDDC >= max(1,M).
 
-    WA      (input/workspace) COMPLEX array, dimension   
-                                 (LDWA,M) if SIDE = 'L'   
-                                 (LDWA,N) if SIDE = 'R'   
-            The vectors which define the elementary reflectors, as   
-            returned by CHETRD_GPU.   
+    WA      (input/workspace) COMPLEX array, dimension
+                                 (LDWA,M) if SIDE = 'L'
+                                 (LDWA,N) if SIDE = 'R'
+            The vectors which define the elementary reflectors, as
+            returned by CHETRD_GPU.
 
-    LDWA    (input) INTEGER   
-            The leading dimension of the array A.   
-            LDWA >= max(1,M) if SIDE = 'L'; LDWA >= max(1,N) if SIDE = 'R'.  
+    LDWA    (input) INTEGER
+            The leading dimension of the array A.
+            LDWA >= max(1,M) if SIDE = 'L'; LDWA >= max(1,N) if SIDE = 'R'.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
-    
-    cuFloatComplex c_one = MAGMA_C_ONE;
 
-    char side_[2] = {side, 0};
+    magmaFloatComplex c_one = MAGMA_C_ONE;
+
+    char side_[2]  = {side,  0};
     char trans_[2] = {trans, 0};
 
     /* Allocate work space on the GPU */
-    cuFloatComplex *dwork;
+    magmaFloatComplex *dwork;
 
     magma_int_t wa_offset, dc_offset, i__4, lddwork;
-    magma_int_t i__;
-    cuFloatComplex t[2*4160]        /* was [65][64] */;
-    magma_int_t i1, i2, i3, ib, ic, jc, nb, mi, ni, nq, nw;
+    magma_int_t i;
+    magmaFloatComplex t[2*4160]        /* was [65][64] */;
+    magma_int_t i1, i2, step, ib, ic, jc, nb, mi, ni, nq, nw;
     int left, notran;
 
     wa_offset = 1 + ldwa;
@@ -128,7 +128,7 @@ magma_cunmqr2_gpu(const char side, const char trans,
     dc -= dc_offset;
 
     *info = 0;
-    left = lapackf77_lsame(side_, "L");
+    left   = lapackf77_lsame(side_,  "L");
     notran = lapackf77_lsame(trans_, "N");
 
     /* NQ is the order of Q and NW is the minimum dimension of WORK */
@@ -161,7 +161,7 @@ magma_cunmqr2_gpu(const char side, const char trans,
 
     // size of the block
     nb = 64;
-  
+
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
         return *info;
@@ -171,66 +171,63 @@ magma_cunmqr2_gpu(const char side, const char trans,
     if (m == 0 || n == 0 || k == 0) {
         return *info;
     }
-        
-        /* Use hybrid CPU-GPU code */
-  
-        if ( ( left && (! notran) ) ||  ( (! left) && notran ) ) {
-            i1 = 1;
-            i2 = k;
-            i3 = nb;
-        } else {
-            i1 = (k - 1) / nb * nb + 1;
-            i2 = 1;
-            i3 = -nb;
-        }
+
+    /* Use hybrid CPU-GPU code */
+    if ( ( left && (! notran) ) ||  ( (! left) && notran ) ) {
+        i1 = 1;
+        i2 = k;
+        step = nb;
+    } else {
+        i1 = ((k - 1)/nb)*nb + 1;
+        i2 = 1;
+        step = -nb;
+    }
+
+    if (left) {
+        ni = n;
+        jc = 1;
+    } else {
+        mi = m;
+        ic = 1;
+    }
+
+    magmablas_csetdiag1subdiag0('L', k, nb, da, ldda);
+
+    // for i=i1 to i2 by step
+    for (i = i1; (step < 0 ? i >= i2 : i <= i2); i += step) {
+        ib = min(nb, k - i + 1);
+
+        /* Form the triangular factor of the block reflector
+           H = H(i) H(i+1) . . . H(i+ib-1) */
+        i__4 = nq - i + 1;
+        lapackf77_clarft("F", "C", &i__4, &ib, &wa[i + i*ldwa], &ldwa,
+                         &tau[i], t, &ib);
+
 
         if (left) {
-            ni = n;
-            jc = 1;
-        } else {
-            mi = m;
-            ic = 1;
+            /* H or H' is applied to C(i:m,1:n) */
+            mi = m - i + 1;
+            ic = i;
         }
-  
-        magmablas_csetdiag1subdiag0('L', k, nb, da, ldda);
-        
-        for (i__ = i1; i3 < 0 ? i__ >= i2 : i__ <= i2; i__ += i3) 
-          {
-            ib = min(nb, k - i__ + 1);
+        else {
+            /* H or H' is applied to C(1:m,i:n) */
+            ni = n - i + 1;
+            jc = i;
+        }
 
-            /* Form the triangular factor of the block reflector   
-               H = H(i) H(i+1) . . . H(i+ib-1) */
-            i__4 = nq - i__ + 1;
-            lapackf77_clarft("F", "C", &i__4, &ib, &wa[i__ + i__ * ldwa], &ldwa, 
-                             &tau[i__], t, &ib);
+        if (left)
+            lddwork = ni;
+        else
+            lddwork = mi;
 
-            
-            if (left) 
-              {
-                /* H or H' is applied to C(i:m,1:n) */
-                mi = m - i__ + 1;
-                ic = i__;
-              } 
-            else 
-              {
-                /* H or H' is applied to C(1:m,i:n) */
-                ni = n - i__ + 1;
-                jc = i__;
-              }
-
-            if (left)
-                lddwork = ni;
-            else
-                lddwork = mi;
-            
-            /* Apply H or H'; First copy T to the GPU */
-            magma_csetmatrix( ib, ib, t, ib, dwork, ib );
-            magma_clarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
-                              mi, ni, ib,
-                              da + (i__ - 1) + (i__ - 1) * ldda , ldda, dwork, ib,
-                              &dc[ic + jc * lddc], lddc, 
-                              dwork + ib*ib, lddwork);
-          }
+        /* Apply H or H'; First copy T to the GPU */
+        magma_csetmatrix( ib, ib, t, ib, dwork, ib );
+        magma_clarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
+                          mi, ni, ib,
+                          da + (i - 1) + (i - 1)*ldda , ldda, dwork, ib,
+                          &dc[ic + jc*lddc], lddc,
+                          dwork + ib*ib, lddwork);
+    }
 
     magma_free( dwork );
 

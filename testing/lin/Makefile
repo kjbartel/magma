@@ -248,7 +248,7 @@ ZLINTSTRFP = zchkrfp.o zdrvrfp.o zdrvrf1.o zdrvrf2.o zdrvrf3.o zdrvrf4.o zerrrfp
 	zlatb4.o zlaipd.o zlarhs.o zsbmv.o zget04.o zpot01.o zpot03.o zpot02.o \
 	chkxer.o xerbla.o alaerh.o aladhd.o alahd.o alasvm.o 
 
-TMGLIB = tmglib.a
+TMGLIB = ../matgen/tmglib.a
 
 all:  single double complex complex16 liblapacktest.a
 
@@ -257,40 +257,39 @@ double: xlintstd
 complex: xlintstc
 complex16: xlintstz 
 
+$(TMGLIB):
+	cd ../matgen && $(MAKE)
+
 liblapacktest.a: $(OBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(OBJ)
 	$(RANLIB) $@
 
-xlintsts : $(ALINTST) $(SLINTST) $(SCLNTST) ../fortran.o
+xlintsts : $(ALINTST) $(SLINTST) $(SCLNTST) ../fortran.o $(TMGLIB)
 	$(FORT) $(ALINTST) $(SCLNTST) $(SLINTST) \
-	../matgen/$(TMGLIB) -o xlintsts \
+	$(TMGLIB) -o xlintsts \
 	../fortran.o \
-	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas \
+	$(LDOPTS) -L../../lib -lmagma \
 	$(LIBDIR) $(LIB) 
 
-xlintstc : $(ALINTST) $(CLINTST) $(SCLNTST) ../fortran.o
+xlintstc : $(ALINTST) $(CLINTST) $(SCLNTST) ../fortran.o $(TMGLIB)
 	$(FORT) $(ALINTST) $(SCLNTST) $(CLINTST) \
-	../matgen/$(TMGLIB) -o xlintstc \
+	$(TMGLIB) -o xlintstc \
 	../fortran.o \
-	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas \
+	$(LDOPTS) -L../../lib -lmagma \
 	$(LIBDIR) $(LIB) 
  
-xlintstd : $(ALINTST) $(DLINTST) $(DZLNTST) ../fortran.o
+xlintstd : $(ALINTST) $(DLINTST) $(DZLNTST) ../fortran.o $(TMGLIB)
 	$(FORT) $(ALINTST) $(DLINTST) $(DZLNTST) \
-	../matgen/$(TMGLIB) -o xlintstd \
+	$(TMGLIB) -o xlintstd \
 	../fortran.o \
-	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas \
+	$(LDOPTS) -L../../lib -lmagma \
 	$(LIBDIR) $(LIB) 
  
-xlintstz : $(ALINTST) $(ZLINTST) $(DZLNTST) ../fortran.o
+xlintstz : $(ALINTST) $(ZLINTST) $(DZLNTST) ../fortran.o $(TMGLIB)
 	$(FORT) $(ALINTST) $(DZLNTST) $(ZLINTST) \
-	../matgen/$(TMGLIB) -o xlintstz \
+	$(TMGLIB) -o xlintstz \
 	../fortran.o \
-	$(LDOPTS) -L../../lib \
-	-lcuda -lmagma -lmagmablas -lmagma \
+	$(LDOPTS) -L../../lib -lmagma \
 	$(LIBDIR) $(LIB) 
  
 $(ALINTST): $(FRC)

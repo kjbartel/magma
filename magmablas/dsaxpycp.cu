@@ -1,103 +1,70 @@
 /*
-  -- MAGMA (version 1.3.0) --
-  Univ. of Tennessee, Knoxville
-  Univ. of California, Berkeley
-  Univ. of Colorado, Denver
-  November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-  @generated ds Wed Nov 14 22:53:45 2012
+       @generated ds Fri Jun 28 19:33:04 2013
 
 */
 #include "common_magma.h"
 
-extern "C" __global__ void
-dsaxpycp_special(float *R, double *X, magma_int_t M, double *B,double *W )
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    X += ibx+idt;
-    R += ibx+idt;
-    B += ibx+idt;
-    W += ibx+idt;
-    X[0] = MAGMA_D_ADD( X[0], (double)(R[0]) );
-    W[0] = B[0];
-}
+#define BLOCK_SIZE 64
 
+// adds   X += R (including conversion to double)  --and--
+// copies W = B
+// each thread does one index, X[i] and W[i]
 extern "C" __global__ void
-daxpycp_special(double *R, double *X, magma_int_t M, double *B)
+dsaxpycp_kernel(
+    int M, float *R, double *X,
+    const double *B, double *W )
 {
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    X += ibx+idt;
-    R += ibx+idt;
-    B += ibx+idt;
-    X[0] = MAGMA_D_ADD( X[0], R[0] );
-    R[0] = B[0];
-}
-
-extern "C" __global__ void
-dsaxpycp_generic(float *R, double *X, magma_int_t M, double *B,double *W )
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    if( ( ibx + idt ) < M ) {
-        X += ibx+idt;
-        R += ibx+idt;
-        B += ibx+idt;
-        W += ibx+idt;
+    const int i = threadIdx.x + blockIdx.x*BLOCK_SIZE;
+    if ( i < M ) {
+        X[i] = MAGMA_D_ADD( X[i], (double)( R[i] ) );
+        W[i] = B[i];
     }
-    else{
-        X +=(M-1);
-        R +=(M-1);
-        B +=(M-1);
-        W +=(M-1);
-    }
-    X[0] = MAGMA_D_ADD( X[0], (double)( R[0] ) );
-    W[0] = B[0];
-}
-
-extern "C" __global__ void
-daxpycp_generic(double *R, double *X, magma_int_t M, double *B)
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    if( ( ibx + idt ) < M ) {
-        X += ibx+idt;
-        R += ibx+idt;
-        B += ibx+idt;
-    }
-    else{
-        X +=(M-1);
-        R +=(M-1);
-        B +=(M-1);
-    }
-    X[0] = MAGMA_D_ADD( X[0], R[0] );
-    R[0] = B[0];
 }
 
 
+// adds   X += R  --and--
+// copies R = B
+// each thread does one index, X[i] and R[i]
+extern "C" __global__ void
+daxpycp_kernel(
+    int M, double *R, double *X,
+    const double *B)
+{
+    const int i = threadIdx.x + blockIdx.x*BLOCK_SIZE;
+    if ( i < M ) {
+        X[i] = MAGMA_D_ADD( X[i], R[i] );
+        R[i] = B[i];
+    }
+}
+
+
+// adds   X += R (including conversion to double)  --and--
+// copies W = B
 extern "C" void
-magmablas_dsaxpycp(float *R, double *X, magma_int_t M, double *B, double *W)
+magmablas_dsaxpycp(
+    magma_int_t M, float *R, double *X,
+    const double *B, double *W)
 {
-    dim3 threads( 64, 1 );
-    dim3 grid(M/64+(M%64!=0),1);
-    if( M %64 == 0 ) {
-        dsaxpycp_special <<< grid, threads, 0, magma_stream >>> ( R, X, M, B, W) ;
-    }
-    else{
-        dsaxpycp_generic <<< grid, threads, 0, magma_stream >>> ( R, X, M, B, W) ;
-    }
+    dim3 threads( BLOCK_SIZE );
+    dim3 grid( (M + BLOCK_SIZE - 1)/BLOCK_SIZE );
+    dsaxpycp_kernel <<< grid, threads, 0, magma_stream >>> ( M, R, X, B, W );
 }
 
+
+// adds   X += R  --and--
+// copies R = B
 extern "C" void
-magmablas_daxpycp(double *R, double *X, magma_int_t M, double *B)
+magmablas_daxpycp(
+    magma_int_t M, double *R, double *X,
+    const double *B)
 {
-    dim3 threads( 64, 1 );
-    dim3 grid(M/64+(M%64!=0),1);
-    if( M %64 == 0 ) {
-        daxpycp_special <<< grid, threads, 0, magma_stream >>> ( R, X, M, B) ;
-    }
-    else{
-        daxpycp_generic <<< grid, threads, 0, magma_stream >>> ( R, X, M, B) ;
-    }
+    dim3 threads( BLOCK_SIZE );
+    dim3 grid( (M + BLOCK_SIZE - 1)/BLOCK_SIZE );
+    daxpycp_kernel <<< grid, threads, 0, magma_stream >>> ( M, R, X, B );
 }

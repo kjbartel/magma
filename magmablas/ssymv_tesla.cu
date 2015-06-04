@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:51 2012
+       @generated s Fri Jun 28 19:33:14 2013
 
 */
 #include "common_magma.h"
@@ -28,16 +28,16 @@
  */
 
 __global__ void
-magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
-                               const float *A, magma_int_t lda,
-                               const float *x, magma_int_t incx,
+magmablas_ssymv_130_L_special( int n, float alpha,
+                               const float *A, int lda,
+                               const float *x, int incx,
                                float  beta,
-                               float *y, magma_int_t incy,
+                               float *y, int incy,
                                float *WC)
 {
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-    magma_int_t blkc = blockIdx.x ;
+    int tx   = threadIdx.x ;
+    int ty   = threadIdx.y ;
+    int blkc = blockIdx.x ;
 
     float res  = MAGMA_S_ZERO;
     float res_ = MAGMA_S_ZERO;
@@ -50,10 +50,10 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     float tr[4];
     float b[8];
 
-    magma_int_t break_d   =  thread_x * blkc;
-    const magma_int_t td  = (thread_x * ty ) + tx;
-    magma_int_t       tx_ = td % half_thread_x;
-    magma_int_t       ty_ = td / half_thread_x;
+    int break_d   =  thread_x * blkc;
+    const int td  = (thread_x * ty ) + tx;
+    int       tx_ = td % half_thread_x;
+    int       ty_ = td / half_thread_x;
 
     WC +=  break_d + tx;
     x  += (break_d + tx ) * incx;
@@ -67,12 +67,12 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     tx = tx_ ; ty = ty_ ;
 
     #pragma unroll
-    for(magma_int_t j =0; j<half_thread_x; j +=8)
+    for(int j =0; j<half_thread_x; j +=8)
         la[0][ bank_shift * (ty_+j) + tx_] =  A[ j * lda];
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(ty_ * 4 + 4)  ; i++){
+    for(int  i=ty_*4; i<(ty_ * 4 + 4)  ; i++){
         if ( i < tx_ )   {
             la[0][bank_shift * tx_ + i] = la[0][ i * bank_shift + tx_];
         }
@@ -82,7 +82,7 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res+= la[0][bank_shift * tx_ + j + ty_ * 4] * buff[j + ty_ * 4];
     __syncthreads();
 
@@ -106,12 +106,12 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     A+= half_thread_x + half_thread_x *lda ;
 
     #pragma unroll
-    for(magma_int_t j =0; j<half_thread_x; j+=8)
+    for(int j =0; j<half_thread_x; j+=8)
         la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(4+ty_*4) ; i++){
+    for(int  i=ty_*4; i<(4+ty_*4) ; i++){
         if ( i < tx_ )   {
             la[0][bank_shift*tx_+i] = la[0][bank_shift*i+tx_];
         }
@@ -121,7 +121,7 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res+= la[0][bank_shift*tx_+j+ty_*4] * buff[half_thread_x + j + 4 * ty_];
     __syncthreads();
     la[0][bank_shift*tx_+ty_]= res ;
@@ -147,18 +147,18 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     MAGMA_S_SET2REAL(res_,0);
 
     #pragma unroll
-    for(magma_int_t j=0; j<half_thread_x; j+=8)
+    for(int j=0; j<half_thread_x; j+=8)
         tr[j/8] = A[ j * lda];
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++){
+    for(int j=0; j < 4 ; j++){
         res += tr[j] * buff[ j*8 + ty_];
         la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
     }
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res_+= la[0][bank_shift*tx_+j+ty_*4] * buff[half_thread_x +j+ty_*4];
     __syncthreads();
 
@@ -213,8 +213,8 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
     A+=4 * ty* lda  ;
     A+=tx;
 
-    magma_int_t wc_c = 0 ;
-    magma_int_t count = 0 ;
+    int wc_c = 0 ;
+    int count = 0 ;
 
     tx_ = td % quarter_thread_x ;
     ty_ = td / quarter_thread_x ;
@@ -225,13 +225,13 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
 
 
     #pragma unroll
-    for(magma_int_t j=0;j<4;j++)
+    for(int j=0;j<4;j++)
     {
         b[j] = buff[ty_*4+j];
     }
     
         #pragma unroll
-        for(magma_int_t i=0; i<thread_x*blkc; i += thread_x )
+        for(int i=0; i<thread_x*blkc; i += thread_x )
         {
             res_ = MAGMA_S_ZERO;
             count++;
@@ -240,14 +240,14 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
             __syncthreads();
 
             #pragma unroll
-            for( magma_int_t k=0;k<4;k++)
+            for( int k=0;k<4;k++)
             {
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4 ; j++)
                     tr[j] = A[j*lda];
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4 ; j++)
                 {
                     res += tr[j] * buff2[ quarter_thread_x * k + ty * 4 + j];
                     la[( j + ty * 4)][tx] = tr[j];
@@ -258,7 +258,7 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
                 MAGMA_S_SET2REAL(res_,0);
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4 ; j++)
                 {
                     res_+=la[tx_][ty_*4+j] * b[j];
                 }
@@ -269,12 +269,12 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
             }
 
             #pragma unroll
-            for(magma_int_t k=0; k < 4 ; k++){
+            for(int k=0; k < 4 ; k++){
                 la[tx_][ty_+quarter_thread_x*k]= b[4+k] ;
             }
             __syncthreads();
             if( ty_ < 4 ) {
-                magma_int_t k = ty_*quarter_thread_x;
+                int k = ty_*quarter_thread_x;
                 res_ = la[tx_][0+k] + la[tx_][1+k]
                     +  la[tx_][2+k] + la[tx_][3+k]
                     +  la[tx_][4+k] + la[tx_][5+k]
@@ -307,17 +307,17 @@ magmablas_ssymv_130_L_special( magma_int_t n, float alpha,
  *    Lower case for generic sizes
  */
 __global__ void
-magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
-                              const float *A, magma_int_t lda,
-                              const float *x, magma_int_t incx,
+magmablas_ssymv_130_L_generic(int n, float alpha,
+                              const float *A, int lda,
+                              const float *x, int incx,
                               float beta,
-                              float *y, magma_int_t incy,
+                              float *y, int incy,
                               float *WC,
-                              magma_int_t m_mod_thread_x)
+                              int m_mod_thread_x)
 {
-    magma_int_t tx   = threadIdx.x ;
-    magma_int_t ty   = threadIdx.y ;
-    magma_int_t blkc = blockIdx.x ;
+    int tx   = threadIdx.x ;
+    int ty   = threadIdx.y ;
+    int blkc = blockIdx.x ;
 
     float res  = MAGMA_S_ZERO;
     float res_ = MAGMA_S_ZERO;
@@ -330,17 +330,17 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     float tr[4];
     float b[8];
 
-    magma_int_t break_d   =  thread_x * blkc;
-    const magma_int_t td  = (thread_x * ty ) + tx;
-    magma_int_t       tx_ = td % half_thread_x;
-    magma_int_t       ty_ = td / half_thread_x;
+    int break_d   =  thread_x * blkc;
+    const int td  = (thread_x * ty ) + tx;
+    int       tx_ = td % half_thread_x;
+    int       ty_ = td / half_thread_x;
 
     WC+=  break_d + tx;
     x += (break_d + tx ) * incx;
     A +=  break_d * (lda+1);
     A += lda * ty_;
 
-    magma_int_t trackA ;
+    int trackA ;
     if( blkc == ( gridDim.x - 1 ) ) {
         if( ty == 0 ){
             if( tx > m_mod_thread_x )
@@ -368,7 +368,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     // It could be a potential bug -- from synchronization or from cuda or compiler
     if( blkc == ( gridDim.x - 1 ) ) {
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
+        for(int j =0; j<half_thread_x; j+=8){
             if( ( ty_ + j ) > m_mod_thread_x )
             {
                 MAGMA_S_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 9999);
@@ -380,7 +380,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     }
     else {
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
+        for(int j =0; j<half_thread_x; j+=8){
             la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
         }
     }
@@ -389,7 +389,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(ty_*4+4)  ; i++){
+    for(int  i=ty_*4; i<(ty_*4+4)  ; i++){
         if ( i < tx_ )   {
             la[0][bank_shift*tx_+i] = la[0][i*bank_shift+tx_];
         }
@@ -399,7 +399,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res += la[0][bank_shift*tx_+j+ty_*4] * buff[j+ty_*4];
     __syncthreads();
 
@@ -431,7 +431,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
         A+= trackA+half_thread_x*lda ;
 
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
+        for(int j =0; j<half_thread_x; j+=8){
             if( ( ty_ + j+half_thread_x ) > m_mod_thread_x )
             {
                 MAGMA_S_SET2REAL(la[0][bank_shift*(ty_+j)+tx_], 99999);
@@ -448,14 +448,14 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
         A+= half_thread_x + half_thread_x *lda ;
 
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8){
+        for(int j =0; j<half_thread_x; j+=8){
             la[0][bank_shift*(ty_+j)+tx_] = A[ j * lda];
         }
     }
 
     __syncthreads();
     #pragma unroll
-    for(magma_int_t  i=ty_*4; i<(4+ty_*4) ; i++){
+    for(int  i=ty_*4; i<(4+ty_*4) ; i++){
         if ( i < tx_ )   {
             la[0][bank_shift*tx_+i] = la[0][bank_shift*i+tx_];
         }
@@ -465,7 +465,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res+= la[0][bank_shift*tx_+j+ty_*4] * buff[half_thread_x + j + 4 * ty_];
     __syncthreads();
 
@@ -502,7 +502,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
         A+= trackA ;
 
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8)
+        for(int j =0; j<half_thread_x; j+=8)
             if( ( ty_ + j ) > m_mod_thread_x )
             {
                 MAGMA_S_SET2REAL(tr[j/8], 99999);
@@ -514,20 +514,20 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     }
     else {
         #pragma unroll
-        for(magma_int_t j =0; j<half_thread_x; j+=8)
+        for(int j =0; j<half_thread_x; j+=8)
             tr[j/8] = A[ j * lda];
     }
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++){
+    for(int j=0; j < 4 ; j++){
         res+= tr[j] * buff[ j*8 + ty_];
         la[0][bank_shift*(ty_+j*8)+tx_] = tr[j];
     }
     __syncthreads();
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         res_+= la[0][bank_shift*tx_+j+ty_*4] * buff[half_thread_x +j+ty_*4];
     __syncthreads();
 
@@ -601,8 +601,8 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
         A+=tx;
     }
 
-    magma_int_t wc_c = 0 ;
-    magma_int_t count = 0 ;
+    int wc_c = 0 ;
+    int count = 0 ;
 
     tx_ = td % quarter_thread_x ;
     ty_ = td / quarter_thread_x ;
@@ -611,11 +611,11 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
     WC+=tx_;
 
     #pragma unroll
-    for(magma_int_t j=0; j < 4 ; j++)
+    for(int j=0; j < 4 ; j++)
         b[j] =  buff[ty_*4+j];
 
         #pragma unroll
-        for(magma_int_t  i=0; i< break_d; i += thread_x ){
+        for(int  i=0; i< break_d; i += thread_x ){
             MAGMA_S_SET2REAL(res_,0);
             count++;
             if( ty== 0 ) {
@@ -624,13 +624,13 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
             __syncthreads();
 
             #pragma unroll
-            for( magma_int_t k=0;k<4;k++){
+            for( int k=0;k<4;k++){
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4 ; j++)
                     tr[j] = A[j*lda] ;
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++){
+                for(int j=0; j < 4 ; j++){
                     res+=tr[j]*buff2[quarter_thread_x*k + ty*4+(j)];
                     la[( (j)+ty*4)][tx] = tr[j];
                 }
@@ -639,7 +639,7 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
                 MAGMA_S_SET2REAL(res_, 0) ;
 
                 #pragma unroll
-                for(magma_int_t j=0; j < 4 ; j++)
+                for(int j=0; j < 4 ; j++)
                     res_+=la[tx_][ty_*4+j]* b[j] ;
                 b[4+k] = res_ ;
                 __syncthreads();
@@ -647,13 +647,13 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
             }
 
             #pragma unroll
-            for(magma_int_t k=0; k < 4 ; k++){
+            for(int k=0; k < 4 ; k++){
                 la[tx_][ty_+quarter_thread_x*k]= b[4+k] ;
             }
             __syncthreads();
 
             if( ty_ < 4 ) {
-                magma_int_t k = ty_*quarter_thread_x;
+                int k = ty_*quarter_thread_x;
                 res_ = la[tx_][0+k] + la[tx_][1+k] 
                     +  la[tx_][2+k] + la[tx_][3+k]
                     +  la[tx_][4+k] + la[tx_][5+k]
@@ -680,16 +680,16 @@ magmablas_ssymv_130_L_generic(magma_int_t n, float alpha,
 }
 
 __global__ void
-magmablas_ssymv_130_L_update(magma_int_t n, float alpha,
-                         const float* A, magma_int_t lda,
-                         const float *x, magma_int_t incx,
+magmablas_ssymv_130_L_update(int n, float alpha,
+                         const float* A, int lda,
+                         const float *x, int incx,
                          float beta,
-                         float *y, magma_int_t incy,
+                         float *y, int incy,
                          float *WC )
 {
-    magma_int_t i;
-    magma_int_t tx  = threadIdx.x ;
-    magma_int_t ind = blockIdx.x * thread_x + tx ;
+    int i;
+    int tx  = threadIdx.x ;
+    int ind = blockIdx.x * thread_x + tx ;
     float Ca;
 
     MAGMA_S_SET2REAL(Ca, 0) ;
@@ -752,7 +752,7 @@ void magmablas_ssymv_130_L(magma_int_t m, float alpha,
        y := alpha*A*x + beta*y,
 
     where alpha and beta are scalars, x and y are n element vectors and
-    A is an n by n hermitian matrix.
+    A is an n by n symmetric matrix.
 
     the interface of magmablas_ssymv2 is different from magmablas_ssymv in
     the last argument dC_work
@@ -840,7 +840,7 @@ magmablas_ssymv2_130( char uplo, magma_int_t n,
        y := alpha*A*x + beta*y,
 
     where alpha and beta are scalars, x and y are n element vectors and
-    A is an n by n hermitian matrix.
+    A is an n by n symmetric matrix.
 
     Arguments
     ==========
@@ -870,11 +870,11 @@ magmablas_ssymv2_130( char uplo, magma_int_t n,
     A      - REAL*16       array of DIMENSION ( LDA, n ).
              Before entry with  UPLO = 'U' or 'u', the leading n by n
              upper triangular part of the array A must contain the upper
-             triangular part of the hermitian matrix and the strictly
+             triangular part of the symmetric matrix and the strictly
              lower triangular part of A is not referenced.
              Before entry with UPLO = 'L' or 'l', the leading n by n
              lower triangular part of the array A must contain the lower
-             triangular part of the hermitian matrix and the strictly
+             triangular part of the symmetric matrix and the strictly
              upper triangular part of A is not referenced.
              Note that the imaginary parts of the diagonal elements need
              not be set and are assumed to be zero.

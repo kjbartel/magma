@@ -1,27 +1,27 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:09 2012
+       @generated c Fri Jun 28 19:32:16 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
-                 cuFloatComplex *dA,    magma_int_t ldda, 
-                 cuFloatComplex *dB,    magma_int_t lddb, 
-                 cuFloatComplex *hwork, magma_int_t lwork, 
+                 magmaFloatComplex *dA,    magma_int_t ldda,
+                 magmaFloatComplex *dB,    magma_int_t lddb,
+                 magmaFloatComplex *hwork, magma_int_t lwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -46,7 +46,7 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
     NRHS    (input) INTEGER
             The number of columns of the matrix C. NRHS >= 0.
 
-    A       (input/output) COMPLEX array, dimension (LDA,N)
+    DA       (input/output) COMPLEX array on the GPU, dimension (LDA,N)
             On entry, the M-by-N matrix A.
             On exit, A is overwritten by details of its QR
             factorization as returned by CGEQRF.
@@ -65,9 +65,9 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
             On exit, if INFO = 0, HWORK(1) returns the optimal LWORK.
 
     LWORK   (input) INTEGER
-            The dimension of the array HWORK, LWORK >= max(1,NRHS).
-            For optimum performance LWORK >= (M-N+NB)*(NRHS + 2*NB), where 
-            NB is the blocksize given by magma_get_cgeqrf_nb( M ).
+            The dimension of the array HWORK,
+            LWORK >= (M - N + NB)*(NRHS + NB) + NRHS*NB,
+            where NB is the blocksize given by magma_get_cgeqrf_nb( M ).
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal size of the HWORK array, returns
@@ -78,13 +78,11 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
-   #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
-
-    cuFloatComplex *dT, *tau;
+    magmaFloatComplex *dT, *tau;
     magma_int_t k;
 
     magma_int_t nb     = magma_get_cgeqrf_nb(m);
-    magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
+    magma_int_t lwkopt = (m - n + nb)*(nrhs + nb) + nrhs*nb;
     int lquery = (lwork == -1);
 
     hwork[0] = MAGMA_C_MAKE( (float)lwkopt, 0. );
@@ -124,7 +122,7 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
      */
     int ldtwork = ( 2*k + ((n+31)/32)*32 )*nb;
     if (nb < nrhs)
-      ldtwork = ( 2*k + ((n+31)/32)*32 )*nrhs;
+        ldtwork = ( 2*k + ((n+31)/32)*32 )*nrhs;
     if (MAGMA_SUCCESS != magma_cmalloc( &dT, ldtwork )) {
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
@@ -140,8 +138,8 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
     magma_cgeqrf_gpu( m, n, dA, ldda, tau, dT, info );
 
     if ( *info == 0 ) {
-        magma_cgeqrs_gpu( m, n, nrhs, 
-                          dA, ldda, tau, dT, 
+        magma_cgeqrs_gpu( m, n, nrhs,
+                          dA, ldda, tau, dT,
                           dB, lddb, hwork, lwork, info );
     }
     
@@ -149,6 +147,3 @@ magma_cgels_gpu( char trans, magma_int_t m, magma_int_t n, magma_int_t nrhs,
     magma_free_cpu(tau);
     return *info;
 }
-
-#undef a_ref
-

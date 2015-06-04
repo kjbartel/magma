@@ -1,112 +1,112 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
- 
+       June 2013
+
        @author Stan Tomov
 
-       @generated s Wed Nov 14 22:53:17 2012
+       @generated s Fri Jun 28 19:32:26 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_sormqr(const char side, const char trans, 
-             magma_int_t m, magma_int_t n, magma_int_t k, 
-             float *A,    magma_int_t lda, 
-             float *tau, 
+magma_sormqr(const char side, const char trans,
+             magma_int_t m, magma_int_t n, magma_int_t k,
+             float *A,    magma_int_t lda,
+             float *tau,
              float *C,    magma_int_t ldc,
-             float *work, magma_int_t lwork, 
+             float *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
-    SORMQR overwrites the general real M-by-N matrix C with   
+    Purpose
+    =======
+    SORMQR overwrites the general real M-by-N matrix C with
 
-                    SIDE = 'L'     SIDE = 'R'   
-    TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q**T * C       C * Q**T   
+                    SIDE = 'L'     SIDE = 'R'
+    TRANS = 'N':      Q * C          C * Q
+    TRANS = 'T':      Q**T * C       C * Q**T
 
-    where Q is a real orthogonal matrix defined as the product of k   
-    elementary reflectors   
+    where Q is a real orthogonal matrix defined as the product of k
+    elementary reflectors
 
-          Q = H(1) H(2) . . . H(k)   
+          Q = H(1) H(2) . . . H(k)
 
-    as returned by SGEQRF. Q is of order M if SIDE = 'L' and of order N   
-    if SIDE = 'R'.   
+    as returned by SGEQRF. Q is of order M if SIDE = 'L' and of order N
+    if SIDE = 'R'.
 
-    Arguments   
-    =========   
-    SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q**T from the Left;   
-            = 'R': apply Q or Q**T from the Right.   
+    Arguments
+    =========
+    SIDE    (input) CHARACTER*1
+            = 'L': apply Q or Q**T from the Left;
+            = 'R': apply Q or Q**T from the Right.
 
-    TRANS   (input) CHARACTER*1   
-            = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q**T.   
+    TRANS   (input) CHARACTER*1
+            = 'N':  No transpose, apply Q;
+            = 'T':  Transpose, apply Q**T.
 
-    M       (input) INTEGER   
-            The number of rows of the matrix C. M >= 0.   
+    M       (input) INTEGER
+            The number of rows of the matrix C. M >= 0.
 
-    N       (input) INTEGER   
-            The number of columns of the matrix C. N >= 0.   
+    N       (input) INTEGER
+            The number of columns of the matrix C. N >= 0.
 
-    K       (input) INTEGER   
-            The number of elementary reflectors whose product defines   
-            the matrix Q.   
-            If SIDE = 'L', M >= K >= 0;   
-            if SIDE = 'R', N >= K >= 0.   
+    K       (input) INTEGER
+            The number of elementary reflectors whose product defines
+            the matrix Q.
+            If SIDE = 'L', M >= K >= 0;
+            if SIDE = 'R', N >= K >= 0.
 
-    A       (input) REAL array, dimension (LDA,K)   
-            The i-th column must contain the vector which defines the   
-            elementary reflector H(i), for i = 1,2,...,k, as returned by   
-            SGEQRF in the first k columns of its array argument A.   
-            A is modified by the routine but restored on exit.   
+    A       (input) REAL array, dimension (LDA,K)
+            The i-th column must contain the vector which defines the
+            elementary reflector H(i), for i = 1,2,...,k, as returned by
+            SGEQRF in the first k columns of its array argument A.
+            A is modified by the routine but restored on exit.
 
-    LDA     (input) INTEGER   
-            The leading dimension of the array A.   
-            If SIDE = 'L', LDA >= max(1,M);   
-            if SIDE = 'R', LDA >= max(1,N).   
+    LDA     (input) INTEGER
+            The leading dimension of the array A.
+            If SIDE = 'L', LDA >= max(1,M);
+            if SIDE = 'R', LDA >= max(1,N).
 
-    TAU     (input) REAL array, dimension (K)   
-            TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by SGEQRF.   
+    TAU     (input) REAL array, dimension (K)
+            TAU(i) must contain the scalar factor of the elementary
+            reflector H(i), as returned by SGEQRF.
 
-    C       (input/output) REAL array, dimension (LDC,N)   
-            On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q**T * C or C * Q**T or C*Q.   
+    C       (input/output) REAL array, dimension (LDC,N)
+            On entry, the M-by-N matrix C.
+            On exit, C is overwritten by Q*C or Q**T * C or C * Q**T or C*Q.
 
-    LDC     (input) INTEGER   
-            The leading dimension of the array C. LDC >= max(1,M).   
+    LDC     (input) INTEGER
+            The leading dimension of the array C. LDC >= max(1,M).
 
-    WORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))   
-            On exit, if INFO = 0, WORK(0) returns the optimal LWORK.   
+    WORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))
+            On exit, if INFO = 0, WORK(0) returns the optimal LWORK.
 
-    LWORK   (input) INTEGER   
-            The dimension of the array WORK.   
-            If SIDE = 'L', LWORK >= max(1,N);   
-            if SIDE = 'R', LWORK >= max(1,M).   
+    LWORK   (input) INTEGER
+            The dimension of the array WORK.
+            If SIDE = 'L', LWORK >= max(1,N);
+            if SIDE = 'R', LWORK >= max(1,M).
             For optimum performance
-            LWORK >= N*NB if SIDE = 'L', and   
+            LWORK >= N*NB if SIDE = 'L', and
             LWORK >= M*NB if SIDE = 'R',
-            where NB is the optimal blocksize.   
+            where NB is the optimal blocksize.
 
-            If LWORK = -1, then a workspace query is assumed; the routine   
-            only calculates the optimal size of the WORK array, returns   
-            this value as the first entry of the WORK array, and no error   
-            message related to LWORK is issued by XERBLA.   
+            If LWORK = -1, then a workspace query is assumed; the routine
+            only calculates the optimal size of the WORK array, returns
+            this value as the first entry of the WORK array, and no error
+            message related to LWORK is issued by XERBLA.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
     
     #define  A(a_1,a_2) ( A + (a_1) + (a_2)*lda)
@@ -121,7 +121,7 @@ magma_sormqr(const char side, const char trans,
 
     magma_int_t nq_i, lddwork;
     magma_int_t i;
-    float T[ 2*nb*nb ];
+    float *T;
     magma_int_t i1, i2, step, ib, ic, jc, mi, ni, nq, nw;
     int left, notran, lquery;
     magma_int_t iinfo, lwkopt;
@@ -179,6 +179,21 @@ magma_sormqr(const char side, const char trans,
     float *dwork, *dC;
     magma_smalloc( &dC, lddc*n );
     magma_smalloc( &dwork, (m + n + nb)*nb );
+    if ( dC == NULL || dwork == NULL ) {
+        magma_free( dC );
+        magma_free( dwork );
+        *info = MAGMA_ERR_DEVICE_ALLOC;
+        return *info;
+    }
+    
+    /* work space on CPU */
+    T = (float*) malloc( 2*nb*nb * sizeof(float) );
+    if ( T == NULL ) {
+        magma_free( dC );
+        magma_free( dwork );
+        *info = MAGMA_ERR_HOST_ALLOC;
+        return *info;
+    }
     
     /* Copy matrix C from the CPU to the GPU */
     magma_ssetmatrix( m, n, C, ldc, dC, lddc );
@@ -187,7 +202,7 @@ magma_sormqr(const char side, const char trans,
         /* Use CPU code */
         lapackf77_sormqr(side_, trans_, &m, &n, &k, A, &lda, &tau[1],
                          C, &ldc, work, &lwork, &iinfo);
-    } 
+    }
     else {
         /* Use hybrid CPU-GPU code */
         if ( (left && (! notran)) ||  ((! left) && notran) ) {
@@ -211,10 +226,10 @@ magma_sormqr(const char side, const char trans,
         for( i=i1; (step<0 ? i>=i2 : i<i2); i += step ) {
             ib = min(nb, k - i);
 
-            /* Form the triangular factor of the block reflector   
+            /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
             nq_i = nq - i;
-            lapackf77_slarft("F", "C", &nq_i, &ib, A(i,i), &lda, 
+            lapackf77_slarft("F", "C", &nq_i, &ib, A(i,i), &lda,
                              &tau[i], T, &ib);
 
             /* 1) Put 0s in the upper triangular part of A;
@@ -228,7 +243,7 @@ magma_sormqr(const char side, const char trans,
                 /* H or H' is applied to C(i:m,1:n) */
                 mi = m - i;
                 ic = i;
-            } 
+            }
             else {
                 /* H or H' is applied to C(1:m,i:n) */
                 ni = n - i;
@@ -245,7 +260,7 @@ magma_sormqr(const char side, const char trans,
             magma_slarfb_gpu( side, trans, MagmaForward, MagmaColumnwise,
                               mi, ni, ib,
                               dwork, nq_i, dwork+nq_i*ib, ib,
-                              dC(ic,jc), lddc, 
+                              dC(ic,jc), lddc,
                               dwork+nq_i*ib + ib*ib, lddwork);
         }
         magma_sgetmatrix( m, n, dC, lddc, C, ldc );
@@ -254,6 +269,7 @@ magma_sormqr(const char side, const char trans,
 
     magma_free( dC );
     magma_free( dwork );
+    free( T );
 
     return *info;
 } /* magma_sormqr */

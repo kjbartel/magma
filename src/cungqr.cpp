@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:16 2012
+       @generated c Fri Jun 28 19:32:25 2013
 
        @author Stan Tomov
        @author Mark Gates
@@ -14,16 +14,16 @@
 
 extern "C" magma_int_t
 magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
-             cuFloatComplex *A, magma_int_t lda,
-             cuFloatComplex *tau,
-             cuFloatComplex *dT, magma_int_t nb,
+             magmaFloatComplex *A, magma_int_t lda,
+             magmaFloatComplex *tau,
+             magmaFloatComplex *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -80,15 +80,15 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
 #define dA(i,j) (dA + (i) + (j)*ldda)
 #define dT(j)   (dT + (j)*nb)
 
-    cuFloatComplex c_zero = MAGMA_C_ZERO;
-    cuFloatComplex c_one  = MAGMA_C_ONE;
+    magmaFloatComplex c_zero = MAGMA_C_ZERO;
+    magmaFloatComplex c_one  = MAGMA_C_ONE;
 
     magma_int_t  m_kk, n_kk, k_kk, mi;
     magma_int_t lwork, ldda;
     magma_int_t i, ib, ki, kk, iinfo;
     magma_int_t lddwork;
-    cuFloatComplex *dA, *dV, *dW;
-    cuFloatComplex *work;
+    magmaFloatComplex *dA, *dV, *dW;
+    magmaFloatComplex *work;
 
     *info = 0;
     if (m < 0) {
@@ -139,7 +139,7 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
         return *info;
     }
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     // Use unblocked code for the last or only block.

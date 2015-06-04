@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -14,13 +14,13 @@ ZSRC := \
 	zprint.cpp	\
 
 ifeq ($(PGIFORTRAN), 0)
-ZSRC := $(ZSRC) 		\
+ZSRC += \
 	magma_zf77.cpp		\
 	magma_param.f90		\
 	magma_zfortran.F90	\
 	magma.f90
 else
-ZSRC := $(ZSRC) 		\
+ZSRC += \
 	magma_zf77pgi.cpp
 endif
 
@@ -28,36 +28,35 @@ endif
 -include Makefile.src
 
 ALLSRC := $(ZSRC) $(CSRC) $(DSRC) $(SSRC)	\
-	auxiliary.cpp	\
-	xerbla.cpp 	\
-	get_nb_tesla.cpp	\
-	get_nb_fermi.cpp	\
-	get_nb_kepler.cpp       \
-	timer.cpp	\
-	trace.cpp	\
-	strlcpy.cpp	\
-	bulge_auxiliary.cpp \
-	connection_mgpu.cpp
+	auxiliary.cpp		\
+	get_nb.cpp		\
+	timer.cpp		\
+	trace.cpp		\
+	strlcpy.cpp		\
+	bulge_auxiliary.cpp	\
+	affinity.cpp		\
+	connection_mgpu.cpp	\
+	pthread_barrier.cpp	\
+	xerbla.cpp		\
+	magma_threadsetting.cpp \
 
 ALLOBJ := $(ALLSRC:.cpp=.o)
 ALLOBJ := $(ALLOBJ:.f90=.o)
 ALLOBJ := $(ALLOBJ:.F90=.o)
 
-all: $(LIBMAGMA) $(PTREXEC)
+.PHONY: all clean cleanall
+
+all: $(LIBMAGMA)
 
 $(LIBMAGMA): $(ALLOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
 	cp *.mod ../include
 
-$(PTREXEC): $(PTRFILE)
-	$(CC) $(OPTS) -o $@ $<
-
 clean:
-	rm -f *.cu_o *.o *~ *.linkinfo *.mod include/*.mod sizeptr
+	rm -f *.cu_o *.o *~ *.linkinfo *.mod ../include/*.mod sizeptr
 
 cleanall: clean
-	rm -f *.a
 	rm -f $(LIBMAGMA)
 
 # Extra dependencies for .mod files

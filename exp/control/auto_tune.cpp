@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 */
 
 #include <stdio.h>
@@ -16,11 +16,11 @@ auto_tune (char algorithm, char precision, magma_int_t ncores, magma_int_t ncore
            magma_int_t m, magma_int_t n, magma_int_t *nb, magma_int_t *ob, magma_int_t *ib, 
            magma_int_t *nthreads, magma_int_t *nquarkthreads)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======

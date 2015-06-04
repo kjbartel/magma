@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:44 2012
+       @generated d Fri Jun 28 19:33:04 2013
 
 */
 #include "common_magma.h"
@@ -273,7 +273,7 @@ __global__ void dsetdiag1subdiag0_U(int k, double *A, int lda)
  */
 extern "C" void
 magmablas_dsetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
-                 double *A, magma_int_t lda, cudaStream_t stream)
+                 double *A, magma_int_t lda, magma_queue_t stream)
 {
   dim3 threads(nb, 1, 1);
   dim3 grid((k-1)/nb+1);

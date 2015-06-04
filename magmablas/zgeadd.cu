@@ -1,9 +1,9 @@
- /*
-    -- MAGMA (version 1.3.0) --
+/*
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
        @author Mark Gates
@@ -13,9 +13,9 @@
 
 #define NB 64
 
-/*
+/* =====================================================================
     Matrix is m x n, and is divided into block rows, each NB x n.
-    Each block has NB threads.
+    Each CUDA block has NB threads to handle one block row.
     Each thread adds one row, iterating across all columns.
     The bottom block of rows may be partially outside the matrix;
     if so, rows outside the matrix (i >= m) are disabled.
@@ -26,16 +26,16 @@
 __global__ void
 zgeadd_kernel(
     int m, int n,
-    cuDoubleComplex alpha,
-    const cuDoubleComplex *dA, int ldda,
-    cuDoubleComplex       *dB, int lddb )
+    magmaDoubleComplex alpha,
+    const magmaDoubleComplex *dA, int ldda,
+    magmaDoubleComplex       *dB, int lddb )
 {
     // dA and dB iterate across row i
     int i = blockIdx.x*blockDim.x + threadIdx.x;
     if ( i < m ) {
         dA += i;
         dB += i;
-        const cuDoubleComplex *dAend = dA + n*ldda;
+        const magmaDoubleComplex *dAend = dA + n*ldda;
         while( dA < dAend ) {
             *dB = alpha*(*dA) + (*dB);
             dA += ldda;
@@ -45,18 +45,18 @@ zgeadd_kernel(
 }
 
 
+/* ===================================================================== */
 extern "C" void
 magmablas_zgeadd(
     magma_int_t m, magma_int_t n,
-    cuDoubleComplex alpha,
-    const cuDoubleComplex *dA, magma_int_t ldda,
-    cuDoubleComplex       *dB, magma_int_t lddb )
+    magmaDoubleComplex alpha,
+    const magmaDoubleComplex *dA, magma_int_t ldda,
+    magmaDoubleComplex       *dB, magma_int_t lddb )
 {
 /*
     Purpose
     =======
-    
-    ZGEADD adds two matrices, B = alpha*A + B.
+    ZGEADD adds two matrices, dB = alpha*dA + dB.
     
     Arguments
     =========
@@ -70,7 +70,7 @@ magmablas_zgeadd(
     ALPHA   (input) COMPLEX DOUBLE PRECISION
             The scalar alpha.
             
-    dA      (input/output) COMPLEX DOUBLE PRECISION array, dimension (LDDA,N)
+    dA      (input) COMPLEX DOUBLE PRECISION array, dimension (LDDA,N)
             The m by n matrix dA.
     
     LDDA    (input) INTEGER
@@ -84,18 +84,27 @@ magmablas_zgeadd(
     
     =====================================================================   */
 
-    //printf( "m %d, grid %d, threads %d\n", m, grid.x, threads.x );
+    magma_int_t info = 0;
+    if ( m < 0 )
+        info = -1;
+    else if ( n < 0 )
+        info = -2;
+    else if ( ldda < max(1,m))
+        info = -5;
+    else if ( lddb < max(1,m))
+        info = -7;
+    
+    if ( info != 0 ) {
+        magma_xerbla( __func__, -(info) );
+        return;
+    }
+    
     if ( m == 0 || n == 0 )
         return;
-    
-    assert( m > 0 );
-    assert( n > 0 );
-    assert( ldda >= m );
-    assert( lddb >= m );
     
     dim3 threads( NB );
     dim3 grid( (m + NB - 1)/NB );
     
-    zgeadd_kernel<<< grid, threads, 0, magma_stream >>>
-        ( m, n, alpha, dA, ldda, dB, lddb );
+    zgeadd_kernel<<< grid, threads, 0, magma_stream >>>(
+        m, n, alpha, dA, ldda, dB, lddb );
 }

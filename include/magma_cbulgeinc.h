@@ -1,12 +1,12 @@
 /*
- *   -- MAGMA (version 1.3.0) --
- *      Univ. of Tennessee, Knoxville
- *      Univ. of California, Berkeley
- *      Univ. of Colorado, Denver
- *      November 2012
- *
- * @generated c Wed Nov 14 22:52:28 2012
- */
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @generated c Fri Jun 28 19:31:30 2013
+*/
 
 #ifndef MAGMA_CBULGEINC_H
 #define MAGMA_CBULGEINC_H
@@ -54,17 +54,17 @@ extern volatile magma_int_t *ss_prog;
 
 
  struct gbstrct_blg {
-    cuFloatComplex *dQ1;
-    cuFloatComplex *dT1;
-    cuFloatComplex *dT2;
-    cuFloatComplex *dV2;
-    cuFloatComplex *dE;
-    cuFloatComplex *T;
-    cuFloatComplex *A;
-    cuFloatComplex *V;
-    cuFloatComplex *TAU;
-    cuFloatComplex *E;
-    cuFloatComplex *E_CPU;
+    magmaFloatComplex *dQ1;
+    magmaFloatComplex *dT1;
+    magmaFloatComplex *dT2;
+    magmaFloatComplex *dV2;
+    magmaFloatComplex *dE;
+    magmaFloatComplex *T;
+    magmaFloatComplex *A;
+    magmaFloatComplex *V;
+    magmaFloatComplex *TAU;
+    magmaFloatComplex *E;
+    magmaFloatComplex *E_CPU;
     int cores_num;
     int locores_num;
     int overlapQ1;

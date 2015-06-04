@@ -1,33 +1,46 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
 include ../Makefile.internal
 
 # ----------
-# BLAS
+# BLAS and auxiliary
 ZSRC += \
 	testing_zgemm.cpp	\
 	testing_zgemv.cpp	\
 	testing_zhemv.cpp	\
 	testing_zsymv.cpp	\
+	testing_zherk.cpp	\
+	testing_zher2k.cpp	\
+	testing_ztrmm.cpp	\
+	testing_ztrmv.cpp	\
+	testing_ztrsm.cpp	\
+	testing_ztrsv.cpp	\
 	\
 	testing_auxiliary.cpp	\
+	testing_parse_opts.cpp	\
 	testing_zblas.cpp	\
 	testing_zgeadd.cpp	\
+	testing_zgeadd_batched.cpp	\
 	testing_zlacpy.cpp	\
+	testing_zlacpy_batched.cpp	\
+	testing_dlarfg.cpp	\
+	testing_zprint.cpp	\
 	testing_zsymmetrize.cpp	\
+	testing_zsymmetrize_tiles.cpp	\
 	testing_zswap.cpp	\
+	testing_ztranspose.cpp	\
 	testing_zutil.cpp	\
 	testing_zhemv_mgpu.cpp	\
-#	\
-#	testing_zhemm_mgpu.cpp	\
-#	testing_zher2k_mgpu.cpp	\
+	\
+	testing_zhemm_mgpu.cpp	\
+	testing_zher2k_mgpu.cpp	\
 
 # ----------
 # Cholesky, GPU interface
@@ -36,6 +49,7 @@ ZSRC += \
 	\
 	testing_zposv_gpu.cpp	\
 	testing_zpotrf_gpu.cpp	\
+	testing_zpotf2_gpu.cpp	\
 	testing_zpotri_gpu.cpp	\
 	\
 	testing_zpotrf_mgpu.cpp	\
@@ -53,6 +67,7 @@ ZSRC += \
 	\
 	testing_zgesv_gpu.cpp	\
 	testing_zgetrf_gpu.cpp	\
+	testing_zgetf2_gpu.cpp	\
 	testing_zgetri_gpu.cpp	\
 	\
 	testing_zgetrf_mgpu.cpp	\
@@ -69,7 +84,8 @@ ZSRC += \
 	\
 	testing_zgelqf_gpu.cpp	\
 	testing_zgeqrf_gpu.cpp	\
-	testing_zgeqr2_gpu.cpp  \
+	testing_zgeqr2_gpu.cpp	\
+	testing_zgeqr2x_gpu.cpp	\
 	testing_zgeqrs3_gpu.cpp	\
 	testing_zgeqrs_gpu.cpp	\
 	testing_zlarfb_gpu.cpp	\
@@ -86,7 +102,10 @@ ZSRC += \
 	testing_zungqr.cpp	\
 	testing_zunmqr.cpp	\
 	\
+	testing_zungqr_m.cpp	\
+	\
 	testing_zgeqp3.cpp	\
+	testing_zgeqp3_gpu.cpp	\
 
 # ----------
 # symmetric eigenvalues, GPU interface
@@ -104,21 +123,26 @@ ZSRC += \
 # symmetric eigenvalues, 2-stage
 ZSRC += \
 	testing_zhetrd_he2hb.cpp	\
-	testing_zhegvdx_2stage.cpp	\
+	testing_zheevdx_2stage.cpp	\
 #	testing_zhetrd_he2hb_mgpu.cpp	\
 
 # generalized symmetric eigenvalues
 ZSRC += \
 	testing_dsygvd.cpp	\
 	testing_zhegvd.cpp	\
+	testing_zhegvd_m.cpp	\
 	testing_zhegvdx.cpp	\
-
+	testing_zhegvdx_2stage.cpp	\
+	testing_zhegvdx_2stage_m.cpp	\
 # ----------
 # non-symmetric eigenvalues
 ZSRC += \
 	testing_dgeev.cpp	\
 	testing_zgeev.cpp	\
 	testing_zgehrd.cpp	\
+	testing_dgeev_m.cpp	\
+	testing_zgeev_m.cpp	\
+	testing_zgehrd_m.cpp	\
 
 # ----------
 # SVD
@@ -158,12 +182,15 @@ LIBEXE  := $(LIBOBJ:.o=)
 # strip out fake exe files generated from LIBSRC
 EXE := $(filter-out $(LIBEXE), $(EXE))
 
-# only testing_auxiliary needs control
-INC += -I../control
+.PHONY: all lib clean cleanall
 
 all: $(EXE)
 
-lib: $(LIBMAGMA) $(LIBMAGMABLAS)
+lib:
+	cd .. && $(MAKE) lib
+
+# depend on header
+$(ALLOBJ): testings.h
 
 $(LIBTEST): $(LIBOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $^
@@ -172,11 +199,13 @@ $(LIBTEST): $(LIBOBJ)
 LIBLAPACKTEST = lin/liblapacktest.a
 
 $(LIBLAPACKTEST):
-	cd lin && make liblapacktest.a
+	cd lin && $(MAKE) liblapacktest.a
 
-$(EXE): $(LIBMAGMA) $(LIBMAGMABLAS) $(LIBLAPACKTEST) $(LIBTEST)
+$(EXE): $(LIBMAGMA) $(LIBLAPACKTEST) $(LIBTEST)
 
 clean:
+	cd lin    && $(MAKE) clean
+	cd matgen && $(MAKE) clean
 	rm -f *.o *~ $(LIBTEST)
 
 cleanall: clean
@@ -192,19 +221,21 @@ endif
 
 testing_%_f : testing_%_f.o $(FOBJ)
 	$(FORT) $(LDOPTS) $< $(FOBJ) -o $@ \
-	$(LIBTEST) $(LIBLAPACKTEST) -L../lib -lmagma -lmagmablas -lmagma \
+	$(LIBTEST) $(LIBLAPACKTEST) -L../lib -lmagma \
 	$(LIBDIR) \
 	$(LIB) 
 
 testing_% : testing_%.o
-	$(CC) $(LDOPTS) $(NOMAIN) $< $(OBJ) -o $@ \
-	$(LIBTEST) $(LIBLAPACKTEST) -L../lib -lmagma -lmagmablas -lmagma \
+	$(CC) $(LDOPTS) $(NOMAIN) $< -o $@ \
+	$(LIBTEST) $(LIBLAPACKTEST) -L../lib -lmagma \
 	$(LIBDIR) \
 	$(LIB) 
 
 #
 # These two files are provided by cuda
+# CUDA 5 needs -DCUBLAS_GFORTRAN or appropriate setting to compile cuda/src/fortran.c bindings
 #
+fortran.o : OPTS += -DCUBLAS_GFORTRAN
 fortran.o : $(CUDADIR)/src/fortran.c
 	$(CC) $(OPTS) $(INC) -c $< -o $@
 

@@ -1,28 +1,26 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
 
-#define MultiGPUs
-
 extern "C" magma_int_t
 magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
-                    cuDoubleComplex **dlA, magma_int_t ldda,
-                    cuDoubleComplex *tau, 
+                    magmaDoubleComplex **dlA, magma_int_t ldda,
+                    magmaDoubleComplex *tau,
                     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -62,7 +60,6 @@ magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(1) H(2) . . . H(k), where k = min(m,n).
@@ -76,23 +73,25 @@ magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     and tau in TAU(i).
     =====================================================================    */
 
-    #define dlA(gpu,a_1,a_2) ( dlA[gpu]+(a_2)*(ldda) + (a_1))
-    #define work_ref(a_1)    ( work + (a_1))
-    #define hwork            ( work + (nb)*(m))
+    #define dlA(dev, i, j)   (dlA[dev] + (i) + (j)*(ldda))
+    #define hpanel(i)        (hpanel + (i))
 
-    #define hwrk_ref(a_1)    ( local_work + (a_1))
-    #define lhwrk            ( local_work + (nb)*(m))
+    // set to NULL to make cleanup easy: free(NULL) does nothing.
+    magmaDoubleComplex *dwork[MagmaMaxGPUs]={NULL}, *dpanel[MagmaMaxGPUs]={NULL};
+    magmaDoubleComplex *hwork=NULL, *hpanel=NULL;
+    magma_queue_t stream[MagmaMaxGPUs][2]={{NULL}};
+    magma_event_t panel_event[MagmaMaxGPUs]={NULL};
 
-    cuDoubleComplex *dwork[4], *panel[4], *local_work;
-
-    magma_int_t i, j, k, ldwork, lddwork, old_i, old_ib, rows;
-    magma_int_t nbmin, nx, ib, nb;
+    magma_int_t i, j, min_mn, dev, ldhpanel, lddwork, rows;
+    magma_int_t ib, nb;
     magma_int_t lhwork, lwork;
+    magma_int_t panel_dev, i_local, i_nb_local, n_local[MagmaMaxGPUs], la_dev, dpanel_offset;
 
+    magma_queue_t cqueue;
+    magmablasGetKernelStream( &cqueue );
+    
     magma_device_t cdevice;
-    magma_getdevice(&cdevice);
-
-    int panel_gpunum, i_local, n_local[4], la_gpu, displacement; 
+    magma_getdevice( &cdevice );
 
     *info = 0;
     if (m < 0) {
@@ -107,258 +106,219 @@ magma_zgeqrf2_mgpu( magma_int_t num_gpus, magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    k = min(m,n);
-    if (k == 0)
+    min_mn = min(m,n);
+    if (min_mn == 0)
         return *info;
 
-    nb = magma_get_zgeqrf_nb(m);
+    nb = magma_get_zgeqrf_nb( m );
 
-    displacement = n * nb;
-    lwork  = (m+n+64) * nb;
-    lhwork = lwork - (m)*nb;
-
-    for(i=0; i<num_gpus; i++){
-      #ifdef  MultiGPUs
-         magma_setdevice(i);
-      #endif
-         if (MAGMA_SUCCESS != magma_zmalloc( &(dwork[i]), (n + ldda)*nb )) {
-        *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info;
-      }
+    /* dwork is (n*nb) --- for T (nb*nb) and zlarfb work ((n-nb)*nb) ---
+     *        + dpanel (ldda*nb), on each GPU.
+     * I think zlarfb work could be smaller, max(n_local[:]).
+     * Oddly, T and zlarfb work get stacked on top of each other, both with lddwork=n.
+     * on GPU that owns panel, set dpanel = dlA(dev,i,i_local).
+     * on other GPUs,          set dpanel = dwork[dev] + dpanel_offset. */
+    lddwork = n;
+    dpanel_offset = lddwork*nb;
+    for( dev=0; dev < num_gpus; dev++ ) {
+        magma_setdevice( dev );
+        if ( MAGMA_SUCCESS != magma_zmalloc( &(dwork[dev]), (lddwork + ldda)*nb )) {
+            *info = MAGMA_ERR_DEVICE_ALLOC;
+            goto CLEANUP;
+        }
     }
+
+    /* hwork is MAX( workspace for zgeqrf (n*nb), two copies of T (2*nb*nb) )
+     *        + hpanel (m*nb).
+     * for last block, need 2*n*nb total. */
+    ldhpanel = m;
+    lhwork = max( n*nb, 2*nb*nb );
+    lwork = max( lhwork + ldhpanel*nb, 2*n*nb );
+    if ( MAGMA_SUCCESS != magma_zmalloc_pinned( &hwork, lwork )) {
+        *info = MAGMA_ERR_HOST_ALLOC;
+        goto CLEANUP;
+    }
+    hpanel = hwork + lhwork;
 
     /* Set the number of local n for each GPU */
-    for(i=0; i<num_gpus; i++){
-      n_local[i] = ((n/nb)/num_gpus)*nb;
-      if (i < (n/nb)%num_gpus)
-        n_local[i] += nb;
-      else if (i == (n/nb)%num_gpus)
-        n_local[i] += n%nb;
+    for( dev=0; dev < num_gpus; dev++ ) {
+        n_local[dev] = ((n/nb)/num_gpus)*nb;
+        if (dev < (n/nb) % num_gpus)
+            n_local[dev] += nb;
+        else if (dev == (n/nb) % num_gpus)
+            n_local[dev] += n % nb;
     }
 
-    if (MAGMA_SUCCESS != magma_zmalloc_pinned( &local_work, lwork )) {
-      *info = -9;
-      for(i=0; i<num_gpus; i++){
-        #ifdef  MultiGPUs
-          magma_setdevice(i);
-        #endif
-        magma_free( dwork[i] );
-      }
-
-      *info = MAGMA_ERR_HOST_ALLOC;
-      return *info;
+    for( dev=0; dev < num_gpus; dev++ ) {
+        magma_setdevice( dev );
+        magma_queue_create( &stream[dev][0] );
+        magma_queue_create( &stream[dev][1] );
+        magma_event_create( &panel_event[dev] );
     }
 
-    cudaStream_t streaml[4][2];
-    for(i=0; i<num_gpus; i++){
-      #ifdef  MultiGPUs
-         magma_setdevice(i);
-      #endif
-      magma_queue_create( &streaml[i][0] );
-      magma_queue_create( &streaml[i][1] );
-    }  
-
-    nbmin = 2;
-    nx    = nb;
-    ldwork = m;
-    lddwork= n;
-
-    if (nb >= nbmin && nb < k && nx < k) {
+    if ( nb < min_mn ) {
         /* Use blocked code initially */
-        old_i = 0; old_ib = nb;
-        for (i = 0; i < k-nx; i += nb) 
-          {
+        // Note: as written, ib cannot be < nb.
+        for( i = 0; i < min_mn-nb; i += nb ) {
             /* Set the GPU number that holds the current panel */
-            panel_gpunum = (i/nb)%num_gpus;
+            panel_dev = (i/nb) % num_gpus;
             
-            /* Set the local index where the current panel is */
+            /* Set the local index where the current panel is (j==i) */
             i_local = i/(nb*num_gpus)*nb;
             
-            ib = min(k-i, nb);
-            rows = m -i;
-            /* Send current panel to the CPU */
-            #ifdef  MultiGPUs
-               magma_setdevice(panel_gpunum);
-            #endif
-            magma_zgetmatrix_async( rows, ib,
-                                    dlA(panel_gpunum, i, i_local), ldda,
-                                    hwrk_ref(i),                   ldwork, streaml[panel_gpunum][1] );
-
-            if (i>0){
-                /* Apply H' to A(i:m,i+2*ib:n) from the left; this is the look-ahead
-                   application to the trailing matrix                                     */
-                la_gpu = panel_gpunum;
-
-                /* only the GPU that has next panel is done look-ahead */
-                #ifdef  MultiGPUs
-                     magma_setdevice(la_gpu);
-                #endif
-                   
-                magma_zlarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                  m-old_i, n_local[la_gpu]-i_local-old_ib, old_ib,
-                                  panel[la_gpu], ldda, dwork[la_gpu],      lddwork,
-                                  dlA(la_gpu, old_i, i_local+old_ib), ldda, 
-                                  dwork[la_gpu]+old_ib, lddwork);
-                  
-                la_gpu = ((i-nb)/nb)%num_gpus;
-                #ifdef  MultiGPUs
-                magma_setdevice(la_gpu);
-                #endif
-                magma_zsetmatrix_async( old_ib, old_ib,
-                                        hwrk_ref(old_i), ldwork,
-                                        panel[la_gpu],   ldda, streaml[la_gpu][0] );
-            }
+            ib = min(min_mn-i, nb);
+            rows = m-i;
             
-            #ifdef  MultiGPUs
-               magma_setdevice(panel_gpunum);
-            #endif
-            magma_queue_sync( streaml[panel_gpunum][1] );
+            /* Send current panel to the CPU, after panel_event indicates it has been updated */
+            magma_setdevice( panel_dev );
+            magma_queue_wait_event( stream[panel_dev][1], panel_event[panel_dev] );
+            magma_zgetmatrix_async( rows, ib,
+                                    dlA(panel_dev, i, i_local), ldda,
+                                    hpanel(i),                  ldhpanel, stream[panel_dev][1] );
+            magma_queue_sync( stream[panel_dev][1] );
 
-            lapackf77_zgeqrf(&rows, &ib, hwrk_ref(i), &ldwork, tau+i, lhwrk, &lhwork, info);
+            // Factor panel
+            lapackf77_zgeqrf( &rows, &ib, hpanel(i), &ldhpanel, tau+i,
+                              hwork, &lhwork, info );
+            if ( *info != 0 ) {
+                fprintf( stderr, "error %d\n", *info );
+            }
 
             // Form the triangular factor of the block reflector
-            // H = H(i) H(i+1) . . . H(i+ib-1) 
+            // H = H(i) H(i+1) . . . H(i+ib-1)
             lapackf77_zlarft( MagmaForwardStr, MagmaColumnwiseStr,
                               &rows, &ib,
-                              hwrk_ref(i), &ldwork, tau+i, lhwrk, &ib);
+                              hpanel(i), &ldhpanel, tau+i, hwork, &ib );
 
-            zpanel_to_q( MagmaUpper, ib, hwrk_ref(i), ldwork, lhwrk+ib*ib );
-            // Send the current panel back to the GPUs 
-            // Has to be done with asynchronous copies
-            for(j=0; j<num_gpus; j++)
-              {  
-                #ifdef  MultiGPUs
-                   magma_setdevice(j);
-                #endif
-                if (j == panel_gpunum)
-                  panel[j] = dlA(j, i, i_local);
+            zpanel_to_q( MagmaUpper, ib, hpanel(i), ldhpanel, hwork + ib*ib );
+            // Send the current panel back to the GPUs
+            for( dev=0; dev < num_gpus; dev++ ) {
+                magma_setdevice( dev );
+                if (dev == panel_dev)
+                    dpanel[dev] = dlA(dev, i, i_local);
                 else
-                  panel[j] = dwork[j]+displacement;
+                    dpanel[dev] = dwork[dev] + dpanel_offset;
                 magma_zsetmatrix_async( rows, ib,
-                                        hwrk_ref(i), ldwork,
-                                        panel[j],    ldda, streaml[j][0] );
-              }
-            for(j=0; j<num_gpus; j++)
-              {
-                #ifdef  MultiGPUs
-                magma_setdevice(j);
-                #endif
-                magma_queue_sync( streaml[j][0] );
-              }
+                                        hpanel(i),   ldhpanel,
+                                        dpanel[dev], ldda, stream[dev][0] );
+            }
+            for( dev=0; dev < num_gpus; dev++ ) {
+                magma_setdevice( dev );
+                magma_queue_sync( stream[dev][0] );
+            }
 
+            // TODO: if zpanel_to_q copied whole block, wouldn't need to restore
+            // -- just send the copy to the GPUs.
+            // TODO: also, could zero out the lower triangle and use Azzam's larfb w/ gemm.
+            
             /* Restore the panel */
-            zq_to_panel( MagmaUpper, ib, hwrk_ref(i), ldwork, lhwrk+ib*ib );
+            zq_to_panel( MagmaUpper, ib, hpanel(i), ldhpanel, hwork + ib*ib );
 
-            if (i + ib < n) 
-              {
-                /* Send the T matrix to the GPU. 
-                   Has to be done with asynchronous copies */
-                for(j=0; j<num_gpus; j++)
-                  {
-                    #ifdef  MultiGPUs
-                       magma_setdevice(j);
-                    #endif
-                       magma_zsetmatrix_async( ib, ib,
-                                               lhwrk,    ib,
-                                               dwork[j], lddwork, streaml[j][0] );
-                  }
-
-                if (i+nb < k-nx)
-                  {
-                    /* Apply H' to A(i:m,i+ib:i+2*ib) from the left;
-                       This is update for the next panel; part of the look-ahead    */
-                    la_gpu = (panel_gpunum+1)%num_gpus;
-                    int i_loc = (i+nb)/(nb*num_gpus)*nb;
-                    for(j=0; j<num_gpus; j++){
-                      #ifdef  MultiGPUs
-                      magma_setdevice(j);
-                      #endif
-                      //magma_queue_sync( streaml[j][0] );
-                      if (j==la_gpu)
+            if (i + ib < n) {
+                /* Send the T matrix to the GPU. */
+                for( dev=0; dev < num_gpus; dev++ ) {
+                    magma_setdevice( dev );
+                    magma_zsetmatrix_async( ib, ib,
+                                            hwork,      ib,
+                                            dwork[dev], lddwork, stream[dev][0] );
+                }
+                
+                la_dev = (panel_dev+1) % num_gpus;
+                for( dev=0; dev < num_gpus; dev++ ) {
+                    magma_setdevice( dev );
+                    magmablasSetKernelStream( stream[dev][0] );
+                    if (dev == la_dev && i+nb < min_mn-nb) {
+                        // If not last panel,
+                        // for look-ahead panel, apply H' to A(i:m,i+ib:i+2*ib)
+                        i_nb_local = (i+nb)/(nb*num_gpus)*nb;
                         magma_zlarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
                                           rows, ib, ib,
-                                          panel[j], ldda, dwork[j],    lddwork,
-                                          dlA(j, i, i_loc), ldda, dwork[j]+ib, lddwork);
-                      else if (j<=panel_gpunum)
+                                          dpanel[dev],             ldda,       // V
+                                          dwork[dev],              lddwork,    // T
+                                          dlA(dev, i, i_nb_local), ldda,       // C
+                                          dwork[dev]+ib,           lddwork );  // work
+                        magma_event_record( panel_event[dev], stream[dev][0] );
+                        // for trailing matrix, apply H' to A(i:m,i+2*ib:n)
                         magma_zlarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                          rows, n_local[j]-i_local-ib, ib,
-                                          panel[j], ldda, dwork[j],    lddwork,
-                                          dlA(j, i, i_local+ib), ldda, dwork[j]+ib, lddwork);
-                      else
+                                          rows, n_local[dev]-(i_nb_local+ib), ib,
+                                          dpanel[dev],                ldda,       // V
+                                          dwork[dev],                 lddwork,    // T
+                                          dlA(dev, i, i_nb_local+ib), ldda,       // C
+                                          dwork[dev]+ib,              lddwork );  // work
+                    }
+                    else {
+                        // for trailing matrix, apply H' to A(i:m,i+ib:n)
+                        i_nb_local = i_local;
+                        if (dev <= panel_dev) {
+                            i_nb_local += ib;
+                        }
                         magma_zlarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                          rows, n_local[j]-i_local, ib,
-                                          panel[j], ldda, dwork[j],    lddwork,
-                                          dlA(j, i, i_local), ldda, dwork[j]+ib, lddwork);
-                    }     
-                  }
-                else {
-                  /* do the entire update as we exit and there would be no lookahead */
-                  la_gpu = (panel_gpunum+1)%num_gpus;
-                  int i_loc = (i+nb)/(nb*num_gpus)*nb;
-
-                  #ifdef  MultiGPUs
-                     magma_setdevice(la_gpu);
-                  #endif
-                  magma_zlarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                    rows, n_local[la_gpu]-i_loc, ib,
-                                    panel[la_gpu], ldda, dwork[la_gpu],    lddwork,
-                                    dlA(la_gpu, i, i_loc), ldda, dwork[la_gpu]+ib, lddwork);
-                  #ifdef  MultiGPUs
-                     magma_setdevice(panel_gpunum);
-                  #endif
-                  magma_zsetmatrix( ib, ib,
-                                    hwrk_ref(i),                   ldwork,
-                                    dlA(panel_gpunum, i, i_local), ldda );
+                                          rows, n_local[dev]-i_nb_local, ib,
+                                          dpanel[dev],             ldda,       // V
+                                          dwork[dev],              lddwork,    // T
+                                          dlA(dev, i, i_nb_local), ldda,       // C
+                                          dwork[dev]+ib,           lddwork );  // work
+                    }
                 }
-                old_i  = i;
-                old_ib = ib;
-              }
-          }
-    } else {
-      i = 0;
+                // Restore top of panel (after larfb is done)
+                magma_setdevice( panel_dev );
+                magma_zsetmatrix_async( ib, ib,
+                                        hpanel(i),                  ldhpanel,
+                                        dlA(panel_dev, i, i_local), ldda, stream[panel_dev][0] );
+            }
+        }
+    }
+    else {
+        i = 0;
     }
     
-    for(j=0; j<num_gpus; j++){
-      #ifdef  MultiGPUs
-      magma_setdevice(j);
-      #endif
-      magma_free( dwork[j] );
-    }
-    
-    /* Use unblocked code to factor the last or only block. */
-    if (i < k) {
-        ib   = n-i;
+    /* Use unblocked code to factor the last or only block row. */
+    if (i < min_mn) {
         rows = m-i;
-        lhwork = lwork - rows*ib;
+        for( j=i; j < n; j += nb ) {
+            panel_dev = (j/nb) % num_gpus;
+            i_local = j/(nb*num_gpus)*nb;
+            ib = min( n-j, nb );
+            magma_setdevice( panel_dev );
+            magma_zgetmatrix( rows, ib,
+                              dlA(panel_dev, i, i_local), ldda,
+                              hwork + (j-i)*rows,         rows );
+        }
 
-        panel_gpunum = (panel_gpunum+1)%num_gpus;
-        int i_loc = (i)/(nb*num_gpus)*nb;
-
-        #ifdef  MultiGPUs
-           magma_setdevice(panel_gpunum);
-        #endif
-        magma_zgetmatrix( rows, ib,
-                          dlA(panel_gpunum, i, i_loc), ldda,
-                          lhwrk,                       rows );
-
-        lhwork = lwork - rows*ib;
-        lapackf77_zgeqrf(&rows, &ib, lhwrk, &rows, tau+i, lhwrk+ib*rows, &lhwork, info);
-
-        magma_zsetmatrix( rows, ib,
-                          lhwrk,                       rows,
-                          dlA(panel_gpunum, i, i_loc), ldda );
+        // needs lwork >= 2*n*nb:
+        // needs (m-i)*(n-i) for last block row, bounded by nb*n.
+        // needs (n-i)*nb    for zgeqrf work,    bounded by n*nb.
+        ib = n-i;  // total columns in block row
+        lhwork = lwork - ib*rows;
+        lapackf77_zgeqrf( &rows, &ib, hwork, &rows, tau+i, hwork + ib*rows, &lhwork, info );
+        if ( *info != 0 ) {
+            fprintf( stderr, "error %d\n", *info );
+        }
+        
+        for( j=i; j < n; j += nb ) {
+            panel_dev = (j/nb) % num_gpus;
+            i_local = j/(nb*num_gpus)*nb;
+            ib = min( n-j, nb );
+            magma_setdevice( panel_dev );
+            magma_zsetmatrix( rows, ib,
+                              hwork + (j-i)*rows,         rows,
+                              dlA(panel_dev, i, i_local), ldda );
+        }
     }
 
-    for(i=0; i<num_gpus; i++){
-      #ifdef  MultiGPUs
-         magma_setdevice(i);
-      #endif
-      magma_queue_destroy( streaml[i][0] );
-      magma_queue_destroy( streaml[i][1] );
+CLEANUP:
+    // free(NULL) does nothing.
+    // check that queues and events are non-zero before destroying them, though.
+    for( dev=0; dev < num_gpus; dev++ ) {
+        magma_setdevice( dev );
+        if ( stream[dev][0]   ) { magma_queue_destroy( stream[dev][0]   ); }
+        if ( stream[dev][1]   ) { magma_queue_destroy( stream[dev][1]   ); }
+        if ( panel_event[dev] ) { magma_event_destroy( panel_event[dev] ); }
+        magma_free( dwork[dev] );
     }
-
-    magma_setdevice(cdevice);
-    magma_free_pinned( local_work );
+    magma_free_pinned( hwork );
+    magma_setdevice( cdevice );
+    magmablasSetKernelStream( cqueue );
 
     return *info;
 } /* magma_zgeqrf2_mgpu */

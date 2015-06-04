@@ -1,26 +1,20 @@
-/**
- *
- * @file common_magma.h
- *
- *  MAGMA (version 1.3.0) --
- *  Univ. of Tennessee, Knoxville
- *  Univ. of California, Berkeley
- *  Univ. of Colorado, Denver
- *  November 2012
- *
- * @version 1.0.0
- * @author Mathieu Faverge
- * @date 2010-11
- *
- * Based on PLASMA common.h
- *
- **/
+/*
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+ 
+       @author Mathieu Faverge
+ 
+       Based on PLASMA common.h
+*/
 
 /***************************************************************************//**
  *  MAGMA facilities of interest to both src and magmablas directories
  **/
-#ifndef _MAGMA_COMMON_H_
-#define _MAGMA_COMMON_H_
+#ifndef MAGMA_COMMON_H
+#define MAGMA_COMMON_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,10 +44,15 @@
 
 #endif
 
+#if defined(__APPLE__)
+    #include "pthread_barrier.h"
+#endif
+
 #include "magma.h"
 #include "magma_lapack.h"
 #include "operators.h"
 #include "transpose.h"
+#include "magma_threadsetting.h"
 
 /** ****************************************************************************
  * C99 standard defines __func__. Some older compilers use __FUNCTION__.
@@ -99,4 +98,4 @@
 #define magma_dsqrt sqrt
 #define magma_ssqrt sqrtf
 
-#endif /* _MAGMA_COMMON_H_ */
+#endif /* MAGMA_COMMON_H */

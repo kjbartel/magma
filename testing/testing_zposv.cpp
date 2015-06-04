@@ -1,13 +1,12 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- * @precisions normal z -> c d s
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @precisions normal z -> c d s
+*/
 // includes, system
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,119 +26,103 @@
 */
 int main( int argc, char** argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    real_Double_t   gflops, gpu_perf, gpu_time;
+    real_Double_t   gflops, cpu_perf, cpu_time, gpu_perf, gpu_time;
     double          Rnorm, Anorm, Xnorm, *work;
-    cuDoubleComplex c_one     = MAGMA_Z_ONE;
-    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex *h_A, *h_R, *h_B, *h_X;
-    const char  *uplo     = MagmaLowerStr;
-    magma_int_t lda, ldb;
-    magma_int_t i, info, szeA, szeB;
+    magmaDoubleComplex c_one     = MAGMA_Z_ONE;
+    magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex *h_A, *h_R, *h_B, *h_X;
+    magma_int_t N, lda, ldb, info, sizeA, sizeB;
     magma_int_t ione     = 1;
-    magma_int_t N        = 0;
-    magma_int_t NRHS     = 100;
     magma_int_t ISEED[4] = {0,0,0,1};
-    const int MAXTESTS   = 10;
-    magma_int_t size[MAXTESTS] = { 1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112 };
-
-    // process command line arguments
-    printf( "\nUsage: %s -N <matrix size> -R <right hand sides> [-L|-U]\n", argv[0] );
-    printf( "  -N can be repeated up to %d times\n\n", MAXTESTS );
-    int ntest = 0;
-    for( int i = 1; i < argc; ++i ) {
-        if ( strcmp("-N", argv[i]) == 0 && i+1 < argc ) {
-            magma_assert( ntest < MAXTESTS, "error: -N repeated more than maximum %d tests\n", MAXTESTS );
-            size[ntest] = atoi( argv[++i] );
-            magma_assert( size[ntest] > 0, "error: -N %s is invalid; must be > 0.\n", argv[i] );
-            N = max( N, size[ntest] );
-            ntest++;
-        }
-        else if ( strcmp("-R", argv[i]) == 0 && i+1 < argc ) {
-            NRHS = atoi( argv[++i] );
-            magma_assert( NRHS > 0, "error: -R %is is invalid; must be > 0.\n", argv[i] );
-        }
-        else if ( strcmp("-L", argv[i]) == 0 ) {
-            uplo = MagmaLowerStr;
-        }
-        else if ( strcmp("-U", argv[i]) == 0 ) {
-            uplo = MagmaUpperStr;
-        }
-        else {
-            printf( "invalid argument: %s\n", argv[i] );
-            exit(1);
-        }
-    }
-    if ( ntest == 0 ) {
-        ntest = MAXTESTS;
-        N = size[ntest-1];
-    }
     
-    // allocate maximum amount of memory required
-    lda = ldb = N;
-    TESTING_MALLOC( h_A, cuDoubleComplex, lda*N    );
-    TESTING_MALLOC( h_R, cuDoubleComplex, lda*N    );
-    TESTING_MALLOC( h_B, cuDoubleComplex, ldb*NRHS );
-    TESTING_MALLOC( h_X, cuDoubleComplex, ldb*NRHS );
-    TESTING_MALLOC( work, double,         N        );
-
-    printf("    N   NRHS   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
-    printf("===========================================================\n");
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
     
-    for( i = 0; i < ntest; ++i ) {
-        N   = size[i];
-        lda = ldb = N;
-        gflops = ( FLOPS_ZPOTRF( (double)N ) +
-                   FLOPS_ZPOTRS( (double)N, (double)NRHS ) ) / 1e9;
-
-        /* ====================================================================
-           Initialize the matrix
-           =================================================================== */
-        szeA = lda*N;
-        szeB = ldb*NRHS;
-        lapackf77_zlarnv( &ione, ISEED, &szeA, h_A );
-        lapackf77_zlarnv( &ione, ISEED, &szeB, h_B );
-        magma_zhpd( N, h_A, lda );
-        
-        // copy A to R and B to X; save A and B for residual
-        lapackf77_zlacpy( MagmaUpperLowerStr, &N, &N,    h_A, &lda, h_R, &lda );
-        lapackf77_zlacpy( MagmaUpperLowerStr, &N, &NRHS, h_B, &ldb, h_X, &ldb );
-
-        /* ====================================================================
-           Performs operation using MAGMA
-           =================================================================== */
-        gpu_time = magma_wtime();
-        magma_zposv( uplo[0], N, NRHS, h_R, lda, h_X, ldb, &info );
-        gpu_time = magma_wtime() - gpu_time;
-        if (info != 0)
-            printf("magma_zpotrf returned error %d.\n", (int) info);
-
-        gpu_perf = gflops / gpu_time;
-
-        /* =====================================================================
-           Residual
-           =================================================================== */
-        Anorm = lapackf77_zlange("I", &N, &N,    h_A, &lda, work);
-        Xnorm = lapackf77_zlange("I", &N, &NRHS, h_X, &ldb, work);
-
-        blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr, &N, &NRHS, &N,
-                       &c_one,     h_A, &lda,
-                                   h_X, &ldb,
-                       &c_neg_one, h_B, &ldb );
-        
-        Rnorm = lapackf77_zlange("I", &N, &NRHS, h_B, &ldb, work);
-
-        printf( "%5d  %5d   %7.2f (%7.2f)   %8.2e\n",
-                (int) N, (int) NRHS, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+    printf("ngpu %d, uplo %c\n", opts.ngpu, opts.uplo );
+    printf("    N  NRHS   CPU Gflop/s (sec)   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
+    printf("==============================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N   = opts.nsize[i];
+            lda = ldb = N;
+            gflops = ( FLOPS_ZPOTRF( N ) + FLOPS_ZPOTRS( N, opts.nrhs ) ) / 1e9;
+            
+            TESTING_MALLOC( h_A, magmaDoubleComplex, lda*N         );
+            TESTING_MALLOC( h_R, magmaDoubleComplex, lda*N         );
+            TESTING_MALLOC( h_B, magmaDoubleComplex, ldb*opts.nrhs );
+            TESTING_MALLOC( h_X, magmaDoubleComplex, ldb*opts.nrhs );
+            TESTING_MALLOC( work, double,         N             );
+            
+            /* ====================================================================
+               Initialize the matrix
+               =================================================================== */
+            sizeA = lda*N;
+            sizeB = ldb*opts.nrhs;
+            lapackf77_zlarnv( &ione, ISEED, &sizeA, h_A );
+            lapackf77_zlarnv( &ione, ISEED, &sizeB, h_B );
+            magma_zmake_hpd( N, h_A, lda );
+            
+            // copy A to R and B to X; save A and B for residual
+            lapackf77_zlacpy( MagmaUpperLowerStr, &N, &N,         h_A, &lda, h_R, &lda );
+            lapackf77_zlacpy( MagmaUpperLowerStr, &N, &opts.nrhs, h_B, &ldb, h_X, &ldb );
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            gpu_time = magma_wtime();
+            magma_zposv( opts.uplo, N, opts.nrhs, h_R, lda, h_X, ldb, &info );
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflops / gpu_time;
+            if (info != 0)
+                printf("magma_zpotrf returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            /* =====================================================================
+               Residual
+               =================================================================== */
+            Anorm = lapackf77_zlange("I", &N, &N,         h_A, &lda, work);
+            Xnorm = lapackf77_zlange("I", &N, &opts.nrhs, h_X, &ldb, work);
+            
+            blasf77_zgemm( MagmaNoTransStr, MagmaNoTransStr, &N, &opts.nrhs, &N,
+                           &c_one,     h_A, &lda,
+                                       h_X, &ldb,
+                           &c_neg_one, h_B, &ldb );
+            
+            Rnorm = lapackf77_zlange("I", &N, &opts.nrhs, h_B, &ldb, work);
+            
+            /* ====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            if ( opts.lapack ) {
+                cpu_time = magma_wtime();
+                lapackf77_zposv( &opts.uplo, &N, &opts.nrhs, h_A, &lda, h_B, &ldb, &info );
+                cpu_time = magma_wtime() - cpu_time;
+                cpu_perf = gflops / cpu_time;
+                if (info != 0)
+                    printf("lapackf77_zposv returned error %d: %s.\n",
+                           (int) info, magma_strerror( info ));
+                
+                printf( "%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
+                        (int) N, (int) opts.nrhs, cpu_perf, cpu_time, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+            }
+            else {
+                printf( "%5d %5d     ---   (  ---  )   %7.2f (%7.2f)   %8.2e\n",
+                        (int) N, (int) opts.nrhs, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+            }
+            
+            TESTING_FREE( h_A );
+            TESTING_FREE( h_R );
+            TESTING_FREE( h_B );
+            TESTING_FREE( h_X );
+            TESTING_FREE( work );
+        }
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
 
-    /* Memory clean up */
-    TESTING_FREE( h_A );
-    TESTING_FREE( h_R );
-    TESTING_FREE( h_B );
-    TESTING_FREE( h_X );
-    TESTING_FREE( work );
-
-    TESTING_CUDA_FINALIZE();
+    TESTING_FINALIZE();
+    return 0;
 }

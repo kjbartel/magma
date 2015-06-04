@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
        @author Azzam Haidar
@@ -13,7 +13,7 @@
 #include "common_magma.h"
 
 extern "C"
-int magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][MagmaMaxGPUs+2], magma_int_t *nbcmplx, magma_int_t ngpu)
+magma_int_t magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][MagmaMaxGPUs+2], magma_int_t *nbcmplx, magma_int_t ngpu)
 {
     magma_int_t *deviceid = (magma_int_t *) malloc(ngpu*sizeof(magma_int_t));
     memset(deviceid,0,ngpu*sizeof(magma_int_t));
@@ -26,14 +26,14 @@ int magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][MagmaMaxGPUs+
 
     //printf(" cudaSuccess %d, cudaErrorInvalidDevice %d, cudaErrorPeerAccessAlreadyEnabled %d, cudaErrorInvalidValue %d \n",    cudaSuccess, cudaErrorInvalidDevice,cudaErrorPeerAccessAlreadyEnabled, cudaErrorInvalidValue );
 
-    magma_int_t samecomplex=-1;
+    int samecomplex=-1;
     cudaError_t err,scerr;
     cudaDeviceProp prop;
 
     magma_int_t cmplxnb = 0;
     magma_int_t cmplxid = 0;
     magma_int_t lcgpunb = 0;
-    for( int d = 0; d < ngpu; ++d ) {
+    for( magma_int_t d = 0; d < ngpu; ++d ) {
         // check for unified memory & enable peer memory access between all GPUs.            
         magma_setdevice( d );
         cudaGetDeviceProperties( &prop, d );
@@ -53,7 +53,7 @@ int magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][MagmaMaxGPUs+
         }
         //printf("DEVICE %d : \n",d);
 
-        for( int d2 = d+1; d2 < ngpu; ++d2 ) {
+        for( magma_int_t d2 = d+1; d2 < ngpu; ++d2 ) {
             // check for unified memory & enable peer memory access between all GPUs.            
             magma_setdevice( d2 );
             cudaGetDeviceProperties( &prop, d2 );

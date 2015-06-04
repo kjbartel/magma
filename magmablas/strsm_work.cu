@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
        
        @precisions normal s -> s
 
@@ -38,11 +38,11 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                            float alpha, const float* A, magma_int_t lda, float* b, magma_int_t ldb,
                            float *d_dinvA, float *d_x)
 {
-        /*  -- MAGMA (version 1.3.0) --
+        /*  -- MAGMA (version 1.4.0-beta2) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                November 2012
+                June 2013
 
                 Purpose
                 =======
@@ -157,10 +157,12 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                      in  the  calling  (sub)  program.   ldb  must  be  at  least
                      max( 1, m ).
                      Unchanged on exit.
-           
+            
+            d_dinvA - workspace of size NB*((M+NB-1)/NB))*NB, on device.
+            
+            d_x     - workspace of size N*M, on device.
            
             Level 3 Blas routine.
-                *
     ===================================================================== */
 
         int i;
@@ -175,10 +177,8 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                 /* invert the diagonals
                  * Allocate device memory for the inverted diagonal blocks, size=m*NB
                  */
-                //cudaMalloc((void**)&d_dinvA, NB*((M/NB)+(M%NB!=0))*NB*sizeof(float));
-                //cudaMalloc((void**)&d_x, N*M*sizeof(float));
-                //cudaMemset (d_x, 0, N*M*sizeof(float));
-                //cudaMemset (d_dinvA, 0, NB*((M/NB)+(M%NB!=0))*NB*sizeof(float));
+                //cudaMemset(d_x,     0, N*M*sizeof(float));
+                //cudaMemset(d_dinvA, 0, NB*((M/NB)+(M%NB!=0))*NB*sizeof(float));
                 diag_strtri (M, uplo, diag, A, d_dinvA, lda);
 
                 if (tran == 'N' || tran == 'n')
@@ -196,8 +196,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (NB>=M)
                                 {
                                         b_copy();
-                                        //cudaFree(d_dinvA);
-                                        //cudaFree(d_x);
                                         return;
                                 }
 
@@ -227,8 +225,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        //cudaFree(d_dinvA);
-                                        //cudaFree(d_x);
                                         return;
                                 }
 
@@ -262,8 +258,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        //cudaFree(d_dinvA);
-                                        //cudaFree(d_x);
                                         return;
                                 }
 
@@ -291,8 +285,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (NB>=M)
                                 {
                                         b_copy();
-                                        //cudaFree(d_dinvA);
-                                        //cudaFree(d_x);
                                         return;
                                 }
 
@@ -318,10 +310,8 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                 /* invert the diagonals
                  * Allocate device memory for the inverted diagonal blocks, size=N*BLOCK_SIZE 
                  */
-                //cudaMalloc((void**)&d_dinvA, NB*((N/NB)+(N%NB!=0))*NB*sizeof(float));
-                //cudaMalloc((void**)&d_x, N*M*sizeof(float));
-                //cudaMemset (d_x, 0, N*M*sizeof(float));
-                //cudaMemset (d_dinvA, 0, NB*((N/NB)+(N%NB!=0))*NB*sizeof(float));
+                //cudaMemset(d_x,     0, N*M*sizeof(float));
+                //cudaMemset(d_dinvA, 0, NB*((N/NB)+(N%NB!=0))*NB*sizeof(float));
                 diag_strtri (N, uplo, diag, A, d_dinvA, lda);
 
                 if (tran == 'N' || tran == 'n')
@@ -339,8 +329,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        //cudaFree(d_x);
-                                        //cudaFree(d_dinvA);
                                         return;
                                 }
 
@@ -368,8 +356,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (NB>=N)
                                 {
                                         b_copy();
-                                        //cudaFree(d_x);
-                                        //cudaFree(d_dinvA);
                                         return;
                                 }
 
@@ -402,8 +388,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (NB>=N)
                                 {
                                         b_copy();
-                                        //cudaFree(d_x);
-                                        //cudaFree(d_dinvA);
                                         return;
                                 }
 
@@ -433,8 +417,6 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
                                 if (i-NB<0)
                                 {
                                         b_copy();
-                                        //cudaFree(d_x);
-                                        //cudaFree(d_dinvA);
                                         return;
                                 }
 
@@ -455,7 +437,5 @@ void magmablas_strsm_work( char side, char uplo, char tran, char diag, magma_int
         }
                 
         b_copy();
-        //cudaFree(d_dinvA);
-        //cudaFree(d_x);
 }
 

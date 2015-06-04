@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:34 2012
+       @generated c Fri Jun 28 19:32:50 2013
 
 */
 #include "common_magma.h"
@@ -14,18 +14,18 @@
 
 extern "C" magma_int_t
 magma_cgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
-             cuFloatComplex *A,    magma_int_t lda, float *s,
-             cuFloatComplex *U,    magma_int_t ldu,
-             cuFloatComplex *VT,   magma_int_t ldvt,
-             cuFloatComplex *work, magma_int_t lwork,
+             magmaFloatComplex *A,    magma_int_t lda, float *s,
+             magmaFloatComplex *U,    magma_int_t ldu,
+             magmaFloatComplex *VT,   magma_int_t ldvt,
+             magmaFloatComplex *work, magma_int_t lwork,
              float *rwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -150,8 +150,8 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
     char jobu_[2]  = {jobu,  0};
     char jobvt_[2] = {jobvt, 0};
     
-    const cuFloatComplex c_zero = MAGMA_C_ZERO;
-    const cuFloatComplex c_one  = MAGMA_C_ONE;
+    const magmaFloatComplex c_zero = MAGMA_C_ZERO;
+    const magmaFloatComplex c_one  = MAGMA_C_ONE;
     const magma_int_t izero      = 0;
     const magma_int_t ione       = 1;
     const magma_int_t ineg_one   = -1;
@@ -162,7 +162,7 @@ magma_cgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
     // Local variables
     magma_int_t i, ie, ir, iu, blk, ncu;
     float dummy[1], eps;
-    cuFloatComplex cdummy[1];
+    magmaFloatComplex cdummy[1];
     magma_int_t nru, iscl;
     float anrm;
     magma_int_t ierr, itau, ncvt, nrvt;

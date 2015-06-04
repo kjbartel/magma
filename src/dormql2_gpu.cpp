@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Raffaele Solca
 
-       @generated d Wed Nov 14 22:53:13 2012
+       @generated d Fri Jun 28 19:32:21 2013
 
 */
 #include "common_magma.h"
@@ -17,94 +17,93 @@ extern"C"{
 }
 
 extern "C" magma_int_t
-magma_dormql2_gpu(const char side, const char trans, 
-                  magma_int_t m, magma_int_t n, magma_int_t k, 
-                  double *da, magma_int_t ldda, 
-                  double *tau, 
+magma_dormql2_gpu(const char side, const char trans,
+                  magma_int_t m, magma_int_t n, magma_int_t k,
+                  double *da, magma_int_t ldda,
+                  double *tau,
                   double *dc, magma_int_t lddc,
                   double *wa, magma_int_t ldwa,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
-    DORMQL overwrites the general real M-by-N matrix C with   
+    Purpose
+    =======
+    DORMQL overwrites the general real M-by-N matrix C with
 
-                    SIDE = 'L'     SIDE = 'R'   
-    TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'C':      Q**T * C       C * Q**T   
+                    SIDE = 'L'     SIDE = 'R'
+    TRANS = 'N':      Q * C          C * Q
+    TRANS = 'C':      Q**T * C       C * Q**T
 
-    where Q is a real unitary matrix defined as the product of k   
-    elementary reflectors   
+    where Q is a real unitary matrix defined as the product of k
+    elementary reflectors
 
-          Q = H(k) . . . H(2) H(1)   
+          Q = H(k) . . . H(2) H(1)
 
-    as returned by DGEQLF. Q is of order M if SIDE = 'L' and of order N   
-    if SIDE = 'R'.   
+    as returned by DGEQLF. Q is of order M if SIDE = 'L' and of order N
+    if SIDE = 'R'.
 
-    Arguments   
-    =========   
-    SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q**T from the Left;   
-            = 'R': apply Q or Q**T from the Right.   
+    Arguments
+    =========
+    SIDE    (input) CHARACTER*1
+            = 'L': apply Q or Q**T from the Left;
+            = 'R': apply Q or Q**T from the Right.
 
-    TRANS   (input) CHARACTER*1   
-            = 'N':  No transpose, apply Q;   
-            = 'C':  Transpose, apply Q**T.   
+    TRANS   (input) CHARACTER*1
+            = 'N':  No transpose, apply Q;
+            = 'C':  Transpose, apply Q**T.
 
-    M       (input) INTEGER   
-            The number of rows of the matrix C. M >= 0.   
+    M       (input) INTEGER
+            The number of rows of the matrix C. M >= 0.
 
-    N       (input) INTEGER   
-            The number of columns of the matrix C. N >= 0.   
+    N       (input) INTEGER
+            The number of columns of the matrix C. N >= 0.
 
-    K       (input) INTEGER   
-            The number of elementary reflectors whose product defines   
-            the matrix Q.   
-            If SIDE = 'L', M >= K >= 0;   
-            if SIDE = 'R', N >= K >= 0.   
+    K       (input) INTEGER
+            The number of elementary reflectors whose product defines
+            the matrix Q.
+            If SIDE = 'L', M >= K >= 0;
+            if SIDE = 'R', N >= K >= 0.
 
-    DA      (input) COMPLEX*16 array, dimension (LDA,K)   
-            The i-th column must contain the vector which defines the   
-            elementary reflector H(i), for i = 1,2,...,k, as returned by   
-            DGEQLF in the last k columns of its array argument A.   
+    DA      (input) DOUBLE_PRECISION array, dimension (LDA,K)
+            The i-th column must contain the vector which defines the
+            elementary reflector H(i), for i = 1,2,...,k, as returned by
+            DGEQLF in the last k columns of its array argument A.
             The diagonal and the lower part
             are destroyed, the reflectors are not modified.
- 
 
-    LDDA    (input) INTEGER   
-            The leading dimension of the array DA.   
-            LDDA >= max(1,M) if SIDE = 'L'; LDDA >= max(1,N) if SIDE = 'R'.  
+    LDDA    (input) INTEGER
+            The leading dimension of the array DA.
+            LDDA >= max(1,M) if SIDE = 'L'; LDDA >= max(1,N) if SIDE = 'R'.
 
-    TAU     (input) COMPLEX*16 array, dimension (K)   
-            TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by DGEQLF.   
+    TAU     (input) DOUBLE_PRECISION array, dimension (K)
+            TAU(i) must contain the scalar factor of the elementary
+            reflector H(i), as returned by DGEQLF.
 
-    DC      (device input/output) DOUBLE_PRECISION array, dimension (LDDC,N)   
-            On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q**T*C or C*Q**T or C*Q.   
+    DC      (device input/output) DOUBLE_PRECISION array, dimension (LDDC,N)
+            On entry, the M-by-N matrix C.
+            On exit, C is overwritten by Q*C or Q**T*C or C*Q**T or C*Q.
 
-    LDDC    (input) INTEGER   
+    LDDC    (input) INTEGER
             The leading dimension of the array C. LDDC >= max(1,M).
- 
-    WA      (input/workspace) DOUBLE_PRECISION array, dimension   
-                                 (LDWA,M) if SIDE = 'L'   
-                                 (LDWA,N) if SIDE = 'R'   
-            The vectors which define the elementary reflectors, as   
-            returned by DSYTRD_GPU.   
 
-    LDWA    (input) INTEGER   
-            The leading dimension of the array A.   
-            LDWA >= max(1,M) if SIDE = 'L'; LDWA >= max(1,N) if SIDE = 'R'. 
+    WA      (input/workspace) DOUBLE_PRECISION array, dimension
+                                 (LDWA,M) if SIDE = 'L'
+                                 (LDWA,N) if SIDE = 'R'
+            The vectors which define the elementary reflectors, as
+            returned by DSYTRD_GPU.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
+    LDWA    (input) INTEGER
+            The leading dimension of the array A.
+            LDWA >= max(1,M) if SIDE = 'L'; LDWA >= max(1,N) if SIDE = 'R'.
+
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
     
     char side_[2] = {side, 0};
@@ -157,7 +156,7 @@ magma_dormql2_gpu(const char side, const char trans,
     } else if (ldwa < max(1,nq)) {
         *info = -12;
     }
-  
+    
     // size of the block
     nb = 64;
 
@@ -168,59 +167,55 @@ magma_dormql2_gpu(const char side, const char trans,
 
     /* Quick return if possible */
     if (m == 0 || n == 0) {
-      return *info;
+        return *info;
     }
 
     ldwork = nw;
-  
         
-        /* Use hybrid CPU-GPU code */
-        if (left && notran || ! left && ! notran) {
-            i1 = 1;
-            i2 = k;
-            i3 = nb;
-        } else {
-            i1 = (k - 1) / nb * nb + 1;
-            i2 = 1;
-            i3 = -nb;
-        }
-
-        if (left) {
-            ni = n;
-        } else {
-            mi = m;
-        }
-
-        magmablas_dsetdiag1subdiag0('U', k, nb, da, ldda);
-  
-        for (i__ = i1; i3 < 0 ? i__ >= i2 : i__ <= i2; i__ += i3) {
-          ib = min(nb, k - i__ + 1);
-          
-          /* Form the triangular factor of the block reflector   
-             H = H(i+ib-1) . . . H(i+1) H(i) */
-          i__4 = nq - k + i__ + ib - 1;
-          lapackf77_dlarft("Backward", "Columnwise", &i__4, &ib, 
-                           &wa[i__ * ldwa + 1], &ldwa, &tau[i__], t, &ib);
+    /* Use hybrid CPU-GPU code */
+    if (left && notran || ! left && ! notran) {
+        i1 = 1;
+        i2 = k;
+        i3 = nb;
+    } else {
+        i1 = (k - 1) / nb * nb + 1;
+        i2 = 1;
+        i3 = -nb;
+    }
     
-          if (left) 
-            {            
-              /* H or H' is applied to C(1:m-k+i+ib-1,1:n) */
-              mi = m - k + i__ + ib - 1;
-            } 
-          else 
-            {
-              /* H or H' is applied to C(1:m,1:n-k+i+ib-1) */
-              ni = n - k + i__ + ib - 1;
-            }
-          
-          /* Apply H or H'; First copy T to the GPU */
-          magma_dsetmatrix( ib, ib, t, ib, dwork+i__4*ib, ib );
-          magma_dlarfb_gpu(side, trans, MagmaBackward, MagmaColumnwise,
-                           mi, ni, ib, 
-                           &da[(i__-1) * ldda], ldda, dwork+i__4*ib, ib, 
-                           &dc[1+lddc], lddc,
-                           dwork+i__4*ib + ib*ib, ldwork);
-
+    if (left) {
+        ni = n;
+    } else {
+        mi = m;
+    }
+    
+    magmablas_dsetdiag1subdiag0('U', k, nb, da, ldda);
+    
+    for (i__ = i1; (i3 < 0 ? i__ >= i2 : i__ <= i2); i__ += i3) {
+        ib = min(nb, k - i__ + 1);
+        
+        /* Form the triangular factor of the block reflector
+           H = H(i+ib-1) . . . H(i+1) H(i) */
+        i__4 = nq - k + i__ + ib - 1;
+        lapackf77_dlarft("Backward", "Columnwise", &i__4, &ib,
+                         &wa[i__ * ldwa + 1], &ldwa, &tau[i__], t, &ib);
+    
+        if (left) {
+            /* H or H' is applied to C(1:m-k+i+ib-1,1:n) */
+            mi = m - k + i__ + ib - 1;
+        }
+        else {
+            /* H or H' is applied to C(1:m,1:n-k+i+ib-1) */
+            ni = n - k + i__ + ib - 1;
+        }
+        
+        /* Apply H or H'; First copy T to the GPU */
+        magma_dsetmatrix( ib, ib, t, ib, dwork+i__4*ib, ib );
+        magma_dlarfb_gpu(side, trans, MagmaBackward, MagmaColumnwise,
+                         mi, ni, ib,
+                         &da[(i__-1) * ldda], ldda, dwork+i__4*ib, ib,
+                         &dc[1+lddc], lddc,
+                         dwork+i__4*ib + ib*ib, ldwork);
     }
 
     magma_free( dwork );

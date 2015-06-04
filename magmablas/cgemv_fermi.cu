@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal d
 
@@ -18,16 +18,16 @@
 
 __global__ void 
 cgemvn_kernel1_fermi(
-    int n, int m, int n1, cuFloatComplex alpha,
-    const cuFloatComplex *A, int lda,
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    int n, int m, int n1, magmaFloatComplex alpha,
+    const magmaFloatComplex *A, int lda,
+    const magmaFloatComplex *x, magmaFloatComplex beta, 
+    magmaFloatComplex *y)
 {
   int ind = blockIdx.x*num_threads + threadIdx.x;
 
   A += ind;
 
-  cuFloatComplex res;
+  magmaFloatComplex res;
   MAGMA_Z_SET2REAL(res, 0.0f);
 
   for(int i=0; i<n1; i += cgemv_bs ){
@@ -49,26 +49,26 @@ cgemvn_kernel1_fermi(
   }
 
   if (ind<n)
-     y[ind] = alpha * res;
+     y[ind] = alpha * res + beta * y[ind];
 
 }
 
 __global__ void 
 cgemvn_kernel2_fermi(
-    int n, int m, int n1, cuFloatComplex alpha,
-    const cuFloatComplex *A, int lda,
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    int n, int m, int n1, magmaFloatComplex alpha,
+    const magmaFloatComplex *A, int lda,
+    const magmaFloatComplex *x, magmaFloatComplex beta, 
+    magmaFloatComplex *y)
 {
   int ind = blockIdx.x*num_threads + threadIdx.x;
 
   A += ind;
   x += threadIdx.x;
 
-  cuFloatComplex res;
+  magmaFloatComplex res;
   MAGMA_Z_SET2REAL(res, 0.0f);
 
-  __shared__ cuFloatComplex buff[num_threads];
+  __shared__ magmaFloatComplex buff[num_threads];
   for(int i=0; i<n1; i += num_threads ){
     __syncthreads();
     buff[threadIdx.x]  = x[i];
@@ -93,21 +93,21 @@ cgemvn_kernel2_fermi(
   }
 
   if (ind<n)
-     y[ind] = alpha * res;
+     y[ind] = alpha * res + beta * y[ind];
 }
 
 extern "C" void
 magmablas_cgemvn_fermi(
-    int n, int m, cuFloatComplex alpha,
-    const cuFloatComplex *A, int lda,
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    magma_int_t n, magma_int_t m, magmaFloatComplex alpha,
+    const magmaFloatComplex *A, magma_int_t lda,
+    const magmaFloatComplex *x, magmaFloatComplex beta,
+    magmaFloatComplex *y)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -146,7 +146,7 @@ magmablas_cgemvn_fermi(
         else 
    */
                 cgemvn_kernel2_fermi<<< grid, threads, 0, magma_stream >>>(n, m, (m / num_threads)*num_threads, 
-                                                   alpha, A, lda, x, y);
+                                                   alpha, A, lda, x, beta, y);
 
 }
 
@@ -154,19 +154,19 @@ magmablas_cgemvn_fermi(
 
 __global__ void 
 cgemvt_kernel_fermi(
-    int m, int n, cuFloatComplex alpha, int n1,
-    const cuFloatComplex *A, int lda,
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    int m, int n, magmaFloatComplex alpha, int n1,
+    const magmaFloatComplex *A, int lda,
+    const magmaFloatComplex *x, magmaFloatComplex beta,
+    magmaFloatComplex *y)
 {
         unsigned int tx = threadIdx.x;
 
-        __shared__ cuFloatComplex sdata[threadSize];
+        __shared__ magmaFloatComplex sdata[threadSize];
         
 
-        cuFloatComplex res;
+        magmaFloatComplex res;
     MAGMA_Z_SET2REAL(res, 0.0f);
-        cuFloatComplex zero;
+        magmaFloatComplex zero;
     MAGMA_Z_SET2REAL(zero, 0.0f);
      
         for(int i=0; i<n1; i+= threadSize)
@@ -216,11 +216,10 @@ cgemvt_kernel_fermi(
 
     if( tx == 0 ) 
         {
-                y[blockIdx.y] = sdata[0];                 
 
                 if (blockIdx.y < n)
                 {
-                        y[blockIdx.y] = y[blockIdx.y] * alpha;
+                        y[blockIdx.y] = sdata[0] * alpha + beta * y[blockIdx.y];
                 }
         }
 }
@@ -230,16 +229,16 @@ cgemvt_kernel_fermi(
 
 extern "C" void
 magmablas_cgemvt_fermi(
-    int m, int n, cuFloatComplex alpha,
-    const cuFloatComplex *A, int lda, 
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    magma_int_t m, magma_int_t n, magmaFloatComplex alpha,
+    const magmaFloatComplex *A, magma_int_t lda, 
+    const magmaFloatComplex *x, magmaFloatComplex beta,
+    magmaFloatComplex *y)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -268,7 +267,7 @@ magmablas_cgemvt_fermi(
     dim3 threads ( threadSize,   1,  1);
 
     cgemvt_kernel_fermi<<< grid, threads, 0, magma_stream >>>( m, n, alpha, ( m / threadSize) * threadSize,
-                                       A, lda, x, y);
+                                       A, lda, x, beta,  y);
     
 
 }
@@ -278,19 +277,19 @@ magmablas_cgemvt_fermi(
 
 __global__ void 
 cgemvc_kernel_fermi(
-    int m, int n, cuFloatComplex alpha, int n1,
-    const cuFloatComplex *A, int lda,
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    int m, int n, magmaFloatComplex alpha, int n1,
+    const magmaFloatComplex *A, int lda,
+    const magmaFloatComplex *x, magmaFloatComplex beta,
+    magmaFloatComplex *y)
 {
         unsigned int tx = threadIdx.x;
 
-        __shared__ cuFloatComplex sdata[threadSize];
+        __shared__ magmaFloatComplex sdata[threadSize];
         
 
-        cuFloatComplex res;
+        magmaFloatComplex res;
     MAGMA_Z_SET2REAL(res, 0.0f);
-        cuFloatComplex zero;
+        magmaFloatComplex zero;
     MAGMA_Z_SET2REAL(zero, 0.0f);
      
         for(int i=0; i<n1; i+= threadSize)
@@ -343,11 +342,10 @@ cgemvc_kernel_fermi(
 
     if( tx == 0 ) 
         {
-                y[blockIdx.y] = sdata[0];                 
 
                 if (blockIdx.y < n)
                 {
-                        y[blockIdx.y] = y[blockIdx.y] * alpha;
+                        y[blockIdx.y] = sdata[0] * alpha + beta * y[blockIdx.y];
                 }
         }
 }
@@ -357,16 +355,16 @@ cgemvc_kernel_fermi(
 
 extern "C" void
 magmablas_cgemvc_fermi(
-    magma_int_t m, magma_int_t n, cuFloatComplex alpha,
-    const cuFloatComplex *A, magma_int_t lda, 
-    const cuFloatComplex *x,
-    cuFloatComplex *y)
+    magma_int_t m, magma_int_t n, magmaFloatComplex alpha,
+    const magmaFloatComplex *A, magma_int_t lda, 
+    const magmaFloatComplex *x, magmaFloatComplex beta,
+    magmaFloatComplex *y)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -395,7 +393,7 @@ magmablas_cgemvc_fermi(
     dim3 threads ( threadSize,   1,  1);
 
     cgemvc_kernel_fermi<<< grid, threads, 0, magma_stream >>>( m, n, alpha, ( m / threadSize) * threadSize,
-                                       A, lda, x, y);
+                                       A, lda, x, beta,  y);
     
 
 }
@@ -403,22 +401,18 @@ magmablas_cgemvc_fermi(
 
 
 
-
-
-
-
 extern "C" void
 magmablas_cgemv_fermi(
     char flag, magma_int_t m, magma_int_t n,
-    cuFloatComplex alpha,
-    const cuFloatComplex *A, magma_int_t lda,
-    const cuFloatComplex *x, magma_int_t incx,
-    cuFloatComplex beta,
-    cuFloatComplex *y, magma_int_t incy ) 
+    magmaFloatComplex alpha,
+    const magmaFloatComplex *A, magma_int_t lda,
+    const magmaFloatComplex *x, magma_int_t incx,
+    magmaFloatComplex beta,
+    magmaFloatComplex *y, magma_int_t incy ) 
 {
 
-    if(beta.x==0 && beta.y==0)
-        {
+    if(incx==1 && incy ==1)
+    {
                 if (flag == 'N' || flag == 'n')
                 {
                         if(m<8000)
@@ -427,26 +421,25 @@ magmablas_cgemv_fermi(
                            }
                         else 
                         {
-                                magmablas_cgemvn_fermi(m,  n, alpha, A, lda, x, y);
+                                magmablas_cgemvn_fermi(m,  n, alpha, A, lda, x,  beta, y);
                         }
                 }
                 else if(flag == 'T' || flag == 't')
                 {
-                        magmablas_cgemvt_fermi(m,  n, alpha, A, lda, x, y);
+                        magmablas_cgemvt_fermi(m,  n, alpha, A, lda, x, beta, y);
                 }
                 else if(flag == 'C' || flag == 'c')
                 {
-                        magmablas_cgemvc_fermi(m,  n, alpha, A, lda, x, y);
+                        magmablas_cgemvc_fermi(m,  n, alpha, A, lda, x, beta,  y);
                 }
                 else 
                 {
                         cublasCgemv(flag, m, n, alpha, A, lda, x, incx, beta, y, incy);
                 }
-        }
-        else 
-        {
-                cublasCgemv(flag, m, n, alpha, A, lda, x, incx, beta, y, incy);
-        }
+     }
+     else
+
+            cublasCgemv(flag, m, n, alpha, A, lda, x, incx, beta, y, incy);
 
 }
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
        
@@ -19,7 +19,7 @@
 #define NTHREADS   64
 
 typedef struct {
-    cuDoubleComplex *dAT;
+    magmaDoubleComplex *dAT;
     int n, lda, j0, npivots;
     int ipiv[MAX_PIVOTS];
 } zlaswp_params_t;
@@ -35,13 +35,13 @@ __global__ void zlaswp_kernel( zlaswp_params_t params )
     unsigned int tid = threadIdx.x + blockDim.x*blockIdx.x;
     if( tid < params.n ) {
         int lda = params.lda;
-        cuDoubleComplex *dAT = params.dAT + tid + params.j0*lda;
-        cuDoubleComplex *A1  = dAT;
+        magmaDoubleComplex *dAT = params.dAT + tid + params.j0*lda;
+        magmaDoubleComplex *A1  = dAT;
         
         for( int i1 = 0; i1 < params.npivots; ++i1 ) {
             int i2 = params.ipiv[i1];
-            cuDoubleComplex *A2 = dAT + i2*lda;
-            cuDoubleComplex temp = *A1;
+            magmaDoubleComplex *A2 = dAT + i2*lda;
+            magmaDoubleComplex temp = *A1;
             *A1 = *A2;
             *A2 = temp;
             A1 += lda;  // A1 = dA + i1*ldx
@@ -51,7 +51,7 @@ __global__ void zlaswp_kernel( zlaswp_params_t params )
 
 
 // Launch zlaswp kernel with ceil( n / NTHREADS ) blocks of NTHREADS threads each.
-extern "C" void zlaswp( zlaswp_params_t &params )
+extern "C" void zlaswp_launch( zlaswp_params_t &params )
 {
     int blocks = (params.n + NTHREADS - 1) / NTHREADS;
     zlaswp_kernel<<< blocks, NTHREADS, 0, magma_stream >>>( params );
@@ -62,7 +62,7 @@ extern "C" void zlaswp( zlaswp_params_t &params )
 // This version updates each entry of ipiv by adding ind.
 // It is used in zgetrf, zgetrf_gpu, zgetrf_mgpu, zgetrf_ooc.
 extern "C" void
-magmablas_zpermute_long2( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
+magmablas_zpermute_long2( magma_int_t n, magmaDoubleComplex *dAT, magma_int_t lda,
                           magma_int_t *ipiv, magma_int_t nb, magma_int_t ind )
 {
     for( int k = 0; k < nb; k += MAX_PIVOTS ) {
@@ -73,7 +73,7 @@ magmablas_zpermute_long2( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
             params.ipiv[j] = ipiv[ind + k + j] - k - 1;
             ipiv[ind + k + j] += ind;
         }
-        zlaswp( params );
+        zlaswp_launch( params );
     }
 }
 
@@ -82,7 +82,7 @@ magmablas_zpermute_long2( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
 // This version assumes ind has already been added to ipiv.
 // It is used in zgetrf_mgpu, zgetrf_ooc.
 extern "C" void
-magmablas_zpermute_long3( cuDoubleComplex *dAT, magma_int_t lda,
+magmablas_zpermute_long3( magmaDoubleComplex *dAT, magma_int_t lda,
                           const magma_int_t *ipiv, magma_int_t nb, magma_int_t ind )
 {
     for( int k = 0; k < nb; k += MAX_PIVOTS ) {
@@ -92,7 +92,7 @@ magmablas_zpermute_long3( cuDoubleComplex *dAT, magma_int_t lda,
         for( int j = 0; j < MAX_PIVOTS; ++j ) {
             params.ipiv[j] = ipiv[ind + k + j] - k - 1 - ind;
         }
-        zlaswp( params );
+        zlaswp_launch( params );
     }
 }
 
@@ -101,7 +101,7 @@ magmablas_zpermute_long3( cuDoubleComplex *dAT, magma_int_t lda,
 // This interface is identical to LAPACK's laswp interface.
 // It is used in zgessm, zgetrf_incpiv.
 extern "C" void
-magmablas_zlaswp( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
+magmablas_zlaswp( magma_int_t n, magmaDoubleComplex *dAT, magma_int_t lda,
                   magma_int_t i1, magma_int_t i2,
                   const magma_int_t *ipiv, magma_int_t inci )
 {
@@ -112,7 +112,7 @@ magmablas_zlaswp( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
         for( int j = 0; j < npivots; ++j ) {
             params.ipiv[j] = ipiv[(k+j)*inci] - k - 1;
         }
-        zlaswp( params );
+        zlaswp_launch( params );
     }
 }
 
@@ -122,7 +122,7 @@ magmablas_zlaswp( magma_int_t n, cuDoubleComplex *dAT, magma_int_t lda,
 // to handle both row-wise and column-wise storage.
 
 typedef struct {
-    cuDoubleComplex *dA;
+    magmaDoubleComplex *dA;
     int n, ldx, ldy, j0, npivots;
     int ipiv[MAX_PIVOTS];
 } zlaswpx_params_t;
@@ -138,13 +138,13 @@ __global__ void zlaswpx_kernel( zlaswpx_params_t params )
     unsigned int tid = threadIdx.x + blockDim.x*blockIdx.x;
     if( tid < params.n ) {
         int ldx = params.ldx;
-        cuDoubleComplex *dA = params.dA + tid*params.ldy + params.j0*ldx;
-        cuDoubleComplex *A1  = dA;
+        magmaDoubleComplex *dA = params.dA + tid*params.ldy + params.j0*ldx;
+        magmaDoubleComplex *A1  = dA;
         
         for( int i1 = 0; i1 < params.npivots; ++i1 ) {
             int i2 = params.ipiv[i1];
-            cuDoubleComplex *A2 = dA + i2*ldx;
-            cuDoubleComplex temp = *A1;
+            magmaDoubleComplex *A2 = dA + i2*ldx;
+            magmaDoubleComplex temp = *A1;
             *A1 = *A2;
             *A2 = temp;
             A1 += ldx;  // A1 = dA + i1*ldx
@@ -166,7 +166,7 @@ extern "C" void zlaswpx( zlaswpx_params_t &params )
 // For A stored column-wise, set ldx=1   and ldy=lda.
 // Otherwise, this interface is identical to LAPACK's laswp interface.
 extern "C" void
-magmablas_zlaswpx( magma_int_t n, cuDoubleComplex *dA, magma_int_t ldx, magma_int_t ldy,
+magmablas_zlaswpx( magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldx, magma_int_t ldy,
                    magma_int_t i1, magma_int_t i2,
                    const magma_int_t *ipiv, magma_int_t inci )
 {
@@ -190,17 +190,17 @@ magmablas_zlaswpx( magma_int_t n, cuDoubleComplex *dA, magma_int_t ldx, magma_in
 // batches of pivots. On Fermi, it is faster than magmablas_zlaswp
 // (including copying pivots to the GPU).
 
-__global__ void zlaswp2_kernel( int n, cuDoubleComplex *dAT, int lda, int npivots, const magma_int_t* d_ipiv )
+__global__ void zlaswp2_kernel( int n, magmaDoubleComplex *dAT, int lda, int npivots, const magma_int_t* d_ipiv )
 {
     unsigned int tid = threadIdx.x + blockDim.x*blockIdx.x;
     if( tid < n ) {
         dAT += tid;
-        cuDoubleComplex *A1  = dAT;
+        magmaDoubleComplex *A1  = dAT;
         
         for( int i1 = 0; i1 < npivots; ++i1 ) {
             int i2 = d_ipiv[i1] - 1;  // Fortran index
-            cuDoubleComplex *A2 = dAT + i2*lda;
-            cuDoubleComplex temp = *A1;
+            magmaDoubleComplex *A2 = dAT + i2*lda;
+            magmaDoubleComplex temp = *A1;
             *A1 = *A2;
             *A2 = temp;
             A1 += lda;  // A1 = dA + i1*ldx
@@ -213,7 +213,7 @@ __global__ void zlaswp2_kernel( int n, cuDoubleComplex *dAT, int lda, int npivot
 // unlike magmablas_zlaswp where ipiv is stored on the CPU.
 // This interface is identical to LAPACK's laswp interface.
 extern "C" void
-magmablas_zlaswp2( magma_int_t n, cuDoubleComplex* dAT, magma_int_t lda,
+magmablas_zlaswp2( magma_int_t n, magmaDoubleComplex* dAT, magma_int_t lda,
                    magma_int_t i1, magma_int_t i2,
                    const magma_int_t *d_ipiv )
 {

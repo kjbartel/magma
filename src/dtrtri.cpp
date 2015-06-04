@@ -1,45 +1,27 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:02 2012
+       @generated d Fri Jun 28 19:32:09 2013
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_d
-
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_dgemm magmablas_dgemm
-  #define magma_dtrsm magmablas_dtrsm
-#endif
-
-#if (GPUSHMEM >= 200) && defined(PRECISION_s)
-  #undef  magma_sgemm
-  #define magma_sgemm magmablas_sgemm_fermi80
-#endif
-// === End defining what BLAS to use ======================================
-
-#define A(i, j)  (a   +(j)*lda  + (i))
-#define dA(i, j) (work+(j)*ldda + (i))
-
 extern "C" magma_int_t
 magma_dtrtri(char uplo, char diag, magma_int_t n,
-              double *a, magma_int_t lda, magma_int_t *info)
+              double *A, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     DTRTRI computes the inverse of a real upper or lower triangular
     matrix A.
 
@@ -47,7 +29,6 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
 
     Arguments
     =========
-
     UPLO    (input) CHARACTER*1
             = 'U':  A is upper triangular;
             = 'L':  A is lower triangular.
@@ -83,6 +64,9 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
 
     ===================================================================== */
 
+    #define  A(i, j) ( A + (i) + (j)*lda )
+    #define dA(i, j) (dA + (i) + (j)*ldda)
+
     /* Local variables */
     char uplo_[2] = {uplo, 0};
     char diag_[2] = {diag, 0};
@@ -90,7 +74,7 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
     double c_zero     = MAGMA_D_ZERO;
     double c_one      = MAGMA_D_ONE;
     double c_neg_one  = MAGMA_D_NEG_ONE;
-    double *work;
+    double *dA;
 
     int upper  = lapackf77_lsame(uplo_, "U");
     int nounit = lapackf77_lsame(diag_, "N");
@@ -129,17 +113,17 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
     nb = magma_get_dpotrf_nb(n);
 
     ldda = ((n+31)/32)*32;
-    if (MAGMA_SUCCESS != magma_dmalloc( &work, (n)*ldda )) {
+    if (MAGMA_SUCCESS != magma_dmalloc( &dA, (n)*ldda )) {
         *info = MAGMA_ERR_DEVICE_ALLOC;
         return *info;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
     if (nb <= 1 || nb >= n)
-        lapackf77_dtrtri(uplo_, diag_, &n, a, &lda, info);
+        lapackf77_dtrtri(uplo_, diag_, &n, A, &lda, info);
     else {
         if (upper) {
             /* Compute inverse of upper triangular matrix */
@@ -157,9 +141,6 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
                 magma_dtrsm( MagmaRight, MagmaUpper,
                              MagmaNoTrans, MagmaNonUnit, j, jb,
                              c_neg_one, dA(j,j), ldda, dA(0, j),ldda);
-
-                //cublasGetMatrix(j ,jb, sizeof( double),
-                //dA(0, j), ldda, A(0, j), lda);
 
                 magma_dgetmatrix_async( jb, jb,
                                         dA(j, j), ldda,
@@ -200,8 +181,6 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
                                  MagmaNoTrans, MagmaNonUnit, (n-j-jb), jb,
                                  c_neg_one, dA(j,j), ldda, dA(j+jb, j), ldda );
 
-                    //cublasGetMatrix((n-j), jb, sizeof( double),dA(j, j), ldda, A(j, j), lda);
-
                     magma_dgetmatrix_async( n-j-jb, jb,
                                             dA(j+jb, j), ldda,
                                             A(j+jb, j),  lda, stream[1] );
@@ -225,7 +204,7 @@ magma_dtrtri(char uplo, char diag, magma_int_t n,
 
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );
-    magma_free( work );
+    magma_free( dA );
 
     return *info;
 }

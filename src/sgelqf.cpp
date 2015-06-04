@@ -1,35 +1,33 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:14 2012
+       @generated s Fri Jun 28 19:32:23 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_sgelqf( magma_int_t m, magma_int_t n, 
-              float *a,    magma_int_t lda,   float *tau, 
+magma_sgelqf( magma_int_t m, magma_int_t n,
+              float *a,    magma_int_t lda,   float *tau,
               float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     SGELQF computes an LQ factorization of a REAL M-by-N matrix A:
     A = L * Q.
 
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -77,7 +75,6 @@ magma_sgelqf( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -143,7 +140,7 @@ magma_sgelqf( magma_int_t m, magma_int_t n,
 
             magma_ssetmatrix( m, n, a, lda, dA, ldda );
             dAT = dA;
-            magmablas_sinplace_transpose( dAT, ldda, ldda );
+            magmablas_stranspose_inplace( ldda, dAT, ldda );
         }
     else
         {
@@ -162,8 +159,8 @@ magma_sgelqf( magma_int_t m, magma_int_t n,
 
     magma_sgeqrf2_gpu(n, m, dAT, ldda, tau, &iinfo);
 
-    if (maxdim*maxdim< 2*maxm*maxn){
-        magmablas_sinplace_transpose( dAT, ldda, ldda );
+    if (maxdim*maxdim < 2*maxm*maxn) {
+        magmablas_stranspose_inplace( ldda, dAT, ldda );
         magma_sgetmatrix( m, n, dA, ldda, a, lda );
     } else {
         magmablas_stranspose2( dA, maxm, dAT, ldda, n, m );

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal s -> s
 
@@ -1305,34 +1305,34 @@ magmablas_ssyr2k(char UPLO, char TRANS, magma_int_t m , magma_int_t k, float alp
                  const float *A, magma_int_t lda , const float *B, magma_int_t ldb, 
                  float beta, float *C, magma_int_t ldc)
 {
-/* -- MAGMA (version 1.3.0) --
-      Univ. of Tennessee, Knoxville
-      Univ. of California, Berkeley
-      Univ. of Colorado, Denver
-      November 2012
+/*  -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-   Purpose
-   =======
-   SSYR2K  performs one of the symmetric rank 2k operations
-      C := alpha*A*B' + alpha*B*A' + beta*C,
-   or
-      C := alpha*A'*B + alpha*B'*A + beta*C,
-
-   where  alpha and beta  are scalars, C is an  n by n  symmetric matrix
-   and  A and B  are  n by k  matrices  in the  first  case  and  k by n
-   matrices in the second case.
-
-   This implementation is for UPLO == 'L' and TRANS == 'N'.
-  
-   Assumptions
-   ===========
-   Both lda and ldb must be multiple of 32. 
-   Parameter k must be divisible by 8 - note that this algorithm was developed
-   for the tridiagonal factorization and k in that case would be the blocking size.
-   We always request the blocking size to be divisible by at least 16.
-
-   This kernel goes to about 300 GFlop/s on the GTX280.
-   ====================================================================== */        
+    Purpose
+    =======
+    SSYR2K  performs one of the symmetric rank 2k operations
+       C := alpha*A*B' + alpha*B*A' + beta*C,
+    or
+       C := alpha*A'*B + alpha*B'*A + beta*C,
+    
+    where  alpha and beta  are scalars, C is an  n by n  symmetric matrix
+    and  A and B  are  n by k  matrices  in the  first  case  and  k by n
+    matrices in the second case.
+    
+    This implementation is for UPLO == 'L' and TRANS == 'N'.
+    
+    Assumptions
+    ===========
+    Both lda and ldb must be multiple of 32. 
+    Parameter k must be divisible by 8 - note that this algorithm was developed
+    for the tridiagonal factorization and k in that case would be the blocking size.
+    We always request the blocking size to be divisible by at least 16.
+    
+    This kernel goes to about 300 GFlop/s on the GTX280.
+    ====================================================================== */        
 
     int in = m / block_M;
     int flag = 1 ;

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:46 2012
+       @generated c Fri Jun 28 19:33:08 2013
 
 */
 #include "common_magma.h"
@@ -21,13 +21,13 @@
 #if (!defined(PRECISION_z)) || (GPUSHMEM >= 200)
 
 __global__ void
-l_clanhe_special (int n, const cuFloatComplex* A, int lda,  float *y){
+l_clanhe_special (int n, const magmaFloatComplex* A, int lda,  float *y){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
   float res = 0.;
 
-  __shared__ cuFloatComplex la[dgemv_bs][dgemv_bs+1];
+  __shared__ magmaFloatComplex la[dgemv_bs][dgemv_bs+1];
           
   A += ind;
   A+= ty * lda  ;  
@@ -100,7 +100,7 @@ l_clanhe_special (int n, const cuFloatComplex* A, int lda,  float *y){
 }
 
 __global__ void
-l_clanhe_generic(int n, const cuFloatComplex* A, int lda,  float *y, int m_full_block, 
+l_clanhe_generic(int n, const magmaFloatComplex* A, int lda,  float *y, int m_full_block, 
                  int m_mod_32)
 { 
   int tx = threadIdx.x ; 
@@ -110,7 +110,7 @@ l_clanhe_generic(int n, const cuFloatComplex* A, int lda,  float *y, int m_full_
   
   float res = 0.;
 
-  __shared__ cuFloatComplex la   [dgemv_bs][dgemv_bs+1];
+  __shared__ magmaFloatComplex la   [dgemv_bs][dgemv_bs+1];
 
   if( blockIdx.x == m_full_block ) {
   /************************************************************************
@@ -321,7 +321,7 @@ l_clanhe_generic(int n, const cuFloatComplex* A, int lda,  float *y, int m_full_
 }
 
 __global__ void
-u_clanhe_generic (int n, const cuFloatComplex* A, int lda, float *y, int m_full_block, int m_mod_32){
+u_clanhe_generic (int n, const magmaFloatComplex* A, int lda, float *y, int m_full_block, int m_mod_32){
 
   
   int tx = threadIdx.x ; 
@@ -332,7 +332,7 @@ u_clanhe_generic (int n, const cuFloatComplex* A, int lda, float *y, int m_full_
   float res = 0.;
 
 
-  __shared__ cuFloatComplex la   [dgemv_bs][dgemv_bs+1];
+  __shared__ magmaFloatComplex la   [dgemv_bs][dgemv_bs+1];
   int blockIdxx =  blockIdx.x ;
 
   if( blockIdx.x == m_full_block ) {
@@ -425,7 +425,7 @@ u_clanhe_generic (int n, const cuFloatComplex* A, int lda, float *y, int m_full_
   ****************************************
   -------------------------------------*/
   ind = blockIdx.x *  dgemv_bs + tx + m_mod_32 ;
-  const cuFloatComplex *A1 = A ; 
+  const magmaFloatComplex *A1 = A ; 
   A+= lda*(n-1)  ; 
 
   A += ind;
@@ -533,7 +533,7 @@ u_clanhe_generic (int n, const cuFloatComplex* A, int lda, float *y, int m_full_
 }
 
 __global__ void
-u_clanhe_special (int n, const cuFloatComplex* A, int lda, float *y ){
+u_clanhe_special (int n, const magmaFloatComplex* A, int lda, float *y ){
   int tx = threadIdx.x ; 
   int ty = threadIdx.y ; 
   int ind = blockIdx.x*  dgemv_bs + tx ;
@@ -547,7 +547,7 @@ u_clanhe_special (int n, const cuFloatComplex* A, int lda, float *y ){
   */
 
   A+= lda*(n-1) ; 
-  __shared__ cuFloatComplex la   [dgemv_bs][dgemv_bs+1];
+  __shared__ magmaFloatComplex la   [dgemv_bs][dgemv_bs+1];
 
   A += ind;
   A-= ty * lda  ;  
@@ -623,7 +623,7 @@ u_clanhe_special (int n, const cuFloatComplex* A, int lda, float *y ){
 }
 
 
-extern "C" void mclanhe (char uplo, int m, const cuFloatComplex *A, int lda,  float *Y  )
+extern "C" void mclanhe (char uplo, int m, const magmaFloatComplex *A, int lda,  float *Y  )
 {
 /*
 Note:
@@ -663,7 +663,7 @@ Note:
 #endif /* (!defined(PRECISION_z)) || (GPUSHMEM >= 200) */
 
 __global__ void
-l_clanhe_max (int m, const cuFloatComplex* A, int lda,  float *y){
+l_clanhe_max (int m, const magmaFloatComplex* A, int lda,  float *y){
     int tx  = threadIdx.x ;
     int ind =  blockIdx.x * clanhe_bs + tx ;
     float res = 0., res1;
@@ -695,7 +695,7 @@ l_clanhe_max (int m, const cuFloatComplex* A, int lda,  float *y){
 }
 
 __global__ void
-u_clanhe_max (int m, const cuFloatComplex* A, int lda,  float *y){
+u_clanhe_max (int m, const magmaFloatComplex* A, int lda,  float *y){
     int ind =  blockIdx.x * clanhe_bs + threadIdx.x ;
     float res = 0.;
 
@@ -709,7 +709,7 @@ u_clanhe_max (int m, const cuFloatComplex* A, int lda,  float *y){
 }
 
 
-extern "C" void clanhe_max (char uplo, int m, const cuFloatComplex *A, int lda, float *y){
+extern "C" void clanhe_max (char uplo, int m, const magmaFloatComplex *A, int lda, float *y){
     int blocks;
     if (m % clanhe_bs==0)
         blocks = m/ clanhe_bs;
@@ -729,7 +729,7 @@ extern "C" void clanhe_max (char uplo, int m, const cuFloatComplex *A, int lda, 
  
 extern "C" float 
 magmablas_clanhe(char norm, char uplo, magma_int_t n, 
-                 const cuFloatComplex *A, magma_int_t lda, float *WORK )
+                 const magmaFloatComplex *A, magma_int_t lda, float *WORK )
 {
         if (norm == 'I' || norm =='i')  
             {

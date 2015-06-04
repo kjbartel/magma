@@ -1,35 +1,43 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.3.0) --
+#   -- MAGMA (version 1.4.0-beta2) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      November 2012
+#      June 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
 include ../Makefile.internal
 
-INC += -I$(MAGMA_DIR)/control
-
 ZHDR  = commonblas_z.h
 
-# mostly alphabetic order
+# alphabetic order by base name (ignoring precision)
 ZSRC := \
 	zauxiliary.cu		\
 	zcaxpycp.cu		\
 	zclaswp.cu		\
 	zgeadd.cu		\
+	zgeadd_batched.cu	\
+	zgemm_reduce.cu		\
 	zhemv_fermi.cu		\
 	zlacpy.cu		\
+	zlacpy_batched.cu	\
+	zlaqps2_gpu.cu		\
+	zlaqps3_gpu.cu		\
 	zlag2c.cu		\
 	clag2z.cu		\
 	zlange.cu		\
 	zlanhe.cu		\
 	zlarf.cu		\
+	zlarfbx.cu		\
+	zlarfx.cu		\
+	dlarfg.cu		\
 	zlarfg-v2.cu		\
+	zlarfgx-v2.cu		\
 	zlascl.cu		\
 	zlaswp.cu		\
 	zlat2c.cu		\
+	dznrm2.cu		\
 	zswap.cu		\
 	zswapblk.cu		\
 	zswapdblk.cu		\
@@ -40,12 +48,11 @@ ZSRC := \
 	ssyr2k.cu		\
 	ztranspose.cu		\
 	ztranspose-v2.cu	\
-	zinplace_transpose.cu	\
+	ztranspose_inplace.cu	\
 	zgetmatrix_transpose.cu	\
 	zsetmatrix_transpose.cu	\
 	dtrsm.cu		\
 	strsm.cu		\
-	dznrm2.cu		\
 	dtrsm_work.cu		\
 	strsm_work.cu		\
 
@@ -56,15 +63,17 @@ ZSRC += \
 	zsetmatrix_transpose_mgpu.cu	\
 	zhemv_fermi_mgpu_32.cu		\
 	zhemv_fermi_mgpu.cu		\
+	zhemm_mgpu.cpp			\
+	zhemm_mgpu_spec.cpp		\
+	zher2k_mgpu.cpp			\
+	zher2k_mgpu_spec.cpp		\
 
-# not yet released
-#	zhemm_1gpu.cpp			\
-#	zhemm_1gpu_old.cpp		\
-#	zhemm_mgpu.cpp			\
-#	zhemm_mgpu_com.cpp		\
-#	zhemm_mgpu_spec.cpp		\
-#	zher2k_mgpu.cpp			\
-#	zher2k_mgpu_spec.cpp		\
+# panels for one-sided factorizations in CUDA
+ZSRC += \
+	zgetf2.cu		\
+	zpotf2.cu		\
+	zgeqr2.cu		\
+	zgeqr2x_gpu-v4.cu	\
 
 # Card-specific versions that need precisions generated must be above in ZSRC,
 # so they are all put into Makefile.src in the release. The code is #ifdef'd
@@ -133,9 +142,11 @@ endif
 ALLOBJ := $(ALLSRC:.cu=.cu_o) 
 ALLOBJ := $(ALLOBJ:.cpp=.o)
 
-all: $(LIBMAGMABLAS) 
+.PHONY: all clean cleanall
 
-$(LIBMAGMABLAS): $(ALLHDR) $(ALLOBJ)
+all: $(LIBMAGMA) 
+
+$(LIBMAGMA): $(ALLHDR) $(ALLOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
 
@@ -143,5 +154,4 @@ clean:
 	rm -f *.cu_o *.o *~ *.linkinfo
 
 cleanall: clean
-	rm -f *.a
-	rm -f $(LIBMAGMABLAS)
+	rm -f $(LIBMAGMA)

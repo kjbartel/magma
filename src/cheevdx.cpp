@@ -1,43 +1,43 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Stan Tomov
        @author Raffaele Solca
+       @author Azzam Haidar
 
-       @generated c Wed Nov 14 22:53:21 2012
+       @generated c Fri Jun 28 19:32:30 2013
 
 */
 #include "common_magma.h"
-extern"C"
-void magma_cmove_eig(char range, magma_int_t n, float *w, magma_int_t *il,
-                   magma_int_t *iu, float vl, float vu, magma_int_t *m);
 
 extern "C" magma_int_t
 magma_cheevdx(char jobz, char range, char uplo,
               magma_int_t n,
-              cuFloatComplex *a, magma_int_t lda,
+              magmaFloatComplex *a, magma_int_t lda,
               float vl, float vu, magma_int_t il, magma_int_t iu,
               magma_int_t *m, float *w,
-              cuFloatComplex *work, magma_int_t lwork,
+              magmaFloatComplex *work, magma_int_t lwork,
               float *rwork, magma_int_t lrwork,
               magma_int_t *iwork, magma_int_t liwork,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-    CHEEVD computes all eigenvalues and, optionally, eigenvectors of a
-    complex Hermitian matrix A.  If eigenvectors are desired, it uses a
-    divide and conquer algorithm.
+    CHEEVDX computes selected eigenvalues and, optionally, eigenvectors
+    of a complex Hermitian matrix A. Eigenvalues and eigenvectors can
+    be selected by specifying either a range of values or a range of
+    indices for the desired eigenvalues.
+    If eigenvectors are desired, it uses a divide and conquer algorithm.
 
     The divide and conquer algorithm makes very mild assumptions about
     floating point arithmetic. It will work on machines with a guard
@@ -102,13 +102,14 @@ magma_cheevdx(char jobz, char range, char uplo,
             If INFO = 0, the required m eigenvalues in ascending order.
 
     WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
-            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+            On exit, if INFO = 0, WORK[0] returns the optimal LWORK.
 
     LWORK   (input) INTEGER
             The length of the array WORK.
-            If N <= 1,                LWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LWORK must be at least N * (NB + 1).
-            If JOBZ  = 'V' and N > 1, LWORK must be at least 2*N + N**2.
+            If N <= 1,                LWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LWORK >= N + N*NB.
+            If JOBZ  = 'V' and N > 1, LWORK >= max( N + N*NB, 2*N + N**2 ).
+            NB can be obtained through magma_get_chetrd_nb(N).
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal sizes of the WORK, RWORK and
@@ -118,14 +119,13 @@ magma_cheevdx(char jobz, char range, char uplo,
 
     RWORK   (workspace/output) DOUBLE PRECISION array,
                                            dimension (LRWORK)
-            On exit, if INFO = 0, RWORK(1) returns the optimal LRWORK.
+            On exit, if INFO = 0, RWORK[0] returns the optimal LRWORK.
 
     LRWORK  (input) INTEGER
             The dimension of the array RWORK.
-            If N <= 1,                LRWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LRWORK must be at least N.
-            If JOBZ  = 'V' and N > 1, LRWORK must be at least
-                           1 + 5*N + 2*N**2.
+            If N <= 1,                LRWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LRWORK >= N.
+            If JOBZ  = 'V' and N > 1, LRWORK >= 1 + 5*N + 2*N**2.
 
             If LRWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK, RWORK
@@ -134,13 +134,13 @@ magma_cheevdx(char jobz, char range, char uplo,
             related to LWORK or LRWORK or LIWORK is issued by XERBLA.
 
     IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
-            On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+            On exit, if INFO = 0, IWORK[0] returns the optimal LIWORK.
 
     LIWORK  (input) INTEGER
             The dimension of the array IWORK.
-            If N <= 1,                LIWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.
-            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.
+            If N <= 1,                LIWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LIWORK >= 1.
+            If JOBZ  = 'V' and N > 1, LIWORK >= 3 + 5*N.
 
             If LIWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK, RWORK
@@ -171,10 +171,9 @@ magma_cheevdx(char jobz, char range, char uplo,
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
     char range_[2] = {range, 0};
-    magma_int_t c__1 = 1;
-    magma_int_t c_n1 = -1;
-    magma_int_t c__0 = 0;
-    float c_b18 = 1.;
+    magma_int_t ione = 1;
+    magma_int_t izero = 0;
+    float d_one = 1.;
 
     float d__1;
 
@@ -201,7 +200,7 @@ magma_cheevdx(char jobz, char range, char uplo,
 
     float* dwork;
 
-    wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
+    wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
 
     alleig = lapackf77_lsame( range_, "A" );
@@ -211,7 +210,7 @@ magma_cheevdx(char jobz, char range, char uplo,
     lquery = lwork == -1 || lrwork == -1 || liwork == -1;
 
     *info = 0;
-    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
+    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -1;
     } else if (! (alleig || valeig || indeig)) {
         *info = -2;
@@ -235,20 +234,26 @@ magma_cheevdx(char jobz, char range, char uplo,
         }
     }
 
-    magma_int_t nb = magma_get_chetrd_nb(n);
-
-    if (wantz) {
-        lwmin = 2 * n + n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
-        liwmin = 5 * n + 3;
-    } else {
-        lwmin = n * (nb + 1);
+    magma_int_t nb = magma_get_chetrd_nb( n );
+    if ( n <= 1 ) {
+        lwmin  = 1;
+        lrwmin = 1;
+        liwmin = 1;
+    }
+    else if ( wantz ) {
+        lwmin  = max( n + n*nb, 2*n + n*n );
+        lrwmin = 1 + 5*n + 2*n*n;
+        liwmin = 3 + 5*n;
+    }
+    else {
+        lwmin  = n + n*nb;
         lrwmin = n;
         liwmin = 1;
     }
-
-    MAGMA_C_SET2REAL(work[0],(float)lwmin);
-    rwork[0] = lrwmin;
+    // multiply by 1+eps to ensure length gets rounded up,
+    // if it cannot be exactly represented in floating point.
+    work[0]  = MAGMA_C_MAKE( lwmin * (1. + lapackf77_slamch("Epsilon")), 0.);
+    rwork[0] = lrwmin * (1. + lapackf77_slamch("Epsilon"));
     iwork[0] = liwmin;
 
     if ((lwork < lwmin) && !lquery) {
@@ -282,7 +287,7 @@ magma_cheevdx(char jobz, char range, char uplo,
 
     /* Get machine constants. */
     safmin = lapackf77_slamch("Safe minimum");
-    eps = lapackf77_slamch("Precision");
+    eps    = lapackf77_slamch("Precision");
     smlnum = safmin / eps;
     bignum = 1. / smlnum;
     rmin = magma_ssqrt(smlnum);
@@ -299,24 +304,29 @@ magma_cheevdx(char jobz, char range, char uplo,
         sigma = rmax / anrm;
     }
     if (iscale == 1) {
-        lapackf77_clascl(uplo_, &c__0, &c__0, &c_b18, &sigma, &n, &n, a,
+        lapackf77_clascl(uplo_, &izero, &izero, &d_one, &sigma, &n, &n, a,
                          &lda, info);
     }
 
     /* Call CHETRD to reduce Hermitian matrix to tridiagonal form. */
-    inde = 0;
+    // chetrd rwork: e (n)
+    // cstedx rwork: e (n) + llrwk (1 + 4*N + 2*N**2)  ==>  1 + 5n + 2n^2
+    inde   = 0;
+    indrwk = inde + n;
+    llrwk  = lrwork - indrwk;
+
+    // chetrd work: tau (n) + llwork (n*nb)  ==>  n + n*nb
+    // cstedx work: tau (n) + z (n^2)
+    // cunmtr work: tau (n) + z (n^2) + llwrk2 (n or n*nb)  ==>  2n + n^2, or n + n*nb + n^2
     indtau = 0;
     indwrk = indtau + n;
-    indrwk = inde + n;
-    indwk2 = indwrk + n * n;
+    indwk2 = indwrk + n*n;
     llwork = lwork - indwrk;
     llwrk2 = lwork - indwk2;
-    llrwk = lrwork - indrwk;
 
-//#define ENABLE_TIMER
+//
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;
-
     start = get_current_time();
 #endif
 
@@ -325,7 +335,6 @@ magma_cheevdx(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
     end = get_current_time();
-
     printf("time chetrd = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
@@ -335,6 +344,9 @@ magma_cheevdx(char jobz, char range, char uplo,
      transformations represented as Householder vectors in A. */
     if (! wantz) {
         lapackf77_ssterf(&n, w, &rwork[inde], info);
+
+        magma_smove_eig(range, n, w, &il, &iu, vl, vu, m);
+
     } else {
 
 #ifdef ENABLE_TIMER
@@ -354,13 +366,11 @@ magma_cheevdx(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time cstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
-
         start = get_current_time();
 #endif
 
-        magma_cmove_eig(range, n, w, &il, &iu, vl, vu, m);
+        magma_smove_eig(range, n, w, &il, &iu, vl, vu, m);
 
         magma_cunmtr(MagmaLeft, uplo, MagmaNoTrans, n, *m, a, lda, &work[indtau],
                      &work[indwrk + n * (il-1) ], n, &work[indwk2], llwrk2, &iinfo);
@@ -369,7 +379,6 @@ magma_cheevdx(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time cunmtr + copy = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
@@ -383,11 +392,11 @@ magma_cheevdx(char jobz, char range, char uplo,
             imax = *info - 1;
         }
         d__1 = 1. / sigma;
-        blasf77_sscal(&imax, &d__1, w, &c__1);
+        blasf77_sscal(&imax, &d__1, w, &ione);
     }
 
-    work[0]  = MAGMA_C_MAKE((float) lwmin, 0.);
-    rwork[0] = (float) lrwmin;
+    work[0]  = MAGMA_C_MAKE( lwmin * (1. + lapackf77_slamch("Epsilon")), 0.);  // round up
+    rwork[0] = lrwmin * (1. + lapackf77_slamch("Epsilon"));
     iwork[0] = liwmin;
 
     return *info;

@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Wed Nov 14 22:53:25 2012
+ *     @generated c Fri Jun 28 19:32:37 2013
  *
  */
 
@@ -15,44 +15,31 @@
 #include "magma_bulge.h"
 #include <cblas.h>
 
-//#include "magma_cbulgeinc.h"
-// === Define what BLAS to use ============================================
 #define PRECISION_c
 
-// === End defining what BLAS to use ======================================
-
-extern "C" {
-
-    void magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                         magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work);
-
-    void magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                         magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work);
-
-    void magma_ctrdtype3cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                         magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work);
-
-    void magma_clarfxsym_v2(magma_int_t n, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, cuFloatComplex *TAU, cuFloatComplex *work);
-
-}
-
-
-
+inline static void
+magma_clarfxsym_v2(magma_int_t n, 
+                magmaFloatComplex *A, magma_int_t lda, 
+                magmaFloatComplex *V, magmaFloatComplex *TAU, 
+                magmaFloatComplex *work);
 ///////////////////////////////////////////////////////////
 
-extern "C" void
-magma_clarfxsym_v2(magma_int_t n, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, cuFloatComplex *TAU, cuFloatComplex *work) {
-
+inline static void
+magma_clarfxsym_v2(magma_int_t n, 
+                magmaFloatComplex *A, magma_int_t lda, 
+                magmaFloatComplex *V, magmaFloatComplex *TAU, 
+                magmaFloatComplex *work) 
+{
 /*
     WORK (workspace) float complex array, dimension N
 */
 
     magma_int_t ione = 1;
-    cuFloatComplex dtmp;
-    cuFloatComplex c_zero   =  MAGMA_C_ZERO;
-    cuFloatComplex c_one    =  MAGMA_C_ONE;
-    cuFloatComplex c_neg_one=  MAGMA_C_NEG_ONE;
-    cuFloatComplex c_half   =  MAGMA_C_HALF;
+    magmaFloatComplex dtmp;
+    magmaFloatComplex c_zero   =  MAGMA_C_ZERO;
+    magmaFloatComplex c_one    =  MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one=  MAGMA_C_NEG_ONE;
+    magmaFloatComplex c_half   =  MAGMA_C_HALF;
 
     /* X = AVtau */
     blasf77_chemv("L",&n, TAU, A, &lda, V, &ione, &c_zero, work, &ione);
@@ -87,8 +74,14 @@ magma_clarfxsym_v2(magma_int_t n, cuFloatComplex *A, magma_int_t lda, cuFloatCom
 #define V(i)     &(V[(i)])
 #define TAU(i)   &(TAU[(i)])
 extern "C" void
-magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work) {
+magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, 
+                                magmaFloatComplex *A, magma_int_t lda, 
+                                magmaFloatComplex *V, magma_int_t ldv, 
+                                magmaFloatComplex *TAU,
+                                magma_int_t st, magma_int_t ed, 
+                                magma_int_t sweep, magma_int_t Vblksiz, 
+                                magmaFloatComplex *work) 
+{
 
 /*
     WORK (workspace) float complex array, dimension N
@@ -97,7 +90,7 @@ magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
     magma_int_t ione = 1;
     magma_int_t vpos, taupos, len;
 
-    cuFloatComplex c_one    =  MAGMA_C_ONE;
+    magmaFloatComplex c_one    =  MAGMA_C_ONE;
 
     magma_bulge_findVTAUpos(n, nb, Vblksiz, sweep-1, st-1, ldv, &vpos, &taupos);
     //printf("voici vpos %d taupos %d  tpos %d  blkid %d \n", vpos, taupos, tpos, blkid);
@@ -106,8 +99,8 @@ magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
     *V(vpos)  = c_one;
 
     cblas_ccopy(len-1, A(st+1, st-1), ione, V(vpos+1), ione);
-    //memcpy(V(vpos+1), A(st+1, st-1), (len-1)*sizeof(cuFloatComplex));
-    memset(A(st+1, st-1), 0, (len-1)*sizeof(cuFloatComplex));
+    //memcpy(V(vpos+1), A(st+1, st-1), (len-1)*sizeof(magmaFloatComplex));
+    memset(A(st+1, st-1), 0, (len-1)*sizeof(magmaFloatComplex));
 
     /* Eliminate the col  at st-1 */
     lapackf77_clarfg( &len, A(st, st-1), V(vpos+1), &ione, TAU(taupos) );
@@ -128,8 +121,14 @@ magma_ctrdtype1cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
 #define V(i)     &(V[(i)])
 #define TAU(i)   &(TAU[(i)])
 extern "C" void
-magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work) {
+magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, 
+                                magmaFloatComplex *A, magma_int_t lda, 
+                                magmaFloatComplex *V, magma_int_t ldv, 
+                                magmaFloatComplex *TAU,
+                                magma_int_t st, magma_int_t ed, 
+                                magma_int_t sweep, magma_int_t Vblksiz, 
+                                magmaFloatComplex *work) 
+{
 
     /*
      WORK (workspace) float complex array, dimension NB
@@ -138,9 +137,9 @@ magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
     magma_int_t ione = 1;
     magma_int_t vpos, taupos;
 
-    cuFloatComplex conjtmp;
+    magmaFloatComplex conjtmp;
 
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    magmaFloatComplex c_one = MAGMA_C_ONE;
 
     magma_int_t ldx = lda-1;
     magma_int_t len = ed - st + 1;
@@ -156,9 +155,9 @@ magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
 
         /* remove the first column of the created bulge */
         *V(vpos)  = c_one;
-        //memcpy(V(vpos+1), A(ed+2, st), (lem-1)*sizeof(cuFloatComplex));
+        //memcpy(V(vpos+1), A(ed+2, st), (lem-1)*sizeof(magmaFloatComplex));
         cblas_ccopy(lem-1, A(ed+2, st), ione, V(vpos+1), ione);
-        memset(A(ed+2, st),0,(lem-1)*sizeof(cuFloatComplex));
+        memset(A(ed+2, st),0,(lem-1)*sizeof(magmaFloatComplex));
 
         /* Eliminate the col at st */
         lapackf77_clarfg( &lem, A(ed+1, st), V(vpos+1), &ione, TAU(taupos) );
@@ -182,8 +181,14 @@ magma_ctrdtype2cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A
 #define V(i)     &(V[(i)])
 #define TAU(i)   &(TAU[(i)])
 extern "C" void
-magma_ctrdtype3cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *V, magma_int_t ldv, cuFloatComplex *TAU,
-                                magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz, cuFloatComplex *work) {
+magma_ctrdtype3cbHLsym_withQ_v2(magma_int_t n, magma_int_t nb, 
+                                magmaFloatComplex *A, magma_int_t lda, 
+                                magmaFloatComplex *V, magma_int_t ldv, 
+                                magmaFloatComplex *TAU,
+                                magma_int_t st, magma_int_t ed, 
+                                magma_int_t sweep, magma_int_t Vblksiz, 
+                                magmaFloatComplex *work) 
+{
 
     /*
      WORK (workspace) float complex array, dimension N

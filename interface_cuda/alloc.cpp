@@ -1,12 +1,12 @@
 /*
- *   -- MAGMA (version 1.3.0) --
- *      Univ. of Tennessee, Knoxville
- *      Univ. of California, Berkeley
- *      Univ. of Colorado, Denver
- *      November 2012
- *
- * @author Mark Gates
- */
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+ 
+       @author Mark Gates
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,7 +20,7 @@
 // memory allocation
 // Allocate size bytes on GPU, returning pointer in ptrPtr.
 extern "C"
-magma_err_t magma_malloc( magma_devptr* ptrPtr, size_t size )
+magma_err_t magma_malloc( magma_ptr* ptrPtr, size_t size )
 {
     if ( cudaSuccess != cudaMalloc( ptrPtr, size )) {
         return MAGMA_ERR_DEVICE_ALLOC;
@@ -31,10 +31,11 @@ magma_err_t magma_malloc( magma_devptr* ptrPtr, size_t size )
 // --------------------
 // Free GPU memory allocated by magma_malloc.
 extern "C"
-magma_err_t magma_free( magma_devptr ptr )
+magma_err_t magma_free_internal( magma_ptr ptr,
+    const char* func, const char* file, int line )
 {
     cudaError_t err = cudaFree( ptr );
-    check_error( err );
+    check_xerror( err, func, file, line );
     if ( err != cudaSuccess ) {
         return MAGMA_ERR_INVALID_PTR;
     }
@@ -76,7 +77,7 @@ magma_err_t magma_malloc_cpu( void** ptrPtr, size_t size )
 // --------------------
 // Free CPU pinned memory previously allocated by magma_malloc_pinned.
 // The default implementation uses free(), which works for both malloc and posix_memalign.
-// Windows will require a different function.
+// For Windows, _aligned_free() is used.
 extern "C"
 magma_err_t magma_free_cpu( void* ptr )
 {
@@ -102,10 +103,11 @@ magma_err_t magma_malloc_pinned( void** ptrPtr, size_t size )
 // --------------------
 // Free CPU pinned memory previously allocated by magma_malloc_pinned.
 extern "C"
-magma_err_t magma_free_pinned( void* ptr )
+magma_err_t magma_free_pinned_internal( void* ptr,
+    const char* func, const char* file, int line )
 {
     cudaError_t err = cudaFreeHost( ptr );
-    check_error( err );
+    check_xerror( err, func, file, line );
     if ( cudaSuccess != err ) {
         return MAGMA_ERR_INVALID_PTR;
     }

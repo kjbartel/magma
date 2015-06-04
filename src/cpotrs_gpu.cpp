@@ -1,43 +1,34 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:52:58 2012
+       @generated c Fri Jun 28 19:32:04 2013
 
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
-#define PRECISION_c
-#if (defined(PRECISION_s) || defined(PRECISION_d)) 
-  #define magma_ctrsm magmablas_ctrsm
-#endif
-// === End defining what BLAS to use =======================================
-
 extern "C" magma_int_t
-magma_cpotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs, 
-                 cuFloatComplex *dA, magma_int_t ldda, 
-                 cuFloatComplex *dB, magma_int_t lddb, magma_int_t *info)
+magma_cpotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
+                 magmaFloatComplex *dA, magma_int_t ldda,
+                 magmaFloatComplex *dB, magma_int_t lddb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
- 
+       June 2013
+
     Purpose
     =======
-
     CPOTRS solves a system of linear equations A*X = B with a Hermitian
     positive definite matrix A using the Cholesky factorization
     A = U**H*U or A = L*L**H computed by CPOTRF.
 
     Arguments
     =========
- 
     UPLO    (input) CHARACTER*1
             = 'U':  Upper triangle of A is stored;
             = 'L':  Lower triangle of A is stored.
@@ -68,17 +59,17 @@ magma_cpotrs_gpu(char uplo, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
-    cuFloatComplex c_one = MAGMA_C_ONE;
-    
-    *info = 0 ; 
+    magmaFloatComplex c_one = MAGMA_C_ONE;
+
+    *info = 0 ;
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
-        *info = -1; 
+        *info = -1;
     if( n < 0 )
-        *info = -2; 
-    if( nrhs < 0) 
-        *info = -3; 
+        *info = -2;
+    if( nrhs < 0)
+        *info = -3;
     if ( ldda < max(1, n) )
-        *info = -5; 
+        *info = -5;
     if ( lddb < max(1, n) )
         *info = -7;
     if (*info != 0) {

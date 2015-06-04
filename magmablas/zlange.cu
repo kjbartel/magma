@@ -1,16 +1,16 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
 */
 #include "common_magma.h"
 
-extern "C" __global__ void magma_zlange_special(const cuDoubleComplex *A, double *C, int M, int N, int lda) {
+extern "C" __global__ void magma_zlange_special(const magmaDoubleComplex *A, double *C, int M, int N, int lda) {
 
         int ibx = blockIdx.x * 64;
 
@@ -22,10 +22,10 @@ extern "C" __global__ void magma_zlange_special(const cuDoubleComplex *A, double
         double Cb[4] = {0., 0., 0., 0.};
 
         A+= ibx+idt ;
-        const cuDoubleComplex * Aend = A+lda*N;
+        const magmaDoubleComplex * Aend = A+lda*N;
 
         
-        cuDoubleComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};
+        magmaDoubleComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};
         
            C+=ibx+idt;
         __shared__ double Cbb[64];
@@ -62,7 +62,7 @@ This Kernel Will be called when
 */
 
 extern "C" __global__ void 
-magma_zlange_generic(const cuDoubleComplex *A, double *C, int M, int N, int lda , int N_mod_4) 
+magma_zlange_generic(const magmaDoubleComplex *A, double *C, int M, int N, int lda , int N_mod_4) 
 {
 
         int ibx = blockIdx.x * 64;
@@ -90,8 +90,8 @@ magma_zlange_generic(const cuDoubleComplex *A, double *C, int M, int N, int lda 
         */
         if( N >= 8 ) {
 
-                const cuDoubleComplex * Aend = A+lda*N   ;
-                cuDoubleComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};        
+                const magmaDoubleComplex * Aend = A+lda*N   ;
+                magmaDoubleComplex Ap[4]={A[0],A[lda],A[2*lda],A[3*lda]};        
         
                 A+=4*lda;
 
@@ -154,7 +154,7 @@ magma_zlange_generic(const cuDoubleComplex *A, double *C, int M, int N, int lda 
 }
 
 extern "C" void
-magmablas_zlange_64_64_16_4(const cuDoubleComplex *A, double *C, 
+magmablas_zlange_64_64_16_4(const magmaDoubleComplex *A, double *C, 
                             int M, int N, int lda,int tree_depth)
 {
 
@@ -173,7 +173,7 @@ magmablas_zlange_64_64_16_4(const cuDoubleComplex *A, double *C,
 extern "C" double  
 magmablas_zlange(
     char norm, magma_int_t M, magma_int_t N,
-    const cuDoubleComplex *A, magma_int_t LDA , double *WORK)
+    const magmaDoubleComplex *A, magma_int_t LDA , double *WORK)
 {
 /*
   !!!!!!!!!!!!!!                
@@ -241,6 +241,6 @@ magmablas_zlange(
   magmablas_zlange_64_64_16_4( A, WORK , M , N ,  LDA , 6 );
   int val = cublasIdamax(N, WORK, 1);
   double retVal[1];
-  cublasGetMatrix( 1, 1, sizeof( cuDoubleComplex ), WORK+val-1, 1, retVal, 1 ) ;
+  cublasGetMatrix( 1, 1, sizeof( magmaDoubleComplex ), WORK+val-1, 1, retVal, 1 ) ;
   return retVal[0];
 }

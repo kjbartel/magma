@@ -1,14 +1,14 @@
 /*
-   -- MAGMA (version 1.3.0) --
-      Univ. of Tennessee, Knoxville
-      Univ. of California, Berkeley
-      Univ. of Colorado, Denver
-      November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+    
+       @author Raffaele Solca
+    
+       @generated c Fri Jun 28 19:32:32 2013
 
-      @author Raffaele Solca
- 
-      @generated c Wed Nov 14 22:53:23 2012
-       
 */
 #include "common_magma.h"
 
@@ -22,32 +22,19 @@ extern "C"{
 extern "C" magma_int_t
 magma_cstedx(char range, magma_int_t n, float vl, float vu,
              magma_int_t il, magma_int_t iu, float* d, float* e,
-             cuFloatComplex* z, magma_int_t ldz,
+             magmaFloatComplex* z, magma_int_t ldz,
              float* rwork, magma_int_t lrwork,
              magma_int_t* iwork, magma_int_t liwork,
              float* dwork, magma_int_t* info)
 {
-/*
-    -- MAGMA (version 1.3.0) --
-    Univ. of Tennessee, Knoxville
-    Univ. of California, Berkeley
-    Univ. of Colorado, Denver
-    November 2012
-
-       .. Scalar Arguments ..
-      CHARACTER          RANGE
-      INTEGER            IL, IU, INFO, LDZ, LIWORK, LRWORK, N
-      DOUBLE PRECISION   VL, VU
-       ..
-       .. Array Arguments ..
-      INTEGER            IWORK( * )
-      DOUBLE PRECISION   D( * ), E( * ), RWORK( * ), DWORK ( * )
-      COMPLEX*16         Z( LDZ, * )
-       ..
+/*  -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
     Purpose
     =======
-
     CSTEDX computes some eigenvalues and eigenvectors of a
     symmetric tridiagonal matrix using the divide and conquer method.
 
@@ -60,7 +47,6 @@ magma_cstedx(char range, magma_int_t n, float vl, float vu,
 
     Arguments
     =========
-
     RANGE   (input) CHARACTER*1
             = 'A': all eigenvalues will be found.
             = 'V': all eigenvalues in the half-open interval (VL,VU]
@@ -91,7 +77,7 @@ magma_cstedx(char range, magma_int_t n, float vl, float vu,
             On entry, the subdiagonal elements of the tridiagonal matrix.
             On exit, E has been destroyed.
 
-    Z       (output) COMPLEX*16 array, dimension (LDZ,N)
+    Z       (output) COMPLEX array, dimension (LDZ,N)
             On exit, if INFO = 0, Z contains the orthonormal eigenvectors
             of the symmetric tridiagonal matrix.
 
@@ -103,7 +89,7 @@ magma_cstedx(char range, magma_int_t n, float vl, float vu,
 
     LRWORK  (input) INTEGER
             The dimension of the array RWORK.
-            LRWORK must be at least 1 + 4*N + 2*N**2.
+            LRWORK >= 1 + 4*N + 2*N**2.
             Note that if N is less than or
             equal to the minimum divide size, usually 25, then LRWORK
             need only be max(1,2*(N-1)).
@@ -119,7 +105,7 @@ magma_cstedx(char range, magma_int_t n, float vl, float vu,
 
     LIWORK  (input) INTEGER
             The dimension of the array IWORK.
-            LIWORK must be at least 3 + 5*N .
+            LIWORK >= 3 + 5*N .
             Note that if N is less than or
             equal to the minimum divide size, usually 25, then LIWORK
             need only be 1.
@@ -141,7 +127,6 @@ magma_cstedx(char range, magma_int_t n, float vl, float vu,
 
     Further Details
     ===============
-
     Based on contributions by
        Jeff Rutter, Computer Science Division, University of California
        at Berkeley, USA

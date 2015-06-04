@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions mixed zc -> ds
 
@@ -13,11 +13,11 @@
 #define num_threadzc 64
 
 __global__ void
-zclaswp_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, const magma_int_t *ipiv)
+zclaswp_kernel(int n, magmaDoubleComplex *a, int lda, magmaFloatComplex *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadzc + threadIdx.x;
     int newind;
-    cuFloatComplex res;
+    magmaFloatComplex res;
     
     if (ind < m) {
         sa   += ind;
@@ -34,11 +34,11 @@ zclaswp_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, co
 }
 
 __global__ void
-zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m, const magma_int_t *ipiv)
+zclaswp_inv_kernel(int n, magmaDoubleComplex *a, int lda, magmaFloatComplex *sa, int m, const magma_int_t *ipiv)
 {
     int ind = blockIdx.x*num_threadzc + threadIdx.x;
     int newind;
-    cuDoubleComplex res;
+    magmaDoubleComplex res;
 
     if (ind < m) {
         a   += ind;
@@ -56,15 +56,15 @@ zclaswp_inv_kernel(int n, cuDoubleComplex *a, int lda, cuFloatComplex *sa, int m
 
 
 extern "C" void
-magmablas_zclaswp( magma_int_t n, cuDoubleComplex *a, magma_int_t lda,
-                   cuFloatComplex *sa, magma_int_t m,
+magmablas_zclaswp( magma_int_t n, magmaDoubleComplex *a, magma_int_t lda,
+                   magmaFloatComplex *sa, magma_int_t m,
                    const magma_int_t *ipiv, magma_int_t incx )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======

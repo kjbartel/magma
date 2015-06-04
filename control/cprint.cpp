@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Mark Gates
-       @generated c Wed Nov 14 22:52:30 2012
+       @generated c Fri Jun 28 19:31:32 2013
 
 */
 #include "common_magma.h"
@@ -18,14 +18,14 @@
 // -------------------------
 // Prints a matrix that is on the CPU host.
 extern "C"
-void magma_cprint( magma_int_t m, magma_int_t n, const cuFloatComplex *A, magma_int_t lda )
+void magma_cprint( magma_int_t m, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda )
 {
     if ( magma_is_devptr( A ) == 1 ) {
         fprintf( stderr, "ERROR: cprint called with device pointer.\n" );
         exit(1);
     }
     
-    cuFloatComplex c_zero = MAGMA_C_ZERO;
+    magmaFloatComplex c_zero = MAGMA_C_ZERO;
     
     if ( m == 1 ) {
         printf( "[ " );
@@ -61,15 +61,15 @@ void magma_cprint( magma_int_t m, magma_int_t n, const cuFloatComplex *A, magma_
 // Internally allocates memory on host, copies it to the host, prints it,
 // and de-allocates host memory.
 extern "C"
-void magma_cprint_gpu( magma_int_t m, magma_int_t n, const cuFloatComplex *dA, magma_int_t ldda )
+void magma_cprint_gpu( magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda )
 {
     if ( magma_is_devptr( dA ) == 0 ) {
         fprintf( stderr, "ERROR: cprint_gpu called with host pointer.\n" );
         exit(1);
     }
     
-    int lda = m;
-    cuFloatComplex* A;
+    magma_int_t lda = m;
+    magmaFloatComplex* A;
     magma_cmalloc_cpu( &A, lda*n );
     magma_cgetmatrix( m, n, dA, ldda, A, lda );
     magma_cprint( m, n, A, lda );

@@ -1,123 +1,125 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:32 2012
-
+       @generated d Fri Jun 28 19:32:47 2013
+       @author Stan Tomov
+       @author Mark Gates
 */
 #include "common_magma.h"
 
-// === Define what BLAS to use ============================================
 #define PRECISION_d
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-// #define magma_dgemv magmablas_dgemv
-#endif
-// === End defining what BLAS to use =======================================
 
-extern "C" magma_int_t 
-magma_dlahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
-             double *da, double *dv, 
-             double *a, magma_int_t lda,
-             double *tau, double *t, magma_int_t ldt, 
-             double *y, magma_int_t ldy)
+extern "C" magma_int_t
+magma_dlahr2(
+    magma_int_t n, magma_int_t k, magma_int_t nb,
+    double *dA, double *dV,
+    double *A, magma_int_t lda,
+    double *tau,
+    double *T, magma_int_t ldt,
+    double *Y, magma_int_t ldy )
 {
-/*  -- MAGMA auxiliary routine (version 1.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
+    Purpose
+    =======
+    DLAHR2 reduces the first NB columns of a real general n-BY-(n-k+1)
+    matrix A so that elements below the k-th subdiagonal are zero. The
+    reduction is performed by an orthogonal similarity transformation
+    Q' * A * Q. The routine returns the matrices V and T which determine
+    Q as a block reflector I - V*T*V', and also the matrix Y = A * V.
+    (Note this is different than LAPACK, which computes Y = A * V * T.)
 
-    DLAHR2 reduces the first NB columns of a real general n-BY-(n-k+1)   
-    matrix A so that elements below the k-th subdiagonal are zero. The   
-    reduction is performed by an orthogonal similarity transformation   
-    Q' * A * Q. The routine returns the matrices V and T which determine   
-    Q as a block reflector I - V*T*V', and also the matrix Y = A * V.   
+    This is an auxiliary routine called by DGEHRD.
 
-    This is an auxiliary routine called by DGEHRD.   
+    Arguments
+    =========
+    N       (input) INTEGER
+            The order of the matrix A.
 
-    Arguments   
-    =========   
+    K       (input) INTEGER
+            The offset for the reduction. Elements below the k-th
+            subdiagonal in the first NB columns are reduced to zero.
+            K < N.
 
-    N       (input) INTEGER   
-            The order of the matrix A.   
-
-    K       (input) INTEGER   
-            The offset for the reduction. Elements below the k-th   
-            subdiagonal in the first NB columns are reduced to zero.   
-            K < N.   
-
-    NB      (input) INTEGER   
+    NB      (input) INTEGER
             The number of columns to be reduced.
 
-    DA      (input/output) DOUBLE_PRECISION array on the GPU, dimension (LDA,N-K+1)   
-            On entry, the n-by-(n-k+1) general matrix A.   
-            On exit, the elements on and above the k-th subdiagonal in   
-            the first NB columns are overwritten with the corresponding   
-            elements of the reduced matrix; the elements below the k-th   
-            subdiagonal, with the array TAU, represent the matrix Q as a   
-            product of elementary reflectors. The other columns of A are   
-            unchanged. See Further Details.   
+    dA      (input/output) DOUBLE_PRECISION array on the GPU, dimension (LDA,N-K+1)
+            On entry, the n-by-(n-k+1) general matrix A.
+            On exit, the elements in rows K:N of the first NB columns are
+            overwritten with the matrix Y.
 
     DV      (output) DOUBLE_PRECISION array on the GPU, dimension (N, NB)
             On exit this contains the Householder vectors of the transformation.
 
-    LDA     (input) INTEGER   
-            The leading dimension of the array A.  LDA >= max(1,N).   
+    A       (input/output) DOUBLE_PRECISION array, dimension (LDA,N-K+1)
+            On entry, the n-by-(n-k+1) general matrix A.
+            On exit, the elements on and above the k-th subdiagonal in
+            the first NB columns are overwritten with the corresponding
+            elements of the reduced matrix; the elements below the k-th
+            subdiagonal, with the array TAU, represent the matrix Q as a
+            product of elementary reflectors. The other columns of A are
+            unchanged. See Further Details.
 
-    TAU     (output) DOUBLE_PRECISION array, dimension (NB)   
-            The scalar factors of the elementary reflectors. See Further   
-            Details.   
+    LDA     (input) INTEGER
+            The leading dimension of the array A.  LDA >= max(1,N).
 
-    T       (output) DOUBLE_PRECISION array, dimension (LDT,NB)   
-            The upper triangular matrix T.   
+    TAU     (output) DOUBLE_PRECISION array, dimension (NB)
+            The scalar factors of the elementary reflectors. See Further
+            Details.
 
-    LDT     (input) INTEGER   
-            The leading dimension of the array T.  LDT >= NB.   
+    T       (output) DOUBLE_PRECISION array, dimension (LDT,NB)
+            The upper triangular matrix T.
 
-    Y       (output) DOUBLE_PRECISION array, dimension (LDY,NB)   
-            The n-by-nb matrix Y.   
+    LDT     (input) INTEGER
+            The leading dimension of the array T.  LDT >= NB.
 
-    LDY     (input) INTEGER   
-            The leading dimension of the array Y. LDY >= N.   
+    Y       (output) DOUBLE_PRECISION array, dimension (LDY,NB)
+            The n-by-nb matrix Y.
 
-    Further Details   
-    ===============   
-    The matrix Q is represented as a product of nb elementary reflectors   
+    LDY     (input) INTEGER
+            The leading dimension of the array Y. LDY >= N.
 
-       Q = H(1) H(2) . . . H(nb).   
+    Further Details
+    ===============
+    The matrix Q is represented as a product of nb elementary reflectors
 
-    Each H(i) has the form   
+       Q = H(1) H(2) . . . H(nb).
 
-       H(i) = I - tau * v * v'   
+    Each H(i) has the form
 
-    where tau is a real scalar, and v is a real vector with   
-    v(1:i+k-1) = 0, v(i+k) = 1; v(i+k+1:n) is stored on exit in   
-    A(i+k+1:n,i), and tau in TAU(i).   
+       H(i) = I - tau * v * v'
 
-    The elements of the vectors v together form the (n-k+1)-by-nb matrix   
-    V which is needed, with T and Y, to apply the transformation to the   
-    unreduced part of the matrix, using an update of the form:   
-    A := (I - V*T*V') * (A - Y*T*V').   
+    where tau is a real scalar, and v is a real vector with
+    v(1:i+k-1) = 0, v(i+k) = 1; v(i+k+1:n) is stored on exit in
+    A(i+k+1:n,i), and tau in TAU(i).
 
-    The contents of A on exit are illustrated by the following example   
-    with n = 7, k = 3 and nb = 2:   
+    The elements of the vectors v together form the (n-k+1)-by-nb matrix
+    V which is needed, with T and Y, to apply the transformation to the
+    unreduced part of the matrix, using an update of the form:
+    A := (I - V*T*V') * (A - Y*T*V').
 
-       ( a   a   a   a   a )   
-       ( a   a   a   a   a )   
-       ( a   a   a   a   a )   
-       ( h   h   a   a   a )   
-       ( v1  h   a   a   a )   
-       ( v1  v2  a   a   a )   
-       ( v1  v2  a   a   a )   
+    The contents of A on exit are illustrated by the following example
+    with n = 7, k = 3 and nb = 2:
 
-    where a denotes an element of the original matrix A, h denotes a   
-    modified element of the upper Hessenberg matrix H, and vi denotes an   
+       ( a   a   a   a   a )
+       ( a   a   a   a   a )
+       ( a   a   a   a   a )
+       ( h   h   a   a   a )
+       ( v1  h   a   a   a )
+       ( v1  v2  a   a   a )
+       ( v1  v2  a   a   a )
+
+    where "a" denotes an element of the original matrix A, h denotes a
+    modified element of the upper Hessenberg matrix H, and vi denotes an
     element of the vector defining H(i).
 
     This implementation follows the hybrid algorithm and notations described in
@@ -128,133 +130,150 @@ magma_dlahr2(magma_int_t n, magma_int_t k, magma_int_t nb,
     May 24, 2009.
     =====================================================================    */
 
-
+    #define  A( i, j ) ( A + (i) + (j)*lda)
+    #define  Y( i, j ) ( Y + (i) + (j)*ldy)
+    #define  T( i, j ) ( T + (i) + (j)*ldt)
+    #define dA( i, j ) (dA + (i) + (j)*ldda)
+    #define dV( i, j ) (dV + (i) + (j)*ldda)
+    
     double c_zero    = MAGMA_D_ZERO;
     double c_one     = MAGMA_D_ONE;
     double c_neg_one = MAGMA_D_NEG_ONE;
 
     magma_int_t ldda = lda;
-    magma_int_t c__1 = 1;
+    magma_int_t ione = 1;
     
-    magma_int_t a_dim1, a_offset, t_dim1, t_offset, y_dim1, y_offset, i__2, i__3;
-    double d__1;
+    magma_int_t n_k_i_1, n_k;
+    double scale;
 
-    magma_int_t i__;
+    magma_int_t i;
     double ei;
 
-    --tau;
-    a_dim1 = lda;
-    a_offset = 1 + a_dim1;
-    a -= a_offset;
-    t_dim1 = ldt;
-    t_offset = 1 + t_dim1;
-    t -= t_offset;
-    y_dim1 = ldy;
-    y_offset = 1 + y_dim1;
-    y -= y_offset;
+    // adjust from 1-based indexing
+    k -= 1;
 
-    /* Function Body */
+    // Function Body
     if (n <= 1)
-      return 0;
+        return 0;
     
-    for (i__ = 1; i__ <= nb; ++i__) {
-        if (i__ > 1) {
-
-          /* Update A(K+1:N,I); Update I-th column of A - Y * V' */
-          i__2 = n - k + 1;
-          i__3 = i__ - 1;
-          #if defined(PRECISION_z) || defined(PRECISION_c)
-             lapackf77_dlacgv(&i__3, &a[k+i__-1+a_dim1], &lda);
-          #endif
-          blasf77_dcopy(&i__3, &a[k+i__-1+a_dim1], &lda, &t[nb*t_dim1+1], &c__1);
-          blasf77_dtrmv("u","n","n",&i__3,&t[t_offset], &ldt, &t[nb*t_dim1+1], &c__1);
-
-          blasf77_dgemv("NO TRANSPOSE", &i__2, &i__3, &c_neg_one, &y[k + y_dim1],
-                        &ldy, &t[nb*t_dim1+1], &c__1, &c_one, &a[k+i__*a_dim1],&c__1);
-
-          #if defined(PRECISION_z) || defined(PRECISION_c)
-             lapackf77_dlacgv(&i__3, &a[k+i__-1+a_dim1], &lda);
-          #endif
-
-          /* Apply I - V * T' * V' to this column (call it b) from the   
-             left, using the last column of T as workspace   
-
-             Let  V = ( V1 )   and   b = ( b1 )   (first I-1 rows)   
-                      ( V2 )             ( b2 )   
-             where V1 is unit lower triangular   
-             w := V1' * b1                                                 */
-          
-          i__2 = i__ - 1;
-          blasf77_dcopy(&i__2, &a[k+1+i__*a_dim1], &c__1, &t[nb*t_dim1+1], &c__1);
-          blasf77_dtrmv("Lower", MagmaTransStr, "UNIT", &i__2, 
-                        &a[k + 1 + a_dim1], &lda, &t[nb * t_dim1 + 1], &c__1);
-
-          /* w := w + V2'*b2 */
-          i__2 = n - k - i__ + 1;
-          i__3 = i__ - 1;
-          blasf77_dgemv(MagmaTransStr, &i__2, &i__3, &c_one, 
-                        &a[k + i__ + a_dim1], &lda, &a[k+i__+i__*a_dim1], &c__1, 
-                        &c_one, &t[nb*t_dim1+1], &c__1);
-
-          /* w := T'*w */
-          i__2 = i__ - 1;
-          blasf77_dtrmv("U", MagmaTransStr, "N", &i__2, &t[t_offset], &ldt, 
-                        &t[nb*t_dim1+1], &c__1);
-          
-          /* b2 := b2 - V2*w */
-          i__2 = n - k - i__ + 1;
-          i__3 = i__ - 1;
-          blasf77_dgemv("N", &i__2, &i__3, &c_neg_one, &a[k + i__ + a_dim1], &lda, 
-                 &t[nb*t_dim1+1], &c__1, &c_one, &a[k+i__+i__*a_dim1], &c__1);
-
-          /* b1 := b1 - V1*w */
-          i__2 = i__ - 1;
-          blasf77_dtrmv("L","N","U",&i__2,&a[k+1+a_dim1],&lda,&t[nb*t_dim1+1],&c__1);
-          blasf77_daxpy(&i__2, &c_neg_one, &t[nb * t_dim1 + 1], &c__1, 
-                 &a[k + 1 + i__ * a_dim1], &c__1);
-          
-          a[k + i__ - 1 + (i__ - 1) * a_dim1] = ei;
+    for (i = 0; i < nb; ++i) {
+        n_k_i_1 = n - k - i - 1;
+        n_k     = n - k;
+        
+        if (i > 0) {
+            // Update A(k:n-1,i); Update i-th column of A - Y * T * V'
+            // This updates one more row than LAPACK does (row k),
+            // making the block above the panel an even multiple of nb.
+            // Use last column of T as workspace, w.
+            // w(0:i-1, nb-1) = VA(k+i, 0:i-1)'
+            blasf77_dcopy( &i,
+                           A(k+i,0),  &lda,
+                           T(0,nb-1), &ione );
+            #if defined(PRECISION_z) || defined(PRECISION_c)
+            // If real, conjugate row of V.
+            lapackf77_dlacgv(&i, T(0,nb-1), &ione);
+            #endif
+            
+            // w = T(0:i-1, 0:i-1) * w
+            blasf77_dtrmv( "Upper", "No trans", "No trans", &i,
+                           T(0,0),    &ldt,
+                           T(0,nb-1), &ione );
+            
+            // A(k:n-1, i) -= Y(k:n-1, 0:i-1) * w
+            blasf77_dgemv( "No trans", &n_k, &i,
+                           &c_neg_one, Y(k,0),    &ldy,
+                                       T(0,nb-1), &ione,
+                           &c_one,     A(k,i),    &ione );
+            
+            // Apply I - V * T' * V' to this column (call it b) from the
+            // left, using the last column of T as workspace, w.
+            //
+            // Let  V = ( V1 )   and   b = ( b1 )   (first i-1 rows)
+            //          ( V2 )             ( b2 )
+            // where V1 is unit lower triangular
+            
+            // w := b1 = A(k+1:k+i, i)
+            blasf77_dcopy( &i,
+                           A(k+1,i),  &ione,
+                           T(0,nb-1), &ione );
+            
+            // w := V1' * b1 = VA(k+1:k+i, 0:i-1)' * w
+            blasf77_dtrmv( "Lower", "Conj", "Unit", &i,
+                           A(k+1,0), &lda,
+                           T(0,nb-1), &ione );
+            
+            // w := w + V2'*b2 = w + VA(k+i+1:n-1, 0:i-1)' * A(k+i+1:n-1, i)
+            blasf77_dgemv( "Conj", &n_k_i_1, &i,
+                           &c_one, A(k+i+1,0), &lda,
+                                   A(k+i+1,i), &ione,
+                           &c_one, T(0,nb-1),  &ione );
+            
+            // w := T'*w = T(0:i-1, 0:i-1)' * w
+            blasf77_dtrmv( "Upper", "Conj", "Non-unit", &i,
+                           T(0,0), &ldt,
+                           T(0,nb-1), &ione );
+            
+            // b2 := b2 - V2*w = A(k+i+1:n-1, i) - VA(k+i+1:n-1, 0:i-1) * w
+            blasf77_dgemv( "No trans", &n_k_i_1, &i,
+                           &c_neg_one, A(k+i+1,0), &lda,
+                                       T(0,nb-1),  &ione,
+                           &c_one,     A(k+i+1,i), &ione );
+            
+            // w := V1*w = VA(k+1:k+i, 0:i-1) * w
+            blasf77_dtrmv( "Lower", "No trans", "Unit", &i,
+                           A(k+1,0), &lda,
+                           T(0,nb-1), &ione );
+            
+            // b1 := b1 - w = A(k+1:k+i-1, i) - w
+            blasf77_daxpy( &i,
+                           &c_neg_one, T(0,nb-1), &ione,
+                                       A(k+1,i),    &ione );
+            
+            // Restore diagonal element, saved below during previous iteration
+            *A(k+i,i-1) = ei;
         }
         
-        /* Generate the elementary reflector H(I) to annihilate A(K+I+1:N,I) */
-        i__2 = n - k - i__ + 1;
-        i__3 = k + i__ + 1;
-        lapackf77_dlarfg(&i__2, &a[k + i__ + i__ * a_dim1], 
-                         &a[min(i__3,n) + i__ * a_dim1], &c__1, &tau[i__]);
-        ei = a[k + i__ + i__ * a_dim1];
-        a[k + i__ + i__ * a_dim1] = c_one;
+        // Generate the elementary reflector H(i) to annihilate A(k+i+1:n-1,i)
+        lapackf77_dlarfg( &n_k_i_1,
+                          A(k+i+1,i),
+                          A(k+i+2,i), &ione, &tau[i] );
+        // Save diagonal element and set to one, to simplify multiplying by V
+        ei = *A(k+i+1,i);
+        *A(k+i+1,i) = c_one;
 
-        /* Compute  Y(K+1:N,I) */
-        i__2 = n - k;
-        i__3 = n - k - i__ + 1;
-        magma_dsetvector( i__3,
-                          &a[k + i__ + i__*a_dim1], 1,
-                          dv+(i__-1)*(ldda+1),      1 );
-
-        magma_dgemv(MagmaNoTrans, i__2+1, i__3, c_one, 
-                    da -1 + k + i__ * ldda, ldda, 
-                    dv+(i__-1)*(ldda+1), c__1, c_zero, 
-                    da-1 + k + (i__-1)*ldda, c__1);     
+        // dV(i+1:n-k-1, i) = VA(k+i+1:n-1, i)
+        magma_dsetvector( n_k_i_1,
+                          A(k+i+1,i), 1,
+                          dV(i+1,i),  1 );
         
-        i__2 = n - k - i__ + 1;
-        i__3 = i__ - 1;
-        blasf77_dgemv(MagmaTransStr, &i__2, &i__3, &c_one, 
-                      &a[k + i__ + a_dim1], &lda, &a[k+i__+i__*a_dim1], &c__1, 
-                      &c_zero, &t[i__*t_dim1+1], &c__1);
+        // Compute Y(k+1:n,i) = A vi
+        // dA(k:n-1, i) = dA(k:n-1, i+1:n-k-1) * dV(i+1:n-k-1, i)
+        magma_dgemv( MagmaNoTrans, n_k, n_k_i_1,
+                     c_one,  dA(k,i+1), ldda,
+                             dV(i+1,i),   ione,
+                     c_zero, dA(k,i),     ione );
+        
+        // Compute T(0:i,i) = [ -tau T V' vi ]
+        //                    [  tau         ]
+        // T(0:i-1, i) = -tau VA(k+i+1:n-1, 0:i-1)' VA(k+i+1:n-1, i)
+        scale = MAGMA_D_NEGATE( tau[i]);
+        blasf77_dgemv( "Conj", &n_k_i_1, &i,
+                       &scale,  A(k+i+1,0), &lda,
+                                A(k+i+1,i), &ione,
+                       &c_zero, T(0,i),     &ione );
+        // T(0:i-1, i) = T(0:i-1, 0:i-1) * T(0:i-1, i)
+        blasf77_dtrmv( "Upper", "No trans", "Non-unit", &i,
+                       T(0,0), &ldt,
+                       T(0,i), &ione );
+        *T(i,i) = tau[i];
 
-        /* Compute T(1:I,I) */
-        i__2 = i__ - 1;
-        d__1 = MAGMA_D_NEGATE( tau[i__] );
-        blasf77_dscal(&i__2, &d__1, &t[i__ * t_dim1 + 1], &c__1);
-        blasf77_dtrmv("U","N","N", &i__2, &t[t_offset], &ldt, &t[i__*t_dim1+1], &c__1);
-        t[i__ + i__ * t_dim1] = tau[i__];
-
-        magma_dgetvector( n - k + 1,
-                          da-1+ k+(i__-1)*ldda, 1,
-                          y+ k + i__*y_dim1,    1 );
+        // Y(k:n-1, i) = dA(k:n-1, i)
+        magma_dgetvector( n-k,
+                          dA(k,i), 1,
+                          Y(k,i),  1 );
     }
-    a[k + nb + nb * a_dim1] = ei;
+    // Restore diagonal element
+    *A(k+nb,nb-1) = ei;
 
     return 0;
-} /* magma_dlahr2 */
-
+} // magma_dlahr2

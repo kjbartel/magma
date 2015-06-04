@@ -1,31 +1,28 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:52:59 2012
+       @generated s Fri Jun 28 19:32:06 2013
 
 */
 #include "common_magma.h"
 
-#include <assert.h>
-
 extern "C" magma_int_t
-magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs, 
-                 float *A, magma_int_t lda, 
+magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
+                 float *A, magma_int_t lda,
                  float *B, magma_int_t ldb, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
- 
+       June 2013
+
     Purpose
     =======
-
     SPOSV computes the solution to a real system of linear equations
        A * X = B,
     where A is an N-by-N symmetric positive definite matrix and X and B
@@ -39,7 +36,6 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
 
     Arguments
     =========
- 
     UPLO    (input) CHARACTER*1
             = 'U':  Upper triangle of A is stored;
             = 'L':  Lower triangle of A is stored.
@@ -51,17 +47,17 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
             The number of right hand sides, i.e., the number of columns
             of the matrix B.  NRHS >= 0.
 
-    A       (input/output) REAL array, dimension (LDA,N)   
-            On entry, the symmetric matrix A.  If UPLO = 'U', the leading   
-            N-by-N upper triangular part of A contains the upper   
-            triangular part of the matrix A, and the strictly lower   
-            triangular part of A is not referenced.  If UPLO = 'L', the   
-            leading N-by-N lower triangular part of A contains the lower   
-            triangular part of the matrix A, and the strictly upper   
-            triangular part of A is not referenced.   
+    A       (input/output) REAL array, dimension (LDA,N)
+            On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+            N-by-N upper triangular part of A contains the upper
+            triangular part of the matrix A, and the strictly lower
+            triangular part of A is not referenced.  If UPLO = 'L', the
+            leading N-by-N lower triangular part of A contains the lower
+            triangular part of the matrix A, and the strictly upper
+            triangular part of A is not referenced.
 
-            On exit, if INFO = 0, the factor U or L from the Cholesky   
-            factorization A = U**T*U or A = L*L**T.   
+            On exit, if INFO = 0, the factor U or L from the Cholesky
+            factorization A = U**T*U or A = L*L**T.
 
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,N).
@@ -79,16 +75,16 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
     =====================================================================   */
 
     magma_int_t num_gpus, ldda, lddb;
-    
-    *info = 0 ; 
+
+    *info = 0 ;
     if( (uplo != 'U') && (uplo != 'u') && (uplo != 'L') && (uplo != 'l') )
-        *info = -1; 
+        *info = -1;
     if( n < 0 )
-        *info = -2; 
-    if( nrhs < 0) 
-        *info = -3; 
+        *info = -2;
+    if( nrhs < 0)
+        *info = -3;
     if ( lda < max(1, n) )
-        *info = -5; 
+        *info = -5;
     if ( ldb < max(1, n) )
         *info = -7;
     if (*info != 0) {
@@ -114,12 +110,15 @@ magma_sposv    ( char uplo, magma_int_t n, magma_int_t nrhs,
     }
     if ( MAGMA_SUCCESS != magma_smalloc( &dB, lddb*nrhs )) {
         magma_free( dA );
-        dA = NULL;
         goto CPU_INTERFACE;
     }
-    assert( num_gpus == 1 && dA != NULL && dB != NULL );
     magma_ssetmatrix( n, n, A, lda, dA, ldda );
     magma_spotrf_gpu( uplo, n, dA, ldda, info );
+    if ( *info == MAGMA_ERR_DEVICE_ALLOC ) {
+        magma_free( dA );
+        magma_free( dB );
+        goto CPU_INTERFACE;
+    }
     magma_sgetmatrix( n, n, dA, ldda, A, lda );
     if ( *info == 0 ) {
         magma_ssetmatrix( n, nrhs, B, ldb, dB, lddb );
@@ -137,6 +136,6 @@ CPU_INTERFACE:
     if ( *info == 0 ) {
         lapackf77_spotrs( &uplo, &n, &nrhs, A, &lda, B, &ldb, info );
     }
-    
+
     return *info;
 }

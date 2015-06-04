@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Azzam Haidar
        @author Stan Tomov
@@ -13,18 +13,8 @@
 */
 #include "common_magma.h"
 #include "magma_zbulgeinc.h"
-#if defined(USEMKL)
-#include <mkl_service.h>
-#endif
-// === Define what BLAS to use ============================================
+
 #define PRECISION_z
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_zgemm magmablas_zgemm
-#endif
-// === End defining what BLAS to use =======================================
-
-
-
 
 #define CHECK 0
 #define LOGQ 0
@@ -39,13 +29,13 @@ extern "C" void    mydlarft_(const char *direct, const char *storev, magma_int_t
 #if defined(PRECISION_z) || defined(PRECISION_d)
 extern "C" void cmp_vals(magma_int_t n, double *wr1, double *wr2, double *nrmI, double *nrm1, double *nrm2);
 extern "C" void zcheck_eig_(char *JOBZ, magma_int_t  *MATYPE, magma_int_t  *N, magma_int_t  *NB,
-                       cuDoubleComplex* A, magma_int_t  *LDA, double *AD, double *AE, double *D1, double *EIG,
-                    cuDoubleComplex *Z, magma_int_t  *LDZ, cuDoubleComplex *WORK, double *RWORK, double *RESU);
+                       magmaDoubleComplex* A, magma_int_t  *LDA, double *AD, double *AE, double *D1, double *EIG,
+                    magmaDoubleComplex *Z, magma_int_t  *LDZ, magmaDoubleComplex *WORK, double *RWORK, double *RESU);
 #endif
 
 
 extern "C"  magma_int_t plasma_ceildiv(magma_int_t a, magma_int_t b);
-extern "C"  void tile_bulge_applyQ_cpu(magma_int_t WANTZ, char SIDE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, cuDoubleComplex *E, magma_int_t LDE, cuDoubleComplex *V, cuDoubleComplex *TAU, cuDoubleComplex *T, magma_int_t *INFO);
+extern "C"  void tile_bulge_applyQ_cpu(magma_int_t WANTZ, char SIDE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magmaDoubleComplex *E, magma_int_t LDE, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magmaDoubleComplex *T, magma_int_t *INFO);
 
 static void barrier(int my_core_id, int cores_num);
 static void *parallel_section(void *thread_id);
@@ -56,10 +46,10 @@ static void tile_bulge_applyQ_parallel(int my_core_id);
 static void tile_bulge_applyQ_parallel2(int my_core_id);
 
 /*
-extern "C" void TRD_hbcelr_v62sym_withQ(int N, int NB, cuDoubleComplex *A, int LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, int st, int ed, int myid, int sweep, int Vblksiz);
-extern "C" void TRD_type1cHLsym_withQ(int N, int NB, cuDoubleComplex *A, int LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
-extern "C" void TRD_type2cHLsym_withQ(int N, int NB, cuDoubleComplex *A, int LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
-extern "C" void TRD_type3cHLsym_withQ(int N, int NB, cuDoubleComplex *A, int LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
+extern "C" void TRD_hbcelr_v62sym_withQ(int N, int NB, magmaDoubleComplex *A, int LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, int st, int ed, int myid, int sweep, int Vblksiz);
+extern "C" void TRD_type1cHLsym_withQ(int N, int NB, magmaDoubleComplex *A, int LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
+extern "C" void TRD_type2cHLsym_withQ(int N, int NB, magmaDoubleComplex *A, int LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
+extern "C" void TRD_type3cHLsym_withQ(int N, int NB, magmaDoubleComplex *A, int LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, int st, int ed, int sweep, int Vblksiz);
 */
 /*
 #define magma_ztrdtype1cbHLsym_withQ                 magma_dtrdtype1cbHLsym_withQ
@@ -67,21 +57,20 @@ extern "C" void TRD_type3cHLsym_withQ(int N, int NB, cuDoubleComplex *A, int LDA
 #define magma_ztrdtype3cbHLsym_withQ                magma_dtrdtype3cbHLsym_withQ
 #define magma_zbulge_applyQ                           magma_dbulge_applyQ
 #define magma_zstedc_withZ                        magma_dstedc_withZ
-#define magma_zgemm                                 magmablas_dgemm
 */
 
-extern "C" void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
-extern "C" void magma_ztrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
-extern "C" void magma_ztrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, cuDoubleComplex *A, magma_int_t LDA, cuDoubleComplex *V, cuDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
-extern "C" void magma_zbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, cuDoubleComplex *E, magma_int_t LDE, cuDoubleComplex *V, cuDoubleComplex *TAU, cuDoubleComplex *T, magma_int_t *INFO, cuDoubleComplex *dV, cuDoubleComplex *dT, cuDoubleComplex *dE, magma_int_t copytype );
-extern "C" void magma_zstedc_withZ(char JOBZ, magma_int_t N, double *D, double * E, cuDoubleComplex *Z, magma_int_t LDZ);
-extern "C" void magma_zstedx_withZ(magma_int_t N, magma_int_t NE, double *D, double * E, cuDoubleComplex *Z, magma_int_t LDZ);
+extern "C" void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_ztrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_ztrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz);
+extern "C" void magma_zbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, magmaDoubleComplex *E, magma_int_t LDE, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magmaDoubleComplex *T, magma_int_t *INFO, magmaDoubleComplex *dV, magmaDoubleComplex *dT, magmaDoubleComplex *dE, magma_int_t copytype );
+extern "C" void magma_zstedc_withZ(char JOBZ, magma_int_t N, double *D, double * E, magmaDoubleComplex *Z, magma_int_t LDZ);
+extern "C" void magma_zstedx_withZ(magma_int_t N, magma_int_t NE, double *D, double * E, magmaDoubleComplex *Z, magma_int_t LDZ);
 
 
 extern "C" magma_int_t
 magma_zungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
-                 cuDoubleComplex *da, magma_int_t ldda,
-                 cuDoubleComplex *tau, cuDoubleComplex *dT,
+                 magmaDoubleComplex *da, magma_int_t ldda,
+                 magmaDoubleComplex *tau, magmaDoubleComplex *dT,
                  magma_int_t nb, magma_int_t *info);
 
          
@@ -129,14 +118,14 @@ static void barrier(int my_core_id, int cores_num)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////          
 /* START CODE */
-extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WANTZ, char uplo, magma_int_t NE, magma_int_t N, magma_int_t NB, cuDoubleComplex *A1, magma_int_t LDA1, double *D2, double *E2, cuDoubleComplex *dT1, magma_int_t LDT1)
+extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WANTZ, char uplo, magma_int_t NE, magma_int_t N, magma_int_t NB, magmaDoubleComplex *A1, magma_int_t LDA1, double *D2, double *E2, magmaDoubleComplex *dT1, magma_int_t LDT1)
 {
     char uplo_[2] = {uplo, 0};
     real_Double_t timelpk=0.0,tconvert=0.0,timeaplQ1=0.0,timeaplQ2=0.0,timeblg=0.0, timeaplQ=0.0, timeeigen=0.0, timegemm=0.0;
     double nrmI=0.0, nrm1=0.0, nrm2=0.0;
     FILE *trace_file;
-    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
-    cuDoubleComplex c_one  = MAGMA_Z_ONE;
+    magmaDoubleComplex c_zero = MAGMA_Z_ZERO;
+    magmaDoubleComplex c_one  = MAGMA_Z_ONE;
 
     
     magma_int_t mklth, thread, INFO;
@@ -209,8 +198,8 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
     timelpk = magma_wtime();
     /* copy the input matrix into a matrix A2 with band storage */
-    cuDoubleComplex *A2    = (cuDoubleComplex *) malloc (N*LDA2*sizeof(cuDoubleComplex));
-    memset(A2 , 0, N*LDA2*sizeof(cuDoubleComplex));        
+    magmaDoubleComplex *A2    = (magmaDoubleComplex *) malloc (N*LDA2*sizeof(magmaDoubleComplex));
+    memset(A2 , 0, N*LDA2*sizeof(magmaDoubleComplex));        
     for (j = 0; j < (N-NB); j++)
     {
         for (i = 0; i < NB+1; i++)
@@ -239,7 +228,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
     /************************************************* 
      *     compute Q1 
      * ***********************************************/
-    cuDoubleComplex *da, *NOTUSED;
+    magmaDoubleComplex *da, *NOTUSED;
     if((WANTZ>0)&(WANTZ!=4)){
        if (MAGMA_SUCCESS != magma_zmalloc( &da, N*LDA1 )) {
            //*info = MAGMA_ERR_DEVICE_ALLOC;
@@ -252,7 +241,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
            timeaplQ1 = magma_wtime();
            magma_zungqr_2stage_gpu(N, N, N, da, LDA1, NOTUSED, dT1, NB, &INFO);
            magma_device_sync();
-           //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
+           //cublasGetMatrix( N, LDA1, sizeof(magmaDoubleComplex), da, LDA1, A1, LDA1);
            timeaplQ1 = magma_wtime()-timeaplQ1;
            printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
        }
@@ -273,26 +262,26 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
      * ***********************************************/
     char JOBZ;
     double *D1;
-    cuDoubleComplex *AINIT;
+    magmaDoubleComplex *AINIT;
     magma_int_t MM,NN,LDAINIT;
     if(CHECK)
     {
         MM=NB+1;
         NN=N;
         LDAINIT=NB+1;
-        AINIT = (cuDoubleComplex *) malloc(MM*NN*sizeof(cuDoubleComplex) );
-        memset(AINIT , 0, MM*NN*sizeof(cuDoubleComplex));        
+        AINIT = (magmaDoubleComplex *) malloc(MM*NN*sizeof(magmaDoubleComplex) );
+        memset(AINIT , 0, MM*NN*sizeof(magmaDoubleComplex));        
         lapackf77_zlacpy("A", &MM, &NN, A2, &LDA2, AINIT, &LDAINIT );
     }
     /***********************************************/
 
 
-    cuDoubleComplex *T     = (cuDoubleComplex *) malloc (blkcnt*LDT*Vblksiz*sizeof(cuDoubleComplex));
-    cuDoubleComplex *TAU   = (cuDoubleComplex *) malloc (blkcnt*Vblksiz*sizeof(cuDoubleComplex));
-    cuDoubleComplex *V     = (cuDoubleComplex *) malloc (blkcnt*LDV*Vblksiz*sizeof(cuDoubleComplex));
-    memset(T,   0, blkcnt*LDT*Vblksiz*sizeof(cuDoubleComplex));        
-    memset(TAU, 0, blkcnt*Vblksiz*sizeof(cuDoubleComplex));        
-    memset(V,   0, blkcnt*LDV*Vblksiz*sizeof(cuDoubleComplex));        
+    magmaDoubleComplex *T     = (magmaDoubleComplex *) malloc (blkcnt*LDT*Vblksiz*sizeof(magmaDoubleComplex));
+    magmaDoubleComplex *TAU   = (magmaDoubleComplex *) malloc (blkcnt*Vblksiz*sizeof(magmaDoubleComplex));
+    magmaDoubleComplex *V     = (magmaDoubleComplex *) malloc (blkcnt*LDV*Vblksiz*sizeof(magmaDoubleComplex));
+    memset(T,   0, blkcnt*LDT*Vblksiz*sizeof(magmaDoubleComplex));        
+    memset(TAU, 0, blkcnt*Vblksiz*sizeof(magmaDoubleComplex));        
+    memset(V,   0, blkcnt*LDV*Vblksiz*sizeof(magmaDoubleComplex));        
 
 
 
@@ -308,9 +297,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
     //goto ed;
     
-#if defined(USEMKL)
-    mkl_set_num_threads( 1 );
-#endif
+    magma_setlapack_numthreads(1);
     core_in_all.cores_num = THREADS;
     core_in_all.dQ1       = da;
     core_in_all.dT1       = dT1;
@@ -456,7 +443,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
 
     /* APPLY V2 generated by the bulge to the matrix Q1 of the first stage Q2=Q2*(I-V_2*T_2*V_2') */
-    cuDoubleComplex *dV2, *dQ2, *dT2, *dZ, *Q2, *Z;
+    magmaDoubleComplex *dV2, *dQ2, *dT2, *dZ, *Q2, *Z;
     int dVsize, LDQ2=N,LDZ=N;
     int parallel=0;
 
@@ -502,15 +489,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
     if(WANTZ==0){
         timelpk = magma_wtime();
         // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
-#if defined(USEMKL)
-        mklth=THREADS; //;
-        mkl_set_num_threads(mklth);
-#endif
+        magma_setlapack_numthreads(THREADS);
+
         // call eigensolver for our resulting tridiag [D E] and form E=Q*Z
-        magma_zstedc_withZ(MagmaNoVectors, N, D2, E2, Z, LDZ);
-#if defined(USEMKL)
-        mkl_set_num_threads( 1 );
-#endif
+        magma_zstedc_withZ(MagmaNoVec, N, D2, E2, Z, LDZ);
+        magma_setlapack_numthreads(1);
         timelpk = magma_wtime()-timelpk;
         printf("  Finish WANTZ %d  eigensolver 'N'    timing= %lf  threads %d \n", (int) WANTZ, timelpk, (int) i);
         /*
@@ -521,12 +504,12 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
         if(WANTZ==1){
             // compute Q2 by applying V2 on the Identity        
             LDZ=LDA1;        
-            Z    = (cuDoubleComplex *) malloc (N*N*sizeof(cuDoubleComplex));
-            memset(Z , 0, N*N*sizeof(cuDoubleComplex));
+            Z    = (magmaDoubleComplex *) malloc (N*N*sizeof(magmaDoubleComplex));
+            memset(Z , 0, N*N*sizeof(magmaDoubleComplex));
             if(parallel==1){
-                Q2    = (cuDoubleComplex *) malloc (N*N*sizeof(cuDoubleComplex));
+                Q2    = (magmaDoubleComplex *) malloc (N*N*sizeof(magmaDoubleComplex));
                 // no need to set the matrix to identity if we are using the GPU because it is done inside bulge_applyQ
-                memset(Q2 , 0, N*N*sizeof(cuDoubleComplex));        
+                memset(Q2 , 0, N*N*sizeof(magmaDoubleComplex));        
                 for (j = 0; j < N; j++)
                     Q2[j+j*LDQ2] = c_one;
             }
@@ -537,8 +520,8 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
             // compute the Q by applying V2 to Q1 that has been computed 
             // from the Right. Q= Q1 * ( I-V2*T2*V2') = Q1*Q2        
             LDZ=LDA1;        
-            Z    = (cuDoubleComplex *) malloc (N*N*sizeof(cuDoubleComplex));
-            memset(Z , 0, N*N*sizeof(cuDoubleComplex));
+            Z    = (magmaDoubleComplex *) malloc (N*N*sizeof(magmaDoubleComplex));
+            memset(Z , 0, N*N*sizeof(magmaDoubleComplex));
             core_in_all.SIDE      = 'R';
             core_in_all.E         = A1;
             core_in_all.LDE       = LDA1;
@@ -546,8 +529,8 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
             // wait till the Eigenvector are computed and the apply V2 from the Left, 
             // and then make gemm with Q1 (WANTZ=3) or apply V1 to the result (WANTZ=4). 
             LDZ=LDA1;        
-            Z    = (cuDoubleComplex *) malloc (N*N*sizeof(cuDoubleComplex));
-            memset(Z , 0, N*N*sizeof(cuDoubleComplex));
+            Z    = (magmaDoubleComplex *) malloc (N*N*sizeof(magmaDoubleComplex));
+            memset(Z , 0, N*N*sizeof(magmaDoubleComplex));
             // variable for Q2
             core_in_all.SIDE      = 'L';
             core_in_all.E         = Z;
@@ -562,16 +545,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
         if((WANTZ==1)||(WANTZ==2)||(WANTZ==3)||(WANTZ==4)){
             timelpk = magma_wtime();
             // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
-#if defined(USEMKL)
-            mklth=THREADS; //;
-            mkl_set_num_threads(mklth);
-#endif
+            magma_setlapack_numthreads(THREADS);
             // call eigensolver for our resulting tridiag [D E] and form E=Q*Z
             //magma_zstedc_withZ('I', N, D2, E2, Z, LDZ);
             magma_zstedx_withZ(N, NE, D2, E2, Z, LDZ);
-#if defined(USEMKL)
-            mkl_set_num_threads( 1 );
-#endif
+            magma_setlapack_numthreads(1);
             timelpk = magma_wtime()-timelpk;
         }
 
@@ -645,8 +623,8 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                }
 
                 /*
-                Q2    = (cuDoubleComplex *) malloc (N*N*sizeof(cuDoubleComplex));
-                memset(Q2 , 0, N*N*sizeof(cuDoubleComplex));       
+                Q2    = (magmaDoubleComplex *) malloc (N*N*sizeof(magmaDoubleComplex));
+                memset(Q2 , 0, N*N*sizeof(magmaDoubleComplex));       
                 magma_zgetmatrix( N, LDA1, da, N, Q2, N );
                 trace_file = fopen("AJETE/Q2", "w");
                 for (j = 0; j < N ; j++) 
@@ -914,15 +892,10 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
                timeaplQ2 = magma_wtime()-timeaplQ2;
                timelpk = magma_wtime();
                // compute the eigenvalues using lapack routine to be able to compare to it and used as ref 
-               #if defined(USEMKL)
-               mklth=THREADS; //;
-               mkl_set_num_threads(mklth);
-               #endif
+               magma_setlapack_numthreads(THREADS);
                // call eigensolver for our resulting tridiag [D E] and form E=Q*Z
-               magma_zstedc_withZ(MagmaVectors, N, D2, E2, A1, LDA1);
-               #if defined(USEMKL)
-               mkl_set_num_threads( 1 );
-               #endif
+               magma_zstedc_withZ(MagmaVec, N, D2, E2, A1, LDA1);
+               magma_setlapack_numthreads(1);
                timelpk = magma_wtime()-timelpk;
            }
 
@@ -1006,11 +979,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
 
 /*
-            cuDoubleComplex mydz=c_zero,mydo=c_one;
-            cuDoubleComplex *Z = (cuDoubleComplex *) malloc(N*N*sizeof(cuDoubleComplex));
+            magmaDoubleComplex mydz=c_zero,mydo=c_one;
+            magmaDoubleComplex *Z = (magmaDoubleComplex *) malloc(N*N*sizeof(magmaDoubleComplex));
    dgemm_("N","N",&N,&N,&N,&mydo,A1,&LDA1,Q1,&LDQ1,&mydz,Z,&LDA1);
-   memcpy(A1,Z,N*N*sizeof(cuDoubleComplex));
-   memcpy(Q1,Z,N*N*sizeof(cuDoubleComplex));
+   memcpy(A1,Z,N*N*sizeof(magmaDoubleComplex));
+   memcpy(Q1,Z,N*N*sizeof(magmaDoubleComplex));
 */
     /*
        trace_file = fopen("AJETE/Qf", "w");
@@ -1025,7 +998,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
        if(WANTZ!=1) JOBZ='N';
        if(WANTZ==1) JOBZ='V';
        magma_zstedc_withZ(JOBZ, N, D2, E2, Q2, LDQ2);            
-       //magma_zstedc_withZ(MagmaNoVectors, N, D2, E2, Q1, LDQ1);            
+       //magma_zstedc_withZ(MagmaNoVec, N, D2, E2, Q1, LDQ1);            
     }
     
 
@@ -1039,11 +1012,11 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
         *     CALLING LAPACK on original matrix
         * ***********************************************/
         int    LWORK=256*N;
-        cuDoubleComplex *WORK    = (cuDoubleComplex *) malloc( LWORK * sizeof(cuDoubleComplex) );
+        magmaDoubleComplex *WORK    = (magmaDoubleComplex *) malloc( LWORK * sizeof(magmaDoubleComplex) );
         D1      = (double *) malloc( N * sizeof(double) );
         double *E1      = (double *) malloc( N * sizeof(double) );
-        cuDoubleComplex *ALPK    = (cuDoubleComplex *) malloc (N*LDAINIT*sizeof(cuDoubleComplex));
-        memcpy(ALPK, AINIT, N*LDAINIT*sizeof(cuDoubleComplex));
+        magmaDoubleComplex *ALPK    = (magmaDoubleComplex *) malloc (N*LDAINIT*sizeof(magmaDoubleComplex));
+        memcpy(ALPK, AINIT, N*LDAINIT*sizeof(magmaDoubleComplex));
 
         timelpk = magma_wtime();
         lapackf77_zhbtrd("N", "L", &N, &NB, ALPK, &LDAINIT, D1, E1, WORK, &N, WORK, &INFO); 
@@ -1059,9 +1032,9 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
        // compare result 
        cmp_vals(N, D1, D2, &nrmI, &nrm1, &nrm2);
 
-       cuDoubleComplex *WORKAJETER;
+       magmaDoubleComplex *WORKAJETER;
        double *RWORKAJETER, *RESU;
-       WORKAJETER  = (cuDoubleComplex *) malloc( (2* N * N + N) * sizeof(cuDoubleComplex) );
+       WORKAJETER  = (magmaDoubleComplex *) malloc( (2* N * N + N) * sizeof(magmaDoubleComplex) );
        RWORKAJETER = (double *) malloc( N * sizeof(double) );
        RESU        = (double *) malloc(10*sizeof(double));
        int MATYPE;
@@ -1069,7 +1042,7 @@ extern "C" magma_int_t magma_zhetrd_bhe2trc( magma_int_t THREADS, magma_int_t WA
 
  
        MATYPE=2;
-       cuDoubleComplex NOTHING=c_zero;
+       magmaDoubleComplex NOTHING=c_zero;
        zcheck_eig_(&JOBZ, &MATYPE, &N, &NB, AINIT, &LDAINIT, &NOTHING, &NOTHING, D2 , D1, Q2, &LDQ2, WORKAJETER, RWORKAJETER, RESU );
 
 
@@ -1125,14 +1098,14 @@ static void *parallel_section(void *thread_id)
     int allcores_num     = core_in_all.cores_num;
     int locores_num      = core_in_all.locores_num;
     int overlapQ1        = core_in_all.overlapQ1;
-    cuDoubleComplex *dQ1 = core_in_all.dQ1;
-    cuDoubleComplex *dT1 = core_in_all.dT1;
+    magmaDoubleComplex *dQ1 = core_in_all.dQ1;
+    magmaDoubleComplex *dT1 = core_in_all.dT1;
     int N                = core_in_all.N;
     int NB               = core_in_all.NB;
     int WANTZ = core_in_all.WANTZ;
     static volatile int sys_corenbr = 1;
     magma_int_t INFO, i, my_newcore_id, lastcoreid;
-    cuDoubleComplex *NOTUSED;
+    magmaDoubleComplex *NOTUSED;
     real_Double_t timeB=0.0, timeT=0.0, timeall=0.0, timeaplQ1=0.0;
 
 #if defined(SETAFFINITY)    
@@ -1197,7 +1170,7 @@ static void *parallel_section(void *thread_id)
                  timeaplQ1 = magma_wtime();
                  magma_zungqr_2stage_gpu(N, N, N, dQ1, N, NOTUSED, dT1, NB, &INFO);
                  magma_device_sync();
-                 //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
+                 //cublasGetMatrix( N, LDA1, sizeof(magmaDoubleComplex), da, LDA1, A1, LDA1);
                  timeaplQ1 = magma_wtime()-timeaplQ1;
                  printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
              }
@@ -1254,7 +1227,7 @@ static void *parallel_section(void *thread_id)
                 timeaplQ1 = magma_wtime();
                 magma_zungqr_2stage_gpu(N, N, N, dQ1, N, NOTUSED, dT1, NB, &INFO);
                 magma_device_sync();
-                //cublasGetMatrix( N, LDA1, sizeof(cuDoubleComplex), da, LDA1, A1, LDA1);
+                //cublasGetMatrix( N, LDA1, sizeof(magmaDoubleComplex), da, LDA1, A1, LDA1);
                 timeaplQ1 = magma_wtime()-timeaplQ1;
                 printf("  Finish applyQ1 timing= %lf \n" ,timeaplQ1); 
             /* I am one of the remaining cores*/
@@ -1340,13 +1313,13 @@ static void *applyQ_parallel_section(void *thread_id)
     int allcores_num     = core_in_all.cores_num;
     int locores_num      = core_in_all.locores_num;
     int usemulticpu      = core_in_all.usemulticpu;
-    cuDoubleComplex *dZ  = core_in_all.dE;
-    cuDoubleComplex *dT2 = core_in_all.dT2;
-    cuDoubleComplex *dV2 = core_in_all.dV2;
-    cuDoubleComplex *Z   = core_in_all.E;
-    cuDoubleComplex *T2  = core_in_all.T;
-    cuDoubleComplex *V2  = core_in_all.V;
-    cuDoubleComplex *TAU2= core_in_all.TAU;
+    magmaDoubleComplex *dZ  = core_in_all.dE;
+    magmaDoubleComplex *dT2 = core_in_all.dT2;
+    magmaDoubleComplex *dV2 = core_in_all.dV2;
+    magmaDoubleComplex *Z   = core_in_all.E;
+    magmaDoubleComplex *T2  = core_in_all.T;
+    magmaDoubleComplex *V2  = core_in_all.V;
+    magmaDoubleComplex *TAU2= core_in_all.TAU;
     int LDZ              = core_in_all.LDE;
     int NE               = core_in_all.NE;
     int N_CPU            = core_in_all.N_CPU;
@@ -1359,7 +1332,7 @@ static void *applyQ_parallel_section(void *thread_id)
     magma_int_t INFO, i, my_newcore_id, lastcoreid;
 
     real_Double_t timeQcpu=0.0, timeQgpu=0.0;
-    cuDoubleComplex *NOTUSED;
+    magmaDoubleComplex *NOTUSED;
     int INOTUSED=0;
 
 
@@ -1558,9 +1531,9 @@ static void tile_bulge_parallel(int my_core_id)
     /* CHANGE HERE to SWITCH FROM local_cores_num to cores_num
      * or do it at the startup by putting core_in_all.es_num=cores_num*/
     int cores_num = core_in_all.locores_num;
-    cuDoubleComplex *A = core_in_all.A;
-    cuDoubleComplex *V = core_in_all.V;
-    cuDoubleComplex *TAU = core_in_all.TAU;
+    magmaDoubleComplex *A = core_in_all.A;
+    magmaDoubleComplex *V = core_in_all.V;
+    magmaDoubleComplex *TAU = core_in_all.TAU;
     int N = core_in_all.N;
     int NB = core_in_all.NB;
     int NBTILES = core_in_all.NBTILES;
@@ -1784,9 +1757,9 @@ static void tile_bulge_computeT_parallel(int my_core_id)
     /* CHANGE HERE to SWITCH FROM local_cores_num to cores_num
      * or do it at the startup by putting core_in_all.es_num=cores_num*/
     magma_int_t cores_num = core_in_all.locores_num;
-    cuDoubleComplex *T     = core_in_all.T;
-    cuDoubleComplex *V     = core_in_all.V;
-    cuDoubleComplex *TAU   = core_in_all.TAU;
+    magmaDoubleComplex *T     = core_in_all.T;
+    magmaDoubleComplex *V     = core_in_all.V;
+    magmaDoubleComplex *TAU   = core_in_all.TAU;
     magma_int_t  N         = core_in_all.N;
     magma_int_t  NB        = core_in_all.NB;
     magma_int_t  Vblksiz   = core_in_all.Vblksiz;
@@ -1868,11 +1841,11 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
     /* CHANGE HERE to SWITCH FROM local_cores_num to cores_num
      * or do it at the startup by putting core_in_all.es_num=cores_num*/
     magma_int_t cores_num = core_in_all.locores_num;
-    cuDoubleComplex *E      = core_in_all.E_CPU;
+    magmaDoubleComplex *E      = core_in_all.E_CPU;
 
-    cuDoubleComplex *T      = core_in_all.T;
-    cuDoubleComplex *V      = core_in_all.V;
-    cuDoubleComplex *TAU    = core_in_all.TAU;
+    magmaDoubleComplex *T      = core_in_all.T;
+    magmaDoubleComplex *V      = core_in_all.V;
+    magmaDoubleComplex *TAU    = core_in_all.TAU;
     magma_int_t  N_CPU     = core_in_all.N_CPU;
     magma_int_t  NE        = core_in_all.NE;
     magma_int_t  N         = core_in_all.N;
@@ -1889,7 +1862,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
     magma_int_t bg, nbGblk,rownbm, k, m, n;
     magma_int_t st,ed,fst,vlen,vnb,colj,len;
     magma_int_t blkid, vpos,taupos,tpos;
-    cuDoubleComplex *WORK;
+    magmaDoubleComplex *WORK;
     magma_int_t LWORK;
     magma_int_t  cur_blksiz,avai_blksiz, ncolinvolvd;
     magma_int_t  nbgr, colst, coled, versionL,versionR;
@@ -1914,7 +1887,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
     blklen   = LDV*Vblksiz;
     nbGblk   = plasma_ceildiv((N-1),Vblksiz);
     //LWORK   = 2*N*max(Vblksiz,64);
-    //WORK    = (cuDoubleComplex *) malloc (LWORK*sizeof(cuDoubleComplex));
+    //WORK    = (magmaDoubleComplex *) malloc (LWORK*sizeof(magmaDoubleComplex));
 
 
     /* use colpercore =  N/cores_num; :if i want to split E into 
@@ -1960,7 +1933,7 @@ static void tile_bulge_applyQ_parallel(int my_core_id)
 
     LWORK   = 2*colpercore*max(Vblksiz,64);
     //LWORK   = 2*N_CPU*max(Vblksiz,64);
-    WORK    = (cuDoubleComplex *) malloc (LWORK*sizeof(cuDoubleComplex));
+    WORK    = (magmaDoubleComplex *) malloc (LWORK*sizeof(magmaDoubleComplex));
 
 
     nbchunk    =  plasma_ceildiv(N_CPU,colpercore);
@@ -2148,10 +2121,10 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
 {
     magma_int_t INFO;
     magma_int_t cores_num  = core_in_all.cores_num;
-    cuDoubleComplex *T      = core_in_all.T;
-    cuDoubleComplex *E      = core_in_all.E;
-    cuDoubleComplex *V      = core_in_all.V;
-    cuDoubleComplex *TAU    = core_in_all.TAU;
+    magmaDoubleComplex *T      = core_in_all.T;
+    magmaDoubleComplex *E      = core_in_all.E;
+    magmaDoubleComplex *V      = core_in_all.V;
+    magmaDoubleComplex *TAU    = core_in_all.TAU;
     magma_int_t  N         = core_in_all.N;
     magma_int_t  NB        = core_in_all.NB;
     magma_int_t  Vblksiz   = core_in_all.Vblksiz;
@@ -2166,7 +2139,7 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
     magma_int_t bg, nbGblk,rownbm, k, m, n;
     magma_int_t st,ed,fst,vlen,vnb,colj,len;
     magma_int_t blkid, vpos,taupos,tpos;
-    cuDoubleComplex *WORK;
+    magmaDoubleComplex *WORK;
     magma_int_t LWORK;
     magma_int_t  cur_blksiz,avai_blksiz, ncolinvolvd;
     magma_int_t  nbgr, colst, coled, versionL;
@@ -2180,7 +2153,7 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
     blklen  = LDV*Vblksiz;
     nbGblk  = plasma_ceildiv((N-1),Vblksiz);
     //LWORK   = 2*N*max(Vblksiz,64);
-    //WORK    = (cuDoubleComplex *) malloc (LWORK*sizeof(cuDoubleComplex));
+    //WORK    = (magmaDoubleComplex *) malloc (LWORK*sizeof(magmaDoubleComplex));
 
 
     /* use colpercore =  N/cores_num; :if i want to split E into 
@@ -2230,7 +2203,7 @@ void tile_bulge_applyQ_parallel2(int my_core_id)
 
     LWORK   = 2*colpercore*max(Vblksiz,64);
     //LWORK   = 2*N*max(Vblksiz,64);
-    WORK    = (cuDoubleComplex *) malloc (LWORK*sizeof(cuDoubleComplex));
+    WORK    = (magmaDoubleComplex *) malloc (LWORK*sizeof(magmaDoubleComplex));
 
 
     nbchunk    =  plasma_ceildiv(N,colpercore);

@@ -1,106 +1,107 @@
 /*
- -- MAGMA (version 1.3.0) --
- Univ. of Tennessee, Knoxville
- Univ. of California, Berkeley
- Univ. of Colorado, Denver
- November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
- @author Stan Tomov
- @author Raffaele Solca
+       @author Azzam Haidar
+       @author Stan Tomov
+       @author Raffaele Solca
 
- @precisions normal z -> s d c
+       @precisions normal z -> s d c
 
- */
+*/
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_zunmqr_gpu_2stages(const char side, const char trans,
                          magma_int_t m, magma_int_t n, magma_int_t k,
-                         cuDoubleComplex *da,   magma_int_t ldda,
-                         cuDoubleComplex *dc,    magma_int_t lddc,
-                         cuDoubleComplex *dT,    magma_int_t nb,
+                         magmaDoubleComplex *da,   magma_int_t ldda,
+                         magmaDoubleComplex *dc,    magma_int_t lddc,
+                         magmaDoubleComplex *dT,    magma_int_t nb,
                          magma_int_t *info)
 {
-    /*  -- MAGMA (version 1.3.0) --
-     Univ. of Tennessee, Knoxville
-     Univ. of California, Berkeley
-     Univ. of Colorado, Denver
-     November 2012
+/*  -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-     Purpose
-     =======
-     ZUNMQR_GPU overwrites the general complex M-by-N matrix C with
+    Purpose
+    =======
+    ZUNMQR_GPU overwrites the general complex M-by-N matrix C with
 
-     SIDE = 'L'     SIDE = 'R'
-     TRANS = 'N':      Q * C          C * Q
-     TRANS = 'T':      Q**H * C       C * Q**H
+    SIDE = 'L'     SIDE = 'R'
+    TRANS = 'N':      Q * C          C * Q
+    TRANS = 'T':      Q**H * C       C * Q**H
 
-     where Q is a complex orthogonal matrix defined as the product of k
-     elementary reflectors
+    where Q is a complex orthogonal matrix defined as the product of k
+    elementary reflectors
 
-     Q = H(1) H(2) . . . H(k)
+    Q = H(1) H(2) . . . H(k)
 
-     as returned by ZGEQRF. Q is of order M if SIDE = 'L' and of order N
-     if SIDE = 'R'.
+    as returned by ZGEQRF. Q is of order M if SIDE = 'L' and of order N
+    if SIDE = 'R'.
 
-     Arguments
-     =========
-     SIDE    (input) CHARACTER*1
-     = 'L': apply Q or Q**H from the Left;
-     = 'R': apply Q or Q**H from the Right.
+    Arguments
+    =========
+    SIDE    (input) CHARACTER*1
+    = 'L': apply Q or Q**H from the Left;
+    = 'R': apply Q or Q**H from the Right.
 
-     TRANS   (input) CHARACTER*1
-     = 'N':  No transpose, apply Q;
-     = 'T':  Transpose, apply Q**H.
+    TRANS   (input) CHARACTER*1
+    = 'N':  No transpose, apply Q;
+    = 'T':  Transpose, apply Q**H.
 
-     M       (input) INTEGER
-     The number of rows of the matrix C. M >= 0.
+    M       (input) INTEGER
+    The number of rows of the matrix C. M >= 0.
 
-     N       (input) INTEGER
-     The number of columns of the matrix C. N >= 0.
+    N       (input) INTEGER
+    The number of columns of the matrix C. N >= 0.
 
-     K       (input) INTEGER
-     The number of elementary reflectors whose product defines
-     the matrix Q.
-     If SIDE = 'L', M >= K >= 0;
-     if SIDE = 'R', N >= K >= 0.
+    K       (input) INTEGER
+    The number of elementary reflectors whose product defines
+    the matrix Q.
+    If SIDE = 'L', M >= K >= 0;
+    if SIDE = 'R', N >= K >= 0.
 
-     DA      (input) COMPLEX_16 array on the GPU, dimension (LDDA,K)
-     The i-th column must contain the vector which defines the
-     elementary reflector H(i), for i = 1,2,...,k, as returned by
-     ZGEQRF in the first k columns of its array argument DA.
-     DA is modified by the routine but restored on exit.
+    DA      (input) COMPLEX_16 array on the GPU, dimension (LDDA,K)
+    The i-th column must contain the vector which defines the
+    elementary reflector H(i), for i = 1,2,...,k, as returned by
+    ZGEQRF in the first k columns of its array argument DA.
+    DA is modified by the routine but restored on exit.
 
-     LDDA    (input) INTEGER
-     The leading dimension of the array DA.
-     If SIDE = 'L', LDDA >= max(1,M);
-     if SIDE = 'R', LDDA >= max(1,N).
+    LDDA    (input) INTEGER
+    The leading dimension of the array DA.
+    If SIDE = 'L', LDDA >= max(1,M);
+    if SIDE = 'R', LDDA >= max(1,N).
 
-     DC      (input/output) COMPLEX_16 array on the GPU, dimension (LDDC,N)
-     On entry, the M-by-N matrix C.
-     On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.
+    DC      (input/output) COMPLEX_16 array on the GPU, dimension (LDDC,N)
+    On entry, the M-by-N matrix C.
+    On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.
 
-     LDDC     (input) INTEGER
-     The leading dimension of the array DC. LDDC >= max(1,M).
+    LDDC     (input) INTEGER
+    The leading dimension of the array DC. LDDC >= max(1,M).
 
-     DT      (input) COMPLEX_16 array on the GPU that is the output
-     (the 9th argument) of magma_zgeqrf_gpu.
+    DT      (input) COMPLEX_16 array on the GPU that is the output
+    (the 9th argument) of magma_zgeqrf_gpu.
 
-     NB      (input) INTEGER
-     This is the blocking size that was used in pre-computing DT, e.g.,
-     the blocking size used in magma_zgeqrf_gpu.
+    NB      (input) INTEGER
+    This is the blocking size that was used in pre-computing DT, e.g.,
+    the blocking size used in magma_zgeqrf_gpu.
 
-     INFO    (output) INTEGER
-     = 0:  successful exit
-     < 0:  if INFO = -i, the i-th argument had an illegal value
-     =====================================================================   */
+    INFO    (output) INTEGER
+    = 0:  successful exit
+    < 0:  if INFO = -i, the i-th argument had an illegal value
+    =====================================================================   */
 
-    cuDoubleComplex c_one = MAGMA_Z_ONE;
+    magmaDoubleComplex c_one = MAGMA_Z_ONE;
 
     char side_[2] = {side, 0};
     char trans_[2] = {trans, 0};
 
-    cuDoubleComplex *dwork;
+    magmaDoubleComplex *dwork;
 
     magma_int_t i1, i2, i3, ib, ic, jc, mi, ni, nq, nw, ret;
     int left, notran;
@@ -167,7 +168,7 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
         ic = 0;
     }
 
-    for (magma_int_t i=i1; i3<0 ? i>=i2 : i<i2; i+=i3)
+    for (magma_int_t i=i1; (i3<0 ? i>=i2 : i<i2); i+=i3)
     {
         ib = min(nb, k - i);
         if (left){
@@ -188,5 +189,5 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
         }
     }
 
-   return MAGMA_SUCCESS;
+    return MAGMA_SUCCESS;
 }   /* End of MAGMA_ZUNMQR_GPU_2stages */

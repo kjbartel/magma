@@ -1,13 +1,12 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- * @precisions normal z -> c d s
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @precisions normal z -> c d s
+*/
 // includes, system
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,40 +21,24 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-// Flops formula
 #define PRECISION_z
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(m, n) ( 6. * FMULS_GETRF(m, n) + 2. * FADDS_GETRF(m, n) )
-#else
-#define FLOPS(m, n) (      FMULS_GETRF(m, n) +      FADDS_GETRF(m, n) )
-#endif
-
-/* ========= definition of multiple GPU code ========= */
-extern "C" magma_int_t
-magma_zgetrf_mgpu(magma_int_t num_gpus, 
-                     magma_int_t m, magma_int_t n,
-                 cuDoubleComplex **d_lA, magma_int_t ldda,
-                         magma_int_t *ipiv, magma_int_t *info);
-/* =================================================== */
-
-
 
 double get_LU_error(magma_int_t M, magma_int_t N, 
-                    cuDoubleComplex *A,  magma_int_t lda, 
-                    cuDoubleComplex *LU, magma_int_t *IPIV)
+                    magmaDoubleComplex *A,  magma_int_t lda, 
+                    magmaDoubleComplex *LU, magma_int_t *IPIV)
 {
     magma_int_t min_mn = min(M,N);
     magma_int_t ione   = 1;
     magma_int_t i, j;
-    cuDoubleComplex alpha = MAGMA_Z_ONE;
-    cuDoubleComplex beta  = MAGMA_Z_ZERO;
-    cuDoubleComplex *L, *U;
+    magmaDoubleComplex alpha = MAGMA_Z_ONE;
+    magmaDoubleComplex beta  = MAGMA_Z_ZERO;
+    magmaDoubleComplex *L, *U;
     double work[1], matnorm, residual;
                        
-    TESTING_MALLOC( L, cuDoubleComplex, M*min_mn);
-    TESTING_MALLOC( U, cuDoubleComplex, min_mn*N);
-    memset( L, 0, M*min_mn*sizeof(cuDoubleComplex) );
-    memset( U, 0, min_mn*N*sizeof(cuDoubleComplex) );
+    TESTING_MALLOC( L, magmaDoubleComplex, M*min_mn);
+    TESTING_MALLOC( U, magmaDoubleComplex, min_mn*N);
+    memset( L, 0, M*min_mn*sizeof(magmaDoubleComplex) );
+    memset( U, 0, min_mn*N*sizeof(magmaDoubleComplex) );
 
     lapackf77_zlaswp( &N, A, &lda, &ione, &min_mn, IPIV, &ione);
     lapackf77_zlacpy( MagmaLowerStr, &M, &min_mn, LU, &lda, L, &M      );
@@ -83,186 +66,128 @@ double get_LU_error(magma_int_t M, magma_int_t N,
 }
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Testing zgetrf
+   -- Testing zgetrf_mgpu
 */
-int main( int argc, char** argv)
+int main( int argc, char** argv )
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    double           flops, gpu_perf, cpu_perf, error;
-    cuDoubleComplex *h_A, *h_R;
-    cuDoubleComplex *d_lA[4];
-    magma_int_t     *ipiv;
-
-    /* Matrix size */
-    magma_int_t M = 0, N = 0, flag = 0, n2, lda, ldda, num_gpus, num_gpus0 = 1, n_local;
-    magma_int_t size[10] = {1024,2048,3072,4032,5184,6016,7040,8064,9088,10112};
-    magma_int_t n_size = 10;
-
-    magma_int_t i, k, info, min_mn, nb0, nb, nk, maxn, ret, ldn_local;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    double           error;
+    magmaDoubleComplex *h_A, *h_R;
+    magmaDoubleComplex *d_lA[ MagmaMaxGPUs ];
+    magma_int_t *ipiv;
+    magma_int_t M, N, n2, lda, ldda, n_local, ngpu;
+    magma_int_t info, min_mn, nb, ldn_local;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
 
-    if (argc != 1){
-        for(i = 1; i<argc; i++){
-            if (strcmp("-N", argv[i])==0) {
-                    N = atoi(argv[++i]);
-                    flag = 1;
-            } else if (strcmp("-M", argv[i])==0) {
-                    M = atoi(argv[++i]);
-                    flag = 1;
-            } else if (strcmp("-NGPU", argv[i])==0)
-                num_gpus0 = atoi(argv[++i]);
-        }
-    }
-    if( flag != 0 ) {
-        if (M>0 && N>0 && num_gpus0>0)
-            printf("  testing_zgetrf_mgpu -M %d -N %d -NGPU %d\n\n", (int) M, (int) N, (int) num_gpus0);
-        else {
-            printf("\nError: \n");
-            printf("  (m, n, num_gpus)=(%d, %d, %d) must be positive.\n\n", (int) M, (int) N, (int) num_gpus0);
-            exit(1);
-        }
-    } else {
-        M = N = size[n_size-1];
-        printf("\nDefault: \n");
-        printf("  testing_zgetrf_mgpu -M %d -N %d -NGPU %d\n\n", (int) M, (int) N, (int) num_gpus0);
-    }
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
 
-    ldda   = ((M+31)/32)*32;
-    maxn   = ((N+31)/32)*32;
-    n2     = M * N;
-    min_mn = min(M, N);
-    nb     = magma_get_zgetrf_nb(M);
-        num_gpus = num_gpus0;
-
-    /* Allocate host memory for the matrix */
-    TESTING_MALLOC(ipiv, magma_int_t, min_mn);
-    TESTING_MALLOC(    h_A, cuDoubleComplex, n2     );
-    TESTING_HOSTALLOC( h_R, cuDoubleComplex, n2     );
-        /* allocate device memory, assuming fixed nb and num_gpus */
-    for(i=0; i<num_gpus; i++){
-          n_local = ((N/nb)/num_gpus)*nb;
-          if (i < (N/nb)%num_gpus)
-            n_local += nb;
-          else if (i == (N/nb)%num_gpus)
-            n_local += N%nb;
-          ldn_local = ((n_local+31)/32)*32;
-      cudaSetDevice(i);
-      //TESTING_DEVALLOC( d_lA[i], cuDoubleComplex, ldda*n_local );
-      TESTING_DEVALLOC( d_lA[i], cuDoubleComplex, ldda*ldn_local );
-    }
-    cudaSetDevice(0);
-    nb0 = nb;
-
-    printf("  M     N   CPU GFlop/s    GPU GFlop/s   ||PA-LU||/(||A||*N)\n");
-    printf("============================================================\n");
-    for(i=0; i<n_size; i++){
-        if (flag == 0){
-              M = N = size[i];
-        }
-            min_mn= min(M, N);
-            lda   = M;
-            n2    = lda*N;
-            ldda  = ((M+31)/32)*32;
-            flops = FLOPS( (double)M, (double)N ) / 1000000;
-
-        /* Initialize the matrix */
-        lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
-        lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
-
-       /* =====================================================================
-           Performs operation using LAPACK
-           =================================================================== */
-        start = get_current_time();
-        lapackf77_zgetrf(&M, &N, h_A, &lda, ipiv, &info);
-        end = get_current_time();
-        if (info < 0) {
-                        printf("Argument %d of zgetrf had an illegal value.\n", (int) -info);
-                        break;
-                } else if (info != 0 ) {
-                        printf("zgetrf returned info=%d.\n", (int) info);
-                        break;
-                }
-        cpu_perf = flops / GetTimerValue(start, end);
-                lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_R, &lda, h_A, &lda );
-
-        /* ====================================================================
-           Performs operation using MAGMA
-           =================================================================== */
-                /* == distributing the matrix == */
-                //cudaSetDevice(0);
-        //cublasSetMatrix( M, N, sizeof(cuDoubleComplex), h_R, lda, d_lA[0], ldda);
-        nb = magma_get_zgetrf_nb(M);
-#ifdef TESTING_ZGETRF_MGPU_CHECK
-                if( nb != nb0 ) {
-                  printf( " different nb used for memory-allocation (%d vs. %d)\n", (int) nb, (int) nb0 );
-                }
-#endif
-        if( num_gpus0 > N/nb ) {
-                  num_gpus = N/nb;
-                  if( N%nb != 0 ) num_gpus ++;
-                  printf( " * too many GPUs for the matrix size, using %d GPUs\n", (int) num_gpus );
-                } else {
-                  num_gpus = num_gpus0;
-                }
-
-                for(int j=0; j<N; j+=nb){
-                  k = (j/nb)%num_gpus;
-                  cudaSetDevice(k);
-                  nk = min(nb, N-j);
-                  magma_zsetmatrix( M, nk,
-                                    h_R+j*lda,                       lda,
-                                    d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda );
-                }
-                cudaSetDevice(0);
-
-                /* == calling MAGMA with multiple GPUs == */
-        start = get_current_time();
-        magma_zgetrf_mgpu( num_gpus, M, N, d_lA, ldda, ipiv, &info);
-        end = get_current_time();
-        gpu_perf = flops / GetTimerValue(start, end);
-        if (info < 0) {
-            printf("Argument %d of magma_zgetrf_mgpu had an illegal value.\n", (int) -info);
-                        break;
-                } else if (info != 0 ) {
-            printf("magma_zgetrf_mgpu returned info=%d.\n", (int) info);
-                        break;
-                }
-                /* == download the matrix from GPUs == */
-                //cudaSetDevice(0);
-                //cublasGetMatrix( M, N, sizeof(cuDoubleComplex), d_lA[0], ldda, h_R, M);
-        for(int j=0; j<N; j+=nb){
-                  k = (j/nb)%num_gpus;
-                  cudaSetDevice(k);
-                  nk = min(nb, N-j);
-                  magma_zgetmatrix( M, nk,
-                                    d_lA[k]+j/(nb*num_gpus)*nb*ldda, ldda,
-                                    h_R+j*lda,                       lda );
-                }
-                cudaSetDevice(0);
-
-        /* =====================================================================
-           Check the factorization
-           =================================================================== */
-        error = get_LU_error(M, N, h_A, lda, h_R, ipiv);
+    printf("ngpu %d\n", opts.ngpu );
+    printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||PA-LU||/(||A||*N)\n");
+    printf("=========================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            M = opts.msize[i];
+            N = opts.nsize[i];
+            min_mn = min(M, N);
+            lda    = M;
+            n2     = lda*N;
+            ldda   = ((M+31)/32)*32;
+            nb     = magma_get_zgetrf_nb( M );
+            gflops = FLOPS_ZGETRF( M, N ) / 1e9;
+            
+            // ngpu must be at least the number of blocks
+            ngpu = min( opts.ngpu, int((N+nb-1)/nb) );
+            if ( ngpu < opts.ngpu ) {
+                printf( " * too many GPUs for the matrix size, using %d GPUs\n", (int) ngpu );
+            }
+            
+            // Allocate host memory for the matrix
+            TESTING_MALLOC(    ipiv, magma_int_t,        min_mn );
+            TESTING_MALLOC(    h_A,  magmaDoubleComplex, n2     );
+            TESTING_HOSTALLOC( h_R,  magmaDoubleComplex, n2     );
+            
+            // Allocate device memory
+            for( int dev=0; dev < ngpu; dev++){
+                n_local = ((N/nb)/ngpu)*nb;
+                if (dev < (N/nb) % ngpu)
+                    n_local += nb;
+                else if (dev == (N/nb) % ngpu)
+                    n_local += N % nb;
+                ldn_local = ((n_local+31)/32)*32;  // TODO why?
+                magma_setdevice( dev );
+                TESTING_DEVALLOC( d_lA[dev], magmaDoubleComplex, ldda*ldn_local );
+            }
         
-        printf("%5d %5d  %6.2f         %6.2f         %e\n",
-               (int) M, (int) N, cpu_perf, gpu_perf, error);
-
-        if (flag != 0)
-            break;
+            /* Initialize the matrix */
+            lapackf77_zlarnv( &ione, ISEED, &n2, h_A );
+            lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
+    
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            if ( opts.lapack ) {
+                cpu_time = magma_wtime();
+                lapackf77_zgetrf( &M, &N, h_A, &lda, ipiv, &info );
+                cpu_time = magma_wtime() - cpu_time;
+                cpu_perf = gflops / cpu_time;
+                if (info != 0)
+                    printf("lapackf77_zgetrf returned error %d: %s.\n",
+                           (int) info, magma_strerror( info ));
+                // restore A for error check
+                lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_R, &lda, h_A, &lda );
+            }
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            magma_zsetmatrix_1D_col_bcyclic( M, N, h_R, lda, d_lA, ldda, ngpu, nb );
+    
+            gpu_time = magma_wtime();
+            magma_zgetrf_mgpu( ngpu, M, N, d_lA, ldda, ipiv, &info );
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflops / gpu_time;
+            if (info != 0)
+                printf("magma_zgetrf_mgpu returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+                       
+            magma_zgetmatrix_1D_col_bcyclic( M, N, d_lA, ldda, h_R, lda, ngpu, nb );
+    
+            /* =====================================================================
+               Check the factorization
+               =================================================================== */
+            if ( opts.lapack ) {
+                printf("%5d %5d  %7.2f (%7.2f)   %7.2f (%7.2f)",
+                       (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time );
+            }
+            else {
+                printf("%5d %5d    ---   (  ---  )   %7.2f (%7.2f)",
+                       (int) M, (int) N, gpu_perf, gpu_time );
+            }
+            if ( opts.check ) {
+                error = get_LU_error( M, N, h_A, lda, h_R, ipiv );
+                printf( "   %8.2e\n", error );
+            }
+            else {
+                printf( "     ---\n" );
+            }
+            
+            TESTING_FREE( ipiv );
+            TESTING_FREE( h_A );
+            TESTING_HOSTFREE( h_R );
+            for( int dev=0; dev < ngpu; dev++ ) {
+                magma_setdevice( dev );
+                TESTING_DEVFREE( d_lA[dev] );
+            }
+        }
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
 
-    /* Memory clean up */
-    TESTING_FREE( ipiv );
-    TESTING_FREE( h_A );
-    TESTING_HOSTFREE( h_R );
-    for(i=0; i<num_gpus0; i++){
-                TESTING_DEVFREE( d_lA[i] );
-        }
-
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
+    TESTING_FINALIZE();
+    return 0;
 }

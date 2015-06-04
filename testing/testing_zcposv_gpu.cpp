@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions mixed zc -> ds
 */
@@ -20,209 +20,176 @@
 #include "testings.h"
 
 #define PRECISION_z
-// Flops formula
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS_POTRF(n)       ( 6.*FMULS_POTRF(n)       + 2.*FADDS_POTRF(n)       )
-#define FLOPS_POTRS(n, nrhs) ( 6.*FMULS_POTRS(n, nrhs) + 2.*FADDS_POTRS(n, nrhs) )
-#else
-#define FLOPS_POTRF(n)       (    FMULS_POTRF(n)       +    FADDS_POTRF(n)       )
-#define FLOPS_POTRS(n, nrhs) (    FMULS_POTRS(n, nrhs) +    FADDS_POTRS(n, nrhs) )
-#endif
 
 int main(int argc, char **argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    double      flopsF, flopsS, gpu_perf;
-    double      gpu_perfdf, gpu_perfds;
-    double      gpu_perfsf, gpu_perfss;
-    double      Rnorm, Anorm;
+    real_Double_t   gflopsF, gflopsS, gpu_perf, gpu_time /*cpu_perf, cpu_time*/;
+    real_Double_t   gpu_perfdf, gpu_perfds;
+    real_Double_t   gpu_perfsf, gpu_perfss;
+    double          Rnorm, Anorm;
     cuDoubleComplex c_one     = MAGMA_Z_ONE;
     cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
     cuDoubleComplex *h_A, *h_B, *h_X;
-    cuDoubleComplex *d_A, *d_B, *d_X, *d_WORKD;
-    cuFloatComplex  *d_As, *d_Bs, *d_WORKS;
+    cuDoubleComplex *d_A, *d_B, *d_X, *d_workd;
+    cuFloatComplex  *d_As, *d_Bs, *d_works;
     double          *h_workd;
     magma_int_t lda, ldb, ldx;
-    magma_int_t i, iter, info, size;
-    magma_int_t N        = 0;
+    magma_int_t N, nrhs, posv_iter, info, size;
     magma_int_t ione     = 1;
-    magma_int_t NRHS     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
-    magma_int_t sizetest[10] = {1024,2048,3072,4032,5184,6016,7040,7520,8064,8192};
-    // const char *uplo = MagmaUpperStr;
-    const char *uplo = MagmaLowerStr;
     
-    if (argc != 1){
-        for(i = 1; i<argc; i++){        
-            if (strcmp("-N", argv[i])==0)
-                N = atoi(argv[++i]);
-            else if (strcmp("-nrhs", argv[i])==0)
-                NRHS = atoi(argv[++i]);
-        }
-        if (N>0) sizetest[0] = sizetest[9] = N;
-        else exit(1);
-    }
-    else {
-        printf("\nUsage: \n");
-        printf("  testing_zcposv_gpu -nrhs %d -N %d\n\n", (int) NRHS, 1024);
-    }
     printf("Epsilon(double): %8.6e\n"
-           "Epsilon(single): %8.6e\n\n", 
+           "Epsilon(single): %8.6e\n\n",
            lapackf77_dlamch("Epsilon"), lapackf77_slamch("Epsilon") );
     
-    N = sizetest[9];
-    ldb = ldx = lda = N ;
-    TESTING_MALLOC( h_A, cuDoubleComplex, lda*N    );
-    TESTING_MALLOC( h_B, cuDoubleComplex, ldb*NRHS );
-    TESTING_MALLOC( h_X, cuDoubleComplex, ldx*NRHS );
-    TESTING_MALLOC( h_workd, double, N );
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
     
-    TESTING_DEVALLOC( d_A,     cuDoubleComplex, lda*N       );
-    TESTING_DEVALLOC( d_B,     cuDoubleComplex, ldb*NRHS    );
-    TESTING_DEVALLOC( d_X,     cuDoubleComplex, ldx*NRHS    );
-    TESTING_DEVALLOC( d_WORKS, cuFloatComplex,  lda*(N+NRHS));
-    TESTING_DEVALLOC( d_WORKD, cuDoubleComplex, N*NRHS      );
-
-    printf("  N   DP-Factor  DP-Solve  SP-Factor  SP-Solve  MP-Solve  ||b-Ax||/||A||  NumIter\n");
-    printf("==================================================================================\n");
-    for(i=0; i<10; i++){
-        N = sizetest[i] ;
-        
-        flopsF = FLOPS_POTRF( (double)N ) / 1000000;
-        flopsS = flopsF + ( FLOPS_POTRS( (double)N, (double)NRHS ) / 1000000 );
-        ldb = ldx = lda = N;
-        
-        /* Initialize the matrix */
-        size = lda * N ;
-        lapackf77_zlarnv( &ione, ISEED, &size, h_A );
-        /* Increase the diagonal (We don't set the matrix as 
-           hermitian since we use only a triangular part) */
-        {
-            magma_int_t i;
-            for(i=0; i<N; i++) {
+    nrhs = opts.nrhs;
+    
+    printf("    N NRHS   DP-Factor  DP-Solve  SP-Factor  SP-Solve  MP-Solve  ||b-Ax||/||A||  Iter\n");
+    printf("=====================================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            N = opts.nsize[i];
+            ldb = ldx = lda = N;
+            gflopsF = FLOPS_ZPOTRF( N ) / 1e9;
+            gflopsS = gflopsF + FLOPS_ZPOTRS( N, nrhs ) / 1e9;
+            
+            TESTING_MALLOC( h_A, cuDoubleComplex, lda*N    );
+            TESTING_MALLOC( h_B, cuDoubleComplex, ldb*nrhs );
+            TESTING_MALLOC( h_X, cuDoubleComplex, ldx*nrhs );
+            TESTING_MALLOC( h_workd, double, N );
+            
+            TESTING_DEVALLOC( d_A,     cuDoubleComplex, lda*N       );
+            TESTING_DEVALLOC( d_B,     cuDoubleComplex, ldb*nrhs    );
+            TESTING_DEVALLOC( d_X,     cuDoubleComplex, ldx*nrhs    );
+            TESTING_DEVALLOC( d_works, cuFloatComplex,  lda*(N+nrhs));
+            TESTING_DEVALLOC( d_workd, cuDoubleComplex, N*nrhs      );
+            
+            /* Initialize the matrix */
+            size = lda * N ;
+            lapackf77_zlarnv( &ione, ISEED, &size, h_A );
+            /* Increase the diagonal (We don't set the matrix as
+               hermitian since we use only a triangular part) */
+            for( int i=0; i<N; i++ ) {
                 MAGMA_Z_SET2REAL( h_A[i*lda+i], ( MAGMA_Z_REAL(h_A[i*lda+i]) + 1.*N ) );
             }
+            
+            size = ldb * nrhs ;
+            lapackf77_zlarnv( &ione, ISEED, &size, h_B );
+            
+            magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
+            magma_zsetmatrix( N, nrhs, h_B, ldb, d_B, ldb );
+            
+            //=====================================================================
+            //              Mixed Precision Iterative Refinement - GPU
+            //=====================================================================
+            gpu_time = magma_wtime();
+            magma_zcposv_gpu(opts.uplo, N, nrhs, d_A, lda, d_B, ldb, d_X, ldx,
+                             d_workd, d_works, &posv_iter, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perf = gflopsS / gpu_time;
+            if (info != 0)
+                printf("magma_zcposv returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            //=====================================================================
+            //                 Error Computation
+            //=====================================================================
+            magma_zgetmatrix( N, nrhs, d_X, ldx, h_X, ldx ) ;
+            
+            Anorm = lapackf77_zlanhe( "I", &opts.uplo, &N, h_A, &N, h_workd);
+            blasf77_zhemm( "L", &opts.uplo, &N, &nrhs,
+                           &c_one,     h_A, &lda,
+                                       h_X, &ldx,
+                           &c_neg_one, h_B, &ldb);
+            Rnorm = lapackf77_zlange( "I", &N, &nrhs, h_B, &ldb, h_workd);
+            
+            //=====================================================================
+            //                 Double Precision Factor
+            //=====================================================================
+            magma_zsetmatrix( N, N, h_A, lda, d_A, lda );
+            
+            gpu_time = magma_wtime();
+            magma_zpotrf_gpu(opts.uplo, N, d_A, lda, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfdf = gflopsF / gpu_time;
+            if (info != 0)
+                printf("magma_zpotrf returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            //=====================================================================
+            //                 Double Precision Solve
+            //=====================================================================
+            magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
+            magma_zsetmatrix( N, nrhs, h_B, ldb, d_B, ldb );
+            
+            gpu_time = magma_wtime();
+            magma_zpotrf_gpu(opts.uplo, N, d_A, lda, &info);
+            magma_zpotrs_gpu(opts.uplo, N, nrhs, d_A, lda, d_B, ldb, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfds = gflopsS / gpu_time;
+            if (info != 0)
+                printf("magma_zpotrs returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            //=====================================================================
+            //                 Single Precision Factor
+            //=====================================================================
+            d_As = d_works;
+            d_Bs = d_works + lda*N;
+            magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
+            magma_zsetmatrix( N, nrhs, h_B, ldb, d_B, ldb );
+            magmablas_zlag2c( N, N,    d_A, lda, d_As, N, &info );
+            magmablas_zlag2c( N, nrhs, d_B, ldb, d_Bs, N, &info );
+            
+            gpu_time = magma_wtime();
+            magma_cpotrf_gpu(opts.uplo, N, d_As, N, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfsf = gflopsF / gpu_time;
+            if (info != 0)
+                printf("magma_cpotrf returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            //=====================================================================
+            //                 Single Precision Solve
+            //=====================================================================
+            magmablas_zlag2c(N, N,    d_A, lda, d_As, N, &info );
+            magmablas_zlag2c(N, nrhs, d_B, ldb, d_Bs, N, &info );
+            
+            gpu_time = magma_wtime();
+            magma_cpotrf_gpu(opts.uplo, N, d_As, lda, &info);
+            magma_cpotrs_gpu(opts.uplo, N, nrhs, d_As, N, d_Bs, N, &info);
+            gpu_time = magma_wtime() - gpu_time;
+            gpu_perfss = gflopsS / gpu_time;
+            if (info != 0)
+                printf("magma_cpotrs returned error %d: %s.\n",
+                       (int) info, magma_strerror( info ));
+            
+            printf("%5d %5d   %7.2f   %7.2f   %7.2f   %7.2f   %7.2f   %8.2e   %3d\n",
+                   (int) N, (int) nrhs,
+                   gpu_perfdf, gpu_perfds, gpu_perfsf, gpu_perfss, gpu_perf,
+                   Rnorm/Anorm, (int) posv_iter );
+            
+            TESTING_FREE( h_A );
+            TESTING_FREE( h_B );
+            TESTING_FREE( h_X );
+            TESTING_FREE( h_workd );
+            
+            TESTING_DEVFREE( d_A );
+            TESTING_DEVFREE( d_B );
+            TESTING_DEVFREE( d_X );
+            TESTING_DEVFREE( d_works );
+            TESTING_DEVFREE( d_workd );
         }
-        
-        size = ldb * NRHS ;
-        lapackf77_zlarnv( &ione, ISEED, &size, h_B );
-      
-        magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
-        magma_zsetmatrix( N, NRHS, h_B, ldb, d_B, ldb );
-    
-        printf("%5d  ", (int) N); fflush(stdout);
-
-        //=====================================================================
-        //              Mixed Precision Iterative Refinement - GPU 
-        //=====================================================================
-        start = get_current_time();
-        magma_zcposv_gpu(uplo[0], N, NRHS, d_A, lda, d_B, ldb, d_X, ldx, 
-                         d_WORKD, d_WORKS, &iter, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_zcposv had an illegal value.\n", (int) -info);
-        gpu_perf = flopsS / GetTimerValue(start, end);
-
-        //=====================================================================
-        //                 Error Computation 
-        //=====================================================================
-        magma_zgetmatrix( N, NRHS, d_X, ldx, h_X, ldx ) ;
-
-        Anorm = lapackf77_zlanhe( "I", uplo, &N, h_A, &N, h_workd);
-        blasf77_zhemm( "L", uplo, &N, &NRHS, 
-                       &c_one,     h_A, &lda,
-                                   h_X, &ldx,
-                       &c_neg_one, h_B, &ldb);
-        Rnorm = lapackf77_zlange( "I", &N, &NRHS, h_B, &ldb, h_workd);
-
-        //=====================================================================
-        //                 Double Precision Factor 
-        //=====================================================================
-        magma_zsetmatrix( N, N, h_A, lda, d_A, lda );
-
-        start = get_current_time();
-        magma_zpotrf_gpu(uplo[0], N, d_A, lda, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_zpotrf had an illegal value.\n", (int) -info);
-        gpu_perfdf = flopsF / GetTimerValue(start, end);
-
-        printf("%6.2f    ", gpu_perfdf); fflush(stdout);
-
-        //=====================================================================
-        //                 Double Precision Solve 
-        //=====================================================================
-        magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
-        magma_zsetmatrix( N, NRHS, h_B, ldb, d_B, ldb );
-    
-        start = get_current_time();
-        magma_zpotrf_gpu(uplo[0], N, d_A, lda, &info);
-        magma_zpotrs_gpu(uplo[0], N, NRHS, d_A, lda, d_B, ldb, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_zpotrs had an illegal value.\n", (int) -info);
-
-        gpu_perfds = flopsS / GetTimerValue(start, end);
-
-        printf("%6.2f    ", gpu_perfds); fflush(stdout);
-
-        //=====================================================================
-        //                 Single Precision Factor 
-        //=====================================================================
-        d_As = d_WORKS;
-        d_Bs = d_WORKS + lda*N;
-        magma_zsetmatrix( N, N,    h_A, lda, d_A, lda );
-        magma_zsetmatrix( N, NRHS, h_B, ldb, d_B, ldb );
-        magmablas_zlag2c( N, N,    d_A, lda, d_As, N, &info ); 
-        magmablas_zlag2c( N, NRHS, d_B, ldb, d_Bs, N, &info );
-
-        start = get_current_time();
-        magma_cpotrf_gpu(uplo[0], N, d_As, N, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_cpotrf had an illegal value.\n", (int) -info);
-
-        gpu_perfsf = flopsF / GetTimerValue(start, end);
-        printf("%6.2f     ", gpu_perfsf); fflush(stdout);
-
-        //=====================================================================
-        //                 Single Precision Solve 
-        //=====================================================================
-        magmablas_zlag2c(N, N,    d_A, lda, d_As, N, &info ); 
-        magmablas_zlag2c(N, NRHS, d_B, ldb, d_Bs, N, &info );
-
-        start = get_current_time();
-        magma_cpotrf_gpu(uplo[0], N, d_As, lda, &info);
-        magma_cpotrs_gpu(uplo[0], N, NRHS, d_As, N, d_Bs, N, &info);
-        end = get_current_time();
-        if (info < 0)
-            printf("Argument %d of magma_cpotrs had an illegal value.\n", (int) -info);
-
-        gpu_perfss = flopsS / GetTimerValue(start, end);
-        printf("%6.2f     ", gpu_perfss); fflush(stdout);
-
-        printf("%6.2f     ", gpu_perf);
-        printf("%e    %3d\n", Rnorm/Anorm, (int) iter); fflush(stdout);
-
-        if( argc != 1 ){
-            break;
-        } 
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
 
-    /* Memory clean up */
-    TESTING_FREE( h_A );
-    TESTING_FREE( h_B );
-    TESTING_FREE( h_X );
-    TESTING_FREE( h_workd );
-    
-    TESTING_DEVFREE( d_A );
-    TESTING_DEVFREE( d_B );
-    TESTING_DEVFREE( d_X );
-    TESTING_DEVFREE( d_WORKS );
-    TESTING_DEVFREE( d_WORKD );
-
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
+    TESTING_FINALIZE();
+    return 0;
 }

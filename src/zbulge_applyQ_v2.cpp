@@ -14,43 +14,129 @@
 
 #include "common_magma.h"
 #include "magma_bulge.h"
+#include "magma_zbulgeinc.h"
 #include <cblas.h>
-// === Define what BLAS to use ============================================
-#define PRECISION_z
 
-// === End defining what BLAS to use ======================================
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define dE(i,j)  (dE+(i) + ldde*(j))
 #define V(j)     (V+(j))
 #define T(j)     (T+(j))
-
-extern "C" void magma_zbulge_applyQ_v2(char side, magma_int_t NE, magma_int_t N, magma_int_t NB, magma_int_t Vblksiz, cuDoubleComplex *dE, magma_int_t ldde, cuDoubleComplex *V, magma_int_t ldv, cuDoubleComplex *T, magma_int_t ldt, magma_int_t *info)
+/***************************************************************************
+ *  Parallel apply Q2 from bulgechasing symetric matrices - static scheduling
+ *  Lower case is treated
+ **/
+    /*
+     * side == magmaLeft:
+     *     meaning apply E = Q*E = (q_1*q_2*.....*q_n) * E ==> so
+     *     traverse Vs in reverse order (forward) from q_n to q_1 Also
+     *     E is splitten by block of col over cores because each apply
+     *     consist in a block of row (horizontal block)
+     */
+    /*
+     * side == magmaRight:
+     *     meaning apply E = E*Q = E * (q_1*q_2*.....*q_n) ==> so
+     *     traverse Vs in normal order (forward) from q_1 to q_n Also
+     *     E is splitten by block of row over core because each apply 
+     *     consist in a block of col (vertical block)
+     */
+/***************************************************************************/
+extern "C" magma_int_t 
+magma_zbulge_applyQ_v2(char side, 
+                        magma_int_t NE, magma_int_t N, 
+                        magma_int_t NB, magma_int_t Vblksiz, 
+                        magmaDoubleComplex *dE, magma_int_t ldde, 
+                        magmaDoubleComplex *V, magma_int_t ldv, 
+                        magmaDoubleComplex *T, magma_int_t ldt, 
+                        magma_int_t *info)
 {
-
     //%===========================
     //%   local variables
     //%===========================
-    magma_int_t rownbm, m, n;
-    magma_int_t st,ed,fst,vlen,vnb,colj;
-    magma_int_t vpos,tpos;
-    magma_int_t cur_blksiz,avai_blksiz, ncolinvolvd;
-    magma_int_t nbgr, colst, coled;
-
+    magma_int_t Vm, Vn, mt, nt;
+    magma_int_t myrow, mycol, blkj, blki;
+    magma_int_t blkid,vpos,tpos;
+    magma_int_t firstrow, nbcolinvolvd;
+    magma_int_t versionL  = 113;
+    magma_int_t versionR  = 92;
+    magma_int_t Vchunksiz = 10;
     *info=0;
 
-    cuDoubleComplex *dwork, *dT, *dV;
-    magma_int_t lddv = NB + Vblksiz + 1;
-    magma_int_t lddt = Vblksiz;
-    magma_int_t ldwork;
-    ldwork  = NE;
-    if(MAGMA_SUCCESS != magma_zmalloc( &dwork, 2*ldwork*Vblksiz + Vblksiz * (lddv+lddt))) {
+    /* Quick return */
+    if ( NE == 0 ) {
+        return MAGMA_SUCCESS;
+    }
+    if ( N == 0 ) {
+        return MAGMA_SUCCESS;
+    }
+    if ( NB == 0 ) {
+        return MAGMA_SUCCESS;
+    }
+    /* ==========================================
+     * some infos for developer 
+     * Initialisation and checking nb of cores
+     * ==========================================*/
+    /* we have 2 algo for left (113 114) and 2 algo for right (91 92)
+     * which correspond to versionL versionR.
+     * They are very similar (detail explained in tech report and matlab code)
+     * however version 114 and 92 improve locality.
+     * while version 113 is used in case WNATZ=1 (construct Q2) which allow 
+     * the construction to be done in an optimized way taking into 
+     * consideration that the matrix is Identity so making less flops.
+     * 
+    */
+
+    // Initialize streaming and events
+    cudaDeviceSynchronize();
+    magma_queue_t cstream;
+    magmablasGetKernelStream(&cstream);
+
+    magma_queue_t stream[2];
+    magma_queue_create( &stream[0] );
+    magma_queue_create( &stream[1] );
+
+    magma_event_t myevent[2];
+    cudaEventCreateWithFlags(&myevent[0],cudaEventDisableTiming);
+    cudaEventCreateWithFlags(&myevent[1],cudaEventDisableTiming);
+
+
+
+    // Azzam 21/11/2012
+    // NOTE THAT dwork was of size 2*lddwork*Vblksiz+...
+    // but I am thinking why not modifing it to lddwork*Vblksiz+...
+    magmaDoubleComplex *dwork, *dT0, *dV0, *dT1, *dV1, *dwvt;
+    magma_int_t lddv = ldv; //NB + Vblksiz - 1;
+    magma_int_t lddt = ldt; // Vblksiz;
+    magma_int_t lddwvt = ldv; 
+
+
+    magma_int_t lddwork = NE;
+    if(MAGMA_SUCCESS != magma_zmalloc( &dwork, 2*lddwork*Vblksiz +  2*Vchunksiz* (Vblksiz* (lddv+lddt)) + lddwvt*Vblksiz )) {
        printf ("!!!!  magma_zbulge_applyQ magma_alloc failed for: dwork\n" );
        exit(-1);
     }
-    dV = dwork + 2*ldwork*Vblksiz;
-    dT = dV + Vblksiz*lddv;
+    dV0 = dwork + 2*lddwork*Vblksiz;
+    dT0 = dV0 + Vchunksiz*Vblksiz*lddv;
+    dV1 = dT0 + Vchunksiz*Vblksiz*lddt;
+    dT1 = dV1 + Vchunksiz*Vblksiz*lddv;
+    dwvt= dT1 + Vchunksiz*Vblksiz*lddt;
+
+
+    // make overlapped copy
+    magma_int_t ncpy = 0;
+    magma_int_t copyed=0, copyst=0;
+    magma_int_t blkcnt,nothing, mysiz, flip, vld,tld, locpos;
+    findVTsiz(N, NB, Vblksiz, &blkcnt, &nothing);
+
+
+
+
+    // performance loss if the reflector are applied to a big number of eigenvectors (~10000)
+    // => apply the reflectors to blocks of eigenvectors.
+    magma_int_t nr_bl = magma_ceildiv(NE,10000);        //nr of blocks
+    magma_int_t sz_bl = magma_ceildiv(NE,nr_bl*64)*64; //maximum size of blocks (to have blocks of around the same size and multiple of 64)
+    magma_int_t ib;                                      //size of current block
 
 
     /* SIDE LEFT  meaning apply E = Q*E = (q_1*q_2*.....*q_n) * E ==> so traverse Vs in reverse order (forward) from q_n to q_1
@@ -58,98 +144,262 @@ extern "C" void magma_zbulge_applyQ_v2(char side, magma_int_t NE, magma_int_t N,
     /* SIDE RIGHT meaning apply E = E*Q = E * (q_1*q_2*.....*q_n) ==> so tarverse Vs in normal  order (forward) from q_1 to q_n
      *            Also E is splitten by col meaning each apply consist in a block of col (vertical block) */
 
+    #ifdef ENABLE_DEBUG
+    printf("  APPLY Q_v22 GPU with  N %d, NE %d,  NB %d, Vblksiz %d, versionL %d versionR %d  SIDE %c \n",
+           N, NE, NB, Vblksiz, versionL, versionR, side);
+    #endif
 
-    printf("  APPLY Q_v2 GPU with  N %d, NE %d,  NB %d, Vblksiz %d, SIDE %c\n",
-           N, NE, NB, Vblksiz, side);
-
+    /*
+     * MagmamaLeft
+     */
     if(side=='L'){
-        rownbm    = magma_ceildiv((N-1),NB);
-        for (m = rownbm; m>0; m--)
-        {
-           ncolinvolvd = min(N-1, m*NB);
-           avai_blksiz=min(Vblksiz,ncolinvolvd);
-           nbgr = magma_ceildiv(ncolinvolvd,avai_blksiz);
-           for (n = nbgr; n>0; n--)
-           {
-               vlen = 0;
-               vnb  = 0;
-               cur_blksiz = min(ncolinvolvd-(n-1)*avai_blksiz, avai_blksiz);
-               colst = (n-1)*avai_blksiz;
-               coled = colst + cur_blksiz -1;
-               fst   = (rownbm -m)*NB+colst +1;
-               for (colj=colst; colj<=coled; colj++)
-               {
-                   st       = (rownbm -m)*NB+colj +1;
-                   ed       = min(st+NB-1,N-1);
-                   if(st>ed)break;
-                   if((st==ed)&&(colj!=N-2))break;
-                   vlen=ed-fst+1;
-                   vnb=vnb+1;
-               }
-               if((vlen>0)&&(vnb>0)){
-                   magma_bulge_findVTpos(N, NB, Vblksiz, colst, fst, ldv, ldt, &vpos, &tpos);
-                   magma_zsetmatrix_async(vlen, vnb, V(vpos), ldv, dV, lddv, NULL);
-                   magma_zsetmatrix_async(vnb,  vnb, T(tpos), ldt, dT, lddt, NULL);
-                   //printf("voici bg %d m %d  vlen %d  vnb %d fcolj %d vpos %d taupos %d \n",bg,m,vlen, vnb,colst+1,vpos+1,taupos+1);
+        /*
+         * Version 113:
+         * loop over the block_col (nt) and for each find the 
+         * number of tiles (mt) in this block_col. then loop over mt, find 
+         * the size of the V's(Vm,Vn) and apply it to the corresponding
+         * portion of E. 
+         */
+        if( versionL == 113 ) {
+            nt  = magma_ceildiv((N-1),Vblksiz);
+            for (blkj=nt-1; blkj>=0; blkj--) {
+                /* the index of the first row on the top of block (blkj) */ 
+                firstrow = blkj * Vblksiz + 1;
+                /*find the number of tile for this block */
+                if( blkj == nt-1 )
+                    mt = magma_ceildiv( N -  firstrow,    NB);
+                else
+                    mt = magma_ceildiv( N - (firstrow+1), NB);
+                /*loop over the tiles find the size of the Vs and apply it */
+                for (blki=mt; blki>0; blki--) {
+                    /*calculate the size of each losange of Vs= (Vm,Vn)*/
+                    myrow     = firstrow + (mt-blki)*NB;
+                    mycol     = blkj*Vblksiz;
+                    Vm = min( NB+Vblksiz-1, N-myrow);
+                    if( ( blkj == nt-1 ) && ( blki == mt ) ){
+                        Vn = min (Vblksiz, Vm);
+                    } else {
+                        Vn = min (Vblksiz, Vm-1);
+                    }
+                    /*calculate the pointer to the Vs and the Ts.
+                     * Note that Vs and Ts have special storage done
+                     * by the bulgechasing function*/
+                    //printf("voici blkj %d blki %d  Vm %d  Vn %d mycol %d vpos %d \n",blkj,blki,Vm, Vn,mycol,vpos);
+                    magma_bulge_findpos113(N, NB, Vblksiz, mycol, myrow, &blkid);
+               
+                    // COPY Vchunksiz Vs and Vchunksiz Ts to GPU and store it in dV0/dV1 and dT0/dT1
+                    if(ncpy==0){
+                        // flip = 1 for this.
+                        copyst = 0;                             // meaning that copy will start copying from blkid =copyst
+                        copyed = min(copyst+Vchunksiz, blkcnt); // meaning that copy will end copying at blkid =copyed-1==> next copy had to start at copyed
+                        mysiz  = copyed-copyst;                 // the size of the chunk to be copied
+                        if(mysiz>0){        
+                            ncpy = 1;
+                            flip = 1;
+                            vpos = copyst*Vblksiz*ldv;
+                            tpos = copyst*Vblksiz*ldt;
+                            vld  = mysiz * ldv;
+                            tld  = mysiz * ldt;
+                            magmablasSetKernelStream(stream[1]);
+                            magma_zsetmatrix_async(vld, Vblksiz, V(vpos), vld, dV1, vld, stream[1]);
+                            magma_zsetmatrix_async(tld, Vblksiz, T(tpos), tld, dT1, tld, stream[1]);
+                            //printf("doing the first copy   of mysiz %2d copyst %2d copyed %2d vpos %8d tpos %8d into dV1 dT1\n",mysiz,copyst,copyed,vpos,tpos);
+                        }
+                    }
+                   
+                    if(blkid == copyst){
+                        flip   = ncpy % 2;
+                        copyst = copyed;                             // meaning that copy will start copying from blkid =copyst
+                        copyed = min(copyst+Vchunksiz, blkcnt); // meaning that copy will end copying at blkid =copyed-1==> next copy had to start at copyed
+                        mysiz  = copyed-copyst;                 // the size of the chunk to be copied
+                        //printf(" get to copy blkid %d blkid+(2*Vchunksiz) %d copyst %d copyed %d\n",blkid,blkid+(Vchunksiz),copyst,copyed);
+                        if(mysiz>0){              
+                            ncpy = ncpy + 1;        
+                            vpos = copyst*Vblksiz*ldv;
+                            tpos = copyst*Vblksiz*ldt;
+                            vld  = mysiz * ldv;
+                            tld  = mysiz * ldt;
+                            if(flip==0){ // now I am working on dV0 so copy the next and put it on dV1
+                                //printf("doing overlapping copy of mysiz %2d copyst %2d copyed %2d vpos %8d tpos %8d into dV1 dT1\n",mysiz,copyst,copyed,vpos,tpos);  
+                                magmablasSetKernelStream(stream[1]);   
+                                magma_zsetmatrix_async(vld, Vblksiz, V(vpos), vld, dV1, vld, stream[1]);
+                                magma_zsetmatrix_async(tld, Vblksiz, T(tpos), tld, dT1, tld, stream[1]);
+                            }else{ // now I am working on dV1 so copy the next and put it on dV0
+                                //printf("doing overlapping copy of mysiz %2d copyst %2d copyed %2d vpos %8d tpos %8d into dV0 dT0\n",mysiz,copyst,copyed,vpos,tpos);   
+                                magmablasSetKernelStream(stream[0]);  
+                                magma_zsetmatrix_async(vld, Vblksiz, V(vpos), vld, dV0, vld, stream[0]);
+                                magma_zsetmatrix_async(tld, Vblksiz, T(tpos), tld, dT0, tld, stream[0]);
+                            }
+                        }
+                    }
 
-                   // performance loss if the reflector are applied to a big number of eigenvectors (~10000)
-                   // => apply the reflectors to blocks of eigenvectors.
-                   magma_int_t nr_bl = magma_ceildiv(NE,10000);        //nr of blocks
-                   magma_int_t sz_bl = magma_ceildiv(NE,nr_bl*64)*64; //maximum size of blocks (to have blocks of around the same size and multiple of 64)
-                   magma_int_t ib;                                      //size of current block
+                    if((Vm>0)&&(Vn>0)){
+                        locpos = blkid%Vchunksiz;
+                        magma_int_t lcvpos   = locpos*Vblksiz*lddv;
+                        magma_int_t lctpos   = locpos*Vblksiz*lddt;
+                        //printf("voici blkj %d blki %d  Vm %d  Vn %d mycol %d locvpos %5d loctpos %5d  blkid %2d  using data in dV%1d dT%1d \n",blkj,blki,Vm, Vn,mycol,lcvpos,lctpos, blkid,flip,flip);
+                        if(flip==0){
+                            magmablasSetKernelStream(stream[0]);
+                            cudaStreamWaitEvent(stream[0], myevent[1], 0);
+                            for(magma_int_t i=0; i<NE; i+= sz_bl){
+                                ib = min(sz_bl, NE-i);
+                                //magma_zlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork, ib);
+                                magma_zlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork, ib, dwvt, Vm);
+                            }
+                            cudaEventRecord(myevent[0], stream[0]);
+                        }else{
+                            magmablasSetKernelStream(stream[1]);
+                            cudaStreamWaitEvent(stream[1], myevent[0], 0);
+                            for(magma_int_t i=0; i<NE; i+= sz_bl){
+                                ib = min(sz_bl, NE-i);
+                                //magma_zlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork, ib);
+                                magma_zlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork, ib, dwvt, Vm);
+                            }
+                            cudaEventRecord(myevent[1], stream[1]);
+                        }
+                    }  // end for (Vm &Vn) > 0   
+                } // end for blki
+            } // end for blkj
+        } // end if version=113
+        /*
+         * Version 114:
+         * loop over the block_row (mt) and for each find diagonally the 
+         * number of tiles (nt) in this block_row. then loop over nt, find 
+         * the size of the V's(Vm,Vn) and apply it to the corresponding
+         * portion of E. 
+         */
+        else {
+            mt    = magma_ceildiv((N-1),NB);
+            for (blki = mt; blki>0; blki--) {
+                /* nbcolinvolvd = number of column corresponding to this block_row (blki) */
+                nbcolinvolvd = min(N-1, blki*NB);
+                /*find the number of tile for this block (diagonal row of tiles) */
+                nt = magma_ceildiv(nbcolinvolvd,Vblksiz);
+                /*loop over the tiles find the size of the Vs and apply it */
+                for (blkj = nt-1; blkj>=0; blkj--) {
+                    /* the index of the first row of the first col meaning 
+                     * the block on the top left (blki) */ 
+                    firstrow = (mt-blki)*NB+1;                
+                    /*calculate the size of each losange of Vs= (Vm,Vn)*/
+                    myrow    = firstrow + blkj*Vblksiz;
+                    mycol    = blkj*Vblksiz;
+                    Vm = min( NB+Vblksiz-1, N-myrow);
+                    if( ( blkj == nt-1 ) && ( blki == mt ) ){
+                        Vn = min (Vblksiz, Vm);
+                    }else{
+                        Vn = min (Vblksiz, Vm-1);
+                    }
 
-                   for(magma_int_t i=0; i<NE; i+= sz_bl){
-                       ib = min(sz_bl, NE-i);
-                       magma_zlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, vlen, ib, vnb, dV, lddv, dT, lddt, dE(fst,i), ldde, dwork, NE);
-                   }
-               }
-           }
-        }
-    }else if (side=='R'){
-         rownbm    = magma_ceildiv((N-1),NB);
-         for (m = 1; m<=rownbm; m++)
-         {
-            ncolinvolvd = min(N-1, m*NB);
-            avai_blksiz=min(Vblksiz,ncolinvolvd);
-            nbgr = magma_ceildiv(ncolinvolvd,avai_blksiz);
-            for (n = 1; n<=nbgr; n++)
-            {
-                vlen = 0;
-                vnb  = 0;
-                cur_blksiz = min(ncolinvolvd-(n-1)*avai_blksiz, avai_blksiz);
-                colst = (n-1)*avai_blksiz;
-                coled = colst + cur_blksiz -1;
-                fst   = (rownbm -m)*NB+colst +1;
-                for (colj=colst; colj<=coled; colj++)
-                {
-                    st       = (rownbm -m)*NB+colj +1;
-                    ed       = min(st+NB-1,N-1);
-                    if(st>ed)break;
-                    if((st==ed)&&(colj!=N-2))break;
-                    vlen=ed-fst+1;
-                    vnb=vnb+1;
-                }
-                magma_bulge_findVTpos(N, NB, Vblksiz ,colst, fst, ldv, ldt, &vpos, &tpos);
-                magma_zsetmatrix_async(vlen, vnb, V(vpos), ldv, dV, lddv, NULL);
-                magma_zsetmatrix_async(vnb,  vnb, T(tpos), ldt, dT, lddt, NULL);
-                if((vlen>0)&&(vnb>0)){
-                   magma_zlarfb_gpu( MagmaRight, MagmaNoTrans, MagmaForward, MagmaColumnwise, NE, vlen, vnb, dV, lddv, dT, lddt, dE(0, fst), ldde, dwork, NE);
+                    if((Vm>0)&&(Vn>0)){
+                    /*calculate the pointer to the Vs and the Ts.
+                     * Note that Vs and Ts have special storage done
+                     * by the bulgechasing function*/
+                        magma_bulge_findVTpos(N, NB, Vblksiz, mycol, myrow, ldv, ldt, &vpos, &tpos);
+                        magma_zsetmatrix_async(Vm, Vn, V(vpos), ldv, dV0, lddv, NULL);
+                        magma_zsetmatrix_async(Vn,  Vn, T(tpos), ldt, dT0, lddt, NULL);
+                        //printf("voici blki %d  rownbm %d mycol %d  coled %d  blkid %d vpos %d  tpos %d\n", blki, rownbm, mycol, coled, blkid, vpos, tpos);
+                        for(magma_int_t i=0; i<NE; i+= sz_bl){
+                            ib = min(sz_bl, NE-i);
+                            magma_zlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0, lddv, dT0, lddt, dE(myrow,i), ldde, dwork, NE);
+                        }
+                    } // end for (Vm &Vn) > 0
+                } // end for blkj
+            } // end for blki
+        } // end version 114
+    } // end LEFT
+    /*
+     * MagmaRight
+     */
+    else {
+        /*
+         * Version 91:
+         */
+        if( versionR == 91 ) {
+            nt  = magma_ceildiv((N-1),Vblksiz);
+            for (blkj=0; blkj<nt; blkj++) {
+                /* the index of the first myrow on the top of block (blkj) */ 
+                firstrow = blkj * Vblksiz + 1;
+                /*find the number of tile for this block */
+                if( blkj == nt-1 )
+                    mt = magma_ceildiv( N -  firstrow,    NB);
+                else
+                    mt = magma_ceildiv( N - (firstrow+1), NB);
+                /*loop over the tiles find the size of the Vs and apply it */
+                for (blki=1; blki<=mt; blki++) {
+                    /*calculate the size of each losange of Vs= (Vm,Vn)*/
+                    myrow  = firstrow + (mt-blki)*NB;
+                    Vm = min( NB+Vblksiz-1, N-myrow);
+                    if( ( blkj == nt-1 ) && ( blki == mt ) )
+                    {
+                        Vn = min (Vblksiz, Vm);
+                    }else{
+                        Vn = min (Vblksiz, Vm-1);
+                    }
+                    mycol     = blkj*Vblksiz;
+                    if((Vm>0)&&(Vn>0)){
+                        /*calculate the pointer to the Vs and the Ts.
+                         * Note that Vs and Ts have special storage done
+                         * by the bulgechasing function*/
+                        magma_bulge_findVTpos(N, NB, Vblksiz ,mycol, myrow, ldv, ldt, &vpos, &tpos);
+                        magma_zsetmatrix_async(Vm, Vn, V(vpos), ldv, dV0, lddv, NULL);
+                        magma_zsetmatrix_async(Vn,  Vn, T(tpos), ldt, dT0, lddt, NULL);
+                        magma_zlarfb_gpu( MagmaRight, MagmaNoTrans, MagmaForward, MagmaColumnwise, NE, Vm, Vn, dV0, lddv, dT0, lddt, dE(0, myrow), ldde, dwork, NE);
+                    } // end for (Vm &Vn) > 0
+                } // end for blki
+            } // end fo blkj
+        } // end of version 91
+        /*
+         * Version 92:
+         */
+        else {
+            mt    = magma_ceildiv((N-1),NB);
+            for (blki = 1; blki<=mt; blki++) {
+                /* nbcolinvolvd = number of column corresponding to this block_row (blki) */
+                nbcolinvolvd = min(N-1, blki*NB);
+                /*find the number of tile for this block (diagonal row of tiles) */
+                nt = magma_ceildiv(nbcolinvolvd,Vblksiz);
+                /*loop over the tiles find the size of the Vs and apply it */
+                for (blkj = 0; blkj<nt; blkj++) {
+                    /* the index of the first row of the first col meaning 
+                     * the block on the top left (blki) */ 
+                    firstrow = (mt-blki)*NB+1;                
+                    /*calculate the size of each losange of Vs= (Vm,Vn)*/
+                    myrow    = firstrow + blkj*Vblksiz;
+                    mycol    = blkj*Vblksiz;
+                    Vm = min( NB+Vblksiz-1, N-myrow);
+                    if( ( blkj == nt-1 ) && ( blki == mt ) ){
+                        Vn = min (Vblksiz, Vm);
+                    }else{
+                        Vn = min (Vblksiz, Vm-1);
+                    }
+                    if((Vm>0)&&(Vn>0)){
+                        /*calculate the pointer to the Vs and the Ts.
+                         * Note that Vs and Ts have special storage done
+                         * by the bulgechasing function*/
+                        magma_bulge_findVTpos(N, NB, Vblksiz ,mycol, myrow, ldv, ldt, &vpos, &tpos);
+                        magma_zsetmatrix_async(Vm, Vn, V(vpos), ldv, dV0, lddv, NULL);
+                        magma_zsetmatrix_async(Vn,  Vn, T(tpos), ldt, dT0, lddt, NULL);
+                        magma_zlarfb_gpu( MagmaRight, MagmaNoTrans, MagmaForward, MagmaColumnwise, NE, Vm, Vn, dV0, lddv, dT0, lddt, dE(0, myrow), ldde, dwork, NE);
+                    } // end for (Vm &Vn) > 0
+                } //end for blkj
+            } // end for blki
+        } //end of version 92
+    } // end RIGHT
 
-               }
-            }
-         }
-    }else{
-            printf("ERROR SIDE %d \n",side);
-    }
 
+    cudaDeviceSynchronize();
+    magmablasSetKernelStream(cstream);        
+    cudaEventDestroy(myevent[0]);
+    cudaEventDestroy(myevent[1]);
+    magma_queue_destroy( stream[0] );
+    magma_queue_destroy( stream[1] );
+
+
+    return MAGMA_SUCCESS;
 }
-#undef E
 #undef V
-#undef TAU
 #undef T
 #undef dE
-#undef dV
-#undef dT
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -103,6 +103,9 @@
 #define FADDS_GEQRF(__m, __n) (((__m) > (__n)) ? ((__n) * ((__n) * (  0.5-(1./3.) * (__n) + (__m))            +  5. / 6.)) \
                                :                 ((__m) * ((__m) * ( -0.5-(1./3.) * (__m) + (__n)) +    (__n) +  5. / 6.)) )
 
+#define FMULS_GEQRT(__m, __n) (0.5 * (__m)*(__n))
+#define FADDS_GEQRT(__m, __n) (0.5 * (__m)*(__n))
+
 #define FMULS_GEQLF(__m, __n) FMULS_GEQRF(__m, __n)
 #define FADDS_GEQLF(__m, __n) FADDS_GEQRF(__m, __n)
 
@@ -157,6 +160,9 @@
                                 :                  ((__m) * ((__m) * (2. * (__n) - 2./3. * (__m) + 2. )         + 20./3.)) )
 #define FADDS_GEBRD(__m, __n) ( ((__m) >= (__n)) ? ((__n) * ((__n) * (2. * (__m) - 2./3. * (__n) + 1. ) - (__m) +  5./3.)) \
                                 :                  ((__m) * ((__m) * (2. * (__n) - 2./3. * (__m) + 1. ) - (__n) +  5./3.)) )
+
+#define FMULS_LARFG(n) (2*n)
+#define FADDS_LARFG(n) (  n)
 
 
 /*******************************************************************************
@@ -259,6 +265,11 @@
 #define FLOPS_DGEQRF(__m, __n) (     FMULS_GEQRF((double)(__m), (double)(__n)) +       FADDS_GEQRF((double)(__m), (double)(__n)) )
 #define FLOPS_SGEQRF(__m, __n) (     FMULS_GEQRF((double)(__m), (double)(__n)) +       FADDS_GEQRF((double)(__m), (double)(__n)) )
 
+#define FLOPS_ZGEQRT(__m, __n) (6. * FMULS_GEQRT((double)(__m), (double)(__n)) + 2.0 * FADDS_GEQRT((double)(__m), (double)(__n)) )
+#define FLOPS_CGEQRT(__m, __n) (6. * FMULS_GEQRT((double)(__m), (double)(__n)) + 2.0 * FADDS_GEQRT((double)(__m), (double)(__n)) )
+#define FLOPS_DGEQRT(__m, __n) (     FMULS_GEQRT((double)(__m), (double)(__n)) +       FADDS_GEQRT((double)(__m), (double)(__n)) )
+#define FLOPS_SGEQRT(__m, __n) (     FMULS_GEQRT((double)(__m), (double)(__n)) +       FADDS_GEQRT((double)(__m), (double)(__n)) )
+
 #define FLOPS_ZGEQLF(__m, __n) (6. * FMULS_GEQLF((double)(__m), (double)(__n)) + 2.0 * FADDS_GEQLF((double)(__m), (double)(__n)) )
 #define FLOPS_CGEQLF(__m, __n) (6. * FMULS_GEQLF((double)(__m), (double)(__n)) + 2.0 * FADDS_GEQLF((double)(__m), (double)(__n)) )
 #define FLOPS_DGEQLF(__m, __n) (     FMULS_GEQLF((double)(__m), (double)(__n)) +       FADDS_GEQLF((double)(__m), (double)(__n)) )
@@ -326,5 +337,10 @@
 #define FLOPS_CGEBRD(__m, __n) (6. * FMULS_GEBRD((double)(__m), (double)(__n)) + 2.0 * FADDS_GEBRD((double)(__m), (double)(__n)) )
 #define FLOPS_DGEBRD(__m, __n) (     FMULS_GEBRD((double)(__m), (double)(__n)) +       FADDS_GEBRD((double)(__m), (double)(__n)) )
 #define FLOPS_SGEBRD(__m, __n) (     FMULS_GEBRD((double)(__m), (double)(__n)) +       FADDS_GEBRD((double)(__m), (double)(__n)) )
+
+#define FLOPS_ZLARFG(n) (6. * FMULS_LARFG((double)n) + 2. * FADDS_LARFG((double)n) )
+#define FLOPS_CLARFG(n) (6. * FMULS_LARFG((double)n) + 2. * FADDS_LARFG((double)n) )
+#define FLOPS_DLARFG(n) (     FMULS_LARFG((double)n) +      FADDS_LARFG((double)n) )
+#define FLOPS_SLARFG(n) (     FMULS_LARFG((double)n) +      FADDS_LARFG((double)n) )
 
 #endif /* _FLOPS_H_ */

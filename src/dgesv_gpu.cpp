@@ -1,31 +1,30 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:02 2012
+       @generated d Fri Jun 28 19:32:09 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_dgesv_gpu( magma_int_t n, magma_int_t nrhs, 
+magma_dgesv_gpu( magma_int_t n, magma_int_t nrhs,
                  double *dA, magma_int_t ldda,
-                 magma_int_t *ipiv, 
-                 double *dB, magma_int_t lddb, 
+                 magma_int_t *ipiv,
+                 double *dB, magma_int_t lddb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     Solves a system of linear equations
        A * X = B
     where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.
@@ -38,7 +37,6 @@ magma_dgesv_gpu( magma_int_t n, magma_int_t nrhs,
 
     Arguments
     =========
-
     N       (input) INTEGER
             The order of the matrix A.  N >= 0.
 

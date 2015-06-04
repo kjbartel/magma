@@ -1,11 +1,12 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @precisions normal z -> c d s
+       @precisions normal z -> s d c
+       @author Mark Gates
 */
 
 // includes, system
@@ -15,171 +16,112 @@
 #include <math.h>
 #include <cuda_runtime_api.h>
 #include <cublas.h>
-#include <cblas.h>
 
 // includes, project
-#include "flops.h"
 #include "magma.h"
 #include "magma_lapack.h"
 #include "testings.h"
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Testing zlacpy
+   -- Testing ztranspose
+   Code is very similar to testing_zsymmetrize.cpp
 */
-#define PRECISION_z
-
-int main( int argc, char** argv) 
+int main( int argc, char** argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
-    cuDoubleComplex c_one  = MAGMA_Z_ONE;
-    
-    magma_timestr_t  start, end;
-    cuDoubleComplex *hA, *hB, *hR, *dA, *dB;
-    double           gpu_time, gpu_perf;
-
+    real_Double_t    gbytes, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    double           error, work[1];
+    magmaDoubleComplex  c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex *h_A, *h_B, *h_R;
+    magmaDoubleComplex *d_A, *d_B;
+    magma_int_t M, N, size, lda, ldb, ldda, lddb;
     magma_int_t ione     = 1;
-    magma_int_t ISEED[4] = {0, 0, 0, 1};
     
-    // groups of tests are:
-    // whole matrix, sub-matrix, around k*64 rows, around k*64 cols,
-    // zero rows, one row, zero cols, one col
-    magma_int_t TESTS_I1[] = {     0,  100,     63,   64,   64,   64,   65,     10,   10,   10,   10,   10,      4,   4,   4,      4,   4,   4,     64,  64,  64,     64,  64,  64 };
-    magma_int_t TESTS_I2[] = {  1000,  500,    511,  511,  512,  513,  513,    900,  900,  900,  900,  900,      4,   4,   4,      5,   5,   5,    127, 128, 129,    255, 256, 257 };
-    magma_int_t TESTS_J1[] = {     0,   50,     10,   10,   10,   10,   10,     63,   64,   64,   64,   65,     64,  64,  64,     64,  64,  64,      4,   4,   4,      4,   4,   4 };
-    magma_int_t TESTS_J2[] = {  1000,  400,    900,  900,  900,  900,  900,    511,  511,  512,  513,  513,    127, 128, 129,    255, 256, 257,      4,   4,   4,      5,   5,   5 };
-    int ntest = sizeof(TESTS_J2) / sizeof(magma_int_t);
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
     
-    magma_int_t n   = 1000;
-    magma_int_t lda = n;
+    printf("    M     N   CPU GByte/s (sec)   GPU GByte/s (sec)   check\n");
+    printf("===========================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            M = opts.msize[i];
+            N = opts.nsize[i];
+            lda    = M;
+            ldb    = lda;
+            ldda   = ((M+31)/32)*32;
+            lddb   = ldda;
+            size   = lda*N;
+            // uplo not yet implemented
+            //if ( opts.uplo == MagmaLower || opts.uplo == MagmaUpper ) {
+            //    // load and save triangle (with diagonal)
+            //    gbytes = sizeof(magmaDoubleComplex) * 1.*N*(N+1) / 1e9;
+            //}
+            //else {
+                // load entire matrix, save entire matrix
+                gbytes = sizeof(magmaDoubleComplex) * 2.*M*N / 1e9;
+            //}
     
-    TESTING_MALLOC   ( hA, cuDoubleComplex, lda*n );
-    TESTING_MALLOC   ( hB, cuDoubleComplex, lda*n );
-    TESTING_MALLOC   ( hR, cuDoubleComplex, lda*n );
-    TESTING_DEVALLOC ( dA, cuDoubleComplex, lda*n );
-    TESTING_DEVALLOC ( dB, cuDoubleComplex, lda*n );
-    
-    // initialize matrices; entries are (i.j) for A and (800 + i.j) for B.
-    double nf = n;
-    for( int i = 0; i < n; ++i ) {
-        for( int j = 0; j < n; ++j ) {
-            hA[i + j*lda] = MAGMA_Z_MAKE( i + j/nf,       0. );
-            hB[i + j*lda] = MAGMA_Z_MAKE( i + j/nf + 800, 0. );
-        }
-    }
-    
-    printf( "\nNote: ranges use Python notation,\n"
-            "i.e., A[i:j] is A[ i, i+1, ..., j-1 ], excluding A[j].\n\n" );
-    for( int t = 0; t < ntest; ++t ) {
-        magma_zsetmatrix( n, n, hA, lda, dA, lda );
-        magma_zsetmatrix( n, n, hB, lda, dB, lda );
-        
-        // copy submatrix
-        int i1 = TESTS_I1[ t ];
-        int i2 = TESTS_I2[ t ];
-        int j1 = TESTS_J1[ t ];
-        int j2 = TESTS_J2[ t ];
-        magmablas_zlacpy( 'F', i2-i1, j2-j1,
-                          &dA[i1 + j1*lda], lda,
-                          &dB[i1 + j1*lda], lda );
-        
-        // verify result
-        int bad_copies = 0;
-        int overwrites = 0;
-        magma_zgetmatrix( n, n, dB, lda, hR, lda );
-        
-        for( int j = 0; j < n; ++j ) {
-            for( int i = 0; i < n; ++i ) {
-                if ( i1 <= i && i < i2 && j1 <= j && j < j2 ) {
-                    if ( ! MAGMA_Z_EQUAL( hR[i + j*lda], hA[i + j*lda] )) {
-                        bad_copies += 1;
-                        printf( "Copy failed at B[%d,%d], expected %.4f, got %.4f\n",
-                                i, j, MAGMA_Z_REAL( hA[i + j*lda] ),
-                                      MAGMA_Z_REAL( hR[i + j*lda] ));
-                    }
-                }
-                else {
-                    if ( ! MAGMA_Z_EQUAL( hR[i + j*lda], hB[i + j*lda] )) {
-                        overwrites += 1;
-                        printf( "Overwrote at B[%d,%d], expected %.4f, got %.4f\n",
-                                i, j, MAGMA_Z_REAL( hA[i + j*lda] ),
-                                      MAGMA_Z_REAL( hR[i + j*lda] ));
-                    }
+            TESTING_MALLOC(   h_A, magmaDoubleComplex, size   );
+            TESTING_MALLOC(   h_B, magmaDoubleComplex, size   );
+            TESTING_MALLOC(   h_R, magmaDoubleComplex, size   );
+            TESTING_DEVALLOC( d_A, magmaDoubleComplex, ldda*N );
+            TESTING_DEVALLOC( d_B, magmaDoubleComplex, ldda*N );
+            
+            /* Initialize the matrix */
+            for( int j = 0; j < N; ++j ) {
+                for( int i = 0; i < M; ++i ) {
+                    h_A[i + j*lda] = MAGMA_Z_MAKE( i + j/10000., j );
+                    h_B[i + j*ldb] = MAGMA_Z_MAKE( i - j/10000. + 10000., j );
                 }
             }
+            
+            /* ====================================================================
+               Performs operation using MAGMA
+               =================================================================== */
+            magma_zsetmatrix( M, N, h_A, lda, d_A, ldda );
+            magma_zsetmatrix( M, N, h_B, ldb, d_B, lddb );
+            
+            gpu_time = magma_sync_wtime( 0 );
+            //magmablas_zlacpy( MagmaUpperLower, M-2, N-2, d_A+1+ldda, ldda, d_B+1+lddb, lddb );  // inset by 1 row & col
+            magmablas_zlacpy( MagmaUpperLower, M, N, d_A, ldda, d_B, lddb );
+            gpu_time = magma_sync_wtime( 0 ) - gpu_time;
+            gpu_perf = gbytes / gpu_time;
+            
+            /* =====================================================================
+               Performs operation using LAPACK
+               =================================================================== */
+            cpu_time = magma_wtime();
+            //magma_int_t M2 = M-2;  // inset by 1 row & col
+            //magma_int_t N2 = N-2;
+            //lapackf77_zlacpy( MagmaUpperLowerStr, &M2, &N2, h_A+1+lda, &lda, h_B+1+ldb, &ldb );
+            lapackf77_zlacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_B, &ldb );
+            cpu_time = magma_wtime() - cpu_time;
+            cpu_perf = gbytes / cpu_time;
+            
+            /* =====================================================================
+               Check the result
+               =================================================================== */
+            magma_zgetmatrix( M, N, d_B, ldda, h_R, lda );
+            
+            blasf77_zaxpy(&size, &c_neg_one, h_B, &ione, h_R, &ione);
+            error = lapackf77_zlange("f", &M, &N, h_R, &lda, work);
+
+            printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %s\n",
+                   (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
+                   (error == 0. ? "okay" : "fail") );
+            
+            TESTING_FREE( h_A );
+            TESTING_FREE( h_B );
+            TESTING_FREE( h_R );
+            TESTING_DEVFREE( d_A );
+            TESTING_DEVFREE( d_B );
         }
-        printf( "B(%4d:%4d, %4d:%4d) = A(%4d:%4d, %4d:%4d) ",
-                i1, i2, j1, j2,
-                i1, i2, j1, j2 );
-        if ( bad_copies > 0 || overwrites > 0 ) {
-            printf( "failed, %d bad copies, %d overwrites\n", bad_copies, overwrites );
-        }
-        else {
-            printf( "passed\n" );
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
         }
     }
-    
-    TESTING_FREE( hA );
-    TESTING_FREE( hB );
-    TESTING_FREE( hR );
-    TESTING_DEVFREE( dA );
-    TESTING_DEVFREE( dB );
-    
-    // --------------------------------------------------
-    // speed tests
-    magma_int_t SIZE[] = {
-        1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840,
-        4096, 4352, 4608, 4864, 5120, 5376, 5632, 5888, 6144, 6400, 6656, 6912,
-        7168, 7424, 7680, 7936, 8192, 8448, 8704, 8960, 9216, 9472, 9728, 9984
-    };
-    magma_int_t nsize = sizeof(SIZE) / sizeof(magma_int_t);
-    
-    printf("\n  N      GPU MB/s (sec)\n");
-    printf("========================================\n");
-    for( int t = 0; t < nsize; ++t ) {
-        n = SIZE[ t ];
-        lda = n;
-        TESTING_MALLOC   ( hA, cuDoubleComplex, lda*n );
-        TESTING_MALLOC   ( hB, cuDoubleComplex, lda*n );
-        TESTING_DEVALLOC ( dA, cuDoubleComplex, lda*n );
-        TESTING_DEVALLOC ( dB, cuDoubleComplex, lda*n );
-        
-        // initialize matrices
-        magma_int_t n2 = lda*n;
-        lapackf77_zlarnv( &ione, ISEED, &n2, hA );
-        lapackf77_zlaset( "F", &n, &n, &c_zero, &c_zero, hB, &lda );
-        magma_zsetmatrix( n, n, hA, lda, dA, lda );
-        magmablas_zlaset( 'F', n, n, /*c_zero,*/ dB, lda );
-        
-        start = get_current_time();
-        magmablas_zlacpy( 'F', n, n, dA, lda, dB, lda );
-        end = get_current_time();
-        
-        // verify copy
-        magma_zgetmatrix( n, n, dB, lda, hB, lda );
-        for( int j = 0; j < n; ++j ) {
-            for( int i = 0; i < n; ++i ) {
-                if ( ! MAGMA_Z_EQUAL( hA[i + j*lda], hB[i + j*lda] )) {
-                    printf( "Copy failed at B[%d,%d], expected %.4f, got %.4f\n",
-                            i, j, MAGMA_Z_REAL( hA[i + j*lda] ),
-                                  MAGMA_Z_REAL( hB[i + j*lda] ));
-                    exit(1);
-                }
-            }
-        }
-        
-        gpu_time = GetTimerValue( start, end ) * 1e-3;
-        gpu_perf = n*n*sizeof(cuDoubleComplex) / 1024. / 1024. / gpu_time;
-        printf( "%5d    %6.2f (%8.6f)\n", (int) n, gpu_perf, gpu_time );
-        
-        TESTING_FREE   ( hA );
-        TESTING_FREE   ( hB );
-        TESTING_DEVFREE( dA );
-        TESTING_DEVFREE( dB );
-    }
-    
-    /* Shutdown */
-    TESTING_CUDA_FINALIZE();
-    return EXIT_SUCCESS;
+
+    TESTING_FINALIZE();
+    return 0;
 }

@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Mark Gates
-       @generated c Wed Nov 14 22:52:29 2012
+       @generated c Fri Jun 28 19:31:32 2013
 */
 #include "common_magma.h"
 
@@ -14,12 +14,12 @@
 // Put 0s in the upper triangular part of a panel and 1s on the diagonal.
 // Stores previous values in work array, to be restored later with cq_to_panel.
 extern "C"
-void cpanel_to_q(char uplo, magma_int_t ib, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *work)
+void cpanel_to_q(char uplo, magma_int_t ib, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *work)
 {
     int i, j, k = 0;
-    cuFloatComplex *col;
-    cuFloatComplex c_zero = MAGMA_C_ZERO;
-    cuFloatComplex c_one  = MAGMA_C_ONE;
+    magmaFloatComplex *col;
+    magmaFloatComplex c_zero = MAGMA_C_ZERO;
+    magmaFloatComplex c_one  = MAGMA_C_ONE;
     
     if (uplo == 'U' || uplo == 'u'){
         for(i = 0; i < ib; ++i){
@@ -54,10 +54,10 @@ void cpanel_to_q(char uplo, magma_int_t ib, cuFloatComplex *A, magma_int_t lda, 
 // -------------------------
 // Restores a panel, after call to cpanel_to_q.
 extern "C"
-void cq_to_panel(char uplo, magma_int_t ib, cuFloatComplex *A, magma_int_t lda, cuFloatComplex *work)
+void cq_to_panel(char uplo, magma_int_t ib, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *work)
 {
     int i, j, k = 0;
-    cuFloatComplex *col;
+    magmaFloatComplex *col;
     
     if (uplo == 'U' || uplo == 'u'){
         for(i = 0; i < ib; ++i){

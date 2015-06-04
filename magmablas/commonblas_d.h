@@ -1,15 +1,15 @@
 /*
- *   -- MAGMA (version 1.3.0) --
- *      Univ. of Tennessee, Knoxville
- *      Univ. of California, Berkeley
- *      Univ. of Colorado, Denver
- *      November 2012
- *
- * @generated d Wed Nov 14 22:53:55 2012
- */
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-#ifndef _COMMONBLAS_D_H_
-#define _COMMONBLAS_D_H_
+       @generated d Fri Jun 28 19:33:21 2013
+*/
+
+#ifndef COMMONBLAS_D_H
+#define COMMONBLAS_D_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,4 +41,4 @@ void magmablas_dgemm_fermi64(char tA, char tB, magma_int_t m, magma_int_t n, mag
 }
 #endif
 
-#endif /* _COMMONBLAS_D_H_ */
+#endif /* COMMONBLAS_D_H */

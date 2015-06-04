@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Mark Gates
        @precisions normal z -> s d c
@@ -18,14 +18,14 @@
 // -------------------------
 // Prints a matrix that is on the CPU host.
 extern "C"
-void magma_zprint( magma_int_t m, magma_int_t n, const cuDoubleComplex *A, magma_int_t lda )
+void magma_zprint( magma_int_t m, magma_int_t n, const magmaDoubleComplex *A, magma_int_t lda )
 {
     if ( magma_is_devptr( A ) == 1 ) {
         fprintf( stderr, "ERROR: zprint called with device pointer.\n" );
         exit(1);
     }
     
-    cuDoubleComplex c_zero = MAGMA_Z_ZERO;
+    magmaDoubleComplex c_zero = MAGMA_Z_ZERO;
     
     if ( m == 1 ) {
         printf( "[ " );
@@ -61,15 +61,15 @@ void magma_zprint( magma_int_t m, magma_int_t n, const cuDoubleComplex *A, magma
 // Internally allocates memory on host, copies it to the host, prints it,
 // and de-allocates host memory.
 extern "C"
-void magma_zprint_gpu( magma_int_t m, magma_int_t n, const cuDoubleComplex *dA, magma_int_t ldda )
+void magma_zprint_gpu( magma_int_t m, magma_int_t n, const magmaDoubleComplex *dA, magma_int_t ldda )
 {
     if ( magma_is_devptr( dA ) == 0 ) {
         fprintf( stderr, "ERROR: zprint_gpu called with host pointer.\n" );
         exit(1);
     }
     
-    int lda = m;
-    cuDoubleComplex* A;
+    magma_int_t lda = m;
+    magmaDoubleComplex* A;
     magma_zmalloc_cpu( &A, lda*n );
     magma_zgetmatrix( m, n, dA, ldda, A, lda );
     magma_zprint( m, n, A, lda );

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -16,7 +16,7 @@
       32x32 block of A.
 */
 
-__global__ void zset_to_zero(cuDoubleComplex *A, int lda)
+__global__ void zset_to_zero(magmaDoubleComplex *A, int lda)
 {
     int ind = blockIdx.x*lda + threadIdx.x;
 
@@ -25,7 +25,7 @@ __global__ void zset_to_zero(cuDoubleComplex *A, int lda)
 //   A[16*lda] = 0.;
 }
 
-__global__ void zset_nbxnb_to_zero(int nb, cuDoubleComplex *A, int lda)
+__global__ void zset_nbxnb_to_zero(int nb, magmaDoubleComplex *A, int lda)
 {
    int ind = blockIdx.x*lda + threadIdx.x, i, j;
 
@@ -38,14 +38,14 @@ __global__ void zset_nbxnb_to_zero(int nb, cuDoubleComplex *A, int lda)
 }
 
 extern "C"
-void zzero_32x32_block(cuDoubleComplex *A, magma_int_t lda)
+void zzero_32x32_block(magmaDoubleComplex *A, magma_int_t lda)
 {
   // zset_to_zero<<< 16, 32, 0, magma_stream >>>(A, lda);
   zset_to_zero<<< 32, 32, 0, magma_stream >>>(A, lda);
 }
 
 extern "C"
-void zzero_nbxnb_block(magma_int_t nb, cuDoubleComplex *A, magma_int_t lda)
+void zzero_nbxnb_block(magma_int_t nb, magmaDoubleComplex *A, magma_int_t lda)
 {
   zset_nbxnb_to_zero<<< 32, 32, 0, magma_stream >>>(nb, A, lda);
 }
@@ -55,7 +55,7 @@ void zzero_nbxnb_block(magma_int_t nb, cuDoubleComplex *A, magma_int_t lda)
 */
 #define zlaset_threads 64
 
-__global__ void zlaset(int m, int n, cuDoubleComplex *A, int lda)
+__global__ void zlaset(int m, int n, magmaDoubleComplex *A, int lda)
 {
    int ibx = blockIdx.x * zlaset_threads;
    int iby = blockIdx.y * 32;
@@ -70,7 +70,7 @@ __global__ void zlaset(int m, int n, cuDoubleComplex *A, int lda)
         A[i*lda] = MAGMA_Z_ZERO;
 }
 
-__global__ void zlaset_identity(int m, int n, cuDoubleComplex *A, int lda)
+__global__ void zlaset_identity(int m, int n, magmaDoubleComplex *A, int lda)
 {
    int ibx = blockIdx.x * zlaset_threads;
    int iby = blockIdx.y * 32;
@@ -89,7 +89,7 @@ __global__ void zlaset_identity(int m, int n, cuDoubleComplex *A, int lda)
      }
 }
 
-__global__ void zlaset_identityonly(int m, int n, cuDoubleComplex *A, int lda)
+__global__ void zlaset_identityonly(int m, int n, magmaDoubleComplex *A, int lda)
 {
    int ibx = blockIdx.x * zlaset_threads;
    int iby = blockIdx.y * 32;
@@ -107,7 +107,7 @@ __global__ void zlaset_identityonly(int m, int n, cuDoubleComplex *A, int lda)
 }
 
 
-__global__ void zlasetlower(int m, int n, cuDoubleComplex *A, int lda)
+__global__ void zlasetlower(int m, int n, magmaDoubleComplex *A, int lda)
 {
    int ibx = blockIdx.x * zlaset_threads;
    int iby = blockIdx.y * 32;
@@ -122,7 +122,7 @@ __global__ void zlasetlower(int m, int n, cuDoubleComplex *A, int lda)
         A[i*lda] = MAGMA_Z_ZERO;
 }
 
-__global__ void zlasetupper(int m, int n, cuDoubleComplex *A, int lda)
+__global__ void zlasetupper(int m, int n, magmaDoubleComplex *A, int lda)
 {
    int ibx = blockIdx.x * zlaset_threads;
    int iby = blockIdx.y * 32;
@@ -143,7 +143,7 @@ __global__ void zlasetupper(int m, int n, cuDoubleComplex *A, int lda)
 */
 extern "C" void
 magmablas_zlaset(char uplo, magma_int_t m, magma_int_t n,
-                 cuDoubleComplex *A, magma_int_t lda)
+                 magmaDoubleComplex *A, magma_int_t lda)
 {
    dim3 threads(zlaset_threads, 1, 1);
    dim3 grid(m/zlaset_threads+(m % zlaset_threads != 0), n/32+(n%32!=0));
@@ -162,7 +162,7 @@ magmablas_zlaset(char uplo, magma_int_t m, magma_int_t n,
 */
 extern "C" void
 magmablas_zlaset_identity(magma_int_t m, magma_int_t n,
-                          cuDoubleComplex *A, magma_int_t lda)
+                          magmaDoubleComplex *A, magma_int_t lda)
 {
    dim3 threads(zlaset_threads, 1, 1);
    dim3 grid(m/zlaset_threads+(m % zlaset_threads != 0), n/32+(n%32!=0));
@@ -176,7 +176,7 @@ magmablas_zlaset_identity(magma_int_t m, magma_int_t n,
 */
 extern "C" void
 magmablas_zlaset_identityonly(magma_int_t m, magma_int_t n,
-                          cuDoubleComplex *A, magma_int_t lda)
+                          magmaDoubleComplex *A, magma_int_t lda)
 {
    dim3 threads(zlaset_threads, 1, 1);
    dim3 grid(m/zlaset_threads+(m % zlaset_threads != 0), n/32+(n%32!=0));
@@ -193,17 +193,17 @@ magmablas_zlaset_identityonly(magma_int_t m, magma_int_t n,
 extern "C"
 double cpu_gpu_zdiff(
     magma_int_t M, magma_int_t N,
-    const cuDoubleComplex *a,  magma_int_t lda,
-    const cuDoubleComplex *da, magma_int_t ldda )
+    const magmaDoubleComplex *a,  magma_int_t lda,
+    const magmaDoubleComplex *da, magma_int_t ldda )
 {
   magma_int_t d_one = 1;
   magma_int_t j;
-  cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+  magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
   double  work[1];
-  cuDoubleComplex *ha = (cuDoubleComplex*)malloc( M * N * sizeof(cuDoubleComplex));
+  magmaDoubleComplex *ha = (magmaDoubleComplex*)malloc( M * N * sizeof(magmaDoubleComplex));
   double res;
 
-  cublasGetMatrix(M, N, sizeof(cuDoubleComplex), da, ldda, ha, M);
+  cublasGetMatrix(M, N, sizeof(magmaDoubleComplex), da, ldda, ha, M);
   for(j=0; j<N; j++)
     blasf77_zaxpy(&M, &c_neg_one, a+j*lda, &d_one, ha+j*M, &d_one);
   res = lapackf77_zlange("f", &M, &N, ha, &M, work);
@@ -216,7 +216,7 @@ double cpu_gpu_zdiff(
  -- GPU kernel for setting 0 in the nb-1 upper subdiagonals and 1 in the diagonal
     @author Raffaele Solca
  */
-__global__ void zsetdiag1subdiag0_L(int k, cuDoubleComplex *A, int lda)
+__global__ void zsetdiag1subdiag0_L(int k, magmaDoubleComplex *A, int lda)
 {
 
   int nb = blockDim.x;
@@ -226,7 +226,7 @@ __global__ void zsetdiag1subdiag0_L(int k, cuDoubleComplex *A, int lda)
 
   A += ind - nb + __mul24((ibx), lda);
 
-  cuDoubleComplex tmp = MAGMA_Z_ZERO;
+  magmaDoubleComplex tmp = MAGMA_Z_ZERO;
   if(threadIdx.x == nb-1)
     tmp = MAGMA_Z_ONE;
 
@@ -243,7 +243,7 @@ __global__ void zsetdiag1subdiag0_L(int k, cuDoubleComplex *A, int lda)
     @author Raffaele Solca
  */
 
-__global__ void zsetdiag1subdiag0_U(int k, cuDoubleComplex *A, int lda)
+__global__ void zsetdiag1subdiag0_U(int k, magmaDoubleComplex *A, int lda)
 {
 
   int nb = blockDim.x;
@@ -253,7 +253,7 @@ __global__ void zsetdiag1subdiag0_U(int k, cuDoubleComplex *A, int lda)
 
   A += ind + __mul24((ibx), lda);
 
-  cuDoubleComplex tmp = MAGMA_Z_ZERO;
+  magmaDoubleComplex tmp = MAGMA_Z_ZERO;
   if(threadIdx.x == 0)
     tmp = MAGMA_Z_ONE;
 
@@ -273,7 +273,7 @@ __global__ void zsetdiag1subdiag0_U(int k, cuDoubleComplex *A, int lda)
  */
 extern "C" void
 magmablas_zsetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
-                 cuDoubleComplex *A, magma_int_t lda, cudaStream_t stream)
+                 magmaDoubleComplex *A, magma_int_t lda, magma_queue_t stream)
 {
   dim3 threads(nb, 1, 1);
   dim3 grid((k-1)/nb+1);
@@ -292,7 +292,7 @@ magmablas_zsetdiag1subdiag0_stream(char uplo, magma_int_t k, magma_int_t nb,
 
 extern "C" void
 magmablas_zsetdiag1subdiag0(char uplo, magma_int_t k, magma_int_t nb,
-                 cuDoubleComplex *A, magma_int_t lda)
+                 magmaDoubleComplex *A, magma_int_t lda)
 {
   magmablas_zsetdiag1subdiag0_stream(uplo, k, nb, A, lda, magma_stream);
 }

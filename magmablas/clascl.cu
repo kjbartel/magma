@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:48 2012
+       @generated c Fri Jun 28 19:33:11 2013
 
 */
 #include "common_magma.h"
@@ -14,7 +14,7 @@
 
 
 __global__ void
-l_clascl (int m, int n, float mul, cuFloatComplex* A, int lda){
+l_clascl (int m, int n, float mul, magmaFloatComplex* A, int lda){
     int ind =  blockIdx.x * clascl_bs + threadIdx.x ;
 
     int break_d = (ind < n)? ind: n-1;
@@ -26,7 +26,7 @@ l_clascl (int m, int n, float mul, cuFloatComplex* A, int lda){
 }
 
 __global__ void
-u_clascl (int m, int n, float mul, cuFloatComplex* A, int lda){
+u_clascl (int m, int n, float mul, magmaFloatComplex* A, int lda){
     int ind =  blockIdx.x * clascl_bs + threadIdx.x ;
 
     A += ind;
@@ -40,7 +40,7 @@ extern "C" void
 magmablas_clascl(char type, magma_int_t kl, magma_int_t ku, 
                  float cfrom, float cto,
                  magma_int_t m, magma_int_t n, 
-                 cuFloatComplex *A, magma_int_t lda, magma_int_t *info )
+                 magmaFloatComplex *A, magma_int_t lda, magma_int_t *info )
 {
     int blocks;
     if (m % clascl_bs==0)

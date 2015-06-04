@@ -1,116 +1,116 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Wed Nov 14 22:53:23 2012
+       @generated c Fri Jun 28 19:32:33 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_cunmtr(char side, char uplo, char trans,
-             magma_int_t m, magma_int_t n, 
-             cuFloatComplex *a,    magma_int_t lda, 
-             cuFloatComplex *tau, 
-             cuFloatComplex *c,    magma_int_t ldc,
-             cuFloatComplex *work, magma_int_t lwork, 
+             magma_int_t m, magma_int_t n,
+             magmaFloatComplex *a,    magma_int_t lda,
+             magmaFloatComplex *tau,
+             magmaFloatComplex *c,    magma_int_t ldc,
+             magmaFloatComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-    Purpose   
-    =======   
-    CUNMTR overwrites the general complex M-by-N matrix C with   
+    Purpose
+    =======
+    CUNMTR overwrites the general complex M-by-N matrix C with
 
-                    SIDE = 'L'     SIDE = 'R'   
-    TRANS = 'N':      Q * C          C * Q   
-    TRANS = 'T':      Q**H * C       C * Q**H   
+                    SIDE = 'L'     SIDE = 'R'
+    TRANS = 'N':      Q * C          C * Q
+    TRANS = 'T':      Q**H * C       C * Q**H
 
-    where Q is a complex orthogonal matrix of order nq, with nq = m if   
-    SIDE = 'L' and nq = n if SIDE = 'R'. Q is defined as the product of   
-    nq-1 elementary reflectors, as returned by SSYTRD:   
+    where Q is a complex orthogonal matrix of order nq, with nq = m if
+    SIDE = 'L' and nq = n if SIDE = 'R'. Q is defined as the product of
+    nq-1 elementary reflectors, as returned by SSYTRD:
 
-    if UPLO = 'U', Q = H(nq-1) . . . H(2) H(1);   
+    if UPLO = 'U', Q = H(nq-1) . . . H(2) H(1);
 
-    if UPLO = 'L', Q = H(1) H(2) . . . H(nq-1).   
+    if UPLO = 'L', Q = H(1) H(2) . . . H(nq-1).
 
-    Arguments   
-    =========   
-    SIDE    (input) CHARACTER*1   
-            = 'L': apply Q or Q**H from the Left;   
-            = 'R': apply Q or Q**H from the Right.   
+    Arguments
+    =========
+    SIDE    (input) CHARACTER*1
+            = 'L': apply Q or Q**H from the Left;
+            = 'R': apply Q or Q**H from the Right.
 
-    UPLO    (input) CHARACTER*1   
-            = 'U': Upper triangle of A contains elementary reflectors   
-                   from SSYTRD;   
-            = 'L': Lower triangle of A contains elementary reflectors   
-                   from SSYTRD.   
+    UPLO    (input) CHARACTER*1
+            = 'U': Upper triangle of A contains elementary reflectors
+                   from SSYTRD;
+            = 'L': Lower triangle of A contains elementary reflectors
+                   from SSYTRD.
 
-    TRANS   (input) CHARACTER*1   
-            = 'N':  No transpose, apply Q;   
-            = 'T':  Transpose, apply Q**H.   
+    TRANS   (input) CHARACTER*1
+            = 'N':  No transpose, apply Q;
+            = 'T':  Transpose, apply Q**H.
 
-    M       (input) INTEGER   
-            The number of rows of the matrix C. M >= 0.   
+    M       (input) INTEGER
+            The number of rows of the matrix C. M >= 0.
 
-    N       (input) INTEGER   
-            The number of columns of the matrix C. N >= 0.   
+    N       (input) INTEGER
+            The number of columns of the matrix C. N >= 0.
 
-    A       (input) COMPLEX array, dimension   
-                                 (LDA,M) if SIDE = 'L'   
-                                 (LDA,N) if SIDE = 'R'   
-            The vectors which define the elementary reflectors, as   
-            returned by SSYTRD.   
+    A       (input) COMPLEX array, dimension
+                                 (LDA,M) if SIDE = 'L'
+                                 (LDA,N) if SIDE = 'R'
+            The vectors which define the elementary reflectors, as
+            returned by SSYTRD.
 
-    LDA     (input) INTEGER   
-            The leading dimension of the array A.   
-            LDA >= max(1,M) if SIDE = 'L'; LDA >= max(1,N) if SIDE = 'R'.   
+    LDA     (input) INTEGER
+            The leading dimension of the array A.
+            LDA >= max(1,M) if SIDE = 'L'; LDA >= max(1,N) if SIDE = 'R'.
 
-    TAU     (input) COMPLEX array, dimension   
-                                 (M-1) if SIDE = 'L'   
-                                 (N-1) if SIDE = 'R'   
-            TAU(i) must contain the scalar factor of the elementary   
-            reflector H(i), as returned by SSYTRD.   
+    TAU     (input) COMPLEX array, dimension
+                                 (M-1) if SIDE = 'L'
+                                 (N-1) if SIDE = 'R'
+            TAU(i) must contain the scalar factor of the elementary
+            reflector H(i), as returned by SSYTRD.
 
-    C       (input/output) COMPLEX array, dimension (LDC,N)   
-            On entry, the M-by-N matrix C.   
-            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.   
+    C       (input/output) COMPLEX array, dimension (LDC,N)
+            On entry, the M-by-N matrix C.
+            On exit, C is overwritten by Q*C or Q**H * C or C * Q**H or C*Q.
 
-    LDC     (input) INTEGER   
-            The leading dimension of the array C. LDC >= max(1,M).   
+    LDC     (input) INTEGER
+            The leading dimension of the array C. LDC >= max(1,M).
 
-    WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))   
-            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.   
+    WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
+            On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
-    LWORK   (input) INTEGER   
-            The dimension of the array WORK.   
-            If SIDE = 'L', LWORK >= max(1,N);   
-            if SIDE = 'R', LWORK >= max(1,M).   
-            For optimum performance LWORK >= N*NB if SIDE = 'L', and   
-            LWORK >= M*NB if SIDE = 'R', where NB is the optimal   
-            blocksize.   
+    LWORK   (input) INTEGER
+            The dimension of the array WORK.
+            If SIDE = 'L', LWORK >= max(1,N);
+            if SIDE = 'R', LWORK >= max(1,M).
+            For optimum performance LWORK >= N*NB if SIDE = 'L', and
+            LWORK >= M*NB if SIDE = 'R', where NB is the optimal
+            blocksize.
 
-            If LWORK = -1, then a workspace query is assumed; the routine   
-            only calculates the optimal size of the WORK array, returns   
-            this value as the first entry of the WORK array, and no error   
-            message related to LWORK is issued.   
+            If LWORK = -1, then a workspace query is assumed; the routine
+            only calculates the optimal size of the WORK array, returns
+            this value as the first entry of the WORK array, and no error
+            message related to LWORK is issued.
 
-    INFO    (output) INTEGER   
-            = 0:  successful exit   
-            < 0:  if INFO = -i, the i-th argument had an illegal value   
+    INFO    (output) INTEGER
+            = 0:  successful exit
+            < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
-   
-    cuFloatComplex c_one = MAGMA_C_ONE;
+
+    magmaFloatComplex c_one = MAGMA_C_ONE;
 
     char side_[2]  = {side, 0};
     char uplo_[2]  = {uplo, 0};
@@ -138,7 +138,7 @@ magma_cunmtr(char side, char uplo, char trans,
         *info = -1;
     } else if (! upper && ! lapackf77_lsame(uplo_, "L")) {
         *info = -2;
-    } else if (! lapackf77_lsame(trans_, "N") && 
+    } else if (! lapackf77_lsame(trans_, "N") &&
                ! lapackf77_lsame(trans_, "C")) {
         *info = -3;
     } else if (m < 0) {
@@ -153,12 +153,12 @@ magma_cunmtr(char side, char uplo, char trans,
         *info = -12;
     }
 
-    if (*info == 0) 
-      {
+    if (*info == 0)
+    {
         nb = 32;
         lwkopt = max(1,nw) * nb;
         MAGMA_C_SET2REAL( work[0], lwkopt );
-      }
+    }
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
@@ -182,17 +182,17 @@ magma_cunmtr(char side, char uplo, char trans,
         ni = n - 1;
     }
 
-    if (upper) 
-      {
+    if (upper)
+    {
         /* Q was determined by a call to SSYTRD with UPLO = 'U' */
         i__2 = nq - 1;
-        //lapackf77_cunmql(side_, trans_, &mi, &ni, &i__2, &a[lda], &lda, 
+        //lapackf77_cunmql(side_, trans_, &mi, &ni, &i__2, &a[lda], &lda,
         //                 tau, c, &ldc, work, &lwork, &iinfo);
         magma_cunmql(side, trans, mi, ni, i__2, &a[lda], lda, tau,
                      c, ldc, work, lwork, &iinfo);
-      }
-    else 
-      {
+    }
+    else
+    {
         /* Q was determined by a call to SSYTRD with UPLO = 'L' */
         if (left) {
             i1 = 1;
@@ -204,7 +204,7 @@ magma_cunmtr(char side, char uplo, char trans,
         i__2 = nq - 1;
         magma_cunmqr(side, trans, mi, ni, i__2, &a[1], lda, tau,
                      &c[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
-      }
+    }
 
     MAGMA_C_SET2REAL( work[0], lwkopt );
 

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2010
+       June 2013
 
-       @generated d Wed Nov 14 22:53:53 2012
+       @generated d Fri Jun 28 19:33:17 2013
        @author Ichitaro Yamazaki
 */
 #include "common_magma.h"
@@ -22,7 +22,7 @@
 //
 extern "C" void 
 magmablas_dgetmatrix_transpose_mgpu(
-                  magma_int_t ngpus, cudaStream_t stream[][2],
+                  magma_int_t ngpus, magma_queue_t stream[][2],
                   double **dat, magma_int_t ldda,
                   double   *ha, magma_int_t lda,
                   double  **db, magma_int_t lddb,

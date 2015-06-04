@@ -1,14 +1,14 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- * @generated s Wed Nov 14 22:54:09 2012
- *
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
+       @generated s Fri Jun 28 19:33:40 2013
+       @author Mark Gates
+*/
+// includes, system
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,232 +16,185 @@
 #include <cuda_runtime_api.h>
 #include <cublas.h>
 
+// includes, project
 #include "flops.h"
 #include "magma.h"
 #include "magma_lapack.h"
 #include "testings.h"
 
-// Flops formula
-#define PRECISION_s
-#if defined(PRECISION_z) || defined(PRECISION_c)
-#define FLOPS(m, n, k) ( 6. * FMULS_GEMM(m, n, k) + 2. * FADDS_GEMM(m, n, k))
-#else
-#define FLOPS(m, n, k) (      FMULS_GEMM(m, n, k) +      FADDS_GEMM(m, n, k))
-#endif
 
+/* ////////////////////////////////////////////////////////////////////////////
+   -- Testing sgemm
+*/
 int main( int argc, char** argv)
 {
-    TESTING_CUDA_INIT();
+    TESTING_INIT();
 
-    magma_timestr_t  start, end;
-    float      flops, magma_perf, cuda_perf, error, work[1];
-    char        transA = MagmaNoTrans;
-    char        transB = MagmaNoTrans;
-
-    magma_int_t istart = 1024;
-    magma_int_t iend   = 6240;
-    magma_int_t M, M0 = 0;
-    magma_int_t N, N0 = 0;
-    magma_int_t K, K0 = 0;
-    magma_int_t i;
+    real_Double_t   gflops, magma_perf, magma_time, cublas_perf, cublas_time, cpu_perf, cpu_time;
+    float          magma_error, cublas_error, Cnorm, work[1];
+    magma_int_t M, N, K;
     magma_int_t Am, An, Bm, Bn;
-    magma_int_t szeA, szeB, szeC;
+    magma_int_t sizeA, sizeB, sizeC;
     magma_int_t lda, ldb, ldc, ldda, lddb, lddc;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     
-    float *h_A, *h_B, *h_C, *h_C2;
+    float *h_A, *h_B, *h_C, *h_Cmagma, *h_Ccublas;
     float *d_A, *d_B, *d_C;
     float c_neg_one = MAGMA_S_NEG_ONE;
     float alpha = MAGMA_S_MAKE(  0.29, -0.86 );
     float beta  = MAGMA_S_MAKE( -0.48,  0.38 );
-
-    if (argc != 1){
-        for(i=1; i<argc; i++){
-            if ( strcmp("-N", argv[i]) == 0 ){
-                N0 = atoi(argv[++i]);
-            }
-            else if ( strcmp("-M", argv[i]) == 0 ){
-                M0 = atoi(argv[++i]);
-            }
-            else if ( strcmp("-K", argv[i]) == 0 ){
-                K0 = atoi(argv[++i]);
-            }
-            else if (strcmp("-NN", argv[i])==0){
-                transA = transB = MagmaNoTrans;
-            }
-            else if (strcmp("-TT", argv[i])==0){
-                transA = transB = MagmaTrans;
-            }
-            else if (strcmp("-NT", argv[i])==0){
-                transA = MagmaNoTrans;
-                transB = MagmaTrans;
-            }
-            else if (strcmp("-TN", argv[i])==0){
-                transA = MagmaTrans;
-                transB = MagmaNoTrans;
-            }
-//#if defined(PRECISION_z) || defined(PRECISION_c)
-            else if (strcmp("-NC", argv[i])==0){
-                transA = MagmaNoTrans;
-                transB = MagmaTrans;
-            }
-            else if (strcmp("-TC", argv[i])==0){
-                transA = MagmaTrans;
-                transB = MagmaTrans;
-            }
-            else if (strcmp("-CN", argv[i])==0){
-                transA = MagmaTrans;
-                transB = MagmaNoTrans;
-            }
-            else if (strcmp("-CT", argv[i])==0){
-                transA = MagmaTrans;
-                transB = MagmaTrans;
-            }
-            else if (strcmp("-CC", argv[i])==0){
-                transA = transB = MagmaTrans;
-            }
-//#endif
-        }
-    }
-
-    if ( (M0 != 0) && (N0 != 0) && (K0 != 0) )
-        iend = istart + 1;
     
-    M = N = K = iend;
-    if ( M0 != 0 ) M = M0;
-    if ( N0 != 0 ) N = N0;
-    if ( K0 != 0 ) K = K0;
+    magma_opts opts;
+    parse_opts( argc, argv, &opts );
     
-    if( transA == MagmaNoTrans ) {
-        Am = M;
-        An = K;
-    }  else {
-        Am = K;
-        An = M;
-    }
-    
-    if( transB == MagmaNoTrans ) {
-        Bm = K;
-        Bn = N;
-    }  else {
-        Bm = N;
-        Bn = K;
-    }
-    
-    lda = ldc = M;
-    ldb = Bm;
-    
-    ldda = lddc = ((M+31)/32)*32;
-    lddb = ((ldb+31)/32)*32;
+    printf("If running lapack (option --lapack), MAGMA and CUBLAS error are both computed\n"
+           "relative to CPU BLAS result. Else, MAGMA error is computed relative to CUBLAS result.\n\n"
+           "transA = %c, transB = %c\n", opts.transA, opts.transB );
+    printf("    M     N     K   MAGMA Gflop/s (ms)  CUBLAS Gflop/s (ms)   CPU Gflop/s (ms)  MAGMA error  CUBLAS error\n");
+    printf("=========================================================================================================\n");
+    for( int i = 0; i < opts.ntest; ++i ) {
+        for( int iter = 0; iter < opts.niter; ++iter ) {
+            M = opts.msize[i];
+            N = opts.nsize[i];
+            K = opts.ksize[i];
+            gflops = FLOPS_SGEMM( M, N, K ) / 1e9;
 
-    K+=32;
-    M+=32;
-    N +=32;
-
-    TESTING_MALLOC( h_A,  float, lda*K );
-    TESTING_MALLOC( h_B,  float, ldb*Bn );
-    TESTING_MALLOC( h_C,  float, ldc*N );
-    TESTING_MALLOC( h_C2, float, ldc*N );
-
-    TESTING_DEVALLOC( d_A, float, ldda*K );
-    TESTING_DEVALLOC( d_B, float, lddb*Bn );
-    TESTING_DEVALLOC( d_C, float, lddc*N );
-
-    printf("\nUsage: \n");
-    printf("  testing_sgemm [-NN|NT|TN|TT] [-N %d] \n\n", 1024);
-
-    printf("Testing transA = %c  transB = %c\n", transA, transB);
-    printf("    M    N    K     MAGMA GFLop/s    CUBLAS GFlop/s       error\n");
-    printf("==================================================================\n");
-    for(i=istart; i<iend; i = (int)(i*1.25) )
-    {
-        M = N = K = i;
-        if ( M0 != 0 ) M = M0;
-        if ( N0 != 0 ) N = N0;
-        if ( K0 != 0 ) K = K0;
-
-        if( transA == MagmaNoTrans ) {
-            lda = Am = M;
-            An = K;
-        }  else {
-            lda = Am = K;
-            An = M;
-        }
-
-        if( transB == MagmaNoTrans ) {
-            ldb = Bm = K;
-            Bn = N;
-        }  else {
-            ldb = Bm = N;
-            Bn = K;
-        }
-        flops = FLOPS( (float)M, (float)N, (float)K ) / 1000000;
-        ldc = M;
-
-        ldda = ((lda+31)/32)*32;
-        lddb = ((ldb+31)/32)*32;
-        lddc = ((ldc+31)/32)*32;
-
-        szeA = lda * An;
-        szeB = ldb * Bn;
-        szeC = ldc * N;
-
-        /* Initialize the matrices */
-        lapackf77_slarnv( &ione, ISEED, &szeA, h_A );
-        lapackf77_slarnv( &ione, ISEED, &szeB, h_B );
-        lapackf77_slarnv( &ione, ISEED, &szeC, h_C );
-        
-        /* =====================================================================
-           Performs operation using MAGMA-BLAS
-           =================================================================== */
-        magma_ssetmatrix( Am, An, h_A, lda, d_A, ldda );
-        magma_ssetmatrix( Bm, Bn, h_B, ldb, d_B, lddb );
-        magma_ssetmatrix( M, N, h_C, ldc, d_C, lddc );
-
-        start = get_current_time();
-        magmablas_sgemm( transA, transB, M, N, K, 
+            if ( opts.transA == MagmaNoTrans ) {
+                lda = Am = M;
+                An = K;
+            } else {
+                lda = Am = K;
+                An = M;
+            }
+            
+            if ( opts.transB == MagmaNoTrans ) {
+                ldb = Bm = K;
+                Bn = N;
+            } else {
+                ldb = Bm = N;
+                Bn = K;
+            }
+            ldc = M;
+            
+            ldda = ((lda+31)/32)*32;
+            lddb = ((ldb+31)/32)*32;
+            lddc = ((ldc+31)/32)*32;
+            
+            sizeA = lda*An;
+            sizeB = ldb*Bn;
+            sizeC = ldc*N;
+            
+            TESTING_MALLOC( h_A,  float, lda*An );
+            TESTING_MALLOC( h_B,  float, ldb*Bn );
+            TESTING_MALLOC( h_C,  float, ldc*N  );
+            TESTING_MALLOC( h_Cmagma,  float, ldc*N  );
+            TESTING_MALLOC( h_Ccublas, float, ldc*N  );
+            
+            TESTING_DEVALLOC( d_A, float, ldda*An );
+            TESTING_DEVALLOC( d_B, float, lddb*Bn );
+            TESTING_DEVALLOC( d_C, float, lddc*N  );
+            
+            /* Initialize the matrices */
+            lapackf77_slarnv( &ione, ISEED, &sizeA, h_A );
+            lapackf77_slarnv( &ione, ISEED, &sizeB, h_B );
+            lapackf77_slarnv( &ione, ISEED, &sizeC, h_C );
+            
+            /* =====================================================================
+               Performs operation using MAGMA-BLAS
+               =================================================================== */
+            magma_ssetmatrix( Am, An, h_A, lda, d_A, ldda );
+            magma_ssetmatrix( Bm, Bn, h_B, ldb, d_B, lddb );
+            magma_ssetmatrix( M, N, h_C, ldc, d_C, lddc );
+            
+            magma_time = magma_sync_wtime( NULL );
+            magmablas_sgemm( opts.transA, opts.transB, M, N, K,
+                             alpha, d_A, ldda,
+                                    d_B, lddb,
+                             beta,  d_C, lddc );
+            magma_time = magma_sync_wtime( NULL ) - magma_time;
+            magma_perf = gflops / magma_time;
+            
+            magma_sgetmatrix( M, N, d_C, lddc, h_Cmagma, ldc );
+            
+            /* =====================================================================
+               Performs operation using CUDA-BLAS
+               =================================================================== */
+            magma_ssetmatrix( M, N, h_C, ldc, d_C, lddc );
+            
+            cublas_time = magma_sync_wtime( NULL );
+            cublasSgemm( opts.transA, opts.transB, M, N, K,
                          alpha, d_A, ldda,
                                 d_B, lddb,
                          beta,  d_C, lddc );
-        end = get_current_time();
-        magma_perf = flops / GetTimerValue(start, end);
-        
-        magma_sgetmatrix( M, N, d_C, lddc, h_C2, ldc );
-        
-        /* =====================================================================
-           Performs operation using CUDA-BLAS
-           =================================================================== */
-        magma_ssetmatrix( M, N, h_C, ldc, d_C, lddc );
-        
-        start = get_current_time();
-        cublasSgemm( transA, transB, M, N, K, 
-                     alpha, d_A, ldda,
-                            d_B, lddb,
-                     beta,  d_C, lddc );
-        end = get_current_time();
-        cuda_perf = flops / GetTimerValue(start, end);
-        
-        magma_sgetmatrix( M, N, d_C, lddc, h_C, ldc );
-        
-        /* =====================================================================
-           Error Computation and Performance Compariosn
-           =================================================================== */
-        blasf77_saxpy(&szeC, &c_neg_one, h_C, &ione, h_C2, &ione);
-        error = lapackf77_slange("M", &M, &N, h_C2, &ldc, work);
-        printf("%5d %5d %5d       %6.2f           %6.2f         %e\n",
-               (int) M, (int) N, (int) K, magma_perf, cuda_perf, error);
+            cublas_time = magma_sync_wtime( NULL ) - cublas_time;
+            cublas_perf = gflops / cublas_time;
+            
+            magma_sgetmatrix( M, N, d_C, lddc, h_Ccublas, ldc );
+            
+            /* =====================================================================
+               Performs operation using CPU BLAS
+               =================================================================== */
+            if ( opts.lapack ) {
+                cpu_time = magma_wtime();
+                blasf77_sgemm( &opts.transA, &opts.transB, &M, &N, &K,
+                               &alpha, h_A, &lda,
+                                       h_B, &ldb,
+                               &beta,  h_C, &ldc );
+                cpu_time = magma_wtime() - cpu_time;
+                cpu_perf = gflops / cpu_time;
+            }
+            
+            /* =====================================================================
+               Check the result
+               =================================================================== */
+            if ( opts.lapack ) {
+                // compute relative error for both magma & cublas, relative to lapack,
+                // |C_magma - C_lapack| / |C_lapack|
+                Cnorm = lapackf77_slange( "M", &M, &N, h_C, &ldc, work );
+                
+                blasf77_saxpy( &sizeC, &c_neg_one, h_C, &ione, h_Cmagma, &ione );
+                magma_error = lapackf77_slange( "M", &M, &N, h_Cmagma, &ldc, work ) / Cnorm;
+                
+                blasf77_saxpy( &sizeC, &c_neg_one, h_C, &ione, h_Ccublas, &ione );
+                cublas_error = lapackf77_slange( "M", &M, &N, h_Ccublas, &ldc, work ) / Cnorm;
+                
+                printf("%5d %5d %5d   %7.2f (%7.2f)    %7.2f (%7.2f)   %7.2f (%7.2f)    %8.2e     %8.2e\n",
+                       (int) M, (int) N, (int) K,
+                       magma_perf,  1000.*magma_time,
+                       cublas_perf, 1000.*cublas_time,
+                       cpu_perf,    1000.*cpu_time,
+                       magma_error, cublas_error );
+            }
+            else {
+                // compute relative error for magma, relative to cublas
+                Cnorm = lapackf77_slange( "M", &M, &N, h_Ccublas, &ldc, work );
+                
+                blasf77_saxpy( &sizeC, &c_neg_one, h_Ccublas, &ione, h_Cmagma, &ione );
+                magma_error = lapackf77_slange( "M", &M, &N, h_Cmagma, &ldc, work ) / Cnorm;
+                
+                printf("%5d %5d %5d   %7.2f (%7.2f)    %7.2f (%7.2f)     ---   (  ---  )    %8.2e     ---\n",
+                       (int) M, (int) N, (int) K,
+                       magma_perf,  1000.*magma_time,
+                       cublas_perf, 1000.*cublas_time,
+                       magma_error );
+            }
+            
+            TESTING_FREE( h_A  );
+            TESTING_FREE( h_B  );
+            TESTING_FREE( h_C  );
+            TESTING_FREE( h_Cmagma  );
+            TESTING_FREE( h_Ccublas );
+            
+            TESTING_DEVFREE( d_A );
+            TESTING_DEVFREE( d_B );
+            TESTING_DEVFREE( d_C );
+        }
+        if ( opts.niter > 1 ) {
+            printf( "\n" );
+        }
     }
 
-    /* Memory clean up */
-    TESTING_FREE( h_A );
-    TESTING_FREE( h_B );
-    TESTING_FREE( h_C );
-    TESTING_FREE( h_C2 );
-
-    TESTING_DEVFREE( d_A );
-    TESTING_DEVFREE( d_B );
-    TESTING_DEVFREE( d_C );
-
-    TESTING_CUDA_FINALIZE();    
+    TESTING_FINALIZE();
+    return 0;
 }

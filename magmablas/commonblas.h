@@ -6,9 +6,4 @@
 #define DSIZE_1SHARED 32
 #define SSIZE_1SHARED 32
 
-#define ZSIZE_2SHARED 16
-#define CSIZE_2SHARED 16
-#define DSIZE_2SHARED 16
-#define SSIZE_2SHARED 32
-
 #endif /* _COMMONBLAS_H_ */

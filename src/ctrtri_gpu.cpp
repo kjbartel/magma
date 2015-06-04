@@ -1,44 +1,29 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:52:58 2012
+       @generated c Fri Jun 28 19:32:05 2013
 
 */
 #include "common_magma.h"
-
-// === Define what BLAS to use ============================================
-#define PRECISION_c
-
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_cgemm magmablas_cgemm
-  #define magma_ctrsm magmablas_ctrsm
-#endif
-
-#if (GPUSHMEM >= 200) && defined(PRECISION_s)
-  #undef  magma_sgemm
-  #define magma_sgemm magmablas_sgemm_fermi80
-#endif
-// === End defining what BLAS to use ======================================
 
 #define dA(i, j) (dA+(j)*ldda + (i))
 
 extern "C" magma_int_t
 magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
-             cuFloatComplex *dA, magma_int_t ldda, magma_int_t *info)
+             magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CTRTRI computes the inverse of a real upper or lower triangular
     matrix dA.
 
@@ -46,7 +31,6 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
 
     Arguments
     =========
-
     UPLO    (input) CHARACTER*1
             = 'U':  A is upper triangular;
             = 'L':  A is lower triangular.
@@ -87,10 +71,10 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
     char uplo_[2] = {uplo, 0};
     char diag_[2] = {diag, 0};
     magma_int_t     nb, nn, j, jb;
-    cuFloatComplex c_zero     = MAGMA_C_ZERO;
-    cuFloatComplex c_one      = MAGMA_C_ONE;
-    cuFloatComplex c_neg_one  = MAGMA_C_NEG_ONE;
-    cuFloatComplex *work;
+    magmaFloatComplex c_zero     = MAGMA_C_ZERO;
+    magmaFloatComplex c_one      = MAGMA_C_ONE;
+    magmaFloatComplex c_neg_one  = MAGMA_C_NEG_ONE;
+    magmaFloatComplex *work;
 
     int upper  = lapackf77_lsame(uplo_, "U");
     int nounit = lapackf77_lsame(diag_, "N");
@@ -132,7 +116,7 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
         return *info;
     }
     
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -144,7 +128,7 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
     else {
         if (upper) {
             /* Compute inverse of upper triangular matrix */
-            for (j=0; j<n; j =j+ nb) {
+            for (j=0; j < n; j += nb) {
                 jb = min(nb, (n-j));
 
                 /* Compute rows 1:j-1 of current block column */
@@ -156,10 +140,6 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
                              MagmaNoTrans, MagmaNonUnit, j, jb,
                              c_neg_one, dA(j,j), ldda, dA(0, j),ldda);
 
-        
-                //cublasGetMatrix(jb ,jb, sizeof(cuFloatComplex),
-                //                dA(j, j), ldda, work, jb);
-
                 magma_cgetmatrix_async( jb, jb,
                                         dA(j, j), ldda,
                                         work,     jb, stream[1] );
@@ -168,9 +148,6 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
 
                 /* Compute inverse of current diagonal block */
                 lapackf77_ctrtri(MagmaUpperStr, diag_, &jb, work, &jb, info);
-
-                //cublasSetMatrix(jb, jb, sizeof(cuFloatComplex),
-                //                work, jb, dA(j, j), ldda);
 
                 magma_csetmatrix_async( jb, jb,
                                         work,     jb,
@@ -195,9 +172,6 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
                                  c_neg_one, dA(j,j), ldda, dA(j+jb, j), ldda);
                 }
 
-                //cublasGetMatrix(jb, jb, sizeof(cuFloatComplex),
-                //               dA(j, j), ldda, work, jb);
-                
                 magma_cgetmatrix_async( jb, jb,
                                         dA(j, j), ldda,
                                         work,     jb, stream[1] );
@@ -207,9 +181,6 @@ magma_ctrtri_gpu(char uplo, char diag, magma_int_t n,
                 /* Compute inverse of current diagonal block */
                 lapackf77_ctrtri(MagmaLowerStr, diag_, &jb, work, &jb, info);
         
-                //cublasSetMatrix(jb, jb, sizeof(cuFloatComplex),
-                //                work, jb, dA(j, j), ldda);
-
                 magma_csetmatrix_async( jb, jb,
                                         work,     jb,
                                         dA(j, j), ldda, stream[0] );

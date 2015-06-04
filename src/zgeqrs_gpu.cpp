@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -12,17 +12,17 @@
 
 extern "C" magma_int_t
 magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
-                 cuDoubleComplex *dA,    magma_int_t ldda, 
-                 cuDoubleComplex *tau,   cuDoubleComplex *dT, 
-                 cuDoubleComplex *dB,    magma_int_t lddb, 
-                 cuDoubleComplex *hwork, magma_int_t lwork, 
+                 magmaDoubleComplex *dA,    magma_int_t ldda,
+                 magmaDoubleComplex *tau,   magmaDoubleComplex *dT,
+                 magmaDoubleComplex *dB,    magma_int_t lddb,
+                 magmaDoubleComplex *hwork, magma_int_t lwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -59,11 +59,11 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
 
     DT      (input) COMPLEX_16 array that is the output (the 6th argument)
             of magma_zgeqrf_gpu of size
-            2*MIN(M, N)*NB + ((N+31)/32*32 )* MAX(NB, NRHS). 
-            The array starts with a block of size MIN(M,N)*NB that stores 
-            the triangular T matrices used in the QR factorization, 
-            followed by MIN(M,N)*NB block storing the diagonal block 
-            inverses for the R matrix, followed by work space of size 
+            2*MIN(M, N)*NB + ((N+31)/32*32 )* MAX(NB, NRHS).
+            The array starts with a block of size MIN(M,N)*NB that stores
+            the triangular T matrices used in the QR factorization,
+            followed by MIN(M,N)*NB block storing the diagonal block
+            inverses for the R matrix, followed by work space of size
             ((N+31)/32*32 )* MAX(NB, NRHS).
 
     LDDB    (input) INTEGER
@@ -73,9 +73,9 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
     LWORK   (input) INTEGER
-            The dimension of the array WORK, LWORK >= max(1,NRHS).
-            For optimum performance LWORK >= (M-N+NB)*(NRHS + 2*NB), where 
-            NB is the blocksize given by magma_get_zgeqrf_nb( M ).
+            The dimension of the array WORK,
+            LWORK >= (M - N + NB)*(NRHS + NB) + NRHS*NB,
+            where NB is the blocksize given by magma_get_zgeqrf_nb( M ).
 
             If LWORK = -1, then a workspace query is assumed; the routine
             only calculates the optimal size of the HWORK array, returns
@@ -86,18 +86,18 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
 
-   #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
-   #define d_ref(a_1)     (dT+(lddwork+(a_1))*nb)
+    #define a_ref(a_1,a_2) (dA+(a_2)*(ldda) + (a_1))
+    #define d_ref(a_1)     (dT+(lddwork+(a_1))*nb)
 
-    cuDoubleComplex c_zero    = MAGMA_Z_ZERO;
-    cuDoubleComplex c_one     = MAGMA_Z_ONE;
-    cuDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
-    cuDoubleComplex *dwork;
+    magmaDoubleComplex c_zero    = MAGMA_Z_ZERO;
+    magmaDoubleComplex c_one     = MAGMA_Z_ONE;
+    magmaDoubleComplex c_neg_one = MAGMA_Z_NEG_ONE;
+    magmaDoubleComplex *dwork;
     magma_int_t i, k, lddwork, rows, ib;
     magma_int_t ione = 1;
 
     magma_int_t nb     = magma_get_zgeqrf_nb(m);
-    magma_int_t lwkopt = (m-n+nb)*(nrhs+2*nb);
+    magma_int_t lwkopt = (m - n + nb)*(nrhs + nb) + nrhs*nb;
     int lquery = (lwork == -1);
 
     hwork[0] = MAGMA_Z_MAKE( (double)lwkopt, 0. );
@@ -112,9 +112,9 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     else if (ldda < max(1,m))
         *info = -5;
     else if (lddb < max(1,m))
-        *info = -8;
+        *info = -9;
     else if (lwork < lwkopt && ! lquery)
-        *info = -10;
+        *info = -11;
 
     if (*info != 0) {
         magma_xerbla( __func__, -(*info) );
@@ -130,9 +130,9 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     }
 
     /* B := Q' * B */
-    magma_zunmqr_gpu( MagmaLeft, MagmaConjTrans, 
+    magma_zunmqr_gpu( MagmaLeft, MagmaConjTrans,
                       m, nrhs, n,
-                      a_ref(0,0), ldda, tau, 
+                      a_ref(0,0), ldda, tau,
                       dB, lddb, hwork, lwork, dT, nb, info );
     if ( *info != 0 ) {
         return *info;
@@ -156,30 +156,30 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
     // Seems this data should already be on the GPU, so could switch to
     // magma_ztrsm and drop the zsetmatrix.
     if ( nrhs == 1 ) {
-        blasf77_ztrsv( MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr, 
-                       &ib, hwork,         &rows, 
+        blasf77_ztrsv( MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr,
+                       &ib, hwork,         &rows,
                             hwork+rows*ib, &ione);
     } else {
-        blasf77_ztrsm( MagmaLeftStr, MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr, 
-                       &ib, &nrhs, 
-                       &c_one, hwork,         &rows, 
+        blasf77_ztrsm( MagmaLeftStr, MagmaUpperStr, MagmaNoTransStr, MagmaNonUnitStr,
+                       &ib, &nrhs,
+                       &c_one, hwork,         &rows,
                                hwork+rows*ib, &rows);
     }
-      
+    
     // update the solution vector
     magma_zsetmatrix( ib, nrhs, hwork+rows*ib, rows, dwork+i, lddwork );
 
     // update c
     if (nrhs == 1)
-        magma_zgemv( MagmaNoTrans, i, ib, 
+        magma_zgemv( MagmaNoTrans, i, ib,
                      c_neg_one, a_ref(0, i), ldda,
-                                dwork + i,   1, 
+                                dwork + i,   1,
                      c_one,     dB,           1);
     else
-        magma_zgemm( MagmaNoTrans, MagmaNoTrans, 
-                     i, nrhs, ib, 
+        magma_zgemm( MagmaNoTrans, MagmaNoTrans,
+                     i, nrhs, ib,
                      c_neg_one, a_ref(0, i), ldda,
-                                dwork + i,   lddwork, 
+                                dwork + i,   lddwork,
                      c_one,     dB,           lddb);
 
     int start = i-nb;
@@ -189,30 +189,28 @@ magma_zgeqrs_gpu(magma_int_t m, magma_int_t n, magma_int_t nrhs,
             rows = m -i;
 
             if (i + ib < n) {
-                if (nrhs == 1)
-                    {
-                        magma_zgemv( MagmaNoTrans, ib, ib, 
-                                     c_one,  d_ref(i), ib,
-                                             dB+i,      1, 
-                                     c_zero, dwork+i,  1);
-                        magma_zgemv( MagmaNoTrans, i, ib, 
-                                     c_neg_one, a_ref(0, i), ldda,
-                                                dwork + i,   1, 
-                                     c_one,     dB,           1);
-                    }
-                else
-                    {
-                        magma_zgemm( MagmaNoTrans, MagmaNoTrans, 
-                                     ib, nrhs, ib, 
-                                     c_one,  d_ref(i), ib,
-                                             dB+i,      lddb, 
-                                     c_zero, dwork+i,  lddwork);
-                        magma_zgemm( MagmaNoTrans, MagmaNoTrans, 
-                                     i, nrhs, ib, 
-                                     c_neg_one, a_ref(0, i), ldda,
-                                                dwork + i,   lddwork, 
-                                     c_one,     dB,          lddb);
-                    }
+                if (nrhs == 1) {
+                    magma_zgemv( MagmaNoTrans, ib, ib,
+                                 c_one,  d_ref(i), ib,
+                                         dB+i,      1,
+                                 c_zero, dwork+i,  1);
+                    magma_zgemv( MagmaNoTrans, i, ib,
+                                 c_neg_one, a_ref(0, i), ldda,
+                                            dwork + i,   1,
+                                 c_one,     dB,           1);
+                }
+                else {
+                    magma_zgemm( MagmaNoTrans, MagmaNoTrans,
+                                 ib, nrhs, ib,
+                                 c_one,  d_ref(i), ib,
+                                         dB+i,      lddb,
+                                 c_zero, dwork+i,  lddwork);
+                    magma_zgemm( MagmaNoTrans, MagmaNoTrans,
+                                 i, nrhs, ib,
+                                 c_neg_one, a_ref(0, i), ldda,
+                                            dwork + i,   lddwork,
+                                 c_one,     dB,          lddb);
+                }
             }
         }
     }

@@ -1,35 +1,33 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:14 2012
+       @generated c Fri Jun 28 19:32:23 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_cgelqf( magma_int_t m, magma_int_t n, 
-              cuFloatComplex *a,    magma_int_t lda,   cuFloatComplex *tau, 
-              cuFloatComplex *work, magma_int_t lwork, magma_int_t *info)
+magma_cgelqf( magma_int_t m, magma_int_t n,
+              magmaFloatComplex *a,    magma_int_t lda,   magmaFloatComplex *tau,
+              magmaFloatComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CGELQF computes an LQ factorization of a COMPLEX M-by-N matrix A:
     A = L * Q.
 
     Arguments
     =========
-
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -77,7 +75,6 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(k) . . . H(2) H(1), where k = min(m,n).
@@ -93,8 +90,8 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
 
     #define  a_ref(a_1,a_2) ( a+(a_2)*(lda) + (a_1))
 
-    cuFloatComplex *dA, *dAT;
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    magmaFloatComplex *dA, *dAT;
+    magmaFloatComplex c_one = MAGMA_C_ONE;
     magma_int_t maxm, maxn, maxdim, nb;
     magma_int_t iinfo, ldda;
     int lquery;
@@ -143,7 +140,7 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
 
             magma_csetmatrix( m, n, a, lda, dA, ldda );
             dAT = dA;
-            magmablas_cinplace_transpose( dAT, ldda, ldda );
+            magmablas_ctranspose_inplace( ldda, dAT, ldda );
         }
     else
         {
@@ -162,8 +159,8 @@ magma_cgelqf( magma_int_t m, magma_int_t n,
 
     magma_cgeqrf2_gpu(n, m, dAT, ldda, tau, &iinfo);
 
-    if (maxdim*maxdim< 2*maxm*maxn){
-        magmablas_cinplace_transpose( dAT, ldda, ldda );
+    if (maxdim*maxdim < 2*maxm*maxn) {
+        magmablas_ctranspose_inplace( ldda, dAT, ldda );
         magma_cgetmatrix( m, n, dA, ldda, a, lda );
     } else {
         magmablas_ctranspose2( dA, maxm, dAT, ldda, n, m );

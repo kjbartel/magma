@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal d -> s
        
@@ -107,7 +107,7 @@ void magma_dlarfg_kernel( int n, double* dx0, double* dx, int incx, double* dtau
 // Stores beta over dx0.
 // Stores tau.
 extern "C"
-void magma_dlarfg( int n, double* dx0, double* dx, int incx, double* dtau )
+void magma_dlarfg( magma_int_t n, double* dx0, double* dx, magma_int_t incx, double* dtau )
 {
     dim3 blocks( 1 );
     dim3 threads( BLOCK_SIZE );

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Stan Tomov
        @author Mark Gates
@@ -22,11 +22,11 @@ magma_dsyevd(char jobz, char uplo,
              magma_int_t *iwork, magma_int_t liwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -77,9 +77,9 @@ magma_dsyevd(char jobz, char uplo,
 
     LWORK   (input) INTEGER
             The length of the array WORK.
-            If N <= 1,                LWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LWORK must be at least 2*N + N*NB.
-            If JOBZ  = 'V' and N > 1, LWORK must be at least 1 + 6*N + 2*N**2.
+            If N <= 1,                LWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LWORK >= 2*N + N*NB.
+            If JOBZ  = 'V' and N > 1, LWORK >= max( 2*N + N*NB, 1 + 6*N + 2*N**2 ).
             NB can be obtained through magma_get_dsytrd_nb(N).
 
             If LWORK = -1, then a workspace query is assumed; the routine
@@ -93,9 +93,9 @@ magma_dsyevd(char jobz, char uplo,
 
     LIWORK  (input) INTEGER
             The dimension of the array IWORK.
-            If N <= 1,                LIWORK must be at least 1.
-            If JOBZ  = 'N' and N > 1, LIWORK must be at least 1.
-            If JOBZ  = 'V' and N > 1, LIWORK must be at least 3 + 5*N.
+            If N <= 1,                LIWORK >= 1.
+            If JOBZ  = 'N' and N > 1, LIWORK >= 1.
+            If JOBZ  = 'V' and N > 1, LIWORK >= 3 + 5*N.
 
             If LIWORK = -1, then a workspace query is assumed; the
             routine only calculates the optimal sizes of the WORK and
@@ -128,7 +128,7 @@ magma_dsyevd(char jobz, char uplo,
     magma_int_t ione = 1;
     magma_int_t izero = 0;
     double d_one = 1.;
-    
+
     double d__1;
 
     double eps;
@@ -151,12 +151,12 @@ magma_dsyevd(char jobz, char uplo,
 
     double* dwork;
 
-    wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
+    wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || liwork == -1;
 
     *info = 0;
-    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
+    if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -1;
     } else if (! (lower || lapackf77_lsame(uplo_, MagmaUpperStr))) {
         *info = -2;
@@ -172,7 +172,7 @@ magma_dsyevd(char jobz, char uplo,
         liwmin = 1;
     }
     else if ( wantz ) {
-        lwmin  = 1 + 6*n + 2*n*n;
+        lwmin  = max( 2*n + n*nb, 1 + 6*n + 2*n*n );
         liwmin = 3 + 5*n;
     }
     else {
@@ -244,7 +244,7 @@ magma_dsyevd(char jobz, char uplo,
     llwork = lwork - indwrk;
     llwrk2 = lwork - indwk2;
 
-//#define ENABLE_TIMER
+//
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;
     start = get_current_time();
@@ -252,7 +252,7 @@ magma_dsyevd(char jobz, char uplo,
 
     magma_dsytrd(uplo, n, a, lda, w, &work[inde],
                  &work[indtau], &work[indwrk], llwork, &iinfo);
-    
+
 #ifdef ENABLE_TIMER
     end = get_current_time();
     printf("time dsytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
@@ -269,28 +269,27 @@ magma_dsyevd(char jobz, char uplo,
 #ifdef ENABLE_TIMER
         start = get_current_time();
 #endif
-        
+
         if (MAGMA_SUCCESS != magma_dmalloc( &dwork, 3*n*(n/2 + 1) )) {
             *info = MAGMA_ERR_DEVICE_ALLOC;
             return *info;
         }
-        
+
         magma_dstedx('A', n, 0., 0., 0, 0, w, &work[inde],
                      &work[indwrk], n, &work[indwk2],
                      llwrk2, iwork, liwork, dwork, info);
-        
+
         magma_free( dwork );
-        
+
 #ifdef ENABLE_TIMER
         end = get_current_time();
         printf("time dstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
-        
         start = get_current_time();
 #endif
 
         magma_dormtr(MagmaLeft, uplo, MagmaNoTrans, n, n, a, lda, &work[indtau],
                      &work[indwrk], n, &work[indwk2], llwrk2, &iinfo);
-        
+
         lapackf77_dlacpy("A", &n, &n, &work[indwrk], &n, a, &lda);
 
 #ifdef ENABLE_TIMER

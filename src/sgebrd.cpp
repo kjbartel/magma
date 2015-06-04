@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:34 2012
+       @generated s Fri Jun 28 19:32:50 2013
 
 */
 #include "common_magma.h"
@@ -13,25 +13,18 @@
 #define A(i, j)  (a + (j)*lda  + (i))
 #define dA(i, j) (da+ (j)*ldda + (i))
 
-// === Define what BLAS to use ============================================
-#define PRECISION_s
-#if (defined(PRECISION_s) || defined(PRECISION_d))
-  #define magma_sgemm magmablas_sgemm
-#endif
-// === End defining what BLAS to use ======================================
-
 extern "C" magma_int_t
 magma_sgebrd(magma_int_t m, magma_int_t n,
              float *a, magma_int_t lda, float *d, float *e,
-             float *tauq, float *taup, 
-             float *work, magma_int_t lwork, 
+             float *tauq, float *taup,
+             float *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -190,7 +183,7 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
     if (MAGMA_SUCCESS != magma_smalloc( &da, n*ldda + (m + n)*nb )) {
         fprintf (stderr, "!!!! device memory allocation error in sgebrd\n" );
         *info = MAGMA_ERR_DEVICE_ALLOC;
-        return *info; 
+        return *info;
     }
     dwork = da + (n)*ldda;
 
@@ -238,14 +231,14 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
                           work  + (ldwrkx+1)*nb, ldwrky,
                           dwork + (ldwrkx+1)*nb, ldwrky );
 
-        magma_sgemm( MagmaNoTrans, MagmaTrans, 
-                     nrow, ncol, nb, 
+        magma_sgemm( MagmaNoTrans, MagmaTrans,
+                     nrow, ncol, nb,
                      c_neg_one, dA(i+nb, i   ),      ldda,
                                 dwork+(ldwrkx+1)*nb, ldwrky,
                      c_one,     dA(i+nb, i+nb),      ldda);
 
-        magma_sgemm( MagmaNoTrans, MagmaNoTrans, 
-                     nrow, ncol, nb, 
+        magma_sgemm( MagmaNoTrans, MagmaNoTrans,
+                     nrow, ncol, nb,
                      c_neg_one, dwork+nb,         ldwrkx,
                                 dA( i,    i+nb ), ldda,
                      c_one,     dA( i+nb, i+nb ), ldda);
@@ -274,7 +267,7 @@ magma_sgebrd(magma_int_t m, magma_int_t n,
         magma_sgetmatrix( nrow, ncol, dA(i, i), ldda, A(i, i), lda );
     }
     
-    lapackf77_sgebrd( &nrow, &ncol, 
+    lapackf77_sgebrd( &nrow, &ncol,
                       A(i, i), &lda, d+i, e+i,
                       tauq+i, taup+i, work, &lwork, &iinfo);
     work[0] = MAGMA_S_MAKE( lwkopt, 0. );

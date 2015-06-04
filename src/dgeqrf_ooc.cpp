@@ -1,26 +1,26 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated d Wed Nov 14 22:53:16 2012
+       @generated d Fri Jun 28 19:32:25 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_dgeqrf_ooc(magma_int_t m, magma_int_t n, 
-                 double *a,    magma_int_t lda, double *tau, 
+magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
+                 double *a,    magma_int_t lda, double *tau,
                  double *work, magma_int_t lwork,
                  magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -132,7 +132,7 @@ magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
     NB = (NB / nb) * nb;
 
     if (NB >= n)
-      return magma_dgeqrf(m, n, a, lda, tau, work, lwork, info);
+        return magma_dgeqrf(m, n, a, lda, tau, work, lwork, info);
 
     k = min(m,n);
     if (k == 0) {
@@ -148,7 +148,7 @@ magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -158,8 +158,7 @@ magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
     dwork = da + ldda*(NB + nb);
 
     /* start the main loop over the blocks that fit in the GPU memory */
-    for(int i=0; i<n; i+=NB)
-      { 
+    for(int i=0; i<n; i+=NB) {
         IB = min(n-i, NB);
         //printf("Processing %5d columns -- %5d to %5d ... \n", IB, i, i+IB);
 
@@ -170,8 +169,7 @@ magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
         magma_queue_sync( stream[0] );
 
         /* 2. Update it with the previous transformations */
-        for(int j=0; j<min(i,k); j+=nb)
-          {
+        for(int j=0; j<min(i,k); j+=nb) {
             magma_int_t ib = min(k-j, nb);
 
             /* Get a panel in ptr.                                           */
@@ -200,17 +198,17 @@ magma_dgeqrf_ooc(magma_int_t m, magma_int_t n,
                               da_ref(j, 0), ldda, dwork+ib, lddwork);
 
             dq_to_panel(MagmaUpper, ib, a_ref(j,j), lda, work+ib*ib);
-          }
+        }
 
         /* 3. Do a QR on the current part */
         if (i<k)
-          magma_dgeqrf2_gpu(m-i, IB, da_ref(i,0), ldda, tau+i, info);
+            magma_dgeqrf2_gpu(m-i, IB, da_ref(i,0), ldda, tau+i, info);
 
         /* 4. Copy the current part back to the CPU */
         magma_dgetmatrix_async( (m), IB,
                                 da_ref(0,0), ldda,
                                 a_ref(0,i),  lda, stream[0] );
-      }
+    }
 
     magma_queue_sync( stream[0] );
 

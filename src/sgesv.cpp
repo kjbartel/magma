@@ -1,33 +1,30 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:05 2012
+       @generated s Fri Jun 28 19:32:12 2013
 
 */
 #include "common_magma.h"
 
-#include <assert.h>
-
 extern "C" magma_int_t
-magma_sgesv(     magma_int_t n, magma_int_t nrhs, 
+magma_sgesv(     magma_int_t n, magma_int_t nrhs,
                  float *A, magma_int_t lda,
-                 magma_int_t *ipiv, 
-                 float *B, magma_int_t ldb, 
+                 magma_int_t *ipiv,
+                 float *B, magma_int_t ldb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     Solves a system of linear equations
        A * X = B
     where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.
@@ -40,7 +37,6 @@ magma_sgesv(     magma_int_t n, magma_int_t nrhs,
 
     Arguments
     =========
-
     N       (input) INTEGER
             The order of the matrix A.  N >= 0.
 
@@ -107,12 +103,15 @@ magma_sgesv(     magma_int_t n, magma_int_t nrhs,
     }
     if ( MAGMA_SUCCESS != magma_smalloc( &dB, lddb*nrhs )) {
         magma_free( dA );
-        dA = NULL;
         goto CPU_INTERFACE;
     }
-    assert( num_gpus == 1 && dA != NULL && dB != NULL );
     magma_ssetmatrix( n, n, A, lda, dA, ldda );
     magma_sgetrf_gpu( n, n, dA, ldda, ipiv, info );
+    if ( *info == MAGMA_ERR_DEVICE_ALLOC ) {
+        magma_free( dA );
+        magma_free( dB );
+        goto CPU_INTERFACE;
+    }
     magma_sgetmatrix( n, n, dA, ldda, A, lda );
     if ( *info == 0 ) {
         magma_ssetmatrix( n, nrhs, B, ldb, dB, lddb );

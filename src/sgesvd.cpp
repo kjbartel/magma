@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
     
-       @generated s Wed Nov 14 22:53:34 2012
+       @generated s Fri Jun 28 19:32:50 2013
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
              float *work, magma_int_t lwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
     
     Purpose
     =======

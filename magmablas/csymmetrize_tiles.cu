@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:50 2012
+       @generated c Fri Jun 28 19:33:13 2013
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -23,18 +23,18 @@
     if so, rows outside the matrix (i >= m) are disabled.
 */
 __global__ void
-csymmetrize_tiles_lower( int m, cuFloatComplex *dA, int ldda, int mstride, int nstride )
+csymmetrize_tiles_lower( int m, magmaFloatComplex *dA, int ldda, int mstride, int nstride )
 {
     // shift dA to tile's top-left corner
     dA += blockIdx.x*(mstride + nstride*ldda);
     
     // dA iterates across row i and dAT iterates down column i.
     int i = blockIdx.y*NB + threadIdx.x;
-    cuFloatComplex *dAT = dA;
+    magmaFloatComplex *dAT = dA;
     if ( i < m ) {
         dA  += i;
         dAT += i*ldda;
-        cuFloatComplex *dAend = dA + i*ldda;
+        magmaFloatComplex *dAend = dA + i*ldda;
         while( dA < dAend ) {
             *dAT = cuConjf(*dA);  // upper := lower
             dA  += ldda;
@@ -46,18 +46,18 @@ csymmetrize_tiles_lower( int m, cuFloatComplex *dA, int ldda, int mstride, int n
 
 // only difference with _lower version is direction dA=dAT instead of dAT=dA.
 __global__ void
-csymmetrize_tiles_upper( int m, cuFloatComplex *dA, int ldda, int mstride, int nstride )
+csymmetrize_tiles_upper( int m, magmaFloatComplex *dA, int ldda, int mstride, int nstride )
 {
     // shift dA to tile's top-left corner
     dA += blockIdx.x*(mstride + nstride*ldda);
     
     // dA iterates across row i and dAT iterates down column i.
     int i = blockIdx.y*NB + threadIdx.x;
-    cuFloatComplex *dAT = dA;
+    magmaFloatComplex *dAT = dA;
     if ( i < m ) {
         dA  += i;
         dAT += i*ldda;
-        cuFloatComplex *dAend = dA + i*ldda;
+        magmaFloatComplex *dAend = dA + i*ldda;
         while( dA < dAend ) {
             *dA  = cuConjf(*dAT);  // lower := upper
             dA  += ldda;
@@ -68,7 +68,7 @@ csymmetrize_tiles_upper( int m, cuFloatComplex *dA, int ldda, int mstride, int n
 
 
 extern "C" void
-magmablas_csymmetrize_tiles( char uplo, magma_int_t m, cuFloatComplex *dA, magma_int_t ldda,
+magmablas_csymmetrize_tiles( char uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda,
                              magma_int_t ntile, magma_int_t mstride, magma_int_t nstride )
 {
 /*

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated s Wed Nov 14 22:53:48 2012
+       @generated s Fri Jun 28 19:33:11 2013
        
        @author Mathieu Faverge
        @author Ichitaro Yamazaki
@@ -51,7 +51,7 @@ __global__ void slaswp_kernel( slaswp_params_t params )
 
 
 // Launch slaswp kernel with ceil( n / NTHREADS ) blocks of NTHREADS threads each.
-extern "C" void slaswp( slaswp_params_t &params )
+extern "C" void slaswp_launch( slaswp_params_t &params )
 {
     int blocks = (params.n + NTHREADS - 1) / NTHREADS;
     slaswp_kernel<<< blocks, NTHREADS, 0, magma_stream >>>( params );
@@ -73,7 +73,7 @@ magmablas_spermute_long2( magma_int_t n, float *dAT, magma_int_t lda,
             params.ipiv[j] = ipiv[ind + k + j] - k - 1;
             ipiv[ind + k + j] += ind;
         }
-        slaswp( params );
+        slaswp_launch( params );
     }
 }
 
@@ -92,7 +92,7 @@ magmablas_spermute_long3( float *dAT, magma_int_t lda,
         for( int j = 0; j < MAX_PIVOTS; ++j ) {
             params.ipiv[j] = ipiv[ind + k + j] - k - 1 - ind;
         }
-        slaswp( params );
+        slaswp_launch( params );
     }
 }
 
@@ -112,7 +112,7 @@ magmablas_slaswp( magma_int_t n, float *dAT, magma_int_t lda,
         for( int j = 0; j < npivots; ++j ) {
             params.ipiv[j] = ipiv[(k+j)*inci] - k - 1;
         }
-        slaswp( params );
+        slaswp_launch( params );
     }
 }
 

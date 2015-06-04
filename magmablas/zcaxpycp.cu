@@ -1,103 +1,70 @@
 /*
-  -- MAGMA (version 1.3.0) --
-  Univ. of Tennessee, Knoxville
-  Univ. of California, Berkeley
-  Univ. of Colorado, Denver
-  November 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
 
-  @precisions mixed zc -> ds
+       @precisions mixed zc -> ds
 
 */
 #include "common_magma.h"
 
-extern "C" __global__ void
-zcaxpycp_special(cuFloatComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B,cuDoubleComplex *W )
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    X += ibx+idt;
-    R += ibx+idt;
-    B += ibx+idt;
-    W += ibx+idt;
-    X[0] = MAGMA_Z_ADD( X[0], cuComplexFloatToDouble(R[0]) );
-    W[0] = B[0];
-}
+#define BLOCK_SIZE 64
 
+// adds   X += R (including conversion to double)  --and--
+// copies W = B
+// each thread does one index, X[i] and W[i]
 extern "C" __global__ void
-zaxpycp_special(cuDoubleComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B)
+zcaxpycp_kernel(
+    int M, magmaFloatComplex *R, magmaDoubleComplex *X,
+    const magmaDoubleComplex *B, magmaDoubleComplex *W )
 {
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    X += ibx+idt;
-    R += ibx+idt;
-    B += ibx+idt;
-    X[0] = MAGMA_Z_ADD( X[0], R[0] );
-    R[0] = B[0];
-}
-
-extern "C" __global__ void
-zcaxpycp_generic(cuFloatComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B,cuDoubleComplex *W )
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    if( ( ibx + idt ) < M ) {
-        X += ibx+idt;
-        R += ibx+idt;
-        B += ibx+idt;
-        W += ibx+idt;
+    const int i = threadIdx.x + blockIdx.x*BLOCK_SIZE;
+    if ( i < M ) {
+        X[i] = MAGMA_Z_ADD( X[i], cuComplexFloatToDouble( R[i] ) );
+        W[i] = B[i];
     }
-    else{
-        X +=(M-1);
-        R +=(M-1);
-        B +=(M-1);
-        W +=(M-1);
-    }
-    X[0] = MAGMA_Z_ADD( X[0], cuComplexFloatToDouble( R[0] ) );
-    W[0] = B[0];
-}
-
-extern "C" __global__ void
-zaxpycp_generic(cuDoubleComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B)
-{
-    const magma_int_t ibx = blockIdx.x * 64;
-    const magma_int_t idt = threadIdx.x;
-    if( ( ibx + idt ) < M ) {
-        X += ibx+idt;
-        R += ibx+idt;
-        B += ibx+idt;
-    }
-    else{
-        X +=(M-1);
-        R +=(M-1);
-        B +=(M-1);
-    }
-    X[0] = MAGMA_Z_ADD( X[0], R[0] );
-    R[0] = B[0];
 }
 
 
+// adds   X += R  --and--
+// copies R = B
+// each thread does one index, X[i] and R[i]
+extern "C" __global__ void
+zaxpycp_kernel(
+    int M, magmaDoubleComplex *R, magmaDoubleComplex *X,
+    const magmaDoubleComplex *B)
+{
+    const int i = threadIdx.x + blockIdx.x*BLOCK_SIZE;
+    if ( i < M ) {
+        X[i] = MAGMA_Z_ADD( X[i], R[i] );
+        R[i] = B[i];
+    }
+}
+
+
+// adds   X += R (including conversion to double)  --and--
+// copies W = B
 extern "C" void
-magmablas_zcaxpycp(cuFloatComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B, cuDoubleComplex *W)
+magmablas_zcaxpycp(
+    magma_int_t M, magmaFloatComplex *R, magmaDoubleComplex *X,
+    const magmaDoubleComplex *B, magmaDoubleComplex *W)
 {
-    dim3 threads( 64, 1 );
-    dim3 grid(M/64+(M%64!=0),1);
-    if( M %64 == 0 ) {
-        zcaxpycp_special <<< grid, threads, 0, magma_stream >>> ( R, X, M, B, W) ;
-    }
-    else{
-        zcaxpycp_generic <<< grid, threads, 0, magma_stream >>> ( R, X, M, B, W) ;
-    }
+    dim3 threads( BLOCK_SIZE );
+    dim3 grid( (M + BLOCK_SIZE - 1)/BLOCK_SIZE );
+    zcaxpycp_kernel <<< grid, threads, 0, magma_stream >>> ( M, R, X, B, W );
 }
 
+
+// adds   X += R  --and--
+// copies R = B
 extern "C" void
-magmablas_zaxpycp(cuDoubleComplex *R, cuDoubleComplex *X, magma_int_t M, cuDoubleComplex *B)
+magmablas_zaxpycp(
+    magma_int_t M, magmaDoubleComplex *R, magmaDoubleComplex *X,
+    const magmaDoubleComplex *B)
 {
-    dim3 threads( 64, 1 );
-    dim3 grid(M/64+(M%64!=0),1);
-    if( M %64 == 0 ) {
-        zaxpycp_special <<< grid, threads, 0, magma_stream >>> ( R, X, M, B) ;
-    }
-    else{
-        zaxpycp_generic <<< grid, threads, 0, magma_stream >>> ( R, X, M, B) ;
-    }
+    dim3 threads( BLOCK_SIZE );
+    dim3 grid( (M + BLOCK_SIZE - 1)/BLOCK_SIZE );
+    zaxpycp_kernel <<< grid, threads, 0, magma_stream >>> ( M, R, X, B );
 }

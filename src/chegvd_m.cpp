@@ -1,54 +1,31 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @author Raffaele Solca
+       @author Azzam Haidar
        @author Stan Tomov
 
-       @generated c Wed Nov 14 22:53:31 2012
+       @generated c Fri Jun 28 19:32:45 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_cpotrf_m(magma_int_t num_gpus, char uplo, magma_int_t n,
-                  cuFloatComplex *a, magma_int_t lda, magma_int_t *info);
-
-extern "C" magma_int_t
-magma_chegst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
-               cuFloatComplex *a, magma_int_t lda,
-               cuFloatComplex *b, magma_int_t ldb, magma_int_t *info);
-
-extern "C" magma_int_t
-magma_cheevd_m(magma_int_t nrgpu, char jobz, char uplo,
-               magma_int_t n,
-               cuFloatComplex *a, magma_int_t lda,
-               float *w,
-               cuFloatComplex *work, magma_int_t lwork,
-               float *rwork, magma_int_t lrwork,
-               magma_int_t *iwork, magma_int_t liwork,
-               magma_int_t *info);
-
-extern "C" magma_int_t
-magma_ctrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
-               magma_int_t m, magma_int_t n, cuFloatComplex alpha, cuFloatComplex *a,
-               magma_int_t lda, cuFloatComplex *b, magma_int_t ldb);
-
-extern "C" magma_int_t
 magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma_int_t n,
-               cuFloatComplex *a, magma_int_t lda, cuFloatComplex *b, magma_int_t ldb,
-               float *w, cuFloatComplex *work, magma_int_t lwork,
+               magmaFloatComplex *a, magma_int_t lda, magmaFloatComplex *b, magma_int_t ldb,
+               float *w, magmaFloatComplex *work, magma_int_t lwork,
                float *rwork, magma_int_t lrwork,
                magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -84,7 +61,7 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
     N       (input) INTEGER
             The order of the matrices A and B.  N >= 0.
 
-    A       (input/output) COMPLEX*16 array, dimension (LDA, N)
+    A       (input/output) COMPLEX array, dimension (LDA, N)
             On entry, the Hermitian matrix A.  If UPLO = 'U', the
             leading N-by-N upper triangular part of A contains the
             upper triangular part of the matrix A.  If UPLO = 'L',
@@ -103,7 +80,7 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
     LDA     (input) INTEGER
             The leading dimension of the array A.  LDA >= max(1,N).
 
-    B       (input/output) COMPLEX*16 array, dimension (LDB, N)
+    B       (input/output) COMPLEX array, dimension (LDB, N)
             On entry, the Hermitian matrix B.  If UPLO = 'U', the
             leading N-by-N upper triangular part of B contains the
             upper triangular part of the matrix B.  If UPLO = 'L',
@@ -120,7 +97,7 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
     W       (output) DOUBLE PRECISION array, dimension (N)
             If INFO = 0, the eigenvalues in ascending order.
 
-    WORK    (workspace/output) COMPLEX*16 array, dimension (MAX(1,LWORK))
+    WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
             On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 
     LWORK   (input) INTEGER
@@ -184,7 +161,6 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
 
     Further Details
     ===============
-
     Based on contributions by
        Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
 
@@ -197,28 +173,28 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
     char uplo_[2] = {uplo, 0};
     char jobz_[2] = {jobz, 0};
 
-    cuFloatComplex c_one = MAGMA_C_ONE;
+    magmaFloatComplex c_one = MAGMA_C_ONE;
 
     magma_int_t lower;
     char trans[1];
     magma_int_t wantz;
     magma_int_t lquery;
 
-    //    magma_int_t lopt;
     magma_int_t lwmin;
-    //    magma_int_t liopt;
     magma_int_t liwmin;
-    //    magma_int_t lropt;
     magma_int_t lrwmin;
 
-    wantz = lapackf77_lsame(jobz_, MagmaVectorsStr);
+    magma_queue_t stream;
+    magma_queue_create( &stream );
+
+    wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     lquery = lwork == -1 || lrwork == -1 || liwork == -1;
 
     *info = 0;
     if (itype < 1 || itype > 3) {
         *info = -1;
-    } else if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVectorsStr))) {
+    } else if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -2;
     } else if (! (lower || lapackf77_lsame(uplo_, MagmaUpperStr))) {
         *info = -3;
@@ -230,20 +206,25 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
         *info = -8;
     }
 
-    magma_int_t nb = magma_get_chetrd_nb(n);
-
-    if (wantz) {
-        lwmin = 2 * n + n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
-        liwmin = 5 * n + 3;
-    } else {
-        lwmin = n * (nb + 1);
+    magma_int_t nb = magma_get_chetrd_nb( n );
+    if ( n <= 1 ) {
+        lwmin  = 1;
+        lrwmin = 1;
+        liwmin = 1;
+    }
+    else if ( wantz ) {
+        lwmin  = 2*n + n*n;
+        lrwmin = 1 + 5*n + 2*n*n;
+        liwmin = 3 + 5*n;
+    }
+    else {
+        lwmin  = n + n*nb;
         lrwmin = n;
         liwmin = 1;
     }
 
-    MAGMA_C_SET2REAL(work[0],(float)lwmin);
-    rwork[0] = lrwmin;
+    work[0]  = MAGMA_C_MAKE( lwmin * (1. + lapackf77_slamch("Epsilon")), 0.);  // round up
+    rwork[0] = lrwmin * (1. + lapackf77_slamch("Epsilon"));
     iwork[0] = liwmin;
 
     if (lwork < lwmin && ! lquery) {
@@ -267,10 +248,9 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
         return *info;
     }
 
-#define ENABLE_TIMER
+//
 #ifdef ENABLE_TIMER
         magma_timestr_t start, end;
-
         start = get_current_time();
 #endif
 
@@ -282,9 +262,7 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time cpotrf = %6.2f\n", GetTimerValue(start,end)/1000.);
-
         start = get_current_time();
 #endif
 
@@ -293,9 +271,7 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time chegst = %6.2f\n", GetTimerValue(start,end)/1000.);
-
         start = get_current_time();
 #endif
 
@@ -303,7 +279,6 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time cheevd = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
@@ -345,15 +320,13 @@ magma_chegvd_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char uplo, magma
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-
         printf("time setmatrices trsm/mm + getmatrices = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
     }
 
-    /*work[0].r = (floatreal) lopt, work[0].i = 0.;
-     rwork[0] = (floatreal) lropt;
-     iwork[0] = liopt;*/
-
+    work[0]  = MAGMA_C_MAKE( lwmin * (1. + lapackf77_slamch("Epsilon")), 0.);  // round up
+    rwork[0] = lrwmin * (1. + lapackf77_slamch("Epsilon"));
+    iwork[0] = liwmin;
 
     return *info;
 } /* magma_chegvd_m */

@@ -1,15 +1,16 @@
 /*
- *  -- MAGMA (version 1.3.0) --
- *     Univ. of Tennessee, Knoxville
- *     Univ. of California, Berkeley
- *     Univ. of Colorado, Denver
- *     November 2012
- *
- * @precisions normal z -> c s d
- *
- * Utilities for testing.
- * @author Mark Gates
- **/
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+
+       @precisions normal z -> c d s
+
+       @author Mark Gates
+
+       Utilities for testing.
+*/
 
 #include "testings.h"
 
@@ -20,7 +21,7 @@
 // Makes diagonal real.
 // Sets Aji = conj( Aij ) for j < i, that is, copy lower triangle to upper triangle.
 extern "C"
-void magma_zhermitian( magma_int_t N, cuDoubleComplex* A, magma_int_t lda )
+void magma_zmake_hermitian( magma_int_t N, magmaDoubleComplex* A, magma_int_t lda )
 {
     magma_int_t i, j;
     for( i=0; i<N; ++i ) {
@@ -37,7 +38,7 @@ void magma_zhermitian( magma_int_t N, cuDoubleComplex* A, magma_int_t lda )
 // Increases diagonal by N, and makes it real.
 // Sets Aji = conj( Aij ) for j < i, that is, copy lower triangle to upper triangle.
 extern "C"
-void magma_zhpd( magma_int_t N, cuDoubleComplex* A, magma_int_t lda )
+void magma_zmake_hpd( magma_int_t N, magmaDoubleComplex* A, magma_int_t lda )
 {
     magma_int_t i, j;
     for( i=0; i<N; ++i ) {

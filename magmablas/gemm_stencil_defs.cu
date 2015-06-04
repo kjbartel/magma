@@ -9,9 +9,9 @@
 
 #ifdef COMPLEX
   #ifdef DOUBLE
-    typedef cuDoubleComplex FloatingPoint_t;
+    typedef magmaDoubleComplex FloatingPoint_t;
   #else
-    typedef cuFloatComplex FloatingPoint_t;
+    typedef magmaFloatComplex FloatingPoint_t;
   #endif
 #else
   #ifdef DOUBLE

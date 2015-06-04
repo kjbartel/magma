@@ -1,32 +1,35 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
-       @generated c Wed Nov 14 22:53:10 2012
+       @generated c Fri Jun 28 19:32:17 2013
 
 */
 #include "common_magma.h"
 
 extern "C" magma_int_t
 magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
-                   cuFloatComplex *dA, magma_int_t ldda,
-                   cuFloatComplex *tau, 
+                   magmaFloatComplex *dA, magma_int_t ldda,
+                   magmaFloatComplex *tau,
                    magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
-
     CGEQRF computes a QR factorization of a complex M-by-N matrix A:
     A = Q * R.
+    
+    This version has LAPACK-complaint arguments.
+    Other versions (magma_cgeqrf_gpu and magma_cgeqrf3_gpu) store the
+    intermediate T matrices.
 
     Arguments
     =========
@@ -37,7 +40,7 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
             The number of columns of the matrix A.  N >= 0.
 
     dA      (input/output) COMPLEX array on the GPU, dimension (LDDA,N)
-            On entry, the M-by-N matrix dA.
+            On entry, the M-by-N matrix A.
             On exit, the elements on and above the diagonal of the array
             contain the min(M,N)-by-N upper trapezoidal matrix R (R is
             upper triangular if m >= n); the elements below the diagonal,
@@ -61,7 +64,6 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
 
     Further Details
     ===============
-
     The matrix Q is represented as a product of elementary reflectors
 
        Q = H(1) H(2) . . . H(k), where k = min(m,n).
@@ -79,8 +81,8 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
     #define work_ref(a_1)  ( work + (a_1))
     #define hwork          ( work + (nb)*(m))
 
-    cuFloatComplex *dwork;
-    cuFloatComplex *work;
+    magmaFloatComplex *dwork;
+    magmaFloatComplex *work;
     magma_int_t i, k, ldwork, lddwork, old_i, old_ib, rows;
     magma_int_t nbmin, nx, ib, nb;
     magma_int_t lhwork, lwork;
@@ -119,7 +121,7 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
         return *info;
     }
 
-    cudaStream_t stream[2];
+    magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
     magma_queue_create( &stream[1] );
 
@@ -153,8 +155,8 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
             lapackf77_cgeqrf(&rows, &ib, work_ref(i), &ldwork, tau+i, hwork, &lhwork, info);
             /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
-            lapackf77_clarft( MagmaForwardStr, MagmaColumnwiseStr, 
-                              &rows, &ib, 
+            lapackf77_clarft( MagmaForwardStr, MagmaColumnwiseStr,
+                              &rows, &ib,
                               work_ref(i), &ldwork, tau+i, hwork, &ib);
 
             cpanel_to_q( MagmaUpper, ib, work_ref(i), ldwork, hwork+ib*ib );
@@ -164,16 +166,17 @@ magma_cgeqrf2_gpu( magma_int_t m, magma_int_t n,
             if (i + ib < n) {
                 magma_csetmatrix( ib, ib, hwork, ib, dwork, lddwork );
 
-                if (i+nb < k-nx)
+                if (i+nb < k-nx) {
                     /* Apply H' to A(i:m,i+ib:i+2*ib) from the left */
                     magma_clarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                      rows, ib, ib, 
-                                      dA(i, i   ), ldda, dwork,    lddwork, 
+                                      rows, ib, ib,
+                                      dA(i, i   ), ldda, dwork,    lddwork,
                                       dA(i, i+ib), ldda, dwork+ib, lddwork);
+                }
                 else {
                     magma_clarfb_gpu( MagmaLeft, MagmaConjTrans, MagmaForward, MagmaColumnwise,
-                                      rows, n-i-ib, ib, 
-                                      dA(i, i   ), ldda, dwork,    lddwork, 
+                                      rows, n-i-ib, ib,
+                                      dA(i, i   ), ldda, dwork,    lddwork,
                                       dA(i, i+ib), ldda, dwork+ib, lddwork);
                     magma_csetmatrix( ib, ib,
                                       work_ref(i), ldwork,

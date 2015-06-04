@@ -1,11 +1,11 @@
 /*
-  -- MAGMA (version 1.3.0) --
-     Univ. of Tennessee, Knoxville
-     Univ. of California, Berkeley
-     Univ. of Colorado, Denver
-     November 2012
-
-     @generated c Wed Nov 14 22:53:18 2012
+    -- MAGMA (version 1.4.0-beta2) --
+       Univ. of Tennessee, Knoxville
+       Univ. of California, Berkeley
+       Univ. of Colorado, Denver
+       June 2013
+  
+       @generated c Fri Jun 28 19:32:26 2013
 
 */
 
@@ -16,19 +16,19 @@
 
 extern "C" magma_int_t
 magma_cgeqp3( magma_int_t m, magma_int_t n,
-              cuFloatComplex *A, magma_int_t lda,
-              magma_int_t *jpvt, cuFloatComplex *tau,
-              cuFloatComplex *work, magma_int_t lwork,
+              magmaFloatComplex *A, magma_int_t lda,
+              magma_int_t *jpvt, magmaFloatComplex *tau,
+              magmaFloatComplex *work, magma_int_t lwork,
 #if defined(PRECISION_z) || defined(PRECISION_c)
               float *rwork,
 #endif
               magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -103,7 +103,7 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
 #define  A(i, j) (A     + (i) + (j)*(lda ))
 #define dA(i, j) (dwork + (i) + (j)*(ldda))
 
-    cuFloatComplex   *dwork, *df;
+    magmaFloatComplex   *dwork, *df;
 
     magma_int_t ione = 1;
 
@@ -114,11 +114,11 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
     *info = 0;
     lquery = (lwork == -1);
     if (m < 0) {
-       *info = -1;
+        *info = -1;
     } else if (n < 0) {
-       *info = -2;
+        *info = -2;
     } else if (lda < max(1,m)) {
-       *info = -4;
+        *info = -4;
     }
     
     if (*info == 0) {
@@ -162,7 +162,7 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
     df = dwork + n*ldda;
     // dwork used for dA
 
-    cudaStream_t stream;
+    magma_queue_t stream;
     magma_queue_create( &stream );
 
     /* Move initial columns up front.
@@ -170,15 +170,15 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
     nfxd = 0;
     for (j = 0; j < n; ++j) {
         if (jpvt[j] != 0) {
-           if (j != nfxd) {
-               blasf77_cswap(&m, A(0, j), &ione, A(0, nfxd), &ione);
-               jpvt[j]    = jpvt[nfxd];
-               jpvt[nfxd] = j + 1;
-           }
-           else {
-               jpvt[j] = j + 1;
-           }
-           ++nfxd;
+            if (j != nfxd) {
+                blasf77_cswap(&m, A(0, j), &ione, A(0, nfxd), &ione);
+                jpvt[j]    = jpvt[nfxd];
+                jpvt[nfxd] = j + 1;
+            }
+            else {
+                jpvt[j] = j + 1;
+            }
+            ++nfxd;
         }
         else {
             jpvt[j] = j + 1;
@@ -207,12 +207,12 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
         sminmn = minmn - nfxd;
         
         if (nb < sminmn) {
-          j = nfxd;
-
-          // Set the original matrix to the GPU
-          magma_csetmatrix_async( m, sn,
-                                  A (0,j), lda,
-                                  dA(0,j), ldda, stream );
+            j = nfxd;
+            
+            // Set the original matrix to the GPU
+            magma_csetmatrix_async( m, sn,
+                                    A (0,j), lda,
+                                    dA(0,j), ldda, stream );
         }
 
         /* Initialize partial column norms. */
@@ -235,15 +235,15 @@ magma_cgeqp3( magma_int_t m, magma_int_t n,
                 n_j = n - j;
                 
                 if (j>nfxd) {
-                  // Get panel to the CPU
-                  magma_cgetmatrix( m-j, jb,
-                                    dA(j,j), ldda,
-                                    A (j,j), lda );
-                
-                  // Get the rows
-                  magma_cgetmatrix( jb, n_j - jb,
-                                    dA(j,j + jb), ldda,
-                                    A (j,j + jb), lda );
+                    // Get panel to the CPU
+                    magma_cgetmatrix( m-j, jb,
+                                      dA(j,j), ldda,
+                                      A (j,j), lda );
+                    
+                    // Get the rows
+                    magma_cgetmatrix( jb, n_j - jb,
+                                      dA(j,j + jb), ldda,
+                                      A (j,j + jb), lda );
                 }
 
                 magma_claqps( m, n_j, j, jb, &fjb,

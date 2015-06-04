@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -18,20 +18,20 @@
  */
 
 __global__ void 
-magmagpu_zswapdblk(magma_int_t nb,
-                   cuDoubleComplex *dA1, magma_int_t ldda1, magma_int_t inca1,
-                   cuDoubleComplex *dA2, magma_int_t ldda2, magma_int_t inca2 )
+magmagpu_zswapdblk(int nb,
+                   magmaDoubleComplex *dA1, int ldda1, int inca1,
+                   magmaDoubleComplex *dA2, int ldda2, int inca2 )
 {
-    const magma_int_t tx = threadIdx.x;
-    const magma_int_t bx = blockIdx.x;
+    const int tx = threadIdx.x;
+    const int bx = blockIdx.x;
 
     dA1 += tx + bx * nb * (ldda1 + inca1);
     dA2 += tx + bx * nb * (ldda2 + inca2);
 
-    cuDoubleComplex tmp;
+    magmaDoubleComplex tmp;
 
     #pragma unroll
-    for( magma_int_t i = 0; i < nb; i++ ){
+    for( int i = 0; i < nb; i++ ){
         tmp = dA1[i*ldda1];
         dA1[i*ldda1] = dA2[i*ldda2];
         dA2[i*ldda2] = tmp;
@@ -41,14 +41,14 @@ magmagpu_zswapdblk(magma_int_t nb,
 
 extern "C" void 
 magmablas_zswapdblk(magma_int_t n, magma_int_t nb,
-                    cuDoubleComplex *dA1, magma_int_t ldda1, magma_int_t inca1,
-                    cuDoubleComplex *dA2, magma_int_t ldda2, magma_int_t inca2 )
+                    magmaDoubleComplex *dA1, magma_int_t ldda1, magma_int_t inca1,
+                    magmaDoubleComplex *dA2, magma_int_t ldda2, magma_int_t inca2 )
 {
-/* -- MAGMA (version 1.3.0) --
+/* -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal d
 
@@ -12,78 +12,80 @@
 
 #define magmablas_dgemv_fermi magmablas_dgemv
 
-#define num_threads 64
 #define dgemv_bs 64
-#define threadSize 128
+#define threadSize 256
 
 
 
 __global__ void 
 dgemvn_kernel_fermi(
-    magma_int_t n, magma_int_t m, magma_int_t n1, double alpha,
-    const double *A, magma_int_t lda,
-    const double *x,
-    double *y)
+    int m, int n, int n1, double alpha,
+    const double *A, int lda,
+    const double *x, int incx, double beta, 
+    double *y, int incy)
 {
-  magma_int_t ind = blockIdx.x*num_threads + threadIdx.x;
+  int ind = blockIdx.x*dgemv_bs + threadIdx.x;
 
-  A += ind;
-  x += threadIdx.x;
 
+  if(ind < m)
+  {
+    A += ind;
+  }
 
   double res = 0.0;
 
   __shared__ double buff[dgemv_bs];
-  for(magma_int_t i=0; i<n1; i += dgemv_bs ){
+
+  for(int i=0; i<n1; i += dgemv_bs ){
     __syncthreads();
-    buff[threadIdx.x]  = x[i];
+    buff[threadIdx.x]  = x[(threadIdx.x + i) * incx];
 
     __syncthreads();
     #pragma unroll
-    for(magma_int_t j=0; j < dgemv_bs ; j++){
+    for(int j=0; j < dgemv_bs ; j++){
        res+=A[0]*buff[j];
        A+=lda;
     }
   }
   __syncthreads();
 
-  if (m>n1){
-     buff[threadIdx.x]  = x[n1];
-
-     __syncthreads();
-     for(magma_int_t j=0; j<(m-n1); j++){
-         res += A[0]*buff[j];
-         A+=lda;
-     }
+  if(ind < m)
+  {
+   if (n>n1)
+   {
+      for(int j=0; j<(n-n1); j++){
+            res += A[0] * x[(n1+j) * incx];
+            A+=lda;
+      }
+   }
   }
-
-  if (ind<n)
-     y[ind] = alpha * res;
+  if (ind<m)
+     y[ind*incy] = alpha * res + beta * y[ind*incy];
 }
 
 
 extern "C" void
 magmablas_dgemvn_fermi(
-    magma_int_t n, magma_int_t m, double alpha,
+    magma_int_t m, magma_int_t n, double alpha,
     const double *A, magma_int_t lda,
-    const double *x,
-    double *y)
+    const double *x, magma_int_t incx, double beta, 
+    double *y, magma_int_t incy)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
 
     This routine computes y = alpha A x on the GPU.
 
-    N      - (input) INTEGER.
+    M      - (input) INTEGER.
              On entry, N specifies the number of rows of the matrix A.
 
-    M      - (input) INTEGER.
+    N      - (input) INTEGER.
              On entry, M specifies the number of columns of the matrix A
 
     A      - (input) DOUBLE PRECISION array of dimension ( LDA, m ) on the GPU.
@@ -99,27 +101,28 @@ magmablas_dgemvn_fermi(
     ===================================================================== */
 
     magma_int_t blocks;
-    if (n % num_threads==0)
-        blocks = n/num_threads;
+    
+    if (m % dgemv_bs==0)
+        blocks = m/dgemv_bs;
     else
-        blocks = n/num_threads + 1;
+        blocks = m/dgemv_bs + 1;
 
     dim3 grid(blocks, 1, 1);
-    dim3 threads(num_threads, 1, 1);
+    dim3 threads(dgemv_bs, 1, 1);
  
-    dgemvn_kernel_fermi<<< grid, threads, 0, magma_stream >>>(n, m, (m / dgemv_bs)*dgemv_bs, 
-                                    alpha, A, lda, x, y);
+    dgemvn_kernel_fermi<<< grid, threads, 0, magma_stream >>>(m, n, (n/ dgemv_bs)*dgemv_bs, 
+                                    alpha, A, lda, x, incx, beta, y, incy);
 }
 
 
 __global__ void
 dgemvt_kernel_fermi(
-    magma_int_t m, magma_int_t n, double alpha, magma_int_t n1,
-    const double *A, magma_int_t lda,
-    const double *x,
-    double *y)
+    int m, int n, double alpha, int n1,
+    const double *A, int lda,
+    const double *x, int incx, double beta, 
+    double *y, int incy)
 {
-        magma_int_t tx = threadIdx.x;
+        int tx = threadIdx.x;
 
         __shared__ double sdata[threadSize];
 
@@ -127,16 +130,16 @@ dgemvt_kernel_fermi(
         double res;
         res = 0.0;
 
-        for(magma_int_t i=0; i<n1; i+= threadSize)
+        for(int i=0; i<n1; i+= threadSize)
         {
-                res += A[tx + i + lda * blockIdx.y] * x[tx + i];
+                res += A[tx + i + lda * blockIdx.y] * x[(tx + i)*incx];
         }
 
         if(m > n1)
         {
                 if( tx + n1 <  m )
                 {
-                        res  += A[tx + n1 + lda *blockIdx.y] * x[tx + n1];
+                        res  += A[tx + n1 + lda *blockIdx.y] * x[(tx + n1)*incx];
                 }
                 else
                 {
@@ -171,11 +174,10 @@ dgemvt_kernel_fermi(
 
         if( tx == 0 )
         {
-                y[blockIdx.y] = sdata[0];
                 
                 if (blockIdx.y < n)
                 {
-                        y[blockIdx.y] = y[blockIdx.y] * alpha;
+                        y[blockIdx.y*incy] = sdata[0] * alpha + beta * y[blockIdx.y*incy];
                 }
         }
 }
@@ -187,14 +189,14 @@ extern "C" void
 magmablas_dgemvt_fermi(
     magma_int_t m, magma_int_t n, double alpha,
     const double *A, magma_int_t lda,
-    const double *x,
-    double *y)
+    const double *x, magma_int_t incx, double beta,
+    double *y, magma_int_t incy)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -223,7 +225,7 @@ magmablas_dgemvt_fermi(
         dim3 threads ( threadSize,   1,  1);
 
         dgemvt_kernel_fermi<<< grid, threads, 0, magma_stream >>>( m, n, alpha, ( m / threadSize) * threadSize,
-                                                                       A, lda, x, y);
+                                                                       A, lda, x, incx, beta,  y, incy);
 }
 
 
@@ -237,11 +239,11 @@ void magmablas_dgemv_fermi(char trans,
                            double beta,
                            double *z, magma_int_t incz)
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -296,23 +298,23 @@ void magmablas_dgemv_fermi(char trans,
             INCZ must not be zero. Unchanged on exit.
     ===================================================================== */
 
-    if (incx == 1 && incz == 1 && beta == 0.) {
+    //if (incx == 1 && incz == 1) 
+    {
        if (trans == 'n' || trans == 'N')
            {
                if ( m >= 7000 && m <= 8000 )
-                cublasDgemv(trans, m, n, alpha, A, lda, x, incx, beta, z, incz);
-                   else 
-                                magmablas_dgemvn_fermi(m,  n, alpha, A, lda, x, z);
+                     cublasDgemv(trans, m, n, alpha, A, lda, x, incx, beta, z, incz);
+                else 
+                     magmablas_dgemvn_fermi(m,  n, alpha, A, lda, x, incx, beta,  z, incz);
            }
        else if (trans == 't' || trans == 'T')
-          magmablas_dgemvt_fermi(m,  n, alpha, A, lda, x, z);
+          magmablas_dgemvt_fermi(m,  n, alpha, A, lda, x, incx, beta, z, incz);
        else
           printf("trans = %c in sgemv_fermi is not available\n", trans);               
     }
-    else
-       cublasDgemv(trans, m, n, alpha, A, lda, x, incx, beta, z, incz);
+//    else
+//       cublasDgemv(trans, m, n, alpha, A, lda, x, incx, beta, z, incz);
 }
 
-#undef num_threads
 #undef dgemv_bs
 #undef threadSize

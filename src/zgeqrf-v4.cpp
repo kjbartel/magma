@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.3.0) --
+    -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
        @precisions normal z -> s d c
 
@@ -11,16 +11,16 @@
 #include "common_magma.h"
 
 extern "C" magma_int_t
-magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n, 
-              cuDoubleComplex *a,    magma_int_t lda, cuDoubleComplex *tau, 
-              cuDoubleComplex *work, magma_int_t lwork,
+magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
+              magmaDoubleComplex *a,    magma_int_t lda, magmaDoubleComplex *tau,
+              magmaDoubleComplex *work, magma_int_t lwork,
               magma_int_t *info )
 {
-/*  -- MAGMA (version 1.3.0) --
+/*  -- MAGMA (version 1.4.0-beta2) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       November 2012
+       June 2013
 
     Purpose
     =======
@@ -30,10 +30,10 @@ magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
 
     Arguments
     =========
-    NUM_GPUS 
+    NUM_GPUS
             (input) INTEGER
             The number of GPUs to be used for the factorization.
- 
+
     M       (input) INTEGER
             The number of rows of the matrix A.  M >= 0.
 
@@ -94,8 +94,8 @@ magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     and tau in TAU(i).
     =====================================================================    */
 
-    cuDoubleComplex *da[4];
-    cuDoubleComplex c_one = MAGMA_Z_ONE;
+    magmaDoubleComplex *da[MagmaMaxGPUs];
+    magmaDoubleComplex c_one = MAGMA_Z_ONE;
 
     int i, k, ldda;
 
@@ -131,7 +131,7 @@ magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
 
     ldda    = ((m+31)/32)*32;
 
-    magma_int_t  n_local[4];
+    magma_int_t  n_local[MagmaMaxGPUs];
     for(i=0; i<num_gpus; i++){
         n_local[i] = ((n/nb)/num_gpus)*nb;
         if (i < (n/nb)%num_gpus)
@@ -151,18 +151,16 @@ magma_zgeqrf4(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
     if (m > nb && n > nb) {
 
         /* Copy the matrix to the GPUs in 1D block cyclic distribution */
-        magmablas_zsetmatrix_1D_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
+        magma_zsetmatrix_1D_col_bcyclic(m, n, a, lda, da, ldda, num_gpus, nb);
 
         /* Factor using the GPU interface */
         magma_zgeqrf2_mgpu( num_gpus, m, n, da, ldda, tau, info);
 
         /* Copy the matrix back from the GPUs to the CPU */
-        magmablas_zgetmatrix_1D_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
-
-    } else {
-
-      lapackf77_zgeqrf(&m, &n, a, &lda, tau, work, &lwork, info);
-
+        magma_zgetmatrix_1D_col_bcyclic(m, n, da, ldda, a, lda, num_gpus, nb);
+    }
+    else {
+        lapackf77_zgeqrf(&m, &n, a, &lda, tau, work, &lwork, info);
     }
 
 

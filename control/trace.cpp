@@ -3,6 +3,9 @@
 #include <errno.h>
 #include <string.h>      // strerror_r
 
+#include <set>
+#include <string>
+
 #include "trace.h"
 
 // define TRACING to compile these functions, e.g.,
@@ -148,10 +151,15 @@ void trace_gpu_end( int dev, int s )
 // ----------------------------------------
 void trace_finalize( const char* filename, const char* cssfile )
 {
-    double xscale = 1e3;
+    // these are all in SVG "pixels"
+    double xscale = 200.; // pixels per second
     double height = 20.;  // of each row
-    double margin =  5.;  // page margin
-    double space  =  1.;  // between rows
+    double margin =  5.;  // page margin and between some elements
+    double space  =  2.;  // between rows
+    double pad    =  5.;  // around text
+    double label  = 75.;  // width of "CPU:", "GPU:" labels
+    double left   = 2*margin + label;
+    double xtick  = 0.5;  // interval of xticks (in seconds)
     char buf[ 1024 ];
     
     // sync devices
@@ -159,6 +167,7 @@ void trace_finalize( const char* filename, const char* cssfile )
         cudaSetDevice( dev );
         cudaDeviceSynchronize();
     }
+    double time = magma_wtime() - glog.cpu_first;
     
     FILE* trace_file = fopen( filename, "w" );
     if ( trace_file == NULL ) {
@@ -168,8 +177,10 @@ void trace_finalize( const char* filename, const char* cssfile )
     }
     fprintf( stderr, "writing trace to '%s'\n", filename );
     
-    int h = (int)( (glog.ncore + glog.ngpu*glog.nstream)*(height + space) - space + 2*margin );
-    int w = (int)( (magma_wtime() - glog.cpu_first) * xscale + 2*margin );
+    // row for each CPU and GPU/stream (with space between), time scale, legend
+    // 4 margins: at top, above time scale, above legend, at bottom
+    int h = (int)( (glog.ncore + glog.ngpu*glog.nstream)*(height + space) - space + 2*height + 4*margin );
+    int w = (int)( left + time*xscale + margin );
     fprintf( trace_file,
              "<?xml version=\"1.0\" standalone=\"no\"?>\n"
              "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n"
@@ -201,7 +212,11 @@ void trace_finalize( const char* filename, const char* cssfile )
     const char* format = 
         "<rect x=\"%8.3f\" y=\"%4.0f\" width=\"%8.3f\" height=\"%2.0f\" class=\"%-8s\" inkscape:label=\"%s\"/>\n";
     
+    // accumulate unique legend entries
+    std::set< std::string > legend;
+    
     // output CPU events
+    double top = margin;
     for( int core = 0; core < glog.ncore; ++core ) {
         if ( glog.cpu_id[core] > MAX_EVENTS ) {
             glog.cpu_id[core] += 1;  // count last event
@@ -210,61 +225,104 @@ void trace_finalize( const char* filename, const char* cssfile )
         }
         fprintf( trace_file, "<!-- core %d, nevents %d -->\n", core, glog.cpu_id[core] );
         fprintf( trace_file, "<g inkscape:groupmode=\"layer\" inkscape:label=\"core %d\">\n", core );
+        fprintf( trace_file, "<text x=\"%8.3f\" y=\"%4.0f\" width=\"%4.0f\" height=\"%2.0f\">CPU %d:</text>\n",
+                 margin,
+                 top + height - pad,
+                 label, height,
+                 core );
         for( int i = 0; i < glog.cpu_id[core]; ++i ) {
             double start  = glog.cpu_start[core][i] - glog.cpu_first;
             double end    = glog.cpu_end  [core][i] - glog.cpu_first;
             fprintf( trace_file, format,
-                     margin + start * xscale,
-                     margin + core * (height + space),
-                     (end - start) * xscale,
+                     left + start*xscale,
+                     top,
+                     (end - start)*xscale,
                      height,
                      glog.cpu_tag[core][i],
                      glog.cpu_label[core][i] );
+            legend.insert( glog.cpu_tag[core][i] );
         }
+        top += (height + space);
         fprintf( trace_file, "</g>\n\n" );
     }
     
     // output GPU events
-    //try {
-        for( int dev = 0; dev < glog.ngpu; ++dev ) {
-        for( int s = 0; s < glog.nstream; ++s ) {
-            int t = dev*glog.nstream + s;
-            if ( glog.gpu_id[t] >= MAX_EVENTS-1 ) {
-                glog.gpu_id[t] += 1;  // count last event
-                fprintf( stderr, "WARNING: trace on gpu %d/stream %d reached limit of %d events; output will be truncated.\n",
-                         dev, s, glog.gpu_id[t] );
-            }
-            fprintf( trace_file, "<!-- gpu %d, stream %d (t %d), nevents %d -->\n", dev, s, t, glog.gpu_id[t] );
-            fprintf( trace_file, "<g inkscape:groupmode=\"layer\" inkscape:label=\"gpu %d stream %d\">\n", dev, s );
-            cudaSetDevice( dev );
-            float start, end;
-            for( int i = 0; i < glog.gpu_id[t]; ++i ) {
+    for( int dev = 0; dev < glog.ngpu; ++dev ) {
+    for( int s = 0; s < glog.nstream; ++s ) {
+        int t = dev*glog.nstream + s;
+        if ( glog.gpu_id[t] >= MAX_EVENTS-1 ) {
+            glog.gpu_id[t] += 1;  // count last event
+            fprintf( stderr, "WARNING: trace on gpu %d/stream %d reached limit of %d events; output will be truncated.\n",
+                     dev, s, glog.gpu_id[t] );
+        }
+        fprintf( trace_file, "<!-- gpu %d, stream %d (t %d), nevents %d -->\n", dev, s, t, glog.gpu_id[t] );
+        fprintf( trace_file, "<g inkscape:groupmode=\"layer\" inkscape:label=\"gpu %d stream %d\">\n", dev, s );
+        fprintf( trace_file, "<text x=\"%8.3f\" y=\"%4.0f\" width=\"%4.0f\" height=\"%2.0f\">GPU %d (s%d):</text>\n",
+                 margin,
+                 margin + (dev*glog.nstream + s + glog.ncore)*(height + space) + height - pad,
+                 label, height,
+                 dev, s );
+        cudaSetDevice( dev );
+        float start, end;
+        for( int i = 0; i < glog.gpu_id[t]; ++i ) {
 #if TRACE_METHOD == 2
-                start = glog.gpu_start[t][i] - glog.cpu_first;
-                if ( i > 0 ) {
-                    // later of task's CPU start time and previous task's end time
-                    start = max( start, end );
-                }
-#else
-                cudaEventElapsedTime( &start, glog.gpu_first[t], glog.gpu_start[t][i] );
-                start *= 1e-3;
-#endif
-                cudaEventElapsedTime( &end  , glog.gpu_first[t], glog.gpu_end  [t][i] );
-                end   *= 1e-3;
-                fprintf( trace_file, format,
-                         margin + start * xscale,
-                         margin + (dev*glog.nstream + s + glog.ncore) * (height + space),
-                         (end - start) * xscale,
-                         height,
-                         glog.gpu_tag[t][i],
-                         glog.gpu_label[t][i] );
+            start = glog.gpu_start[t][i] - glog.cpu_first;
+            if ( i > 0 ) {
+                // later of task's CPU start time and previous task's end time
+                start = max( start, end );
             }
-            fprintf( trace_file, "</g>\n\n" );
-        }}
-    //}
-    //catch( cudaError_t err ) {
-    //    fprintf( stderr, "CUDA error: %s (%d)\n", cudaGetErrorString( err ), err );
-    //}
+#else
+            cudaEventElapsedTime( &start, glog.gpu_first[t], glog.gpu_start[t][i] );
+            start *= 1e-3;  // ms to seconds
+#endif
+            cudaEventElapsedTime( &end  , glog.gpu_first[t], glog.gpu_end  [t][i] );
+            end   *= 1e-3;  // ms to seconds
+            fprintf( trace_file, format,
+                     left + start*xscale,
+                     top,
+                     (end - start)*xscale,
+                     height,
+                     glog.gpu_tag[t][i],
+                     glog.gpu_label[t][i] );
+            legend.insert( glog.gpu_tag[t][i] );
+        }
+        top += (height + space);
+        fprintf( trace_file, "</g>\n\n" );
+    }}
+    
+    // output time scale
+    top += (-space + margin);
+    fprintf( trace_file, "<g inkscape:groupmode=\"layer\" inkscape:label=\"scale\">\n" );
+    fprintf( trace_file, "<text x=\"%8.1f\" y=\"%4.0f\" width=\"%2.0f\" height=\"%2.0f\">Time (sec):</text>\n",
+             margin, top + height - pad, label, height );
+    for( double s=0; s < time; s += xtick ) {
+        fprintf( trace_file,
+            "<line x1=\"%8.1f\" y1=\"0\" x2=\"%8.1f\" y2=\"%4.0f\"/>"
+            "<text x=\"%8.1f\" y=\"%4.0f\">%4.1f</text>\n",
+            left + s*xscale,
+            left + s*xscale,
+            top,
+            left + s*xscale,
+            top + height - pad,
+            s );
+    }
+    fprintf( trace_file, "</g>\n\n" );
+    top += (height + margin);
+    
+    // output legend
+    fprintf( trace_file, "<g inkscape:groupmode=\"layer\" inkscape:label=\"legend\">\n" );
+    fprintf( trace_file, "<text x=\"%8.1f\" y=\"%4.0f\" width=\"%2.0f\" height=\"%2.0f\">Legend:</text>\n",
+             margin, top + height - pad, label, height );
+    double x=left;
+    for( std::set<std::string>::iterator it=legend.begin(); it != legend.end(); ++it ) {
+        fprintf( trace_file,
+            "<rect x=\"%8.1f\" y=\"%4.0f\" width=\"%2.0f\" height=\"%2.0f\" class=\"%s\"/>"
+            "<text x=\"%8.1f\" y=\"%4.0f\" width=\"%2.0f\" height=\"%2.0f\">%s</text>",
+            x,       top,                label, height, (*it).c_str(),
+            x + pad, top + height - pad, label, height, (*it).c_str() );
+        x += label + margin;
+    }
+    fprintf( trace_file, "</g>\n\n" );
     
     fprintf( trace_file, "</svg>\n" );
     

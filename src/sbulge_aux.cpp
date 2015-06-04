@@ -7,15 +7,12 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated s Wed Nov 14 22:53:24 2012
+ *     @generated s Fri Jun 28 19:32:36 2013
  *
  */
 
 #include "common_magma.h"
 #include "magma_sbulgeinc.h"
-// === Define what BLAS to use ============================================
-
-// === End defining what BLAS to use ======================================
  
 
 //////////////////////////////////////////////////////////////
@@ -83,10 +80,9 @@ extern "C" void  magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
   }
   printf("using magma_sstedx\n");
 
-#define ENABLE_TIMER 
+ 
 #ifdef ENABLE_TIMER 
     magma_timestr_t start, end;
-    
     start = get_current_time();
 #endif
 
@@ -106,7 +102,6 @@ extern "C" void  magma_sstedx_withZ(magma_int_t N, magma_int_t NE, float *D, flo
 
 #ifdef ENABLE_TIMER    
     end = get_current_time();
-    
     printf("time sstedx = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
