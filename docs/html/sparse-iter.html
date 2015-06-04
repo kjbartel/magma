@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -122,7 +122,7 @@ $(document).ready(function(){initNavTree('sparse-iter.html','');});
 <p>For each of these steps, multiple options are offered by the MAGMA software stack.</p>
 <h1><a class="anchor" id="datastructures"></a>
 Sparse Data Structures </h1>
-<p>For a more generic programming approach, the sparse data structures (matrices and vectors) are stored in data structures containing all information necessary to access the sparse-BLAS via wrappers: </p><pre class="fragment">struct magma_z_sparse_matrix{
+<p>For a more generic programming approach, the sparse data structures (matrices and vectors) are stored in data structures containing all information necessary to access the sparse-BLAS via wrappers: </p><pre class="fragment">struct magma_z_matrix{
     magma_storage_t    storage_type;            // matrix format - CSR, ELL, SELL-P
     magma_location_t   memory_location;         // CPU or DEV
     magma_symmetry_t   sym;                     // opt: indicate symmetry
@@ -157,9 +157,9 @@ Sparse Data Structures </h1>
     magma_int_t        blocksize;               // opt: info for SELL-P/BCSR
     magma_int_t        numblocks;               // opt: info for SELL-P/BCSR
     magma_int_t        alignment;               // opt: info for SELL-P/BCSR
-}magma_z_sparse_matrix;
+}magma_z_matrix;
 
-struct magma_z_vector{
+struct magma_z_matrix{
     magma_location_t   memory_location;         // CPU or DEV
     magma_int_t        num_rows;                // number of rows
     magma_int_t        num_cols;                // number of columns (in case of a block of vectors)
@@ -169,20 +169,20 @@ struct magma_z_vector{
         magmaDoubleComplex_ptr  dval;           // array containing values in DEV case
     };
     magma_order_t      major;                   // storage type:Row/Column-Major
-}magma_z_vector;
+}magma_z_matrix;
 </pre><p>The purpose of the unions (e.g. for the val array) is to support different hardware platforms, where the magmaXXX_ptr is adapted to the respective device characteristics.</p>
 <p>For sparse matrices, the main formats are CSR, ELL and the MAGMA-specific SELL-P. Generally, the sparse-BLAS routines provide for these the best performance.</p>
 <p>Without specifying the storage type, the memory location or the dimension of the matrix, the sparse matrix vector product can then be used via the wrapper: </p><pre class="fragment">magma_z_spmv(
         magmaDoubleComplex alpha,
-        magma_z_sparse_matrix A,
-        magma_z_vector x,
+        magma_z_matrix A,
+        magma_z_matrix x,
         magmaDoubleComplex beta,
-        magma_z_vector y,
+        magma_z_matrix y,
         magma_queue_t queue );
 </pre><h1><a class="anchor" id="io"></a>
 Sparse I/O </h1>
 <p>A sparse matrix stored in mtx format can be read from disk via the function: </p><pre class="fragment">magma_z_csr_mtx(
-        magma_z_sparse_matrix *A,
+        magma_z_matrix *A,
         const char *filename,
         magma_queue_t queue );
 </pre><p>A sparse linear system of dimension mxn present in main memory can be passed to MAGMA via the function: </p><pre class="fragment">magma_zcsrset(
@@ -191,7 +191,7 @@ Sparse I/O </h1>
         magma_index_t *row,
         magma_index_t *col,
         magmaDoubleComplex *val,
-        magma_z_sparse_matrix *A,
+        magma_z_matrix *A,
         magma_queue_t queue );
 </pre><p>where row, col, val contain the matrix in CSR format.</p>
 <p>If the matrix is already present in DEV memory, the corresponding function is </p><pre class="fragment">magma_zcsrset_gpu(
@@ -200,10 +200,10 @@ Sparse I/O </h1>
     magmaIndex_ptr row,
     magmaIndex_ptr col,
     magmaDoubleComplex_ptr val,
-    magma_z_sparse_matrix *A,
+    magma_z_matrix *A,
     magma_queue_t queue );
 </pre><p>Similarly, matrices handled in MAGMA can be returned via the functions </p><pre class="fragment">magma_zcsrget(
-    magma_z_sparse_matrix A,
+    magma_z_matrix A,
     magma_int_t *m,
     magma_int_t *n,
     magma_index_t **row,
@@ -212,7 +212,7 @@ Sparse I/O </h1>
     magma_queue_t queue );
 
 magma_zcsrget_gpu(
-    magma_z_sparse_matrix A,
+    magma_z_matrix A,
     magma_int_t *m,
     magma_int_t *n,
     magmaIndex_ptr *row,
@@ -223,34 +223,34 @@ magma_zcsrget_gpu(
 respectively
 
 write_z_csrtomtx(
-    magma_z_sparse_matrix A,
+    magma_z_matrix A,
     const char *filename,
     magma_queue_t queue );
 </pre><p>Additionally, MAGMA contains routines to generate stencil discretizations of different kind.</p>
 <p>Vectors can be initiated inside MAGMA via </p><pre class="fragment">magma_z_vinit(
-    magma_z_vector *x,
+    magma_z_matrix *x,
     magma_location_t memory_location,
     magma_int_t num_rows,
     magmaDoubleComplex values,
     magma_queue_t queue );
 </pre><p>where ''memory_location'' sets the location (Magma_CPU or Magma_DEV). Also, vectors can be read from file via </p><pre class="fragment">magma_z_vread(
-    magma_z_vector *x,
+    magma_z_matrix *x,
     magma_int_t length,
     char * filename,
     magma_queue_t queue );
 </pre><p>or - in case of a block of sparse vectors stored as CSR matrix - via </p><pre class="fragment">magma_z_vspread(
-    magma_z_vector *x,
+    magma_z_matrix *x,
     const char * filename,
     magma_queue_t queue );
 </pre><p>or passed from/to main memory: </p><pre class="fragment">magma_zvset(
     magma_int_t m,
     magma_int_t n,
     magmaDoubleComplex *val,
-    magma_z_vector *b,
+    magma_z_matrix *b,
     magma_queue_t queue );
 
 magma_zvget(
-    magma_z_vector b
+    magma_z_matrix b
     magma_int_t *m,
     magma_int_t *n,
     magmaDoubleComplex **val,
@@ -258,8 +258,8 @@ magma_zvget(
 </pre><h1><a class="anchor" id="formats"></a>
 Matrix Formats </h1>
 <p>To convert a matrix from one into another format, the CPU-based routine </p><pre class="fragment">magma_z_mconvert(
-    magma_z_sparse_matrix A,
-    magma_z_sparse_matrix *B,
+    magma_z_matrix A,
+    magma_z_matrix *B,
     magma_storage_t old_format,
     magma_storage_t new_format,
     magma_queue_t queue );
@@ -267,25 +267,25 @@ Matrix Formats </h1>
 <h1><a class="anchor" id="memorhandling"></a>
 Memory Handling </h1>
 <p>All iterative solvers and eigensolvers included in the sparse-iter package work on the device. Hence, it is required to send the respective data structures to the device for solving, and back to access the solution. The functions </p><pre class="fragment">magma_z_mtransfer(
-    magma_z_sparse_matrix A,
-    magma_z_sparse_matrix *B,
+    magma_z_matrix A,
+    magma_z_matrix *B,
     magma_location_t src,
     magma_location_t dst,
     magma_queue_t queue );
 
 magma_z_vtransfer(
-    magma_z_vector x,
-    magma_z_vector *y,
+    magma_z_matrix x,
+    magma_z_matrix *y,
     magma_location_t src,
     magma_location_t dst,
     magma_queue_t queue );
 </pre><p>allow any data copy operation - from host to device, device to device, device to host or host to host.</p>
 <p>Linear algebra objects can be deallocated via </p><pre class="fragment">magma_z_mfree(
-    magma_z_sparse_matrix *A,
+    magma_z_matrix *A,
     magma_queue_t queue );
 
 magma_z_vfree(
-    magma_z_vector *x,
+    magma_z_matrix *x,
     magma_queue_t queue );
 </pre><h1><a class="anchor" id="sparsesolvers"></a>
 Iterative Solvers </h1>
@@ -328,21 +328,21 @@ Iterative Solvers </h1>
     magma_queue_t queue );
 </pre><p>deallocates all memory used within the solver and preconditioner structure.</p>
 <p>A solver can then be called via </p><pre class="fragment">magma_z*solvername*(
-    magma_z_sparse_matrix A,
-    magma_z_vector b,
-    magma_z_vector *x,
+    magma_z_matrix A,
+    magma_z_matrix b,
+    magma_z_matrix *x,
     magma_z_solver_par *solver_par,
     magma_queue_t queue );
 </pre><p>respectively </p><pre class="fragment">magma_z*solvername*(
-    magma_z_sparse_matrix A,
-    magma_z_vector b,
-    magma_z_vector *x,
+    magma_z_matrix A,
+    magma_z_matrix b,
+    magma_z_matrix *x,
     magma_z_solver_par *solver_par,
     magma_z_preconditioner *precond_par,
     magma_queue_t queue );
 </pre><p>More conveniant is the use the wrapper </p><pre class="fragment">magma_z_solver(
-    magma_z_sparse_matrix A, magma_z_vector b,
-    magma_z_vector *x, magma_zopts *zopts,
+    magma_z_matrix A, magma_z_matrix b,
+    magma_z_matrix *x, magma_zopts *zopts,
     magma_queue_t queue );
 </pre><p>where zopts is a structure containing both, the solver and the preconditioner information: struct magma_zopts{ magma_z_solver_par solver_par; magma_z_preconditioner precond_par; magma_storage_t input_format; int blocksize; int alignment; magma_storage_t output_format; magma_location_t input_location; magma_location_t output_location; magma_scale_t scaling; }magma_zopts;</p>
 <p>All entities of this structure can be initialized from command line by calling </p><pre class="fragment">magma_zparse_opts(
@@ -379,7 +379,7 @@ Example </h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:45 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:12 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

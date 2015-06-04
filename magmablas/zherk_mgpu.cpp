@@ -20,7 +20,7 @@
     This zherk_mgpu is internal routine used by zpotrf_mgpu_right.
     it has specific assumption on the block diagonal.
     
-    @ingroup magma_zherk_comp
+    @ingroup magma_zblas3
     ********************************************************************/
 
 extern "C" void

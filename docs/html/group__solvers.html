@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
-<title>MAGMA: Linear Systems</title>
+<title>MAGMA: Linear systems</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('group__solvers.html','');});
   <div class="summary">
 <a href="#groups">Modules</a>  </div>
   <div class="headertitle">
-<div class="title">Linear Systems</div>  </div>
+<div class="title">Linear systems</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -121,9 +121,12 @@ Modules</h2></td></tr>
 <tr class="memdesc:group__magma__gesv"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve \( Ax = b \), using LU factorization for general \( A \). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__magma__posv"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__posv.html">Cholesky solve</a></td></tr>
-<tr class="memdesc:group__magma__posv"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve \( Ax = b \), using Cholesky factorization for symmetric positive definite (SPD) \( A \). <br /></td></tr>
+<tr class="memdesc:group__magma__posv"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve \( Ax = b \), using Cholesky factorization for symmetric/Hermitian positive definite (SPD) \( A \). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__magma__gels"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__gels.html">Least Squares</a></td></tr>
+<tr class="memitem:group__magma__sysv"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sysv.html">Symmetric indefinite solve</a></td></tr>
+<tr class="memdesc:group__magma__sysv"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve \( Ax = b \), using indefinite factorization for symmetric/Hermitian \( A \). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:group__magma__gels"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__gels.html">Least squares</a></td></tr>
 <tr class="memdesc:group__magma__gels"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve over- or under-determined \( Ax = b \). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -134,7 +137,7 @@ Modules</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:45 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:12 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

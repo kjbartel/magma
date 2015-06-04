@@ -4,6 +4,7 @@ var group__magma__zblas3 =
     [ "magma_zhemm", "group__magma__zblas3.html#ga76a65b497151bcb560c94c7dbc31c99a", null ],
     [ "magma_zher2k", "group__magma__zblas3.html#ga54ca9b7106797176b040f08ca430f9a1", null ],
     [ "magma_zherk", "group__magma__zblas3.html#gaedbc23544bad4144c1b9415272bd1c2c", null ],
+    [ "magma_zherk_mgpu", "group__magma__zblas3.html#ga9d1d6c0dcd7cc60a26f21df6dccc9255", null ],
     [ "magma_zsymm", "group__magma__zblas3.html#ga6fa89e85be9c67d76c68643869b736df", null ],
     [ "magma_zsyr2k", "group__magma__zblas3.html#gaaf0d4e48b7d65e1965004cd477d4a651", null ],
     [ "magma_zsyrk", "group__magma__zblas3.html#ga77cb826a086526fc1418e43adc708a92", null ],

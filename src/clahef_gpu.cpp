@@ -102,7 +102,7 @@
                  has been completed, but the block diagonal matrix D is
                  exactly singular.
   
-    @ingroup magma_chetrf_comp
+    @ingroup magma_chesv_aux
     ********************************************************************/
 extern "C" magma_int_t
 magma_clahef_gpu(

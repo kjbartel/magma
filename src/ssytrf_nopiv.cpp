@@ -69,7 +69,7 @@
                   positive definite, and the factorization could not be   
                   completed.
 
-    @ingroup magma_ssytrf_comp              
+    @ingroup magma_ssysv_comp
     ******************************************************************* */
 extern "C" magma_int_t
 magma_ssytrf_nopiv(

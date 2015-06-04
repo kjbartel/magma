@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -108,26 +108,26 @@ $(document).ready(function(){initNavTree('group__magmasparse__zheev.html','');})
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">double-complex precision<div class="ingroups"><a class="el" href="group__sparse__heev.html">hermitian eigenvalue</a></div></div>  </div>
+<div class="title">double-complex precision<div class="ingroups"><a class="el" href="group__sparse__heev.html">Symmetric eigenvalue</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gad00951041b786d394370cb9c4ac25e04"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zheev.html#gad00951041b786d394370cb9c4ac25e04">magma_zlobpcg</a> (magma_z_sparse_matrix A, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gad00951041b786d394370cb9c4ac25e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves an eigenvalue problem.  <a href="#gad00951041b786d394370cb9c4ac25e04">More...</a><br /></td></tr>
-<tr class="separator:gad00951041b786d394370cb9c4ac25e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae662be23a9a8b2a835cd42a8c3ba9f51"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zheev.html#gae662be23a9a8b2a835cd42a8c3ba9f51">magma_zlobpcg</a> (magma_z_matrix A, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gae662be23a9a8b2a835cd42a8c3ba9f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves an eigenvalue problem.  <a href="#gae662be23a9a8b2a835cd42a8c3ba9f51">More...</a><br /></td></tr>
+<tr class="separator:gae662be23a9a8b2a835cd42a8c3ba9f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gad00951041b786d394370cb9c4ac25e04"></a>
+<a class="anchor" id="gae662be23a9a8b2a835cd42a8c3ba9f51"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zlobpcg </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
@@ -135,6 +135,12 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">magma_z_solver_par *&#160;</td>
           <td class="paramname"><em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_preconditioner *&#160;</td>
+          <td class="paramname"><em>precond_par</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -157,11 +163,9 @@ Functions</h2></td></tr>
 <p>This method allocates all required memory space inside the routine. Also, the memory is not allocated as one big chunk, but seperatly for the different blocks. This allows to use texture also for large matrices.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters <pre class="fragment">                        make sure to fill:
-                        num_eigenvalues
-                        length_ev
-</pre> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">precond_par</td><td>magma_z_precond_par* preconditioner parameters</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -174,7 +178,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:48 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:15 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -4,6 +4,7 @@ var group__magma__sblas3 =
     [ "magma_ssymm", "group__magma__sblas3.html#ga656eacd599a042052476ac2cd57fd669", null ],
     [ "magma_ssyr2k", "group__magma__sblas3.html#gac130f025860d36e013512cc43689994b", null ],
     [ "magma_ssyrk", "group__magma__sblas3.html#ga126192b3e85f56ebcb1f7516a4b6d32a", null ],
+    [ "magma_ssyrk_mgpu", "group__magma__sblas3.html#gaf910cf5c193df36dd5cd6aad041e2202", null ],
     [ "magma_strmm", "group__magma__sblas3.html#gada995557f67b53620ead1fb4a567f255", null ],
     [ "magma_strsm", "group__magma__sblas3.html#ga39ef682ec0a298ba8df1000c85c63a3f", null ],
     [ "magma_strsm_m", "group__magma__sblas3.html#ga1cd1d3c9d203f497367157a07d11baf8", null ],

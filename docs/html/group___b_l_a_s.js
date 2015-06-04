@@ -6,6 +6,5 @@ var group___b_l_a_s =
     [ "Math auxiliary", "group__magma__aux0.html", "group__magma__aux0" ],
     [ "Level-1 auxiliary", "group__magma__aux1.html", "group__magma__aux1" ],
     [ "Level-2 auxiliary", "group__magma__aux2.html", "group__magma__aux2" ],
-    [ "Level-3 auxiliary", "group__magma__aux3.html", "group__magma__aux3" ],
-    [ "Communication", "group__magma__comm.html", "group__magma__comm" ]
+    [ "Level-3 auxiliary", "group__magma__aux3.html", "group__magma__aux3" ]
 ];

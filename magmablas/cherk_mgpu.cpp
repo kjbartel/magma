@@ -20,7 +20,7 @@
     This cherk_mgpu is internal routine used by cpotrf_mgpu_right.
     it has specific assumption on the block diagonal.
     
-    @ingroup magma_cherk_comp
+    @ingroup magma_cblas3
     ********************************************************************/
 
 extern "C" void

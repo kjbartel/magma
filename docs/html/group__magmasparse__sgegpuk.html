@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -114,15 +114,21 @@ $(document).ready(function(){initNavTree('group__magmasparse__sgegpuk.html','');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga93acfb8809018b797937fd59efd0b787"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga93acfb8809018b797937fd59efd0b787">magma_sbajac_csr</a> (magma_int_t localiters, magma_s_sparse_matrix D, magma_s_sparse_matrix R, magma_s_vector b, magma_s_vector *x, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga93acfb8809018b797937fd59efd0b787"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine is a block-asynchronous Jacobi iteration performing s local Jacobi-updates within the block.  <a href="#ga93acfb8809018b797937fd59efd0b787">More...</a><br /></td></tr>
-<tr class="separator:ga93acfb8809018b797937fd59efd0b787"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga33e538354979538a925f348e430180a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga33e538354979538a925f348e430180a6">magma_scompact</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dnorms, float tol, magmaInt_ptr active, magmaInt_ptr cBlock, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga33e538354979538a925f348e430180a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZCOMPACT takes a set of n vectors of size m (in dA) and their norms and compacts them into the cBlock size&lt;=n vectors that have norms &gt; tol.  <a href="#ga33e538354979538a925f348e430180a6">More...</a><br /></td></tr>
-<tr class="separator:ga33e538354979538a925f348e430180a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad582fefd1ec9a0cd2f6f7339622d7753"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gad582fefd1ec9a0cd2f6f7339622d7753">magma_sjacobisetup_vector_gpu</a> (int num_rows, magma_s_vector b, magma_s_vector d, magma_s_vector c, magma_s_vector *x, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gad582fefd1ec9a0cd2f6f7339622d7753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gad582fefd1ec9a0cd2f6f7339622d7753">More...</a><br /></td></tr>
-<tr class="separator:gad582fefd1ec9a0cd2f6f7339622d7753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga29d994816c56baae8738b23670757cac"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga29d994816c56baae8738b23670757cac">magma_sbajac_csr</a> (magma_int_t localiters, magma_s_matrix D, magma_s_matrix R, magma_s_matrix b, magma_s_matrix *x, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga29d994816c56baae8738b23670757cac"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine is a block-asynchronous Jacobi iteration performing s local Jacobi-updates within the block.  <a href="#ga29d994816c56baae8738b23670757cac">More...</a><br /></td></tr>
+<tr class="separator:ga29d994816c56baae8738b23670757cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0090f53ff98caac8a9a7ad7329d45905"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga0090f53ff98caac8a9a7ad7329d45905">magma_scompact</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dnorms, float tol, magmaInt_ptr active, magmaInt_ptr cBlock, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga0090f53ff98caac8a9a7ad7329d45905"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZCOMPACT takes a set of n vectors of size m (in dA) and their norms and compacts them into the cBlock size&lt;=n vectors that have norms &gt; tol.  <a href="#ga0090f53ff98caac8a9a7ad7329d45905">More...</a><br /></td></tr>
+<tr class="separator:ga0090f53ff98caac8a9a7ad7329d45905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga382e9f0305a849f7c79b6f859d9e3db6"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga382e9f0305a849f7c79b6f859d9e3db6">magma_siteric_csr</a> (magma_s_matrix A, magma_s_matrix A_CSR, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga382e9f0305a849f7c79b6f859d9e3db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine iteratively computes an incomplete Cholesky factorization.  <a href="#ga382e9f0305a849f7c79b6f859d9e3db6">More...</a><br /></td></tr>
+<tr class="separator:ga382e9f0305a849f7c79b6f859d9e3db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab97359287b75762ab1e0785de9a626de"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gab97359287b75762ab1e0785de9a626de">magma_siterilu_csr</a> (magma_s_matrix A, magma_s_matrix L, magma_s_matrix U, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gab97359287b75762ab1e0785de9a626de"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine iteratively computes an incomplete LU factorization.  <a href="#gab97359287b75762ab1e0785de9a626de">More...</a><br /></td></tr>
+<tr class="separator:gab97359287b75762ab1e0785de9a626de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga12319060ea0cf4ebfa80417a9763a140"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga12319060ea0cf4ebfa80417a9763a140">magma_sjacobisetup_vector_gpu</a> (int num_rows, magma_s_matrix b, magma_s_matrix d, magma_s_matrix c, magma_s_matrix *x, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga12319060ea0cf4ebfa80417a9763a140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga12319060ea0cf4ebfa80417a9763a140">More...</a><br /></td></tr>
+<tr class="separator:ga12319060ea0cf4ebfa80417a9763a140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8f278cffaa1c23d3ac0f1374a12bdcc2"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga8f278cffaa1c23d3ac0f1374a12bdcc2">magma_slobpcg_maxpy</a> (magma_int_t num_rows, magma_int_t num_vecs, magmaFloat_ptr X, magmaFloat_ptr Y, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga8f278cffaa1c23d3ac0f1374a12bdcc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine computes a axpy for a mxn matrix:  <a href="#ga8f278cffaa1c23d3ac0f1374a12bdcc2">More...</a><br /></td></tr>
 <tr class="separator:ga8f278cffaa1c23d3ac0f1374a12bdcc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,22 +144,22 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa170c0a962db8767931c7479001c7392"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gaa170c0a962db8767931c7479001c7392">magma_sbicgmerge4</a> (int type, magmaFloat_ptr skp)</td></tr>
 <tr class="memdesc:gaa170c0a962db8767931c7479001c7392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs some parameter operations for the BiCGSTAB with scalars on GPU.  <a href="#gaa170c0a962db8767931c7479001c7392">More...</a><br /></td></tr>
 <tr class="separator:gaa170c0a962db8767931c7479001c7392"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac6e791b0014744b8d294777d22f2fcf3"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gac6e791b0014744b8d294777d22f2fcf3">magma_sbicgmerge_spmv1</a> (magma_s_sparse_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr dp, magmaFloat_ptr dr, magmaFloat_ptr dv, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gac6e791b0014744b8d294777d22f2fcf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the first SpmV using CSR with the dot product and the computation of alpha.  <a href="#gac6e791b0014744b8d294777d22f2fcf3">More...</a><br /></td></tr>
-<tr class="separator:gac6e791b0014744b8d294777d22f2fcf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0036be41d35eb8365dac5df8911bdd27"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga0036be41d35eb8365dac5df8911bdd27">magma_sbicgmerge_spmv2</a> (magma_s_sparse_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr ds, magmaFloat_ptr dt, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga0036be41d35eb8365dac5df8911bdd27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the second SpmV using CSR with the dot product and the computation of omega.  <a href="#ga0036be41d35eb8365dac5df8911bdd27">More...</a><br /></td></tr>
-<tr class="separator:ga0036be41d35eb8365dac5df8911bdd27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf98da2724ddaa96db2ffae9a944f4c4e"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gaf98da2724ddaa96db2ffae9a944f4c4e">magma_sbicgmerge_spmv1</a> (magma_s_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr dp, magmaFloat_ptr dr, magmaFloat_ptr dv, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gaf98da2724ddaa96db2ffae9a944f4c4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the first SpmV using CSR with the dot product and the computation of alpha.  <a href="#gaf98da2724ddaa96db2ffae9a944f4c4e">More...</a><br /></td></tr>
+<tr class="separator:gaf98da2724ddaa96db2ffae9a944f4c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9fa95cc9809ecb69cdc8d4088014b2fd"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga9fa95cc9809ecb69cdc8d4088014b2fd">magma_sbicgmerge_spmv2</a> (magma_s_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr ds, magmaFloat_ptr dt, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga9fa95cc9809ecb69cdc8d4088014b2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the second SpmV using CSR with the dot product and the computation of omega.  <a href="#ga9fa95cc9809ecb69cdc8d4088014b2fd">More...</a><br /></td></tr>
+<tr class="separator:ga9fa95cc9809ecb69cdc8d4088014b2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d83522556cf31c1ff3b14f76032593b"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga4d83522556cf31c1ff3b14f76032593b">magma_sbicgmerge_xrbeta</a> (int n, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr rr, magmaFloat_ptr r, magmaFloat_ptr p, magmaFloat_ptr s, magmaFloat_ptr t, magmaFloat_ptr x, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga4d83522556cf31c1ff3b14f76032593b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the second SpmV using CSR with the dot product and the computation of omega.  <a href="#ga4d83522556cf31c1ff3b14f76032593b">More...</a><br /></td></tr>
 <tr class="separator:ga4d83522556cf31c1ff3b14f76032593b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7fc13df51c3b9d5209f80dd6eabe5878"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#ga7fc13df51c3b9d5209f80dd6eabe5878">magma_scgmerge_spmv1</a> (magma_s_sparse_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr dd, magmaFloat_ptr dz, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga7fc13df51c3b9d5209f80dd6eabe5878"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the first SpmV using different formats with the dot product and the computation of rho.  <a href="#ga7fc13df51c3b9d5209f80dd6eabe5878">More...</a><br /></td></tr>
-<tr class="separator:ga7fc13df51c3b9d5209f80dd6eabe5878"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac76227cebc7f5c40aa18214ff8759ef0"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__sgegpuk.html#gac76227cebc7f5c40aa18214ff8759ef0">magma_scgmerge_spmv1</a> (magma_s_matrix A, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr dd, magmaFloat_ptr dz, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gac76227cebc7f5c40aa18214ff8759ef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the first SpmV using different formats with the dot product and the computation of rho.  <a href="#gac76227cebc7f5c40aa18214ff8759ef0">More...</a><br /></td></tr>
+<tr class="separator:gac76227cebc7f5c40aa18214ff8759ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga93acfb8809018b797937fd59efd0b787"></a>
+<a class="anchor" id="ga29d994816c56baae8738b23670757cac"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -166,25 +172,25 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>D</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>R</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector *&#160;</td>
+          <td class="paramtype">magma_s_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -206,10 +212,10 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">localiters</td><td>magma_int_t number of local Jacobi-like updates</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">D</td><td>magma_s_sparse_matrix input matrix with diagonal blocks</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">R</td><td>magma_s_sparse_matrix input matrix with non-diagonal parts</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_s_vector RHS</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>magma_s_vector* iterate/solution</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">D</td><td>magma_s_matrix input matrix with diagonal blocks</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">R</td><td>magma_s_matrix input matrix with non-diagonal parts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_s_matrix RHS</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>magma_s_matrix* iterate/solution</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -444,14 +450,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gac6e791b0014744b8d294777d22f2fcf3"></a>
+<a class="anchor" id="gaf98da2724ddaa96db2ffae9a944f4c4e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_sbicgmerge_spmv1 </td>
           <td>(</td>
-          <td class="paramtype">magma_s_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
@@ -507,7 +513,7 @@ Functions</h2></td></tr>
 <p>Merges the first SpmV using CSR with the dot product and the computation of alpha. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_sparse_matrix system matrix</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_matrix system matrix</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d1</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d2</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dp</td><td>magmaFloat_ptr input vector p</td></tr>
@@ -521,14 +527,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga0036be41d35eb8365dac5df8911bdd27"></a>
+<a class="anchor" id="ga9fa95cc9809ecb69cdc8d4088014b2fd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_sbicgmerge_spmv2 </td>
           <td>(</td>
-          <td class="paramtype">magma_s_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
@@ -578,7 +584,7 @@ Functions</h2></td></tr>
 <p>Merges the second SpmV using CSR with the dot product and the computation of omega. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_sparse_matrix input matrix</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_matrix input matrix</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d1</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d2</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ds</td><td>magmaFloat_ptr input vector s</td></tr>
@@ -689,14 +695,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga7fc13df51c3b9d5209f80dd6eabe5878"></a>
+<a class="anchor" id="gac76227cebc7f5c40aa18214ff8759ef0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_scgmerge_spmv1 </td>
           <td>(</td>
-          <td class="paramtype">magma_s_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
@@ -746,7 +752,7 @@ Functions</h2></td></tr>
 <p>Merges the first SpmV using different formats with the dot product and the computation of rho. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_sparse_matrix input matrix</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_matrix input matrix</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d1</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">d2</td><td>magmaFloat_ptr temporary vector</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dd</td><td>magmaFloat_ptr input vector d</td></tr>
@@ -759,12 +765,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga33e538354979538a925f348e430180a6"></a>
+<a class="anchor" id="ga0090f53ff98caac8a9a7ad7329d45905"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void magma_scompact </td>
+          <td class="memname">magma_int_t magma_scompact </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&#160;</td>
           <td class="paramname"><em>m</em>, </td>
@@ -844,7 +850,102 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gad582fefd1ec9a0cd2f6f7339622d7753"></a>
+<a class="anchor" id="ga382e9f0305a849f7c79b6f859d9e3db6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_siteric_csr </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
+          <td class="paramname"><em>A_CSR</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This routine iteratively computes an incomplete Cholesky factorization. </p>
+<p>The idea is according to Edmond Chow's presentation at SIAM 2014. This routine was used in the ISC 2015 paper: E. Chow et al.: 'Study of an Asynchronous Iterative Algorithm for Computing Incomplete Factorizations on GPUs'</p>
+<p>The input format of the initial guess matrix A is Magma_CSRCOO, A_CSR is CSR or CSRCOO format.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_matrix input matrix A - initial guess (lower triangular)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">out]</td><td>A_CSR magma_s_matrix input/output matrix containing the IC approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A_CSR</td><td>magma_s_matrix input/output matrix containing the IC approximation </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gab97359287b75762ab1e0785de9a626de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_siterilu_csr </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
+          <td class="paramname"><em>U</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This routine iteratively computes an incomplete LU factorization. </p>
+<p>The idea is according to Edmond Chow's presentation at SIAM 2014. This routine was used in the ISC 2015 paper: E. Chow et al.: 'Study of an Asynchronous Iterative Algorithm for Computing Incomplete Factorizations on GPUs'</p>
+<p>The input format of the matrix is Magma_CSRCOO for the upper and lower triangular parts. Note however, that we flip col and rowidx for the U-part. Every component of L and U is handled by one thread.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_s_matrix input matrix A determing initial guess &amp; processing order</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">out]</td><td>L magma_s_matrix input/output matrix L containing the ILU approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">out]</td><td>U magma_s_matrix input/output matrix U containing the ILU approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A_CSR</td><td>magma_s_matrix input/output matrix containing the IC approximation </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga12319060ea0cf4ebfa80417a9763a140"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -857,25 +958,25 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector&#160;</td>
+          <td class="paramtype">magma_s_matrix&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_s_vector *&#160;</td>
+          <td class="paramtype">magma_s_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -897,10 +998,10 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">num_rows</td><td>magma_int_t number of rows</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_s_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_s_vector vector with diagonal entries</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>magma_s_vector* c = D^(-1) * b</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>magma_s_vector* iteration vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_s_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_s_matrix vector with diagonal entries</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>magma_s_matrix* c = D^(-1) * b</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>magma_s_matrix* iteration vector </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -974,7 +1075,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:48 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:15 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

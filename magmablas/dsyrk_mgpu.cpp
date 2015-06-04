@@ -20,7 +20,7 @@
     This dsyrk_mgpu is internal routine used by dpotrf_mgpu_right.
     it has specific assumption on the block diagonal.
     
-    @ingroup magma_dsyrk_comp
+    @ingroup magma_dblas3
     ********************************************************************/
 
 extern "C" void

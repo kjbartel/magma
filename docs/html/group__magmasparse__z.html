@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -114,53 +114,65 @@ $(document).ready(function(){initNavTree('group__magmasparse__z.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga088705edb182238356d419600f79c928"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga088705edb182238356d419600f79c928">magma_zjacobisetup_matrix</a> (magma_z_sparse_matrix A, magma_z_sparse_matrix *M, magma_z_vector *d, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga088705edb182238356d419600f79c928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Matrix M for the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga088705edb182238356d419600f79c928">More...</a><br /></td></tr>
-<tr class="separator:ga088705edb182238356d419600f79c928"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga25aee6446d6b5807fd2827761a03b7e6"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga25aee6446d6b5807fd2827761a03b7e6">magma_zjacobisetup_diagscal</a> (magma_z_sparse_matrix A, magma_z_vector *d, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga25aee6446d6b5807fd2827761a03b7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">It returns a vector d containing the inverse diagonal elements.  <a href="#ga25aee6446d6b5807fd2827761a03b7e6">More...</a><br /></td></tr>
-<tr class="separator:ga25aee6446d6b5807fd2827761a03b7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga606fb44280035c70bd5e52bd980360be"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga606fb44280035c70bd5e52bd980360be">magma_zjacobisetup_vector</a> (magma_z_vector b, magma_z_vector d, magma_z_vector *c, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga606fb44280035c70bd5e52bd980360be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga606fb44280035c70bd5e52bd980360be">More...</a><br /></td></tr>
-<tr class="separator:ga606fb44280035c70bd5e52bd980360be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga72776c21af5a10a39eaa2f855dfc32ac"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga72776c21af5a10a39eaa2f855dfc32ac">magma_zjacobisetup</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_sparse_matrix *M, magma_z_vector *c, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga72776c21af5a10a39eaa2f855dfc32ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga72776c21af5a10a39eaa2f855dfc32ac">More...</a><br /></td></tr>
-<tr class="separator:ga72776c21af5a10a39eaa2f855dfc32ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadd2392b7ee0a6586a1f2f49088e939c1"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gadd2392b7ee0a6586a1f2f49088e939c1">magma_zjacobiiter</a> (magma_z_sparse_matrix M, magma_z_vector c, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gadd2392b7ee0a6586a1f2f49088e939c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gadd2392b7ee0a6586a1f2f49088e939c1">More...</a><br /></td></tr>
-<tr class="separator:gadd2392b7ee0a6586a1f2f49088e939c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga310eea9d0bd5b325cceee534b59693bf"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga310eea9d0bd5b325cceee534b59693bf">magma_zjacobiiter_precond</a> (magma_z_sparse_matrix M, magma_z_vector *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga310eea9d0bd5b325cceee534b59693bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga310eea9d0bd5b325cceee534b59693bf">More...</a><br /></td></tr>
-<tr class="separator:ga310eea9d0bd5b325cceee534b59693bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0bc07eaffdf33dcaa1bcb5ec623be726"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga0bc07eaffdf33dcaa1bcb5ec623be726">magma_z_spmv</a> (magmaDoubleComplex alpha, magma_z_sparse_matrix A, magma_z_vector x, magmaDoubleComplex beta, magma_z_vector y, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga0bc07eaffdf33dcaa1bcb5ec623be726"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given input matrix A and vectors x, y and scalars alpha, beta the wrapper determines the suitable SpMV computing y = alpha * A * x + beta * y.  <a href="#ga0bc07eaffdf33dcaa1bcb5ec623be726">More...</a><br /></td></tr>
-<tr class="separator:ga0bc07eaffdf33dcaa1bcb5ec623be726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0fb47096cd5c1dec11479b13367dcd99"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga0fb47096cd5c1dec11479b13367dcd99">magma_sparse_matrix_zlag2c</a> (magma_z_sparse_matrix A, magma_c_sparse_matrix *B, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga0fb47096cd5c1dec11479b13367dcd99"><td class="mdescLeft">&#160;</td><td class="mdescRight">convertes magma_z_sparse_matrix from Z to C  <a href="#ga0fb47096cd5c1dec11479b13367dcd99">More...</a><br /></td></tr>
-<tr class="separator:ga0fb47096cd5c1dec11479b13367dcd99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga38bd81b6ffd84d4ee5809db7c59c52e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga38bd81b6ffd84d4ee5809db7c59c52e9">magma_zcompactActive</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaInt_ptr active, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga38bd81b6ffd84d4ee5809db7c59c52e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZCOMPACTACTIVE takes a set of n vectors of size m (in dA) and an array of 1s and 0sindicating which vectors to compact (for 1s) and which to disregard (for 0s).  <a href="#ga38bd81b6ffd84d4ee5809db7c59c52e9">More...</a><br /></td></tr>
-<tr class="separator:ga38bd81b6ffd84d4ee5809db7c59c52e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae052858a748dfd20afc0d98680b17bf9"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gae052858a748dfd20afc0d98680b17bf9">magma_zjacobisetup_matrix</a> (magma_z_matrix A, magma_z_matrix *M, magma_z_matrix *d, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gae052858a748dfd20afc0d98680b17bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Matrix M for the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gae052858a748dfd20afc0d98680b17bf9">More...</a><br /></td></tr>
+<tr class="separator:gae052858a748dfd20afc0d98680b17bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadd3590ffce8fb397c1e868d0c2fc4ec3"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gadd3590ffce8fb397c1e868d0c2fc4ec3">magma_zjacobisetup_diagscal</a> (magma_z_matrix A, magma_z_matrix *d, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gadd3590ffce8fb397c1e868d0c2fc4ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">It returns a vector d containing the inverse diagonal elements.  <a href="#gadd3590ffce8fb397c1e868d0c2fc4ec3">More...</a><br /></td></tr>
+<tr class="separator:gadd3590ffce8fb397c1e868d0c2fc4ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaa531cf6a4e0e554fb57a3f109967c50"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gaaa531cf6a4e0e554fb57a3f109967c50">magma_zjacobisetup_vector</a> (magma_z_matrix b, magma_z_matrix d, magma_z_matrix *c, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gaaa531cf6a4e0e554fb57a3f109967c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gaaa531cf6a4e0e554fb57a3f109967c50">More...</a><br /></td></tr>
+<tr class="separator:gaaa531cf6a4e0e554fb57a3f109967c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa42e614c67089d3fc61a84dff15fbb82"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gaa42e614c67089d3fc61a84dff15fbb82">magma_zjacobisetup</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *M, magma_z_matrix *c, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gaa42e614c67089d3fc61a84dff15fbb82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gaa42e614c67089d3fc61a84dff15fbb82">More...</a><br /></td></tr>
+<tr class="separator:gaa42e614c67089d3fc61a84dff15fbb82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9728990d9d5797ce38cab2d63624d5cb"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga9728990d9d5797ce38cab2d63624d5cb">magma_zjacobiiter</a> (magma_z_matrix M, magma_z_matrix c, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga9728990d9d5797ce38cab2d63624d5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga9728990d9d5797ce38cab2d63624d5cb">More...</a><br /></td></tr>
+<tr class="separator:ga9728990d9d5797ce38cab2d63624d5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69f80c3bd8a9529e60821c5b0e649832"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga69f80c3bd8a9529e60821c5b0e649832">magma_zjacobiiter_precond</a> (magma_z_matrix M, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga69f80c3bd8a9529e60821c5b0e649832"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga69f80c3bd8a9529e60821c5b0e649832">More...</a><br /></td></tr>
+<tr class="separator:ga69f80c3bd8a9529e60821c5b0e649832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab4f10977bddc092fb412d3ca399d2c3b"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gab4f10977bddc092fb412d3ca399d2c3b">magma_zjacobiiter_sys</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix d, magma_z_matrix t, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gab4f10977bddc092fb412d3ca399d2c3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gab4f10977bddc092fb412d3ca399d2c3b">More...</a><br /></td></tr>
+<tr class="separator:gab4f10977bddc092fb412d3ca399d2c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf2cfc7dde081ea84002eff1738a47ac"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gaaf2cfc7dde081ea84002eff1738a47ac">magma_z_spmv</a> (magmaDoubleComplex alpha, magma_z_matrix A, magma_z_matrix x, magmaDoubleComplex beta, magma_z_matrix y, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gaaf2cfc7dde081ea84002eff1738a47ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given input matrix A and vectors x, y and scalars alpha, beta the wrapper determines the suitable SpMV computing y = alpha * A * x + beta * y.  <a href="#gaaf2cfc7dde081ea84002eff1738a47ac">More...</a><br /></td></tr>
+<tr class="separator:gaaf2cfc7dde081ea84002eff1738a47ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadad5bf7f7d90e545626ea732a30ca333"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gadad5bf7f7d90e545626ea732a30ca333">magma_z_spmm</a> (magmaDoubleComplex alpha, magma_z_matrix A, magma_z_matrix B, magma_z_matrix *C, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gadad5bf7f7d90e545626ea732a30ca333"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given input matrix A and B and scalar alpha, the wrapper determines the suitable SpMV computing C = alpha * A * B.  <a href="#gadad5bf7f7d90e545626ea732a30ca333">More...</a><br /></td></tr>
+<tr class="separator:gadad5bf7f7d90e545626ea732a30ca333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad43338ab1b6090291717347b2f65dc02"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gad43338ab1b6090291717347b2f65dc02">magma_sparse_matrix_zlag2c</a> (magma_z_matrix A, magma_c_sparse_matrix *B, magma_queue_t queue)</td></tr>
+<tr class="memdesc:gad43338ab1b6090291717347b2f65dc02"><td class="mdescLeft">&#160;</td><td class="mdescRight">convertes magma_z_matrix from Z to C  <a href="#gad43338ab1b6090291717347b2f65dc02">More...</a><br /></td></tr>
+<tr class="separator:gad43338ab1b6090291717347b2f65dc02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4f07812b832129be3b15eb62b91763bf"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga4f07812b832129be3b15eb62b91763bf">magma_zcompactActive</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaInt_ptr active, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga4f07812b832129be3b15eb62b91763bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZCOMPACTACTIVE takes a set of n vectors of size m (in dA) and an array of 1s and 0sindicating which vectors to compact (for 1s) and which to disregard (for 0s).  <a href="#ga4f07812b832129be3b15eb62b91763bf">More...</a><br /></td></tr>
+<tr class="separator:ga4f07812b832129be3b15eb62b91763bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga46e86872a38dcbc4d8c96a30a184023b"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga46e86872a38dcbc4d8c96a30a184023b">magma_zgeelltmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaDoubleComplex alpha, magmaDoubleComplex_ptr dval, magmaIndex_ptr dcolind, magmaDoubleComplex_ptr dx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga46e86872a38dcbc4d8c96a30a184023b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#ga46e86872a38dcbc4d8c96a30a184023b">More...</a><br /></td></tr>
 <tr class="separator:ga46e86872a38dcbc4d8c96a30a184023b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae2328416f56d64d54a852b5dcba2368d"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#gae2328416f56d64d54a852b5dcba2368d">magma_zjacobi_diagscal</a> (int num_rows, magma_z_vector d, magma_z_vector b, magma_z_vector *c, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gae2328416f56d64d54a852b5dcba2368d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gae2328416f56d64d54a852b5dcba2368d">More...</a><br /></td></tr>
-<tr class="separator:gae2328416f56d64d54a852b5dcba2368d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga127aca2ac328124a38e8ebbfd568017d"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga127aca2ac328124a38e8ebbfd568017d">magma_zjacobi_diagscal</a> (int num_rows, magma_z_matrix d, magma_z_matrix b, magma_z_matrix *c, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga127aca2ac328124a38e8ebbfd568017d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga127aca2ac328124a38e8ebbfd568017d">More...</a><br /></td></tr>
+<tr class="separator:ga127aca2ac328124a38e8ebbfd568017d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49147086b85f8cd65df412bad173151a"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga49147086b85f8cd65df412bad173151a">magma_zjacobiupdate</a> (magma_z_matrix t, magma_z_matrix b, magma_z_matrix d, magma_z_matrix *x, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga49147086b85f8cd65df412bad173151a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the iteration vector x for the Jacobi iteration according to x=x+d.  <a href="#ga49147086b85f8cd65df412bad173151a">More...</a><br /></td></tr>
+<tr class="separator:ga49147086b85f8cd65df412bad173151a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3035d846e114ab8f12f86825de5a2ca5"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga3035d846e114ab8f12f86825de5a2ca5">magma_zjacobispmvupdate</a> (magma_int_t maxiter, magma_z_matrix A, magma_z_matrix t, magma_z_matrix b, magma_z_matrix d, magma_z_matrix *x, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga3035d846e114ab8f12f86825de5a2ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the iteration vector x for the Jacobi iteration according to x=x+d.  <a href="#ga3035d846e114ab8f12f86825de5a2ca5">More...</a><br /></td></tr>
+<tr class="separator:ga3035d846e114ab8f12f86825de5a2ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga77efa757078bb668aa65a4ebf2ce4035"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__z.html#ga77efa757078bb668aa65a4ebf2ce4035">magma_zgemvmdot</a> (int n, int k, magmaDoubleComplex_ptr v, magmaDoubleComplex_ptr r, magmaDoubleComplex_ptr d1, magmaDoubleComplex_ptr d2, magmaDoubleComplex_ptr skp, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga77efa757078bb668aa65a4ebf2ce4035"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an extension of the merged dot product above by chunking the set of vectors v_i such that the data always fits into cache.  <a href="#ga77efa757078bb668aa65a4ebf2ce4035">More...</a><br /></td></tr>
 <tr class="separator:ga77efa757078bb668aa65a4ebf2ce4035"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga0fb47096cd5c1dec11479b13367dcd99"></a>
+<a class="anchor" id="gad43338ab1b6090291717347b2f65dc02"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_sparse_matrix_zlag2c </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
@@ -183,10 +195,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>convertes magma_z_sparse_matrix from Z to C </p>
+<p>convertes magma_z_matrix from Z to C </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix descriptor</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">A</td><td>magma_z_matrix input matrix descriptor</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">B</td><td>magma_c_sparse_matrix* output matrix descriptor </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -195,7 +207,63 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga0bc07eaffdf33dcaa1bcb5ec623be726"></a>
+<a class="anchor" id="gadad5bf7f7d90e545626ea732a30ca333"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_z_spmm </td>
+          <td>(</td>
+          <td class="paramtype">magmaDoubleComplex&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
+          <td class="paramname"><em>C</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>For a given input matrix A and B and scalar alpha, the wrapper determines the suitable SpMV computing C = alpha * A * B. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>magmaDoubleComplex scalar alpha</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix sparse matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">B</td><td>magma_z_matrix sparse matrix C</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">C</td><td>magma_z_matrix * outpur sparse matrix C</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaaf2cfc7dde081ea84002eff1738a47ac"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -208,13 +276,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -226,7 +294,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>y</em>, </td>
         </tr>
         <tr>
@@ -247,10 +315,10 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>magmaDoubleComplex scalar alpha</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix sparse matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>magma_z_vector input vector x</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix sparse matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>magma_z_matrix input vector x</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>magmaDoubleComplex scalar beta </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>magma_z_vector output vector y </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>magma_z_matrix output vector y </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -258,12 +326,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga38bd81b6ffd84d4ee5809db7c59c52e9"></a>
+<a class="anchor" id="ga4f07812b832129be3b15eb62b91763bf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void magma_zcompactActive </td>
+          <td class="memname">magma_int_t magma_zcompactActive </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&#160;</td>
           <td class="paramname"><em>m</em>, </td>
@@ -506,7 +574,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gae2328416f56d64d54a852b5dcba2368d"></a>
+<a class="anchor" id="ga127aca2ac328124a38e8ebbfd568017d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -519,19 +587,19 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
@@ -553,9 +621,9 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">num_rows</td><td>magma_int_t number of rows</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_vector vector with diagonal entries</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>magma_z_vector* c = D^(-1) * b </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_matrix vector with diagonal entries</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>magma_z_matrix* c = D^(-1) * b </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -563,26 +631,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gadd2392b7ee0a6586a1f2f49088e939c1"></a>
+<a class="anchor" id="ga9728990d9d5797ce38cab2d63624d5cb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobiiter </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>M</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -606,11 +674,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<p>This routine takes the iteration matrix M as input.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_sparse_matrix input matrix M = D^(-1) * (L+U)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_vector c = D^(-1) * b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* iteration vector x</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_matrix input matrix M = D^(-1) * (L+U)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_matrix c = D^(-1) * b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* iteration vector x</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -619,20 +688,20 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga310eea9d0bd5b325cceee534b59693bf"></a>
+<a class="anchor" id="ga69f80c3bd8a9529e60821c5b0e649832"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobiiter_precond </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>M</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -664,9 +733,9 @@ Functions</h2></td></tr>
 <p>Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_sparse_matrix input matrix M = D^(-1) * (L+U)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_vector c = D^(-1) * b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* iteration vector x</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_matrix input matrix M = D^(-1) * (L+U)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_matrix c = D^(-1) * b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* iteration vector x</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">solver_par</td><td>magma_z_precond_par* precond parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
@@ -676,32 +745,101 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga72776c21af5a10a39eaa2f855dfc32ac"></a>
+<a class="anchor" id="gab4f10977bddc092fb412d3ca399d2c3b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zjacobiiter_sys </td>
+          <td>(</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_solver_par *&#160;</td>
+          <td class="paramname"><em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<p>This routine takes the system matrix A and the RHS b as input.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_matrix input matrix M = D^(-1) * (L+U)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_matrix c = D^(-1) * b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* iteration vector x</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa42e614c67089d3fc61a84dff15fbb82"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobisetup </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_sparse_matrix *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>M</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
@@ -721,10 +859,10 @@ Functions</h2></td></tr>
 <p>Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_sparse_matrix* M = D^(-1) * (L+U)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_vector* c = D^(-1) * b </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_matrix* M = D^(-1) * (L+U)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_matrix* c = D^(-1) * b </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -732,20 +870,20 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga25aee6446d6b5807fd2827761a03b7e6"></a>
+<a class="anchor" id="gadd3590ffce8fb397c1e868d0c2fc4ec3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobisetup_diagscal </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
@@ -765,8 +903,8 @@ Functions</h2></td></tr>
 <p>It returns a vector d containing the inverse diagonal elements. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">d</td><td>magma_z_vector* vector with diagonal elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">d</td><td>magma_z_matrix* vector with diagonal elements </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -774,26 +912,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga088705edb182238356d419600f79c928"></a>
+<a class="anchor" id="gae052858a748dfd20afc0d98680b17bf9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobisetup_matrix </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_sparse_matrix *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>M</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
@@ -814,9 +952,9 @@ Functions</h2></td></tr>
 <p>It returns the preconditioner Matrix M and a vector d containing the diagonal elements.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_sparse_matrix* M = D^(-1) * (L+U)</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">d</td><td>magma_z_vector* vector with diagonal elements of A </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_matrix* M = D^(-1) * (L+U)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">d</td><td>magma_z_matrix* vector with diagonal elements of A </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -824,26 +962,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga606fb44280035c70bd5e52bd980360be"></a>
+<a class="anchor" id="gaaa531cf6a4e0e554fb57a3f109967c50"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobisetup_vector </td>
           <td>(</td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
@@ -864,9 +1002,139 @@ Functions</h2></td></tr>
 <p>Returns the vector c</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_vector vector with diagonal entries</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_vector* c = D^(-1) * b </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_matrix vector with diagonal entries</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>magma_z_matrix* c = D^(-1) * b </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga3035d846e114ab8f12f86825de5a2ca5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zjacobispmvupdate </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>maxiter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates the iteration vector x for the Jacobi iteration according to x=x+d. </p>
+<p>*(b-Ax)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxiter</td><td>magma_int_t number of Jacobi iterations</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix system matrix</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>magma_z_matrix workspace</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_matrix vector with diagonal entries</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>magma_z_matrix* iteration vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga49147086b85f8cd65df412bad173151a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zjacobiupdate </td>
+          <td>(</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates the iteration vector x for the Jacobi iteration according to x=x+d. </p>
+<p>*(b-t) where d is the diagonal of the system matrix A and t=Ax.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_rows</td><td>magma_int_t number of rows</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_cols</td><td>magma_int_t number of cols</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>magma_z_matrix t = A*x</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">d</td><td>magma_z_matrix vector with diagonal entries</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>magma_z_matrix* iteration vector </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -879,7 +1147,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:48 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:15 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

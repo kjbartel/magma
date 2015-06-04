@@ -68,7 +68,7 @@
                   positive definite, and the factorization could not be   
                   completed.   
     
-    @ingroup magma_chetrf_comp
+    @ingroup magma_chesv_comp
     ******************************************************************* */
 extern "C" magma_int_t
 magma_chetrf_nopiv_gpu(

@@ -1,5 +1,6 @@
 var group__magma__util =
 [
+    [ "cusparse2magma_error", "group__magma__util.html#gaf1a014b017dcd37c5157b89ac4c89200", null ],
     [ "magma_get_lapack_numthreads", "group__magma__util.html#ga6fc0af8a25c14a401e5c99d0f9471dc2", null ],
     [ "magma_get_parallel_numthreads", "group__magma__util.html#gad07446b16b26c7e36cc08e6601845460", null ],
     [ "magma_is_devptr", "group__magma__util.html#gae69c91a4a2093a4d3b5792208b03f75d", null ],

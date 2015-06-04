@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -192,6 +192,9 @@ This routine computes C = alpha * A^T*B^T + beta * C  <a href="#gab9374a80a778eb
 <tr class="memitem:ga4a975911a6c75774bf214fa9d7ae97f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas3.html#ga4a975911a6c75774bf214fa9d7ae97f0">magmablas_ssyrk_batched_k32</a> (magma_uplo_t uplo, magma_trans_t trans, magma_int_t n, magma_int_t k, float alpha, float const *const *dA_array, magma_int_t ldda, float beta, float **dC_array, magma_int_t lddc, magma_int_t batchCount, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga4a975911a6c75774bf214fa9d7ae97f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">SSYRK performs one of the symmetric rank k operations.  <a href="#ga4a975911a6c75774bf214fa9d7ae97f0">More...</a><br /></td></tr>
 <tr class="separator:ga4a975911a6c75774bf214fa9d7ae97f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf910cf5c193df36dd5cd6aad041e2202"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas3.html#gaf910cf5c193df36dd5cd6aad041e2202">magma_ssyrk_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_trans_t trans, magma_int_t nb, magma_int_t n, magma_int_t k, float alpha, magmaFloat_ptr dB[], magma_int_t lddb, magma_int_t b_offset, float beta, magmaFloat_ptr dC[], magma_int_t lddc, magma_int_t c_offset, magma_int_t nqueue, magma_queue_t queues[][10])</td></tr>
+<tr class="memdesc:gaf910cf5c193df36dd5cd6aad041e2202"><td class="mdescLeft">&#160;</td><td class="mdescRight">This ssyrk_mgpu is internal routine used by spotrf_mgpu_right.  <a href="#gaf910cf5c193df36dd5cd6aad041e2202">More...</a><br /></td></tr>
+<tr class="separator:gaf910cf5c193df36dd5cd6aad041e2202"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e67477b506ab59bf4feae8a5112dede"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas3.html#ga8e67477b506ab59bf4feae8a5112dede">magmablas_strsm_outofplace</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t transA, magma_diag_t diag, magma_int_t m, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t flag, magmaFloat_ptr d_dinvA, magmaFloat_ptr dX)</td></tr>
 <tr class="memdesc:ga8e67477b506ab59bf4feae8a5112dede"><td class="mdescLeft">&#160;</td><td class="mdescRight">strsm_outofplace solves one of the matrix equations on gpu  <a href="#ga8e67477b506ab59bf4feae8a5112dede">More...</a><br /></td></tr>
 <tr class="separator:ga8e67477b506ab59bf4feae8a5112dede"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -642,6 +645,119 @@ This routine computes C = alpha * A^T*B^T + beta * C  <a href="#gab9374a80a778eb
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf910cf5c193df36dd5cd6aad041e2202"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magma_ssyrk_mgpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>ngpu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_uplo_t&#160;</td>
+          <td class="paramname"><em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_trans_t&#160;</td>
+          <td class="paramname"><em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>nb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&#160;</td>
+          <td class="paramname"><em>dB</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>b_offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&#160;</td>
+          <td class="paramname"><em>dC</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>lddc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>c_offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&#160;</td>
+          <td class="paramname"><em>nqueue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&#160;</td>
+          <td class="paramname"><em>queues</em>[][10]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This ssyrk_mgpu is internal routine used by spotrf_mgpu_right. </p>
+<p>it has specific assumption on the block diagonal. </p>
 
 </div>
 </div>
@@ -3973,7 +4089,7 @@ This routine computes C = alpha * A^T*B^T + beta * C </p>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:47 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:14 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

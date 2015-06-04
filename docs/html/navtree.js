@@ -26,6 +26,12 @@ var NAVTREE =
       [ "Iterative Solvers ", "sparse-iter.html#sparsesolvers", null ],
       [ "Example ", "sparse-iter.html#sparseexample", null ]
     ] ],
+    [ "Contributor's Guide", "contributors-guide.html", [
+      [ "Coding Style ", "contributors-guide.html#style", null ],
+      [ "Naming Conventions ", "contributors-guide.html#naming", null ],
+      [ "Coding Practices ", "contributors-guide.html#coding", null ]
+    ] ],
+    [ "Deprecated List", "deprecated.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Classes", null, [
       [ "Class List", "annotated.html", "annotated" ],
@@ -45,13 +51,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"group__magma__cgesvd__aux.html#ga76953f2b54d90ddd87363e516db54cee",
-"group__magma__dgeqrf__comp.html#ga09f0829a12ccf16d66983440f47f35dd",
-"group__magma__sblas2.html#gab1877e646259c752bd2db97f7f05e899",
-"group__magma__zaux2.html#ga61294345d36a0e20f1bdccd5788c2f66",
-"group__magma__zhegv__driver.html#ga01d82620599e377a181806892d3d6951",
-"group__magmasparse__dblas.html#ga99794ffbbe068ba1932a972dfd355402",
-"group__magmasparse__zaux.html#gaf7939dfcee419c775596a0c51cd007e8"
+"group__magma__cgesv__driver.html",
+"group__magma__dgeev__driver.html#gace6cb42b5d62631a35577df62d3b0544",
+"group__magma__saux2.html#gaebda359c3cf76130d5815c1ef3925ee4",
+"group__magma__ssygv__driver.html#ga30790c840604af8b7754391dfda8e14a",
+"group__magma__zgesv__comp.html#gac73e955b433379b2556e324209792c7a",
+"group__magmasparse__chepr.html#ga6188eff0ae7b51210ea56f95734a3810",
+"group__magmasparse__sblas.html#ga0c84a43b4627facb77f44c60decfa4d1",
+"routines.html#comp"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

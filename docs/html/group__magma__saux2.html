@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -142,7 +142,7 @@ Functions</h2></td></tr>
 <tr class="memitem:gadd78d2fc764464349a717f8ce441460e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#gadd78d2fc764464349a717f8ce441460e">magmablas_slacpy</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb)</td></tr>
 <tr class="separator:gadd78d2fc764464349a717f8ce441460e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga112ec1ea3144ca58e55345307d673213"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#ga112ec1ea3144ca58e55345307d673213">magmablas_slacpy_batched</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloat_const_ptr const dAarray[], magma_int_t ldda, magmaFloat_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga112ec1ea3144ca58e55345307d673213"><td class="mdescLeft">&#160;</td><td class="mdescRight">SLACPY_BATCHED_Q copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount.  <a href="#ga112ec1ea3144ca58e55345307d673213">More...</a><br /></td></tr>
+<tr class="memdesc:ga112ec1ea3144ca58e55345307d673213"><td class="mdescLeft">&#160;</td><td class="mdescRight">SLACPY_BATCHED copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount.  <a href="#ga112ec1ea3144ca58e55345307d673213">More...</a><br /></td></tr>
 <tr class="separator:ga112ec1ea3144ca58e55345307d673213"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6c3cb47d9474889c3699e57a46ff36ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#ga6c3cb47d9474889c3699e57a46ff36ca">magmablas_slag2d_q</a> (magma_int_t m, magma_int_t n, magmaFloat_const_ptr SA, magma_int_t ldsa, magmaDouble_ptr A, magma_int_t lda, magma_int_t *info, magma_queue_t queue)</td></tr>
 <tr class="memdesc:ga6c3cb47d9474889c3699e57a46ff36ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">SLAG2D_STREAM converts a single-real matrix, SA, to a double-real matrix, A.  <a href="#ga6c3cb47d9474889c3699e57a46ff36ca">More...</a><br /></td></tr>
@@ -176,7 +176,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ga4275cab211a7f8bb8ae93544c21f523f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#ga4275cab211a7f8bb8ae93544c21f523f">magmablas_slascl_diag</a> (magma_type_t type, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dD, magma_int_t lddd, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
 <tr class="separator:ga4275cab211a7f8bb8ae93544c21f523f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70ca0586d9adaca49d4252348df1ba89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#ga70ca0586d9adaca49d4252348df1ba89">magmablas_slaset_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, float offdiag, float diag, magmaFloat_ptr dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga70ca0586d9adaca49d4252348df1ba89"><td class="mdescLeft">&#160;</td><td class="mdescRight">SLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals.  <a href="#ga70ca0586d9adaca49d4252348df1ba89">More...</a><br /></td></tr>
+<tr class="memdesc:ga70ca0586d9adaca49d4252348df1ba89"><td class="mdescLeft">&#160;</td><td class="mdescRight">SLASET_Q initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals.  <a href="#ga70ca0586d9adaca49d4252348df1ba89">More...</a><br /></td></tr>
 <tr class="separator:ga70ca0586d9adaca49d4252348df1ba89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaff7118d59fb9095b880853db5d6d048b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__saux2.html#gaff7118d59fb9095b880853db5d6d048b">magmablas_slaset</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, float offdiag, float diag, magmaFloat_ptr dA, magma_int_t ldda)</td></tr>
 <tr class="separator:gaff7118d59fb9095b880853db5d6d048b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -902,8 +902,7 @@ SLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gab347
       </table>
 </div><div class="memdoc">
 
-<p>SLACPY_BATCHED_Q copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount. </p>
-<p>This is the same as SLACPY_BATCHED, but adds queue argument.</p>
+<p>SLACPY_BATCHED copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>magma_uplo_t Specifies the part of each matrix dA to be copied to dB.<ul>
@@ -913,9 +912,9 @@ SLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gab347
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>INTEGER The number of rows of each matrix dA. M &gt;= 0.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>INTEGER The number of columns of each matrix dA. N &gt;= 0.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dAarray</td><td>REAL* array, dimension (batchCount) array of pointers to the matrices dA, where each dA is of dimension (LDDA,N) The m by n matrix dA. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dAarray</td><td>REAL* array, dimension (batchCount) Array of pointers to the matrices dA, where each dA is of dimension (LDDA,N). The M-by-N matrix dA. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ldda</td><td>INTEGER The leading dimension of each array dA. LDDA &gt;= max(1,M).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">dBarray</td><td>REAL* array, dimension (batchCount) array of pointers to the matrices dB, where each dB is of dimension (LDDB,N) The m by n matrix dB. On exit, dB = dA in the locations specified by UPLO.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dBarray</td><td>REAL* array, dimension (batchCount) Array of pointers to the matrices dB, where each dB is of dimension (LDDB,N). The M-by-N matrix dB. On exit, dB = dA in the locations specified by UPLO.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lddb</td><td>INTEGER The leading dimension of each array dB. LDDB &gt;= max(1,M).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">batchCount</td><td>Number of matrices in dAarray and dBarray.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
@@ -991,14 +990,15 @@ SLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gab347
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>magma_uplo_t Specifies the part of the matrix dA to be copied to dB.<ul>
 <li>= MagmaUpper: Upper triangular part</li>
-<li>= MagmaLower: Lower triangular part Otherwise: All of the matrix dA</li>
+<li>= MagmaLower: Lower triangular part</li>
+<li>= MagmaFull: All of the matrix dA</li>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>INTEGER The number of rows of the matrix dA. M &gt;= 0.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>INTEGER The number of columns of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dA</td><td>REAL array, dimension (LDDA,N) The m by n matrix dA. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dA</td><td>REAL array, dimension (LDDA,N) The M-by-N matrix dA. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ldda</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,M).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">dB</td><td>REAL array, dimension (LDDB,N) The m by n matrix dB. On exit, dB = dA in the locations specified by UPLO.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dB</td><td>REAL array, dimension (LDDB,N) The M-by-N matrix dB. On exit, dB = dA in the locations specified by UPLO.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lddb</td><td>INTEGER The leading dimension of the array dB. LDDB &gt;= max(1,M).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -1944,7 +1944,7 @@ SLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gab347
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__magma__saux2.html#ga70ca0586d9adaca49d4252348df1ba89" title="SLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals...">magmablas_slaset_q</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__magma__saux2.html#ga70ca0586d9adaca49d4252348df1ba89" title="SLASET_Q initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals. ">magmablas_slaset_q</a> </dd></dl>
 
 </div>
 </div>
@@ -2160,13 +2160,14 @@ SLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gab347
       </table>
 </div><div class="memdoc">
 
-<p>SLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals. </p>
+<p>SLASET_Q initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals. </p>
 <p>This is the same as SLASET, but adds queue argument.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>magma_uplo_t Specifies the part of the matrix dA to be set.<ul>
 <li>= MagmaUpper: Upper triangular part</li>
-<li>= MagmaLower: Lower triangular part Otherwise: All of the matrix dA is set.</li>
+<li>= MagmaLower: Lower triangular part</li>
+<li>= MagmaFull: All of the matrix dA</li>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>INTEGER The number of rows of the matrix dA. M &gt;= 0.</td></tr>
@@ -3341,7 +3342,7 @@ SLASWPX performs a series of row interchanges on the matrix A. </p>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:48 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:14 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

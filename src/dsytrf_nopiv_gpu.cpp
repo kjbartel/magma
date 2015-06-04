@@ -68,7 +68,7 @@
                   positive definite, and the factorization could not be   
                   completed.   
     
-    @ingroup magma_dsytrf_comp
+    @ingroup magma_dsysv_comp
     ******************************************************************* */
 extern "C" magma_int_t
 magma_dsytrf_nopiv_gpu(

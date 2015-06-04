@@ -20,7 +20,7 @@
     This ssyrk_mgpu is internal routine used by spotrf_mgpu_right.
     it has specific assumption on the block diagonal.
     
-    @ingroup magma_ssyrk_comp
+    @ingroup magma_sblas3
     ********************************************************************/
 
 extern "C" void

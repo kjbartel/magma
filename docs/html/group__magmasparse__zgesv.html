@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -114,68 +114,53 @@ $(document).ready(function(){initNavTree('group__magmasparse__zgesv.html','');})
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga5c9f4c4a8959d940c4be68c6654466f8"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga5c9f4c4a8959d940c4be68c6654466f8">magma_zbaiter</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga5c9f4c4a8959d940c4be68c6654466f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * x = b via the block asynchronous iteration method on GPU.  <a href="#ga5c9f4c4a8959d940c4be68c6654466f8">More...</a><br /></td></tr>
-<tr class="separator:ga5c9f4c4a8959d940c4be68c6654466f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae986853fd028053979366ee35c0ce485"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#gae986853fd028053979366ee35c0ce485">magma_zbicgstab</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gae986853fd028053979366ee35c0ce485"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#gae986853fd028053979366ee35c0ce485">More...</a><br /></td></tr>
-<tr class="separator:gae986853fd028053979366ee35c0ce485"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga35eba1d85a65a92a38749aaba700e959"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga35eba1d85a65a92a38749aaba700e959">magma_zbicgstab_merge</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga35eba1d85a65a92a38749aaba700e959"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga35eba1d85a65a92a38749aaba700e959">More...</a><br /></td></tr>
-<tr class="separator:ga35eba1d85a65a92a38749aaba700e959"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf6bec1f81eb6628b4a9b5f804aaf3e1d"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#gaf6bec1f81eb6628b4a9b5f804aaf3e1d">magma_zbicgstab_merge2</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gaf6bec1f81eb6628b4a9b5f804aaf3e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#gaf6bec1f81eb6628b4a9b5f804aaf3e1d">More...</a><br /></td></tr>
-<tr class="separator:gaf6bec1f81eb6628b4a9b5f804aaf3e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6e52638e5e29bf77709ad990019f0502"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga6e52638e5e29bf77709ad990019f0502">magma_zcir</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_precond_parameters *precond_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga6e52638e5e29bf77709ad990019f0502"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga6e52638e5e29bf77709ad990019f0502">More...</a><br /></td></tr>
-<tr class="separator:ga6e52638e5e29bf77709ad990019f0502"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0b5892a54c8a9d7db785e4c94c493eeb"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga0b5892a54c8a9d7db785e4c94c493eeb">magma_zcpir</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_precond_parameters *precond_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga0b5892a54c8a9d7db785e4c94c493eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a hermetian matrix.  <a href="#ga0b5892a54c8a9d7db785e4c94c493eeb">More...</a><br /></td></tr>
-<tr class="separator:ga0b5892a54c8a9d7db785e4c94c493eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga15a55141c24f94c7e8e2ea2bf2324319"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga15a55141c24f94c7e8e2ea2bf2324319">magma_zfgmres</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga15a55141c24f94c7e8e2ea2bf2324319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory.  <a href="#ga15a55141c24f94c7e8e2ea2bf2324319">More...</a><br /></td></tr>
-<tr class="separator:ga15a55141c24f94c7e8e2ea2bf2324319"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8f3f47cf706ab2daa997e34440491120"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga8f3f47cf706ab2daa997e34440491120">magma_zgmres</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga8f3f47cf706ab2daa997e34440491120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory.  <a href="#ga8f3f47cf706ab2daa997e34440491120">More...</a><br /></td></tr>
-<tr class="separator:ga8f3f47cf706ab2daa997e34440491120"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf55849ba4867eddc7ee50f51b2d410df"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#gaf55849ba4867eddc7ee50f51b2d410df">magma_zilusetup</a> (magma_z_sparse_matrix A, magma_z_sparse_matrix *M, magma_int_t *ipiv, magma_queue_t queue)</td></tr>
-<tr class="memdesc:gaf55849ba4867eddc7ee50f51b2d410df"><td class="mdescLeft">&#160;</td><td class="mdescRight">LU for a BCSR matrix A.  <a href="#gaf55849ba4867eddc7ee50f51b2d410df">More...</a><br /></td></tr>
-<tr class="separator:gaf55849ba4867eddc7ee50f51b2d410df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga36808a60fd5ad674dcf185da5be4b183"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga36808a60fd5ad674dcf185da5be4b183">magma_ziterref</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga36808a60fd5ad674dcf185da5be4b183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga36808a60fd5ad674dcf185da5be4b183">More...</a><br /></td></tr>
-<tr class="separator:ga36808a60fd5ad674dcf185da5be4b183"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga03248c3a9ba24128311d22aa42e436ec"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga03248c3a9ba24128311d22aa42e436ec">magma_zjacobi</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga03248c3a9ba24128311d22aa42e436ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga03248c3a9ba24128311d22aa42e436ec">More...</a><br /></td></tr>
-<tr class="separator:ga03248c3a9ba24128311d22aa42e436ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga758fa6866d5f81f9bd441c7d3453629e"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga758fa6866d5f81f9bd441c7d3453629e">magma_zpastixsetup</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga758fa6866d5f81f9bd441c7d3453629e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the PASTIX solver.  <a href="#ga758fa6866d5f81f9bd441c7d3453629e">More...</a><br /></td></tr>
-<tr class="separator:ga758fa6866d5f81f9bd441c7d3453629e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5b16d029e277a47e03ab10b8e49262ee"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga5b16d029e277a47e03ab10b8e49262ee">magma_zpgmres</a> (magma_z_sparse_matrix A, magma_z_vector b, magma_z_vector *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
-<tr class="memdesc:ga5b16d029e277a47e03ab10b8e49262ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">ma Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory.  <a href="#ga5b16d029e277a47e03ab10b8e49262ee">More...</a><br /></td></tr>
-<tr class="separator:ga5b16d029e277a47e03ab10b8e49262ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3bcfb907a7e3e31ed9be4106ce94ae41"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga3bcfb907a7e3e31ed9be4106ce94ae41">magma_zbaiter</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga3bcfb907a7e3e31ed9be4106ce94ae41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * x = b via the block asynchronous iteration method on GPU.  <a href="#ga3bcfb907a7e3e31ed9be4106ce94ae41">More...</a><br /></td></tr>
+<tr class="separator:ga3bcfb907a7e3e31ed9be4106ce94ae41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1c3ac14fb9883fb4821de495638d4fae"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga1c3ac14fb9883fb4821de495638d4fae">magma_zbicgstab</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga1c3ac14fb9883fb4821de495638d4fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general matrix.  <a href="#ga1c3ac14fb9883fb4821de495638d4fae">More...</a><br /></td></tr>
+<tr class="separator:ga1c3ac14fb9883fb4821de495638d4fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga78bc54c0d670049f409dce046a12473c"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga78bc54c0d670049f409dce046a12473c">magma_zbicgstab_merge</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga78bc54c0d670049f409dce046a12473c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general matrix.  <a href="#ga78bc54c0d670049f409dce046a12473c">More...</a><br /></td></tr>
+<tr class="separator:ga78bc54c0d670049f409dce046a12473c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8a7862907714f6bc688b06df265373c0"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga8a7862907714f6bc688b06df265373c0">magma_zbicgstab_merge2</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga8a7862907714f6bc688b06df265373c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general matrix.  <a href="#ga8a7862907714f6bc688b06df265373c0">More...</a><br /></td></tr>
+<tr class="separator:ga8a7862907714f6bc688b06df265373c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0db5bfc065a198f2e8892c62959cdfbc"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga0db5bfc065a198f2e8892c62959cdfbc">magma_zfgmres</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga0db5bfc065a198f2e8892c62959cdfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory.  <a href="#ga0db5bfc065a198f2e8892c62959cdfbc">More...</a><br /></td></tr>
+<tr class="separator:ga0db5bfc065a198f2e8892c62959cdfbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga586da3780cf221816de77d1fd121b3ab"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga586da3780cf221816de77d1fd121b3ab">magma_ziterref</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga586da3780cf221816de77d1fd121b3ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga586da3780cf221816de77d1fd121b3ab">More...</a><br /></td></tr>
+<tr class="separator:ga586da3780cf221816de77d1fd121b3ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga36d7a948aaf96583ec4479804abe8b66"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga36d7a948aaf96583ec4479804abe8b66">magma_zjacobi</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga36d7a948aaf96583ec4479804abe8b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A.  <a href="#ga36d7a948aaf96583ec4479804abe8b66">More...</a><br /></td></tr>
+<tr class="separator:ga36d7a948aaf96583ec4479804abe8b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3bfbf1ac9d9ed6c4dca3b45245701764"><td class="memItemLeft" align="right" valign="top">magma_int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zgesv.html#ga3bfbf1ac9d9ed6c4dca3b45245701764">magma_zpbicgstab</a> (magma_z_matrix A, magma_z_matrix b, magma_z_matrix *x, magma_z_solver_par *solver_par, magma_z_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr class="memdesc:ga3bfbf1ac9d9ed6c4dca3b45245701764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a complex N-by-N general matrix.  <a href="#ga3bfbf1ac9d9ed6c4dca3b45245701764">More...</a><br /></td></tr>
+<tr class="separator:ga3bfbf1ac9d9ed6c4dca3b45245701764"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga5c9f4c4a8959d940c4be68c6654466f8"></a>
+<a class="anchor" id="ga3bcfb907a7e3e31ed9be4106ce94ae41"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zbaiter </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -201,9 +186,9 @@ Functions</h2></td></tr>
 <p>Solves a system of linear equations A * x = b via the block asynchronous iteration method on GPU. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -212,26 +197,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gae986853fd028053979366ee35c0ce485"></a>
+<a class="anchor" id="ga1c3ac14fb9883fb4821de495638d4fae"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zbicgstab </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -254,13 +239,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A. </p>
-<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method.</p>
+<p>Solves a system of linear equations A * X = B where A is a general matrix. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabilized method.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -269,26 +254,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga35eba1d85a65a92a38749aaba700e959"></a>
+<a class="anchor" id="ga78bc54c0d670049f409dce046a12473c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zbicgstab_merge </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -311,13 +296,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A. </p>
-<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method. The difference to magma_zbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
+<p>Solves a system of linear equations A * X = B where A is a general matrix. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabilized method. The difference to magma_zbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -326,26 +311,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gaf6bec1f81eb6628b4a9b5f804aaf3e1d"></a>
+<a class="anchor" id="ga8a7862907714f6bc688b06df265373c0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zbicgstab_merge2 </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -368,13 +353,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A. </p>
-<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method. The difference to magma_zbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
+<p>Solves a system of linear equations A * X = B where A is a general matrix. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabilized method. The difference to magma_zbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -383,158 +368,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga6e52638e5e29bf77709ad990019f0502"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zcir </td>
-          <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_solver_par *&#160;</td>
-          <td class="paramname"><em>solver_par</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_precond_parameters *&#160;</td>
-          <td class="paramname"><em>precond_par</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&#160;</td>
-          <td class="paramname"><em>queue</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Solves a system of linear equations A * X = B where A is a complex Hermitian N-by-N positive definite matrix A. </p>
-<p>This is a GPU implementation of the mixed precision Iterative Refinement method.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">precond_par</td><td>magma_precond_parameters * parameters for inner solver </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga0b5892a54c8a9d7db785e4c94c493eeb"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zcpir </td>
-          <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_solver_par *&#160;</td>
-          <td class="paramname"><em>solver_par</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_precond_parameters *&#160;</td>
-          <td class="paramname"><em>precond_par</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&#160;</td>
-          <td class="paramname"><em>queue</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Solves a system of linear equations A * X = B where A is a hermetian matrix. </p>
-<p>This is a GPU implementation of the mixed precision Iterative Refinement method featuring a Jacobi smoother after the low precision inner solver.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>magma_precond_parameters *precond_par parameters for inner solver </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga15a55141c24f94c7e8e2ea2bf2324319"></a>
+<a class="anchor" id="ga0db5bfc065a198f2e8892c62959cdfbc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zfgmres </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -567,9 +420,9 @@ Functions</h2></td></tr>
 <p>X and B are complex vectors stored on the GPU memory. This is a GPU implementation of the right-preconditioned flexible GMRES.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix descriptor for matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b vector</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix descriptor for matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b vector</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">precond_par</td><td>magma_z_preconditioner* preconditioner </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
@@ -579,133 +432,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga8f3f47cf706ab2daa997e34440491120"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zgmres </td>
-          <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_solver_par *&#160;</td>
-          <td class="paramname"><em>solver_par</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&#160;</td>
-          <td class="paramname"><em>queue</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory. </p>
-<p>X and B are complex vectors stored on the GPU memory. This is a GPU implementation of the GMRES method.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix descriptor for matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b vector</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="gaf55849ba4867eddc7ee50f51b2d410df"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zilusetup </td>
-          <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_sparse_matrix *&#160;</td>
-          <td class="paramname"><em>M</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t *&#160;</td>
-          <td class="paramname"><em>ipiv</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&#160;</td>
-          <td class="paramname"><em>queue</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>LU for a BCSR matrix A. </p>
-<p>We assume all diagonal blocks to be nonzero.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A (on DEV)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>magma_z_sparse_matrix* output matrix M approx. (LU)^{-1} (on DEV)</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ipiv</td><td>magma_int_t* pivoting vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga36808a60fd5ad674dcf185da5be4b183"></a>
+<a class="anchor" id="ga586da3780cf221816de77d1fd121b3ab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_ziterref </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -738,9 +484,9 @@ Functions</h2></td></tr>
 <p>This is a GPU implementation of the Iterative Refinement method. The inner solver is passed via the preconditioner argument.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">precond_par</td><td>magma_z_preconditioner* inner solver </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
@@ -750,26 +496,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga03248c3a9ba24128311d22aa42e436ec"></a>
+<a class="anchor" id="ga36d7a948aaf96583ec4479804abe8b66"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">magma_int_t magma_zjacobi </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -796,9 +542,9 @@ Functions</h2></td></tr>
 <p>This is a GPU implementation of the Jacobi method.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_vector* solution approximation</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -807,75 +553,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga758fa6866d5f81f9bd441c7d3453629e"></a>
+<a class="anchor" id="ga3bfbf1ac9d9ed6c4dca3b45245701764"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">magma_int_t magma_zpastixsetup </td>
+          <td class="memname">magma_int_t magma_zpbicgstab </td>
           <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
+          <td class="paramtype">magma_z_matrix&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_z_preconditioner *&#160;</td>
-          <td class="paramname"><em>precond</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&#160;</td>
-          <td class="paramname"><em>queue</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Prepares the PASTIX solver. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_vector RHS b</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">precond</td><td>magma_z_preconditioner* preconditioner parameter </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga5b16d029e277a47e03ab10b8e49262ee"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zpgmres </td>
-          <td>(</td>
-          <td class="paramtype">magma_z_sparse_matrix&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_z_vector *&#160;</td>
+          <td class="paramtype">magma_z_matrix *&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -904,30 +601,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>ma Solves a system of linear equations A * X = B where A is a complex sparse matrix stored in the GPU memory. </p>
-<p>X and B are complex vectors stored on the GPU memory. This is a GPU implementation of the right-preconditioned GMRES method.</p>
-<pre class="fragment">@param[in]
-A           magma_z_sparse_matrix
-            descriptor for matrix A
+<p>Solves a system of linear equations A * X = B where A is a complex N-by-N general matrix. </p>
+<p>This is a GPU implementation of the preconditioned Biconjugate Gradient Stabelized method.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">A</td><td>magma_z_matrix input matrix A</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>magma_z_matrix RHS b</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>magma_z_matrix* solution approximation</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">solver_par</td><td>magma_z_solver_par* solver parameters</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">precond_par</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">queue</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-@param[in]
-b           magma_z_vector
-            RHS b vector
-
-@param[in,out]
-x           magma_z_vector*
-            solution approximation
-
-@param[in,out]
-solver_par  magma_z_solver_par*
-            solver parameters
-
-@param[in]
-precond_par magma_z_preconditioner*
-            preconditioner
-@param[in]
-queue       magma_queue_t
-            Queue to execute in.</pre> 
 </div>
 </div>
 </div><!-- contents -->
@@ -935,7 +622,7 @@ queue       magma_queue_t
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:48 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:15 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

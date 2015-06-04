@@ -1,4 +1,4 @@
 var group__magmasparse__cheev =
 [
-    [ "magma_clobpcg", "group__magmasparse__cheev.html#gae76473d06a0fd47902cfe16c93d35742", null ]
+    [ "magma_clobpcg", "group__magmasparse__cheev.html#ga2f59beaae5b1f275a86baf11727d75a5", null ]
 ];

@@ -112,7 +112,7 @@
     If s = 2, the lower triangle of D(k) overwrites A(k,k), A(k+1,k),
     and A(k+1,k+1), and v overwrites A(k+2:n,k:k+1).
  
-    @ingroup magma_ssytrf_comp
+    @ingroup magma_ssysv_comp
     ********************************************************************/
 extern "C" magma_int_t
 magma_ssytrf(

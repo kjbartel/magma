@@ -10,6 +10,7 @@ var group__magma__dblas3 =
     [ "magma_dsymm", "group__magma__dblas3.html#ga3ddb324433a49643091989144ae1ce6a", null ],
     [ "magma_dsyr2k", "group__magma__dblas3.html#ga497636881a179b38dc7303f038b2f70d", null ],
     [ "magma_dsyrk", "group__magma__dblas3.html#ga4deaac8806ac142770e8a158e2fc8366", null ],
+    [ "magma_dsyrk_mgpu", "group__magma__dblas3.html#ga57cfd911cc2bf94f24d1c37913c12534", null ],
     [ "magma_dtrmm", "group__magma__dblas3.html#ga50206438fffe5a7284a12da304c2ecd9", null ],
     [ "magma_dtrsm", "group__magma__dblas3.html#gaa39ce59bf7f85497c16e4b5786a742ca", null ],
     [ "magma_dtrsm_m", "group__magma__dblas3.html#ga9b2d1ac6e30207549d659a2d472223f2", null ],

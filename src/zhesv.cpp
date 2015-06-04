@@ -92,7 +92,7 @@
                  has been completed, but the block diagonal matrix D is
                  exactly singular, so the solution could not be computed.
 
-    @ingroup magma_zhesv_comp
+    @ingroup magma_zhesv_driver
     ********************************************************************/
 extern "C" magma_int_t
 magma_zhesv(

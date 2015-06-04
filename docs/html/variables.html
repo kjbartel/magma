@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="magma-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">MAGMA
-   &#160;<span id="projectnumber">1.6.1</span>
+   &#160;<span id="projectnumber">1.6.2</span>
    </div>
    <div id="projectbrief">Matrix Algebra for GPU and Multicore Architectures</div>
   </td>
@@ -127,8 +127,9 @@ $(document).ready(function(){initNavTree('variables.html','');});
 </ul>
 <p>LAPACK and MAGMA use column-major matrices. For matrix X with dimension (lda,n), element X(i, j) is X[ i + j*lda ]. For symmetric, Hermitian, and triangular matrices, only the lower or upper triangle is accessed, as specified by the uplo argument; the other triangle is ignored.</p>
 <p>lda is the leading dimension of matrix A; similarly ldb for B, ldda for dA, etc. It should immediately follow the matrix pointer in the argument list. The leading dimension can be the number of rows, or if A is a sub-matrix of a larger parent matrix, lda is the leading dimension (e.g., rows) of the parent matrix.</p>
-<p>On the GPU, it is often beneficial to round the leading dimension up to a multiple of 32, to provide better performance. This aligns memory reads so they are coalesced. One formula to do this (relying on floored integer division) is: </p><pre class="fragment">ldda = (( m + 31 )/32) * 32;
-</pre><p>On the CPU, it is often beneficial to ensure that the leading dimension is <b>not</b> a multiple of the page size (often 4 KiB), to minimize TLB misses.</p>
+<p>On the GPU, it is often beneficial to round the leading dimension up to a multiple of 32, to provide better performance. This aligns memory reads so they are coalesced. This is provided by the magma_roundup function: </p><pre class="fragment">ldda = magma_roundup( m, 32 );
+</pre><p>The formula ((m + 31)/32)*32 also works, relying on floored integer division, but the roundup function is clearer to use.</p>
+<p>On the CPU, it is often beneficial to ensure that the leading dimension is <b>not</b> a multiple of the page size (often 4 KiB), to minimize TLB misses.</p>
 <p>For vectors, incx is the increment or stride between elements of vector x. In all cases, incx != 0. In most cases, if incx &lt; 0, then the vector is indexed in reverse order, for instance, using Matlab notation, </p><pre class="fragment">incx =  1   means   x( 1 : 1 : n     )
 incx =  2   means   x( 1 : 2 : 2*n-1 )
 </pre><p>while </p><pre class="fragment">incx = -1   means   x( n     : -1 : 1 )
@@ -139,7 +140,7 @@ incx = -2   means   x( 2*n-1 : -2 : 1 )
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 30 2015 19:00:45 for MAGMA by
+    <li class="footer">Generated on Mon May 11 2015 10:07:12 for MAGMA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>
