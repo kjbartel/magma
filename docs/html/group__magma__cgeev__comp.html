@@ -25,8 +25,8 @@
 [<a class="el" href="group__magma__geev__comp.html">Non-symmetric eigenvalue: computational</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#ga0ccc60f77449ee6f3aba056e345d15c8">magma_cgehrd</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magmaFloatComplex *dT, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEHRD reduces a COMPLEX general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#ga0ccc60f77449ee6f3aba056e345d15c8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#gabb038016a7f499c46c604650880be711">magma_cgehrd</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magmaFloatComplex_ptr dT, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEHRD reduces a COMPLEX general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#gabb038016a7f499c46c604650880be711"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#ga1ef7dda30b2691ad6f37ec76082dc641">magma_cgehrd2</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEHRD2 reduces a COMPLEX general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#ga1ef7dda30b2691ad6f37ec76082dc641"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#ga99a6ce9ed9c039351a24148bd635efd5">magma_cgehrd_m</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magmaFloatComplex *T, magma_int_t *info)</td></tr>
@@ -35,13 +35,13 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CTREVC3 computes some or all of the right and/or left eigenvectors of a complex upper triangular matrix T.  <a href="#gaabe4c9003c1b68ccea6e5a64875a3e6f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#gab683d09689da0d357666194408411673">magma_ctrevc3_mt</a> (magma_side_t side, magma_vec_t howmany, magma_int_t *select, magma_int_t n, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *VL, magma_int_t ldvl, magmaFloatComplex *VR, magma_int_t ldvr, magma_int_t mm, magma_int_t *mout, magmaFloatComplex *work, magma_int_t lwork, float *rwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CTREVC3_MT computes some or all of the right and/or left eigenvectors of a complex upper triangular matrix T.  <a href="#gab683d09689da0d357666194408411673"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#gaf47e067f8f0cd62c009b3733a5424bf0">magma_cunghr</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CUNGHR generates a COMPLEX unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by CGEHRD:.  <a href="#gaf47e067f8f0cd62c009b3733a5424bf0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#ga09a558890c516640ef81f1205b691310">magma_cunghr</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex_ptr dT, magma_int_t nb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CUNGHR generates a COMPLEX unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by CGEHRD:.  <a href="#ga09a558890c516640ef81f1205b691310"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__comp.html#ga837c62a892423c53dc421c473c4aca92">magma_cunghr_m</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t nb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CUNGHR generates a COMPLEX unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by CGEHRD:.  <a href="#ga837c62a892423c53dc421c473c4aca92"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga0ccc60f77449ee6f3aba056e345d15c8"></a><!-- doxytag: member="cgehrd.cpp::magma_cgehrd" ref="ga0ccc60f77449ee6f3aba056e345d15c8" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magmaFloatComplex *dT, magma_int_t *info)" -->
+<a class="anchor" id="gabb038016a7f499c46c604650880be711"></a><!-- doxytag: member="cgehrd.cpp::magma_cgehrd" ref="gabb038016a7f499c46c604650880be711" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, magmaFloatComplex_ptr dT, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -96,7 +96,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -710,7 +710,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf47e067f8f0cd62c009b3733a5424bf0"></a><!-- doxytag: member="cunghr.cpp::magma_cunghr" ref="gaf47e067f8f0cd62c009b3733a5424bf0" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *dT, magma_int_t nb, magma_int_t *info)" -->
+<a class="anchor" id="ga09a558890c516640ef81f1205b691310"></a><!-- doxytag: member="cunghr.cpp::magma_cunghr" ref="ga09a558890c516640ef81f1205b691310" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex_ptr dT, magma_int_t nb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -753,7 +753,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -893,7 +893,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

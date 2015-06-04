@@ -25,49 +25,49 @@
 [<a class="el" href="group__magma__geqrf.html">QR factorization</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga22604b91dd5b58710c95be229149cde7">magma_zgegqr_gpu</a> (magma_int_t ikind, magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dwork, magmaDoubleComplex *work, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEGQR orthogonalizes the N vectors given by a complex M-by-N matrix A:.  <a href="#ga22604b91dd5b58710c95be229149cde7"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gae34bb6b3611d105e797fdd0cef45a91c">magma_zgeqr2x2_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#gae34bb6b3611d105e797fdd0cef45a91c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga2fac3b56dbe9b28a18a751e213a52f65">magma_zgeqr2x3_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#ga2fac3b56dbe9b28a18a751e213a52f65"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga500633fc29122fadb07fef28bd7ca782">magma_zgeqr2x_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#ga500633fc29122fadb07fef28bd7ca782"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga9b2613d949cc2af7378ea7a353a818c2">magma_zgeqrf4</a> (magma_int_t num_gpus, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF4 computes a QR factorization of a COMPLEX_16 M-by-N matrix A: A = Q * R using multiple GPUs.  <a href="#ga9b2613d949cc2af7378ea7a353a818c2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga72e995bd49d2cdc8bdd94cb247b63386">magma_zgegqr_gpu</a> (magma_int_t ikind, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dwork, magmaDoubleComplex *work, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEGQR orthogonalizes the N vectors given by a complex M-by-N matrix A:.  <a href="#ga72e995bd49d2cdc8bdd94cb247b63386"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gaf5326ae062babd68066d9f731e4f2d95">magma_zgeqr2x2_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#gaf5326ae062babd68066d9f731e4f2d95"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gafef65136bc90963ef949842320fd53f0">magma_zgeqr2x3_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#gafef65136bc90963ef949842320fd53f0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga0652a2fd35f57b32f022d1cc9d542a1a">magma_zgeqr2x_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#ga0652a2fd35f57b32f022d1cc9d542a1a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gad0b9cb3db7e903ed07b4823cb523344a">magma_zgeqrf4</a> (magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF4 computes a QR factorization of a COMPLEX_16 M-by-N matrix A: A = Q * R using multiple GPUs.  <a href="#gad0b9cb3db7e903ed07b4823cb523344a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga204d1e33825ec70fe68ac07187039800">magma_zgeqrf</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a COMPLEX_16 M-by-N matrix A: A = Q * R.  <a href="#ga204d1e33825ec70fe68ac07187039800"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga033366cf39f90014b851cb7e875ac2cc">magma_zgeqrf2_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga033366cf39f90014b851cb7e875ac2cc"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga1b31b36b42e0c6c5dde87af4c6aca009">magma_zgeqrf3_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF3 computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga1b31b36b42e0c6c5dde87af4c6aca009"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga4587cb2eaa187ca56071db7b03d059b3">magma_zgeqrf_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga4587cb2eaa187ca56071db7b03d059b3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gaaf2443cbb6fb7c64cafdb0253a8f72a0">magma_zgeqrf2_mgpu</a> (magma_int_t num_gpus, magma_int_t m, magma_int_t n, magmaDoubleComplex **dlA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF2_MGPU computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#gaaf2443cbb6fb7c64cafdb0253a8f72a0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga15d7cf0446dcf4657cf531ba92746525">magma_zgeqrf2_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga15d7cf0446dcf4657cf531ba92746525"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gab8fa0746f4d05679559141d33d04f0fe">magma_zgeqrf3_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF3 computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#gab8fa0746f4d05679559141d33d04f0fe"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga8be3baf08856d86c56262e54e771f3fa">magma_zgeqrf_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga8be3baf08856d86c56262e54e771f3fa"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga517a6fa285754905600beaa32d650c78">magma_zgeqrf2_mgpu</a> (magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dlA[], magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF2_MGPU computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga517a6fa285754905600beaa32d650c78"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga2c6667c239ed3f2f8aa76b6490c2db3d">magma_zgeqrf_ooc</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF_OOC computes a QR factorization of a COMPLEX_16 M-by-N matrix A: A = Q * R.  <a href="#ga2c6667c239ed3f2f8aa76b6490c2db3d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga9d82a6ddd67924d65dba33bcf75444e4">magma_zungqr</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#ga9d82a6ddd67924d65dba33bcf75444e4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gafe72e6255dc28171aacf72134f332aa4">magma_zungqr</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#gafe72e6255dc28171aacf72134f332aa4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga5c72df779157f898792065cbe4750ef3">magma_zungqr2</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#ga5c72df779157f898792065cbe4750ef3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga5b1f9dc65125171ec1e8b52341b5a36a">magma_zungqr_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#ga5b1f9dc65125171ec1e8b52341b5a36a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga94b013e5ea65faafa9d3470646f89482">magma_zungqr_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#ga94b013e5ea65faafa9d3470646f89482"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga9245d369e71d90882707ce22aa2490cd">magma_zungqr_m</a> (magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *T, magma_int_t nb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGQR generates an M-by-N COMPLEX_16 matrix Q with orthonormal columns, which is defined as the first N columns of a product of K elementary reflectors of order M.  <a href="#ga9245d369e71d90882707ce22aa2490cd"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga04caefefcecc9958e5a515584f09cf95">magma_zunmqr</a> (magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR overwrites the general complex M-by-N matrix C with.  <a href="#ga04caefefcecc9958e5a515584f09cf95"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga1c3488f562d0078198b4c7f842d1523f">magma_zunmqr2_gpu</a> (magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR overwrites the general complex M-by-N matrix C with.  <a href="#ga1c3488f562d0078198b4c7f842d1523f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gaf915d664bedc7611aeabe6477f9739d0">magma_zunmqr_gpu</a> (magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *hwork, magma_int_t lwork, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR_GPU overwrites the general complex M-by-N matrix C with.  <a href="#gaf915d664bedc7611aeabe6477f9739d0"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga0a53c39aa2f514b749a35b45bf298e4a">magma_zunmqr_m</a> (magma_int_t nrgpu, magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR overwrites the general complex M-by-N matrix C with.  <a href="#ga0a53c39aa2f514b749a35b45bf298e4a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga37a6e076eec2ece2356ffc1a8ba09496">magma_zgeqr2x4_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info, magma_queue_t stream)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#ga37a6e076eec2ece2356ffc1a8ba09496"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga1f1973af75482dec6151b6a1a9e28068">magma_zunmqr2_gpu</a> (magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR overwrites the general complex M-by-N matrix C with.  <a href="#ga1f1973af75482dec6151b6a1a9e28068"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga35912eaf1ac49124d04682a3a0765f49">magma_zunmqr_gpu</a> (magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *hwork, magma_int_t lwork, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR_GPU overwrites the general complex M-by-N matrix C with.  <a href="#ga35912eaf1ac49124d04682a3a0765f49"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#ga76cdee4665c9594ead67e719edc2db73">magma_zunmqr_m</a> (magma_int_t ngpu, magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMQR overwrites the general complex M-by-N matrix C with.  <a href="#ga76cdee4665c9594ead67e719edc2db73"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__comp.html#gafa38ca4550f252ed6eac8be3213ba722">magma_zgeqr2x4_gpu</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_queue_t queue, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQR2 computes a QR factorization of a complex m by n matrix A: A = Q * R.  <a href="#gafa38ca4550f252ed6eac8be3213ba722"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga22604b91dd5b58710c95be229149cde7"></a><!-- doxytag: member="zgegqr_gpu.cpp::magma_zgegqr_gpu" ref="ga22604b91dd5b58710c95be229149cde7" args="(magma_int_t ikind, magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dwork, magmaDoubleComplex *work, magma_int_t *info)" -->
+<a class="anchor" id="ga72e995bd49d2cdc8bdd94cb247b63386"></a><!-- doxytag: member="zgegqr_gpu.cpp::magma_zgegqr_gpu" ref="ga72e995bd49d2cdc8bdd94cb247b63386" args="(magma_int_t ikind, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dwork, magmaDoubleComplex *work, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -92,7 +92,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -104,7 +104,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -153,7 +153,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gae34bb6b3611d105e797fdd0cef45a91c"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v2.cpp::magma_zgeqr2x2_gpu" ref="gae34bb6b3611d105e797fdd0cef45a91c" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)" -->
+<a class="anchor" id="gaf5326ae062babd68066d9f731e4f2d95"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v2.cpp::magma_zgeqr2x2_gpu" ref="gaf5326ae062babd68066d9f731e4f2d95" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -172,7 +172,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -184,25 +184,25 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dtau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>ddA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -251,7 +251,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga2fac3b56dbe9b28a18a751e213a52f65"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v3.cpp::magma_zgeqr2x3_gpu" ref="ga2fac3b56dbe9b28a18a751e213a52f65" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)" -->
+<a class="anchor" id="gafef65136bc90963ef949842320fd53f0"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v3.cpp::magma_zgeqr2x3_gpu" ref="gafef65136bc90963ef949842320fd53f0" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -270,7 +270,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -282,25 +282,25 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dtau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>ddA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -350,7 +350,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga37a6e076eec2ece2356ffc1a8ba09496"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v4.cu::magma_zgeqr2x4_gpu" ref="ga37a6e076eec2ece2356ffc1a8ba09496" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info, magma_queue_t stream)" -->
+<a class="anchor" id="gafa38ca4550f252ed6eac8be3213ba722"></a><!-- doxytag: member="zgeqr2x_gpu&#45;v4.cu::magma_zgeqr2x4_gpu" ref="gafa38ca4550f252ed6eac8be3213ba722" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_queue_t queue, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -369,7 +369,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -381,38 +381,38 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dtau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>ddA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_int_t *&nbsp;</td>
-          <td class="paramname"> <em>info</em>, </td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em></td><td>&nbsp;</td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -450,12 +450,12 @@
 <p>Further Details --------------- The matrix Q is represented as a product of elementary reflectors</p>
 <p>Q = H(1) H(2) . . . H(k), where k = min(m,n).</p>
 <p>Each H(i) has the form</p>
-<p>H(i) = I - tau * v * v'</p>
+<p>H(i) = I - tau * v * v**H</p>
 <p>where tau is a complex scalar, and v is a complex vector with v(1:i-1) = 0 and v(i) = 1; v(i+1:m) is stored on exit in A(i+1:m,i), and tau in TAU(i). </p>
 
 </div>
 </div>
-<a class="anchor" id="ga500633fc29122fadb07fef28bd7ca782"></a><!-- doxytag: member="zgeqr2x_gpu.cpp::magma_zgeqr2x_gpu" ref="ga500633fc29122fadb07fef28bd7ca782" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dtau, magmaDoubleComplex *dT, magmaDoubleComplex *ddA, double *dwork, magma_int_t *info)" -->
+<a class="anchor" id="ga0652a2fd35f57b32f022d1cc9d542a1a"></a><!-- doxytag: member="zgeqr2x_gpu.cpp::magma_zgeqr2x_gpu" ref="ga0652a2fd35f57b32f022d1cc9d542a1a" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dtau, magmaDoubleComplex_ptr dT, magmaDoubleComplex_ptr ddA, magmaDouble_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -474,7 +474,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -486,25 +486,25 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dtau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>ddA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -647,7 +647,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga033366cf39f90014b851cb7e875ac2cc"></a><!-- doxytag: member="zgeqrf2_gpu.cpp::magma_zgeqrf2_gpu" ref="ga033366cf39f90014b851cb7e875ac2cc" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)" -->
+<a class="anchor" id="ga15d7cf0446dcf4657cf531ba92746525"></a><!-- doxytag: member="zgeqrf2_gpu.cpp::magma_zgeqrf2_gpu" ref="ga15d7cf0446dcf4657cf531ba92746525" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -666,7 +666,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -747,7 +747,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaaf2443cbb6fb7c64cafdb0253a8f72a0"></a><!-- doxytag: member="zgeqrf_mgpu.cpp::magma_zgeqrf2_mgpu" ref="gaaf2443cbb6fb7c64cafdb0253a8f72a0" args="(magma_int_t num_gpus, magma_int_t m, magma_int_t n, magmaDoubleComplex **dlA, magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)" -->
+<a class="anchor" id="ga517a6fa285754905600beaa32d650c78"></a><!-- doxytag: member="zgeqrf_mgpu.cpp::magma_zgeqrf2_mgpu" ref="ga517a6fa285754905600beaa32d650c78" args="(magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dlA[], magma_int_t ldda, magmaDoubleComplex *tau, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -755,7 +755,7 @@
           <td class="memname">magma_int_t magma_zgeqrf2_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -772,8 +772,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>dlA</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dlA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -828,7 +828,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga1b31b36b42e0c6c5dde87af4c6aca009"></a><!-- doxytag: member="zgeqrf3_gpu.cpp::magma_zgeqrf3_gpu" ref="ga1b31b36b42e0c6c5dde87af4c6aca009" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t *info)" -->
+<a class="anchor" id="gab8fa0746f4d05679559141d33d04f0fe"></a><!-- doxytag: member="zgeqrf3_gpu.cpp::magma_zgeqrf3_gpu" ref="gab8fa0746f4d05679559141d33d04f0fe" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -847,7 +847,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -865,7 +865,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -910,7 +910,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9b2613d949cc2af7378ea7a353a818c2"></a><!-- doxytag: member="zgeqrf&#45;v4.cpp::magma_zgeqrf4" ref="ga9b2613d949cc2af7378ea7a353a818c2" args="(magma_int_t num_gpus, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gad0b9cb3db7e903ed07b4823cb523344a"></a><!-- doxytag: member="zgeqrf&#45;v4.cpp::magma_zgeqrf4" ref="gad0b9cb3db7e903ed07b4823cb523344a" args="(magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -918,7 +918,7 @@
           <td class="memname">magma_int_t magma_zgeqrf4 </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -981,7 +981,7 @@
 <p>This version does not require work space on the GPU passed as input. GPU memory is allocated in the routine.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs to be used for the factorization.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDA,N) On entry, the M-by-N matrix A. On exit, the elements on and above the diagonal of the array contain the min(M,N)-by-N upper trapezoidal matrix R (R is upper triangular if m &gt;= n); the elements below the diagonal, with the array TAU, represent the orthogonal matrix Q as a product of min(m,n) elementary reflectors (see Further Details). <br/>
@@ -1009,7 +1009,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga4587cb2eaa187ca56071db7b03d059b3"></a><!-- doxytag: member="zgeqrf_gpu.cpp::magma_zgeqrf_gpu" ref="ga4587cb2eaa187ca56071db7b03d059b3" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t *info)" -->
+<a class="anchor" id="ga8be3baf08856d86c56262e54e771f3fa"></a><!-- doxytag: member="zgeqrf_gpu.cpp::magma_zgeqrf_gpu" ref="ga8be3baf08856d86c56262e54e771f3fa" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1028,7 +1028,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1046,7 +1046,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -1183,7 +1183,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9d82a6ddd67924d65dba33bcf75444e4"></a><!-- doxytag: member="zungqr.cpp::magma_zungqr" ref="ga9d82a6ddd67924d65dba33bcf75444e4" args="(magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)" -->
+<a class="anchor" id="gafe72e6255dc28171aacf72134f332aa4"></a><!-- doxytag: member="zungqr.cpp::magma_zungqr" ref="gafe72e6255dc28171aacf72134f332aa4" args="(magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1226,7 +1226,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -1354,7 +1354,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga5b1f9dc65125171ec1e8b52341b5a36a"></a><!-- doxytag: member="zungqr_gpu.cpp::magma_zungqr_gpu" ref="ga5b1f9dc65125171ec1e8b52341b5a36a" args="(magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)" -->
+<a class="anchor" id="ga94b013e5ea65faafa9d3470646f89482"></a><!-- doxytag: member="zungqr_gpu.cpp::magma_zungqr_gpu" ref="ga94b013e5ea65faafa9d3470646f89482" args="(magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1379,7 +1379,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1397,7 +1397,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -1674,7 +1674,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga1c3488f562d0078198b4c7f842d1523f"></a><!-- doxytag: member="zunmqr2_gpu.cpp::magma_zunmqr2_gpu" ref="ga1c3488f562d0078198b4c7f842d1523f" args="(magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)" -->
+<a class="anchor" id="ga1f1973af75482dec6151b6a1a9e28068"></a><!-- doxytag: member="zunmqr2_gpu.cpp::magma_zunmqr2_gpu" ref="ga1f1973af75482dec6151b6a1a9e28068" args="(magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1711,7 +1711,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1729,7 +1729,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
@@ -1809,7 +1809,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf915d664bedc7611aeabe6477f9739d0"></a><!-- doxytag: member="zunmqr_gpu.cpp::magma_zunmqr_gpu" ref="gaf915d664bedc7611aeabe6477f9739d0" args="(magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *hwork, magma_int_t lwork, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)" -->
+<a class="anchor" id="ga35912eaf1ac49124d04682a3a0765f49"></a><!-- doxytag: member="zunmqr_gpu.cpp::magma_zunmqr_gpu" ref="ga35912eaf1ac49124d04682a3a0765f49" args="(magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *hwork, magma_int_t lwork, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1846,7 +1846,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1864,7 +1864,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
@@ -1888,7 +1888,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -1960,7 +1960,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga0a53c39aa2f514b749a35b45bf298e4a"></a><!-- doxytag: member="zunmqr_m.cpp::magma_zunmqr_m" ref="ga0a53c39aa2f514b749a35b45bf298e4a" args="(magma_int_t nrgpu, magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga76cdee4665c9594ead67e719edc2db73"></a><!-- doxytag: member="zunmqr_m.cpp::magma_zunmqr_m" ref="ga76cdee4665c9594ead67e719edc2db73" args="(magma_int_t ngpu, magma_side_t side, magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1968,7 +1968,7 @@
           <td class="memname">magma_int_t magma_zunmqr_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2067,7 +2067,7 @@
 <p>as returned by ZGEQRF. Q is of order M if SIDE = MagmaLeft and of order N if SIDE = MagmaRight.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>side</em>&nbsp;</td><td>magma_side_t</p>
 <ul>
 <li>= MagmaLeft: apply Q or Q**H from the Left;</li>
@@ -2104,7 +2104,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -27,8 +27,8 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeqp3__comp.html#ga1aa131f17dae8f46a6397b1137570050">magma_cgeqp3</a> (magma_int_t m, magma_int_t n, magmaFloatComplex *A, magma_int_t lda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, float *rwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#ga1aa131f17dae8f46a6397b1137570050"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeqp3__comp.html#gafc199504c5666132f10edb7a3ae5594b">magma_cgeqp3_gpu</a> (magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex *dwork, magma_int_t lwork, float *rwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#gafc199504c5666132f10edb7a3ae5594b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeqp3__comp.html#gac41eb6c743cc23380c79142e6dc658b0">magma_cgeqp3_gpu</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex_ptr dwork, magma_int_t lwork, float *rwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#gac41eb6c743cc23380c79142e6dc658b0"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga1aa131f17dae8f46a6397b1137570050"></a><!-- doxytag: member="cgeqp3.cpp::magma_cgeqp3" ref="ga1aa131f17dae8f46a6397b1137570050" args="(magma_int_t m, magma_int_t n, magmaFloatComplex *A, magma_int_t lda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex *work, magma_int_t lwork, float *rwork, magma_int_t *info)" -->
@@ -134,7 +134,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gafc199504c5666132f10edb7a3ae5594b"></a><!-- doxytag: member="cgeqp3_gpu.cpp::magma_cgeqp3_gpu" ref="gafc199504c5666132f10edb7a3ae5594b" args="(magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex *dwork, magma_int_t lwork, float *rwork, magma_int_t *info)" -->
+<a class="anchor" id="gac41eb6c743cc23380c79142e6dc658b0"></a><!-- doxytag: member="cgeqp3_gpu.cpp::magma_cgeqp3_gpu" ref="gac41eb6c743cc23380c79142e6dc658b0" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *jpvt, magmaFloatComplex *tau, magmaFloatComplex_ptr dwork, magma_int_t lwork, float *rwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -153,7 +153,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -177,7 +177,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -238,7 +238,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

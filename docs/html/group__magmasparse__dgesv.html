@@ -24,9 +24,556 @@
 <small>
 [<a class="el" href="group__sparse__gesv.html">General solver</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
+<tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#gac078baeb333a071e0f831519603a5e54">magma_dbaiter</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * x = b via the block asynchronous iteration method on GPU.  <a href="#gac078baeb333a071e0f831519603a5e54"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#gaa75592fd17094b222fb4547f216ea92d">magma_dbicgstab</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A.  <a href="#gaa75592fd17094b222fb4547f216ea92d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#ga7d4a52d6d332b989fc0b9a2d2a42e5be">magma_dbicgstab_merge</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A.  <a href="#ga7d4a52d6d332b989fc0b9a2d2a42e5be"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#ga1293bdcfafe8b4ed6416838a498a84e8">magma_dbicgstab_merge2</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A.  <a href="#ga1293bdcfafe8b4ed6416838a498a84e8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#ga9e519461f31912202749af007a1b5652">magma_dgmres</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real sparse matrix stored in the GPU memory.  <a href="#ga9e519461f31912202749af007a1b5652"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#ga6e47703dcfa2540e82e26913e22a884e">magma_diterref</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_d_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A.  <a href="#ga6e47703dcfa2540e82e26913e22a884e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#gae83190970956dba07a23e629a5bed7aa">magma_djacobi</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A.  <a href="#gae83190970956dba07a23e629a5bed7aa"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#gab9976a0f2ae44f885d591c33ee7ae600">magma_dpastixsetup</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the PASTIX solver.  <a href="#gab9976a0f2ae44f885d591c33ee7ae600"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__dgesv.html#ga775947a2335ae7c4933389137ae9af0d">magma_dpgmres</a> (magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_d_preconditioner *precond_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ma Solves a system of linear equations A * X = B where A is a real sparse matrix stored in the GPU memory.  <a href="#ga775947a2335ae7c4933389137ae9af0d"></a><br/></td></tr>
 </table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="gac078baeb333a071e0f831519603a5e54"></a><!-- doxytag: member="dbaiter.cpp::magma_dbaiter" ref="gac078baeb333a071e0f831519603a5e54" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dbaiter </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * x = b via the block asynchronous iteration method on GPU. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa75592fd17094b222fb4547f216ea92d"></a><!-- doxytag: member="dbicgstab.cpp::magma_dbicgstab" ref="gaa75592fd17094b222fb4547f216ea92d" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dbicgstab </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga7d4a52d6d332b989fc0b9a2d2a42e5be"></a><!-- doxytag: member="dbicgstab_merge.cpp::magma_dbicgstab_merge" ref="ga7d4a52d6d332b989fc0b9a2d2a42e5be" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dbicgstab_merge </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method. The difference to magma_dbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga1293bdcfafe8b4ed6416838a498a84e8"></a><!-- doxytag: member="dbicgstab_merge2.cpp::magma_dbicgstab_merge2" ref="ga1293bdcfafe8b4ed6416838a498a84e8" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dbicgstab_merge2 </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A. </p>
+<p>This is a GPU implementation of the Biconjugate Gradient Stabelized method. The difference to magma_dbicgstab is that we use specifically designed kernels merging multiple operations into one kernel.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga9e519461f31912202749af007a1b5652"></a><!-- doxytag: member="dgmres.cpp::magma_dgmres" ref="ga9e519461f31912202749af007a1b5652" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dgmres </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real sparse matrix stored in the GPU memory. </p>
+<p>X and B are real vectors stored on the GPU memory. This is a GPU implementation of the GMRES method.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix descriptor for matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b vector</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga6e47703dcfa2540e82e26913e22a884e"></a><!-- doxytag: member="diterref.cpp::magma_diterref" ref="ga6e47703dcfa2540e82e26913e22a884e" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_d_preconditioner *precond_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_diterref </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A. </p>
+<p>This is a GPU implementation of the Iterative Refinement method. The inner solver is passed via the preconditioner argument.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond_par</em>&nbsp;</td><td>magma_d_preconditioner* inner solver </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gae83190970956dba07a23e629a5bed7aa"></a><!-- doxytag: member="djacobi.cpp::magma_djacobi" ref="gae83190970956dba07a23e629a5bed7aa" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_djacobi </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a real symmetric N-by-N positive definite matrix A. </p>
+<p>This is a GPU implementation of the Jacobi method.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gab9976a0f2ae44f885d591c33ee7ae600"></a><!-- doxytag: member="dpastix.cpp::magma_dpastixsetup" ref="gab9976a0f2ae44f885d591c33ee7ae600" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_preconditioner *precond, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dpastixsetup </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Prepares the PASTIX solver. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_d_preconditioner* preconditioner parameter </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga775947a2335ae7c4933389137ae9af0d"></a><!-- doxytag: member="dpgmres.cpp::magma_dpgmres" ref="ga775947a2335ae7c4933389137ae9af0d" args="(magma_d_sparse_matrix A, magma_d_vector b, magma_d_vector *x, magma_d_solver_par *solver_par, magma_d_preconditioner *precond_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dpgmres </td>
+          <td>(</td>
+          <td class="paramtype">magma_d_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_d_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>ma Solves a system of linear equations A * X = B where A is a real sparse matrix stored in the GPU memory. </p>
+<p>X and B are real vectors stored on the GPU memory. This is a GPU implementation of the right-preconditioned GMRES method.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_d_sparse_matrix descriptor for matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_d_vector RHS b vector</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_d_vector* solution approximation</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_d_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>precond_par</em>&nbsp;</td><td>magma_d_preconditioner* preconditioner </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

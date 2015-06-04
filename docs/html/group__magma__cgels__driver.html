@@ -25,13 +25,13 @@
 [<a class="el" href="group__magma__gels__driver.html">Least Squares solve: driver</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgels__driver.html#gaa073ff66cc73bf09321e5a9895d00786">magma_cgels3_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#gaa073ff66cc73bf09321e5a9895d00786"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgels__driver.html#gafa42a36c85825e0accccf66dc4a69b4c">magma_cgels_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#gafa42a36c85825e0accccf66dc4a69b4c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgels__driver.html#ga9908cd5e427774eae5238866107ec3e5">magma_cgels3_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#ga9908cd5e427774eae5238866107ec3e5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgels__driver.html#gaec9ae710930ccbb83779bf41c6315f1b">magma_cgels_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#gaec9ae710930ccbb83779bf41c6315f1b"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gaa073ff66cc73bf09321e5a9895d00786"></a><!-- doxytag: member="cgels3_gpu.cpp::magma_cgels3_gpu" ref="gaa073ff66cc73bf09321e5a9895d00786" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga9908cd5e427774eae5238866107ec3e5"></a><!-- doxytag: member="cgels3_gpu.cpp::magma_cgels3_gpu" ref="ga9908cd5e427774eae5238866107ec3e5" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -62,7 +62,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -74,7 +74,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -141,7 +141,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gafa42a36c85825e0accccf66dc4a69b4c"></a><!-- doxytag: member="cgels_gpu.cpp::magma_cgels_gpu" ref="gafa42a36c85825e0accccf66dc4a69b4c" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gaec9ae710930ccbb83779bf41c6315f1b"></a><!-- doxytag: member="cgels_gpu.cpp::magma_cgels_gpu" ref="gaec9ae710930ccbb83779bf41c6315f1b" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -172,7 +172,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -184,7 +184,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -252,7 +252,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

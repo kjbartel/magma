@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.5.0) --
+    -- MAGMA (version 1.6.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date September 2014
+       @date November 2014
  
        @author Mark Gates
 */
@@ -131,25 +131,26 @@ void magma_print_environment()
     int ndevices;
     err = cudaGetDeviceCount( &ndevices );
     check_error( err );
-    for( int idevice = 0; idevice < ndevices; idevice++ ) {
+    for( int dev = 0; dev < ndevices; dev++ ) {
         cudaDeviceProp prop;
-        err = cudaGetDeviceProperties( &prop, idevice );
+        err = cudaGetDeviceProperties( &prop, dev );
         check_error( err );
         printf( "device %d: %s, %.1f MHz clock, %.1f MB memory, capability %d.%d\n",
-                idevice,
+                dev,
                 prop.name,
                 prop.clockRate / 1000.,
                 prop.totalGlobalMem / (1024.*1024.),
                 prop.major,
                 prop.minor );
         
-        if ( prop.major*100 + prop.minor*10 < MIN_CUDA_ARCH ) {
+        int arch = prop.major*100 + prop.minor*10;
+        if ( arch < MIN_CUDA_ARCH ) {
             printf("\n"
                    "==============================================================================\n"
                    "WARNING: MAGMA was compiled only for CUDA capability %.1f and higher;\n"
-                   "some routines will not run correctly!\n"
+                   "device %d has only capability %.1f; some routines will not run correctly!\n"
                    "==============================================================================\n\n",
-                   MIN_CUDA_ARCH/100. );
+                   MIN_CUDA_ARCH/100., dev, arch/100. );
         }
     }
 }

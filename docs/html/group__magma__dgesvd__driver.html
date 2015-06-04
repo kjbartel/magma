@@ -25,13 +25,13 @@
 [<a class="el" href="group__magma__gesvd__driver.html">SVD: driver</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgesvd__driver.html#ga6ac1524e23541c747ef0a319fde3af2f">magma_dgesdd</a> (magma_vec_t jobz, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGESDD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and right singular vectors, by using divide-and-conquer method.  <a href="#ga6ac1524e23541c747ef0a319fde3af2f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgesvd__driver.html#gae96893c07d98c00aa2dad4afc76c89f7">magma_dgesvd</a> (magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGESVD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and/or right singular vectors.  <a href="#gae96893c07d98c00aa2dad4afc76c89f7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgesvd__driver.html#gad0803be0e272f52600bc7345c0aeb2e4">magma_dgesdd</a> (magma_vec_t jobz, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGESDD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and right singular vectors, by using divide-and-conquer method.  <a href="#gad0803be0e272f52600bc7345c0aeb2e4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgesvd__driver.html#ga1c35716875bdffb18ae15eba0cb1b00c">magma_dgesvd</a> (magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGESVD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and/or right singular vectors.  <a href="#ga1c35716875bdffb18ae15eba0cb1b00c"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga6ac1524e23541c747ef0a319fde3af2f"></a><!-- doxytag: member="dgesdd.cpp::magma_dgesdd" ref="ga6ac1524e23541c747ef0a319fde3af2f" args="(magma_vec_t jobz, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t *info)" -->
+<a class="anchor" id="gad0803be0e272f52600bc7345c0aeb2e4"></a><!-- doxytag: member="dgesdd.cpp::magma_dgesdd" ref="gad0803be0e272f52600bc7345c0aeb2e4" args="(magma_vec_t jobz, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -106,6 +106,12 @@
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
           <td class="paramname"> <em>lwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -195,7 +201,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gae96893c07d98c00aa2dad4afc76c89f7"></a><!-- doxytag: member="dgesvd.cpp::magma_dgesvd" ref="gae96893c07d98c00aa2dad4afc76c89f7" args="(magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga1c35716875bdffb18ae15eba0cb1b00c"></a><!-- doxytag: member="dgesvd.cpp::magma_dgesvd" ref="ga1c35716875bdffb18ae15eba0cb1b00c" args="(magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *s, double *U, magma_int_t ldu, double *VT, magma_int_t ldvt, double *work, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -276,6 +282,12 @@
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
           <td class="paramname"> <em>lwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -365,7 +377,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

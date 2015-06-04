@@ -33,7 +33,7 @@
 <p>Two-sided matrix factorizations =================================</p>
 <p>As the one-sided matrix factorizations are the basis for various linear solvers, the two-sided matrix factorizations are the basis for eigen-solvers, and therefore form an important class of dense linear algebra routines. The two-sided factorizations have been traditionally more difficult to achieve high performance. The reason is that the two-sided factorizations involve large matrix-vector products which are memory bound, and as the gap between compute and communication power increases exponentially, these memory bound operations become an increasingly more difficult to handle bottleneck. GPUs though offer an attractive possibility to accelerate them. Indeed, having a high bandwidth (e.g. 10 times larger than current CPU bus bandwidths), GPUs can accelerate matrix-vector products significantly (10 to 30 times). Here, the panel factorization itself is hybrid, while the trailing matrix update is performed on the GPU. </p>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

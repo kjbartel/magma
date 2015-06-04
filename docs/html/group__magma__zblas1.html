@@ -59,6 +59,9 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Scales a vector by a real constant; <img class="formulaInl" alt="$ x = \alpha x $" src="form_21.png"/>.  <a href="#ga1f6fe9f1cee298f2ea1d999a269a0f68"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas1.html#gacc420578151cc1c4a53f3d8ac61a0faa">magma_zswap</a> (magma_int_t n, magmaDoubleComplex *dx, magma_int_t incx, magmaDoubleComplex *dy, magma_int_t incy)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Swap vector x and y; <img class="formulaInl" alt="$ x <-> y $" src="form_22.png"/>.  <a href="#gacc420578151cc1c4a53f3d8ac61a0faa"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas1.html#ga7b4d32bfc85adb473ca35ba28e12dad1">magmablas_zswap_q</a> (magma_int_t n, magmaDoubleComplex_ptr dx, magma_int_t incx, magmaDoubleComplex_ptr dy, magma_int_t incy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= Swap vector x and y; <img class="formulaInl" alt="$ x <-> y $" src="form_22.png"/>.  <a href="#ga7b4d32bfc85adb473ca35ba28e12dad1"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas1.html#ga6a4078ce9ae8df15c37b7353a541d905">magmablas_zswap</a> (magma_int_t n, magmaDoubleComplex_ptr dx, magma_int_t incx, magmaDoubleComplex_ptr dy, magma_int_t incy)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga55a7946aeb4dc5186523c72727f308cc"></a><!-- doxytag: member="cblas_z.cpp::magma_cblas_dzasum" ref="ga55a7946aeb4dc5186523c72727f308cc" args="(magma_int_t n, const magmaDoubleComplex *x, magma_int_t incx)" -->
@@ -971,8 +974,117 @@
 
 </div>
 </div>
+<a class="anchor" id="ga6a4078ce9ae8df15c37b7353a541d905"></a><!-- doxytag: member="zswap.cu::magmablas_zswap" ref="ga6a4078ce9ae8df15c37b7353a541d905" args="(magma_int_t n, magmaDoubleComplex_ptr dx, magma_int_t incx, magmaDoubleComplex_ptr dy, magma_int_t incy)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_zswap </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incy</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<div class="memdoc">
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__zblas1.html#ga7b4d32bfc85adb473ca35ba28e12dad1" title="Purpose: ============= Swap vector x and y; .">magmablas_zswap_q</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga7b4d32bfc85adb473ca35ba28e12dad1"></a><!-- doxytag: member="zswap.cu::magmablas_zswap_q" ref="ga7b4d32bfc85adb473ca35ba28e12dad1" args="(magma_int_t n, magmaDoubleComplex_ptr dx, magma_int_t incx, magmaDoubleComplex_ptr dy, magma_int_t incy, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_zswap_q </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Purpose: ============= Swap vector x and y; <img class="formulaInl" alt="$ x <-> y $" src="form_22.png"/>. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>Number of elements in vector x and y. n &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX_16 array on GPU device. The n element vector x of dimension (1 + (n-1)*incx).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>Stride between consecutive elements of dx. incx != 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX_16 array on GPU device. The n element vector y of dimension (1 + (n-1)*incy).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>Stride between consecutive elements of dy. incy != 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

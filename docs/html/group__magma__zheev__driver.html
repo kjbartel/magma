@@ -27,28 +27,28 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga623139c7a079fff5dad908a51b6085a4">magma_zheevd</a> (magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga623139c7a079fff5dad908a51b6085a4"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga47897285de25a724d919e7f0fe592cf7">magma_zheevd_gpu</a> (magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD_GPU computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga47897285de25a724d919e7f0fe592cf7"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gaef8beb10de1e32f19382f2db9dd968a0">magma_zheevd_m</a> (magma_int_t nrgpu, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#gaef8beb10de1e32f19382f2db9dd968a0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga841519bd19ba04630758ffda31bc1cbb">magma_zheevd_gpu</a> (magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD_GPU computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga841519bd19ba04630758ffda31bc1cbb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga61045f0f4962bb37a86096227848e5b8">magma_zheevd_m</a> (magma_int_t ngpu, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga61045f0f4962bb37a86096227848e5b8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga4647f1ca5481e78f2c9f3248432347c0">magma_zheevdx</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVDX computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga4647f1ca5481e78f2c9f3248432347c0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gab4fd281a4bd162c3d4f45f1ab0c79747">magma_zheevdx_2stage</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD_2STAGE computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#gab4fd281a4bd162c3d4f45f1ab0c79747"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga14e1397a0cd8ba3ffc17ef53199f8bba">magma_zheevdx_2stage_m</a> (magma_int_t nrgpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD_2STAGE computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga14e1397a0cd8ba3ffc17ef53199f8bba"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga9fb21486047a949357b0a145896609cf">magma_zheevdx_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVDX_GPU computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga9fb21486047a949357b0a145896609cf"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gaf03aa40c624b6ccce6c46faea19ba050">magma_zheevdx_m</a> (magma_int_t nrgpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#gaf03aa40c624b6ccce6c46faea19ba050"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga37a20efbe12d537677f17027f5fc09e7">magma_zheevdx_2stage_m</a> (magma_int_t ngpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD_2STAGE computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga37a20efbe12d537677f17027f5fc09e7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gaa28dc8ae8bfbc4ca9b93a7b43f544231">magma_zheevdx_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVDX_GPU computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#gaa28dc8ae8bfbc4ca9b93a7b43f544231"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga2ef0d19dad6a7ea4bc1d2c3ab7e1d80e">magma_zheevdx_m</a> (magma_int_t ngpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVD computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga2ef0d19dad6a7ea4bc1d2c3ab7e1d80e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gad13a22d9b91126f8a049ecba2026f2ae">magma_zheevr</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *Z, magma_int_t ldz, magma_int_t *isuppz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVR computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix T.  <a href="#gad13a22d9b91126f8a049ecba2026f2ae"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga102bc375e5eb3e45e8ffae7b350c0c16">magma_zheevr_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *dZ, magma_int_t lddz, magma_int_t *isuppz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVR computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix T.  <a href="#ga102bc375e5eb3e45e8ffae7b350c0c16"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gae13bb322dc89a67187bc40ae05dd187d">magma_zheevr_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex_ptr dZ, magma_int_t lddz, magma_int_t *isuppz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVR computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix T.  <a href="#gae13bb322dc89a67187bc40ae05dd187d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#gaf52eba70bf6a90108c381ca50e75b3f8">magma_zheevx</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *Z, magma_int_t ldz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVX computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#gaf52eba70bf6a90108c381ca50e75b3f8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga3b18ab909f93d48458792b5f5ef5628e">magma_zheevx_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *dZ, magma_int_t lddz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVX computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga3b18ab909f93d48458792b5f5ef5628e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__driver.html#ga93603e49e26f7102780e022cb513bd62">magma_zheevx_gpu</a> (magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex_ptr dZ, magma_int_t lddz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEEVX computes selected eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix A.  <a href="#ga93603e49e26f7102780e022cb513bd62"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga623139c7a079fff5dad908a51b6085a4"></a><!-- doxytag: member="zheevd.cpp::magma_zheevd" ref="ga623139c7a079fff5dad908a51b6085a4" args="(magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
@@ -187,7 +187,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga47897285de25a724d919e7f0fe592cf7"></a><!-- doxytag: member="zheevd_gpu.cpp::magma_zheevd_gpu" ref="ga47897285de25a724d919e7f0fe592cf7" args="(magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga841519bd19ba04630758ffda31bc1cbb"></a><!-- doxytag: member="zheevd_gpu.cpp::magma_zheevd_gpu" ref="ga841519bd19ba04630758ffda31bc1cbb" args="(magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -212,7 +212,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -337,7 +337,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaef8beb10de1e32f19382f2db9dd968a0"></a><!-- doxytag: member="zheevd_m.cpp::magma_zheevd_m" ref="gaef8beb10de1e32f19382f2db9dd968a0" args="(magma_int_t nrgpu, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga61045f0f4962bb37a86096227848e5b8"></a><!-- doxytag: member="zheevd_m.cpp::magma_zheevd_m" ref="ga61045f0f4962bb37a86096227848e5b8" args="(magma_int_t ngpu, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -345,7 +345,7 @@
           <td class="memname">magma_int_t magma_zheevd_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -439,7 +439,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
 <li>= MagmaNoVec: Compute eigenvalues only;</li>
@@ -848,7 +848,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga14e1397a0cd8ba3ffc17ef53199f8bba"></a><!-- doxytag: member="zheevdx_2stage_m.cpp::magma_zheevdx_2stage_m" ref="ga14e1397a0cd8ba3ffc17ef53199f8bba" args="(magma_int_t nrgpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga37a20efbe12d537677f17027f5fc09e7"></a><!-- doxytag: member="zheevdx_2stage_m.cpp::magma_zheevdx_2stage_m" ref="ga37a20efbe12d537677f17027f5fc09e7" args="(magma_int_t ngpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -856,7 +856,7 @@
           <td class="memname">magma_int_t magma_zheevdx_2stage_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -986,7 +986,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
 <li>= MagmaNoVec: Compute eigenvalues only;</li>
@@ -1039,7 +1039,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9fb21486047a949357b0a145896609cf"></a><!-- doxytag: member="zheevdx_gpu.cpp::magma_zheevdx_gpu" ref="ga9fb21486047a949357b0a145896609cf" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gaa28dc8ae8bfbc4ca9b93a7b43f544231"></a><!-- doxytag: member="zheevdx_gpu.cpp::magma_zheevdx_gpu" ref="gaa28dc8ae8bfbc4ca9b93a7b43f544231" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1070,7 +1070,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1237,7 +1237,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf03aa40c624b6ccce6c46faea19ba050"></a><!-- doxytag: member="zheevdx_m.cpp::magma_zheevdx_m" ref="gaf03aa40c624b6ccce6c46faea19ba050" args="(magma_int_t nrgpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga2ef0d19dad6a7ea4bc1d2c3ab7e1d80e"></a><!-- doxytag: member="zheevdx_m.cpp::magma_zheevdx_m" ref="ga2ef0d19dad6a7ea4bc1d2c3ab7e1d80e" args="(magma_int_t ngpu, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1245,7 +1245,7 @@
           <td class="memname">magma_int_t magma_zheevdx_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1375,7 +1375,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
 <li>= MagmaNoVec: Compute eigenvalues only;</li>
@@ -1654,7 +1654,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga102bc375e5eb3e45e8ffae7b350c0c16"></a><!-- doxytag: member="zheevr_gpu.cpp::magma_zheevr_gpu" ref="ga102bc375e5eb3e45e8ffae7b350c0c16" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *dZ, magma_int_t lddz, magma_int_t *isuppz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gae13bb322dc89a67187bc40ae05dd187d"></a><!-- doxytag: member="zheevr_gpu.cpp::magma_zheevr_gpu" ref="gae13bb322dc89a67187bc40ae05dd187d" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex_ptr dZ, magma_int_t lddz, magma_int_t *isuppz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1685,7 +1685,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1739,7 +1739,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dZ</em>, </td>
         </tr>
         <tr>
@@ -2111,7 +2111,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga3b18ab909f93d48458792b5f5ef5628e"></a><!-- doxytag: member="zheevx_gpu.cpp::magma_zheevx_gpu" ref="ga3b18ab909f93d48458792b5f5ef5628e" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *dZ, magma_int_t lddz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)" -->
+<a class="anchor" id="ga93603e49e26f7102780e022cb513bd62"></a><!-- doxytag: member="zheevx_gpu.cpp::magma_zheevx_gpu" ref="ga93603e49e26f7102780e022cb513bd62" args="(magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex_ptr dZ, magma_int_t lddz, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *wZ, magma_int_t ldwz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2142,7 +2142,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2196,7 +2196,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dZ</em>, </td>
         </tr>
         <tr>
@@ -2343,7 +2343,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

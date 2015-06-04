@@ -31,68 +31,73 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magma_cprint_gpu prints a matrix that is located on the GPU device.  <a href="#ga9f2ef18326d62707b6da9b2360fe62f8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga82e3bc2e6365c0045b927d49625d9eb6">magma_cnan_inf</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magma_cnan_inf checks a matrix that is located on the CPU host for NAN (not-a-number) and INF (infinity) values.  <a href="#ga82e3bc2e6365c0045b927d49625d9eb6"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga24cc7787933eaa5d8c9cae93efbe29fa">magma_cnan_inf_gpu</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magma_cnan_inf checks a matrix that is located on the CPU host for NAN (not-a-number) and INF (infinity) values.  <a href="#ga24cc7787933eaa5d8c9cae93efbe29fa"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga616f9fb325e0179e1160780fab52332c">magmablas_cgeadd_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEADD adds two matrices, dB = alpha*dA + dB.  <a href="#ga616f9fb325e0179e1160780fab52332c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga55c3c984194506145ab839245ceb16b6">magmablas_cgeadd</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2bf2c8b2fedac6545114f6099f357ae9">magmablas_cgeadd_batched_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEADD adds two sets of matrices, dAarray[i] = alpha*dAarray[i] + dBarray[i], for i = 0, .  <a href="#ga2bf2c8b2fedac6545114f6099f357ae9"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga27e1770b9564d83abb6331a8fbd46e91">magmablas_cgeadd_batched</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gad57f63944812b643767baf6cc097a525">magmablas_clacpy_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLACPY_STREAM copies all or part of a two-dimensional matrix dA to another matrix dB.  <a href="#gad57f63944812b643767baf6cc097a525"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga4798f85b755bf59e51abd49ecae412f4">magmablas_clacpy</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga6a5193a0b207c9996220c9f6e1e71963">magmablas_clacpy_batched_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Note --------</p>
-<ul>
-<li>UPLO Parameter is disabled</li>
-<li>Do we want to provide a generic function to the user with all the options? </li>
-</ul>
- <a href="#ga6a5193a0b207c9996220c9f6e1e71963"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa77dc49cec899e83bf48903797fd660e">magmablas_clacpy_batched</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gacf5908d678c7a76a8b48bee4285ded6e">magmablas_clag2z_q</a> (magma_int_t m, magma_int_t n, const magmaFloatComplex *SA, magma_int_t ldsa, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAG2Z_STREAM converts a single-complex matrix, SA, to a double-complex matrix, A.  <a href="#gacf5908d678c7a76a8b48bee4285ded6e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga1fafc6db2511871f3bb542607da02677">magmablas_clag2z</a> (magma_int_t m, magma_int_t n, const magmaFloatComplex *SA, magma_int_t ldsa, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga828b91eeb758feead86b3bccaaf1cdcb">magma_cnan_inf_gpu</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magma_cnan_inf checks a matrix that is located on the CPU host for NAN (not-a-number) and INF (infinity) values.  <a href="#ga828b91eeb758feead86b3bccaaf1cdcb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gab380f72be15613985a75d75ec5728792">magmablas_cgeadd_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEADD adds two matrices, dB = alpha*dA + dB.  <a href="#gab380f72be15613985a75d75ec5728792"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga18cce79d2c51107b0d86a29c082aa2ee">magmablas_cgeadd</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gab1e35d87229c509bbaa973552e8f9d85">magmablas_cgeadd_batched_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEADD adds two sets of matrices, dAarray[i] = alpha*dAarray[i] + dBarray[i], for i = 0, .  <a href="#gab1e35d87229c509bbaa973552e8f9d85"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gae600997865cc633691925f6f6c44b14e">magmablas_cgeadd_batched</a> (magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga4a6c93e932b215ed1ff1767cebc2df65">magmablas_clacpy_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLACPY_Q copies all or part of a two-dimensional matrix dA to another matrix dB.  <a href="#ga4a6c93e932b215ed1ff1767cebc2df65"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga124356246942c901489b413e58104fb3">magmablas_clacpy</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2f360c0704ffb753fbe14015c1dddc6a">magmablas_clacpy_batched_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLACPY_BATCHED_Q copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount.  <a href="#ga2f360c0704ffb753fbe14015c1dddc6a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaea480380be402233348c849c4041f40e">magmablas_clacpy_batched</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga74ec8850899d3fda5d53a64c635a135b">magmablas_clag2z_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr SA, magma_int_t ldsa, magmaDoubleComplex_ptr A, magma_int_t lda, magma_int_t *info, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAG2Z_STREAM converts a single-complex matrix, SA, to a double-complex matrix, A.  <a href="#ga74ec8850899d3fda5d53a64c635a135b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gafacaa679c0c328529685f54e1ff45a86">magmablas_clag2z</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr SA, magma_int_t ldsa, magmaDoubleComplex_ptr A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga789b77cda1ebc1775a3e1407ae2f9b3b">magmablas_clange</a> (magma_norm_t norm, magma_int_t m, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, float *dwork)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLANGE returns the value of the one norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a real matrix A.  <a href="#ga789b77cda1ebc1775a3e1407ae2f9b3b"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga6f5aaea4f548acc263f4ebb1a81dc72e">magmablas_clanhe</a> (magma_norm_t norm, magma_uplo_t uplo, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, float *dwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLANHE returns the value of the one norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a complex Hermitian matrix A.  <a href="#ga6f5aaea4f548acc263f4ebb1a81dc72e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gae1e96de4b9c5649c15bd7637fb9f9ed3">magmablas_clascl_q</a> (magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL multiplies the M by N complex matrix A by the real scalar CTO/CFROM.  <a href="#gae1e96de4b9c5649c15bd7637fb9f9ed3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gacc01fa36d455f9b8c66734ab4efeec7d">magmablas_clascl</a> (magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga371c7b6b55f3bb40356730927b937bf3">magmablas_clascl2_q</a> (magma_type_t type, magma_int_t m, magma_int_t n, const float *dD, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.  <a href="#ga371c7b6b55f3bb40356730927b937bf3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga79c7e184b2fa4d80cff9cbf4a4fb7a01">magmablas_clascl2</a> (magma_type_t type, magma_int_t m, magma_int_t n, const float *dD, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gae169738f21bfff6802247b00bc5d077d">magmablas_claset_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals.  <a href="#gae169738f21bfff6802247b00bc5d077d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga40b0ba0e8b44df3364fae761ff01b418">magmablas_claset</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaf3333ab68f77df074f2ce236d8cf5425">magmablas_claset_band_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASET_BAND_STREAM initializes the main diagonal of dA to DIAG, and the K-1 sub- or super-diagonals to OFFDIAG.  <a href="#gaf3333ab68f77df074f2ce236d8cf5425"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gafbeb6538c4bd293f0bc8222e0f7fa11c">magmablas_claset_band</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga5d0b1dbc696b3d1ddfd26006faae30ba">magmablas_claswp_q</a> (magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWP performs a series of row interchanges on the matrix A.  <a href="#ga5d0b1dbc696b3d1ddfd26006faae30ba"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga355ace580bcb413f392daa998d1e77f1">magmablas_claswp</a> (magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga66b774a74772d664ea9b5c465684611f">magmablas_claswpx_q</a> (magma_int_t n, magmaFloatComplex *dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWPX performs a series of row interchanges on the matrix A.  <a href="#ga66b774a74772d664ea9b5c465684611f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gab277993b71d7c6127746e3df10070be3">magmablas_claswpx</a> (magma_int_t n, magmaFloatComplex *dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga6562a24d37dbbdec83cd0314492deb42">magmablas_claswp2_q</a> (magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *d_ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWP2 performs a series of row interchanges on the matrix A.  <a href="#ga6562a24d37dbbdec83cd0314492deb42"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga949609c9379e2de51bb5abf3701ad691">magmablas_claswp2</a> (magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *d_ipiv, magma_int_t inci)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2ba2d44d5fc8436bf11bcbf382987e99">magmablas_cswapdblk_q</a> (magma_int_t n, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t incb, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">cswapdblk swaps diagonal blocks of size nb x nb between matrices dA and dB on the GPU.  <a href="#ga2ba2d44d5fc8436bf11bcbf382987e99"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa301469d05e2671441440e367f1d567f">magmablas_cswapdblk</a> (magma_int_t n, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t incb)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga92663bb9c3be8a7c5eb13a7b99128d52">magmablas_csymmetrize_q</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa, to make dA a general representation of a symmetric matrix.  <a href="#ga92663bb9c3be8a7c5eb13a7b99128d52"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga400ea96f657e95b6c9b349369b3e5ec4">magmablas_csymmetrize</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaf7575daf78a949d8e02702a0182a3224">magmablas_csymmetrize_tiles_q</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CSYMMETRIZE_TILES copies lower triangle to upper triangle, or vice-versa, to make some blocks of dA into general representations of a symmetric block.  <a href="#gaf7575daf78a949d8e02702a0182a3224"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaee7e4f971db51ffe154b4cfa5a64d0f8">magmablas_csymmetrize_tiles</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gad8545d91733ea5f0c9884a359494317c">magmablas_ctranspose_q</a> (magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dAT, magma_int_t lddat, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ctranspose_q copies and transposes a matrix dA to matrix dAT.  <a href="#gad8545d91733ea5f0c9884a359494317c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga046ed25c4abe677543af9a16f8e9b31d">magmablas_ctranspose</a> (magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dAT, magma_int_t lddat)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gadc466e8d3c3c2f5b1dad3d319313f78c">magmablas_ctranspose_inplace_q</a> (magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ctranspose_inplace_q transposes a square N-by-N matrix in-place.  <a href="#gadc466e8d3c3c2f5b1dad3d319313f78c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga06d4e027a3b7b556c9c3295da771ca36">magmablas_ctranspose_inplace</a> (magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa95745d2cdde19ba2795144a7716fdef">magmablas_clanhe</a> (magma_norm_t norm, magma_uplo_t uplo, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloat_ptr dwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLANHE returns the value of the one norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a complex Hermitian matrix A.  <a href="#gaa95745d2cdde19ba2795144a7716fdef"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gace5afb5e7e8d1bc7ac090c4cdf216b77">magmablas_clascl_q</a> (magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL multiplies the M by N complex matrix A by the real scalar CTO/CFROM.  <a href="#gace5afb5e7e8d1bc7ac090c4cdf216b77"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga85afe115712b20c54bef72e5eca086e9">magmablas_clascl</a> (magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga0f7f691609d80e0d501a3ac2eff41b1f">magmablas_clascl2_q</a> (magma_type_t type, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dD, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.  <a href="#ga0f7f691609d80e0d501a3ac2eff41b1f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga0fcb82b607002d3c2e1d7031143eeb70">magmablas_clascl2</a> (magma_type_t type, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dD, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa582974acaec0447951f9afdb1ae95bd">magmablas_clascl_2x2_q</a> (magma_type_t type, magma_int_t m, const magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.  <a href="#gaa582974acaec0447951f9afdb1ae95bd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga146bb7aba5f8ae2a2e95473b1c63d0c4">magmablas_clascl_2x2</a> (magma_type_t type, magma_int_t m, magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga299b79edf6bcad1fa404c16bcab42f23">magmablas_clascl_diag_q</a> (magma_type_t type, magma_int_t m, magma_int_t n, const magmaFloatComplex *dD, magma_int_t lddd, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.  <a href="#ga299b79edf6bcad1fa404c16bcab42f23"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa07227dbb849361bba9edc07827763bf">magmablas_clascl_diag</a> (magma_type_t type, magma_int_t m, magma_int_t n, const magmaFloatComplex *dD, magma_int_t lddd, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaa2292baa9e98daa2b9384983b1829751">magmablas_claset_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the off-diagonals.  <a href="#gaa2292baa9e98daa2b9384983b1829751"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2ff60fcfe8da9e95e2a382adc5231eda">magmablas_claset</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga73ec76de14156b05923c269179e0446f">magmablas_claset_batched</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dAarray[], magma_int_t ldda, magma_int_t batchCount)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2cf65ca8dd3bc71aa1d7e0e2ec2560b7">magmablas_claset_band_q</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLASET_BAND_STREAM initializes the main diagonal of dA to DIAG, and the K-1 sub- or super-diagonals to OFFDIAG.  <a href="#ga2cf65ca8dd3bc71aa1d7e0e2ec2560b7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gad8397cdf419d54eb91c8acdeedd30c00">magmablas_claset_band</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gacce599491cd6ccbc8b5b66f22ad64817">magmablas_claswp_q</a> (magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWP performs a series of row interchanges on the matrix A.  <a href="#gacce599491cd6ccbc8b5b66f22ad64817"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gab1b3737748d618c111884f4acbd93e98">magmablas_claswp</a> (magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga119c244d42d9e28e2ab61f34ada3b7f7">magmablas_claswpx_q</a> (magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWPX performs a series of row interchanges on the matrix A.  <a href="#ga119c244d42d9e28e2ab61f34ada3b7f7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gada3883b9d8c34a7b281155f145c400b5">magmablas_claswpx</a> (magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaf83a77cc5fbad3a938cc9044af01f442">magmablas_claswp2_q</a> (magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, magmaInt_const_ptr d_ipiv, magma_int_t inci, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Purpose: ============= CLASWP2 performs a series of row interchanges on the matrix A.  <a href="#gaf83a77cc5fbad3a938cc9044af01f442"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga60ee06f25049c3d1b970668c3a03c15e">magmablas_claswp2</a> (magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, magmaInt_const_ptr d_ipiv, magma_int_t inci)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga2a63bcc61053472bd0d998368ee5beec">magmablas_cswapdblk_q</a> (magma_int_t n, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t incb, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">cswapdblk swaps diagonal blocks of size nb x nb between matrices dA and dB on the GPU.  <a href="#ga2a63bcc61053472bd0d998368ee5beec"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaec5a16a96655b7410581ec72bbac9290">magmablas_cswapdblk</a> (magma_int_t n, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t incb)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga66e227d63afe3eb4251cd0979fa1cf0a">magmablas_csymmetrize_q</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa, to make dA a general representation of a symmetric matrix.  <a href="#ga66e227d63afe3eb4251cd0979fa1cf0a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gac2f1c16daec5e07284746f1aff098863">magmablas_csymmetrize</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gac2b2d999eb505555fce5d17a9fcf77e3">magmablas_csymmetrize_tiles_q</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CSYMMETRIZE_TILES copies lower triangle to upper triangle, or vice-versa, to make some blocks of dA into general representations of a symmetric block.  <a href="#gac2b2d999eb505555fce5d17a9fcf77e3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga6cca74632dc09ff44a611d033a2b20fe">magmablas_csymmetrize_tiles</a> (magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga1e0232c48e21130b6c814d6e1ace4f0c">magmablas_ctranspose_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dAT, magma_int_t lddat, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ctranspose_q copies and transposes a matrix dA to matrix dAT.  <a href="#ga1e0232c48e21130b6c814d6e1ace4f0c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaed3fb60914ec4da5a9cd5ce22288013d">magmablas_ctranspose</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dAT, magma_int_t lddat)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga39eb26ade5b98d5d78a569a6e7b1a0ee">magmablas_ctranspose_batched_q</a> (magma_int_t m, magma_int_t n, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dAT_array, magma_int_t lddat, magma_int_t batchCount, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ctranspose_batched_q copies and transposes a matrix dA_array[i] to matrix dAT_array[i].  <a href="#ga39eb26ade5b98d5d78a569a6e7b1a0ee"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#ga1cbabd6aed8e75d6971be5ce812df3b8">magmablas_ctranspose_batched</a> (magma_int_t m, magma_int_t n, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dAT_array, magma_int_t lddat, magma_int_t batchCount)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gaca08ec48c6cb1a59cf4b8faad140989b">magmablas_ctranspose_inplace_q</a> (magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ctranspose_inplace_q transposes a square N-by-N matrix in-place.  <a href="#gaca08ec48c6cb1a59cf4b8faad140989b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__caux2.html#gabc9a4abb27d34a6c671675805a9d253b">magmablas_ctranspose_inplace</a> (magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga82e3bc2e6365c0045b927d49625d9eb6"></a><!-- doxytag: member="magma_cnan_inf.cpp::magma_cnan_inf" ref="ga82e3bc2e6365c0045b927d49625d9eb6" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)" -->
@@ -178,7 +183,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga24cc7787933eaa5d8c9cae93efbe29fa"></a><!-- doxytag: member="magma_cnan_inf.cpp::magma_cnan_inf_gpu" ref="ga24cc7787933eaa5d8c9cae93efbe29fa" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)" -->
+<a class="anchor" id="ga828b91eeb758feead86b3bccaaf1cdcb"></a><!-- doxytag: member="magma_cnan_inf.cpp::magma_cnan_inf_gpu" ref="ga828b91eeb758feead86b3bccaaf1cdcb" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magma_int_t *cnt_nan, magma_int_t *cnt_inf)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -203,7 +208,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -363,7 +368,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga55c3c984194506145ab839245ceb16b6"></a><!-- doxytag: member="cgeadd.cu::magmablas_cgeadd" ref="ga55c3c984194506145ab839245ceb16b6" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb)" -->
+<a class="anchor" id="ga18cce79d2c51107b0d86a29c082aa2ee"></a><!-- doxytag: member="cgeadd.cu::magmablas_cgeadd" ref="ga18cce79d2c51107b0d86a29c082aa2ee" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -388,7 +393,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -400,7 +405,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -417,11 +422,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga616f9fb325e0179e1160780fab52332c" title="ZGEADD adds two matrices, dB = alpha*dA + dB.">magmablas_cgeadd_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gab380f72be15613985a75d75ec5728792" title="ZGEADD adds two matrices, dB = alpha*dA + dB.">magmablas_cgeadd_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga27e1770b9564d83abb6331a8fbd46e91"></a><!-- doxytag: member="cgeadd_batched.cu::magmablas_cgeadd_batched" ref="ga27e1770b9564d83abb6331a8fbd46e91" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount)" -->
+<a class="anchor" id="gae600997865cc633691925f6f6c44b14e"></a><!-- doxytag: member="cgeadd_batched.cu::magmablas_cgeadd_batched" ref="gae600997865cc633691925f6f6c44b14e" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -446,8 +451,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *const *&nbsp;</td>
-          <td class="paramname"> <em>dAarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_const_ptr const &nbsp;</td>
+          <td class="paramname"> <em>dAarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -458,8 +463,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dBarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dBarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -481,11 +486,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga2bf2c8b2fedac6545114f6099f357ae9" title="ZGEADD adds two sets of matrices, dAarray[i] = alpha*dAarray[i] + dBarray[i], for...">magmablas_cgeadd_batched_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gab1e35d87229c509bbaa973552e8f9d85" title="ZGEADD adds two sets of matrices, dAarray[i] = alpha*dAarray[i] + dBarray[i], for...">magmablas_cgeadd_batched_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga2bf2c8b2fedac6545114f6099f357ae9"></a><!-- doxytag: member="cgeadd_batched.cu::magmablas_cgeadd_batched_q" ref="ga2bf2c8b2fedac6545114f6099f357ae9" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)" -->
+<a class="anchor" id="gab1e35d87229c509bbaa973552e8f9d85"></a><!-- doxytag: member="cgeadd_batched.cu::magmablas_cgeadd_batched_q" ref="gab1e35d87229c509bbaa973552e8f9d85" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -510,8 +515,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *const *&nbsp;</td>
-          <td class="paramname"> <em>dAarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_const_ptr const &nbsp;</td>
+          <td class="paramname"> <em>dAarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -522,8 +527,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dBarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dBarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -571,7 +576,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga616f9fb325e0179e1160780fab52332c"></a><!-- doxytag: member="cgeadd.cu::magmablas_cgeadd_q" ref="ga616f9fb325e0179e1160780fab52332c" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_queue_t queue)" -->
+<a class="anchor" id="gab380f72be15613985a75d75ec5728792"></a><!-- doxytag: member="cgeadd.cu::magmablas_cgeadd_q" ref="gab380f72be15613985a75d75ec5728792" args="(magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -596,7 +601,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -608,7 +613,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -649,7 +654,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga4798f85b755bf59e51abd49ecae412f4"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy" ref="ga4798f85b755bf59e51abd49ecae412f4" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb)" -->
+<a class="anchor" id="ga124356246942c901489b413e58104fb3"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy" ref="ga124356246942c901489b413e58104fb3" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -674,7 +679,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -686,7 +691,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -703,11 +708,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gad57f63944812b643767baf6cc097a525" title="CLACPY_STREAM copies all or part of a two-dimensional matrix dA to another matrix...">magmablas_clacpy_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga4a6c93e932b215ed1ff1767cebc2df65" title="CLACPY_Q copies all or part of a two-dimensional matrix dA to another matrix dB.">magmablas_clacpy_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gaa77dc49cec899e83bf48903797fd660e"></a><!-- doxytag: member="clacpy_batched.cu::magmablas_clacpy_batched" ref="gaa77dc49cec899e83bf48903797fd660e" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount)" -->
+<a class="anchor" id="gaea480380be402233348c849c4041f40e"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy_batched" ref="gaea480380be402233348c849c4041f40e" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -732,8 +737,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *const *&nbsp;</td>
-          <td class="paramname"> <em>dAarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_const_ptr const &nbsp;</td>
+          <td class="paramname"> <em>dAarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -744,8 +749,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dBarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dBarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -767,11 +772,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga6a5193a0b207c9996220c9f6e1e71963" title="Note --------UPLO Parameter is disabledDo we want to provide a generic function to...">magmablas_clacpy_batched_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga2f360c0704ffb753fbe14015c1dddc6a" title="CLACPY_BATCHED_Q copies all or part of each two-dimensional matrix dAarray[i] to...">magmablas_clacpy_batched_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga6a5193a0b207c9996220c9f6e1e71963"></a><!-- doxytag: member="clacpy_batched.cu::magmablas_clacpy_batched_q" ref="ga6a5193a0b207c9996220c9f6e1e71963" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *const *dAarray, magma_int_t ldda, magmaFloatComplex **dBarray, magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)" -->
+<a class="anchor" id="ga2f360c0704ffb753fbe14015c1dddc6a"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy_batched_q" ref="ga2f360c0704ffb753fbe14015c1dddc6a" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr const dAarray[], magma_int_t ldda, magmaFloatComplex_ptr dBarray[], magma_int_t lddb, magma_int_t batchCount, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -796,8 +801,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *const *&nbsp;</td>
-          <td class="paramname"> <em>dAarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_const_ptr const &nbsp;</td>
+          <td class="paramname"> <em>dAarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -808,8 +813,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dBarray</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dBarray</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -838,28 +843,23 @@
 </div>
 <div class="memdoc">
 
-<p>Note --------</p>
-<ul>
-<li>UPLO Parameter is disabled</li>
-<li>Do we want to provide a generic function to the user with all the options? </li>
-</ul>
-</p>
-<p>CLACPY copies all or part of a set of two-dimensional matrices dAarray[i] to another set of matrices dBarray[i], for i = 0, ..., batchCount-1.</p>
+<p>CLACPY_BATCHED_Q copies all or part of each two-dimensional matrix dAarray[i] to matrix dBarray[i], for 0 &lt;= i &lt; batchcount. </p>
+<p>This is the same as CLACPY_BATCHED, but adds queue argument.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t Specifies the part of each matrix dAarray[i] to be copied to dBarray[i].</p>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t Specifies the part of each matrix dA to be copied to dB.</p>
 <ul>
 <li>= MagmaUpper: Upper triangular part</li>
-<li>= MagmaLower: Lower triangular part Otherwise: All of each matrix dAarray[i]</li>
+<li>= MagmaLower: Lower triangular part Otherwise: All of each matrix dA</li>
 </ul>
 </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of each matrix dAarray[i]. M &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of each matrix dAarray[i]. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dAarray</em>&nbsp;</td><td>array on GPU, dimension(batchCount), of pointers to arrays, with each array a COMPLEX array, dimension (LDDA,N) The m by n matrices dAarray[i]. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of each array dAarray[i]. LDDA &gt;= max(1,M).</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dBarray</em>&nbsp;</td><td>array on GPU, dimension(batchCount), of pointers to arrays, with each array a COMPLEX array, dimension (LDDB,N) The m by n matrices dBarray[i]. On exit, matrix dBarray[i] = matrix dAarray[i] in the locations specified by UPLO.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of each array dBarray[i]. LDDB &gt;= max(1,M).</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>INTEGER The number of matrices to add; length of dAarray and dBarray. batchCount &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of each matrix dA. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of each matrix dA. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dAarray</em>&nbsp;</td><td>COMPLEX* array, dimension (batchCount) array of pointers to the matrices dA, where each dA is of dimension (LDDA,N) The m by n matrix dA. If UPLO = MagmaUpper, only the upper triangle or trapezoid is accessed; if UPLO = MagmaLower, only the lower triangle or trapezoid is accessed.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of each array dA. LDDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dBarray</em>&nbsp;</td><td>COMPLEX* array, dimension (batchCount) array of pointers to the matrices dB, where each dB is of dimension (LDDB,N) The m by n matrix dB. On exit, dB = dA in the locations specified by UPLO.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of each array dB. LDDB &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>Number of matrices in dAarray and dBarray.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -867,7 +867,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gad57f63944812b643767baf6cc097a525"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy_q" ref="gad57f63944812b643767baf6cc097a525" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_queue_t queue)" -->
+<a class="anchor" id="ga4a6c93e932b215ed1ff1767cebc2df65"></a><!-- doxytag: member="clacpy.cu::magmablas_clacpy_q" ref="ga4a6c93e932b215ed1ff1767cebc2df65" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -892,7 +892,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -904,7 +904,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -928,7 +928,7 @@
 </div>
 <div class="memdoc">
 
-<p>CLACPY_STREAM copies all or part of a two-dimensional matrix dA to another matrix dB. </p>
+<p>CLACPY_Q copies all or part of a two-dimensional matrix dA to another matrix dB. </p>
 <p>This is the same as CLACPY, but adds queue argument.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
@@ -951,7 +951,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga1fafc6db2511871f3bb542607da02677"></a><!-- doxytag: member="clag2z.cu::magmablas_clag2z" ref="ga1fafc6db2511871f3bb542607da02677" args="(magma_int_t m, magma_int_t n, const magmaFloatComplex *SA, magma_int_t ldsa, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
+<a class="anchor" id="gafacaa679c0c328529685f54e1ff45a86"></a><!-- doxytag: member="clag2z.cu::magmablas_clag2z" ref="gafacaa679c0c328529685f54e1ff45a86" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr SA, magma_int_t ldsa, magmaDoubleComplex_ptr A, magma_int_t lda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -970,7 +970,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>SA</em>, </td>
         </tr>
         <tr>
@@ -982,7 +982,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>A</em>, </td>
         </tr>
         <tr>
@@ -1005,11 +1005,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gacf5908d678c7a76a8b48bee4285ded6e" title="CLAG2Z_STREAM converts a single-complex matrix, SA, to a double-complex matrix, A...">magmablas_clag2z_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga74ec8850899d3fda5d53a64c635a135b" title="CLAG2Z_STREAM converts a single-complex matrix, SA, to a double-complex matrix, A...">magmablas_clag2z_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gacf5908d678c7a76a8b48bee4285ded6e"></a><!-- doxytag: member="clag2z.cu::magmablas_clag2z_q" ref="gacf5908d678c7a76a8b48bee4285ded6e" args="(magma_int_t m, magma_int_t n, const magmaFloatComplex *SA, magma_int_t ldsa, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info, magma_queue_t queue)" -->
+<a class="anchor" id="ga74ec8850899d3fda5d53a64c635a135b"></a><!-- doxytag: member="clag2z.cu::magmablas_clag2z_q" ref="ga74ec8850899d3fda5d53a64c635a135b" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr SA, magma_int_t ldsa, magmaDoubleComplex_ptr A, magma_int_t lda, magma_int_t *info, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1028,7 +1028,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>SA</em>, </td>
         </tr>
         <tr>
@@ -1040,7 +1040,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>A</em>, </td>
         </tr>
         <tr>
@@ -1160,7 +1160,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga6f5aaea4f548acc263f4ebb1a81dc72e"></a><!-- doxytag: member="clanhe.cu::magmablas_clanhe" ref="ga6f5aaea4f548acc263f4ebb1a81dc72e" args="(magma_norm_t norm, magma_uplo_t uplo, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, float *dwork)" -->
+<a class="anchor" id="gaa95745d2cdde19ba2795144a7716fdef"></a><!-- doxytag: member="clanhe.cu::magmablas_clanhe" ref="gaa95745d2cdde19ba2795144a7716fdef" args="(magma_norm_t norm, magma_uplo_t uplo, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloat_ptr dwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1185,19 +1185,19 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -1233,7 +1233,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacc01fa36d455f9b8c66734ab4efeec7d"></a><!-- doxytag: member="clascl.cu::magmablas_clascl" ref="gacc01fa36d455f9b8c66734ab4efeec7d" args="(magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga85afe115712b20c54bef72e5eca086e9"></a><!-- doxytag: member="clascl.cu::magmablas_clascl" ref="ga85afe115712b20c54bef72e5eca086e9" args="(magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1282,7 +1282,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1305,11 +1305,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gae1e96de4b9c5649c15bd7637fb9f9ed3" title="CLASCL multiplies the M by N complex matrix A by the real scalar CTO/CFROM.">magmablas_clascl_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gace5afb5e7e8d1bc7ac090c4cdf216b77" title="CLASCL multiplies the M by N complex matrix A by the real scalar CTO/CFROM.">magmablas_clascl_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga79c7e184b2fa4d80cff9cbf4a4fb7a01"></a><!-- doxytag: member="clascl2.cu::magmablas_clascl2" ref="ga79c7e184b2fa4d80cff9cbf4a4fb7a01" args="(magma_type_t type, magma_int_t m, magma_int_t n, const float *dD, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga0fcb82b607002d3c2e1d7031143eeb70"></a><!-- doxytag: member="clascl2.cu::magmablas_clascl2" ref="ga0fcb82b607002d3c2e1d7031143eeb70" args="(magma_type_t type, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dD, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1334,8 +1334,150 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dD</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga0f7f691609d80e0d501a3ac2eff41b1f" title="CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.">magmablas_clascl2_q</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga0f7f691609d80e0d501a3ac2eff41b1f"></a><!-- doxytag: member="clascl2.cu::magmablas_clascl2_q" ref="ga0f7f691609d80e0d501a3ac2eff41b1f" args="(magma_type_t type, magma_int_t m, magma_int_t n, magmaFloat_const_ptr dD, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_clascl2_q </td>
+          <td>(</td>
+          <td class="paramtype">magma_type_t&nbsp;</td>
+          <td class="paramname"> <em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dD</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD. </p>
+<p>TYPE specifies that A may be full, upper triangular, lower triangular.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>type</em>&nbsp;</td><td>magma_type_t TYPE indices the storage type of the input matrix A. = MagmaFull: full matrix. = MagmaLower: lower triangular matrix. = MagmaUpper: upper triangular matrix. Other formats that LAPACK supports, MAGMA does not currently support.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dD</em>&nbsp;</td><td>REAL vector, dimension (M) The diagonal matrix containing the scalar factors. Stored as a vector.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array, dimension (LDDA,N) The matrix to be scaled by dD. See TYPE for the storage type.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga146bb7aba5f8ae2a2e95473b1c63d0c4"></a><!-- doxytag: member="clascl_2x2.cu::magmablas_clascl_2x2" ref="ga146bb7aba5f8ae2a2e95473b1c63d0c4" args="(magma_type_t type, magma_int_t m, magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_clascl_2x2 </td>
+          <td>(</td>
+          <td class="paramtype">magma_type_t&nbsp;</td>
+          <td class="paramname"> <em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddw</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1363,16 +1505,16 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga371c7b6b55f3bb40356730927b937bf3" title="CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.">magmablas_clascl2_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga0f7f691609d80e0d501a3ac2eff41b1f" title="CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.">magmablas_clascl2_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga371c7b6b55f3bb40356730927b937bf3"></a><!-- doxytag: member="clascl2.cu::magmablas_clascl2_q" ref="ga371c7b6b55f3bb40356730927b937bf3" args="(magma_type_t type, magma_int_t m, magma_int_t n, const float *dD, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)" -->
+<a class="anchor" id="gaa582974acaec0447951f9afdb1ae95bd"></a><!-- doxytag: member="clascl_2x2.cu::magmablas_clascl_2x2_q" ref="gaa582974acaec0447951f9afdb1ae95bd" args="(magma_type_t type, magma_int_t m, const magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void magmablas_clascl2_q </td>
+          <td class="memname">void magmablas_clascl_2x2_q </td>
           <td>(</td>
           <td class="paramtype">magma_type_t&nbsp;</td>
           <td class="paramname"> <em>type</em>, </td>
@@ -1386,14 +1528,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>n</em>, </td>
+          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dW</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>dD</em>, </td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddw</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1441,17 +1583,169 @@
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
 <ul>
 <li>= 0: successful exit</li>
-<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value.</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value. </li>
 </ul>
 </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gae1e96de4b9c5649c15bd7637fb9f9ed3"></a><!-- doxytag: member="clascl.cu::magmablas_clascl_q" ref="gae1e96de4b9c5649c15bd7637fb9f9ed3" args="(magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)" -->
+<a class="anchor" id="gaa07227dbb849361bba9edc07827763bf"></a><!-- doxytag: member="clascl_diag.cu::magmablas_clascl_diag" ref="gaa07227dbb849361bba9edc07827763bf" args="(magma_type_t type, magma_int_t m, magma_int_t n, const magmaFloatComplex *dD, magma_int_t lddd, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_clascl_diag </td>
+          <td>(</td>
+          <td class="paramtype">magma_type_t&nbsp;</td>
+          <td class="paramname"> <em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dD</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga0f7f691609d80e0d501a3ac2eff41b1f" title="CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD.">magmablas_clascl2_q</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga299b79edf6bcad1fa404c16bcab42f23"></a><!-- doxytag: member="clascl_diag.cu::magmablas_clascl_diag_q" ref="ga299b79edf6bcad1fa404c16bcab42f23" args="(magma_type_t type, magma_int_t m, magma_int_t n, const magmaFloatComplex *dD, magma_int_t lddd, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_clascl_diag_q </td>
+          <td>(</td>
+          <td class="paramtype">magma_type_t&nbsp;</td>
+          <td class="paramname"> <em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dD</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>CLASCL2 scales the M by N complex matrix A by the real diagonal matrix dD. </p>
+<p>TYPE specifies that A may be full, upper triangular, lower triangular.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>type</em>&nbsp;</td><td>magma_type_t TYPE indices the storage type of the input matrix A. = MagmaFull: full matrix. = MagmaLower: lower triangular matrix. = MagmaUpper: upper triangular matrix. Other formats that LAPACK supports, MAGMA does not currently support.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dD</em>&nbsp;</td><td>REAL vector, dimension (M) The diagonal matrix containing the scalar factors. Stored as a vector.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array, dimension (LDDA,N) The matrix to be scaled by dD. See TYPE for the storage type.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gace5afb5e7e8d1bc7ac090c4cdf216b77"></a><!-- doxytag: member="clascl.cu::magmablas_clascl_q" ref="gace5afb5e7e8d1bc7ac090c4cdf216b77" args="(magma_type_t type, magma_int_t kl, magma_int_t ku, float cfrom, float cto, magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1500,7 +1794,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1512,14 +1806,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_int_t *&nbsp;</td>
-          <td class="paramname"> <em>info</em>, </td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1557,7 +1851,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga40b0ba0e8b44df3364fae761ff01b418"></a><!-- doxytag: member="claset.cu::magmablas_claset" ref="ga40b0ba0e8b44df3364fae761ff01b418" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda)" -->
+<a class="anchor" id="ga2ff60fcfe8da9e95e2a382adc5231eda"></a><!-- doxytag: member="claset.cu::magmablas_claset" ref="ga2ff60fcfe8da9e95e2a382adc5231eda" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1594,7 +1888,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1611,11 +1905,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gae169738f21bfff6802247b00bc5d077d" title="CLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the...">magmablas_claset_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gaa2292baa9e98daa2b9384983b1829751" title="CLASET_STREAM initializes a 2-D array A to DIAG on the diagonal and OFFDIAG on the...">magmablas_claset_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gafbeb6538c4bd293f0bc8222e0f7fa11c"></a><!-- doxytag: member="claset_band.cu::magmablas_claset_band" ref="gafbeb6538c4bd293f0bc8222e0f7fa11c" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda)" -->
+<a class="anchor" id="gad8397cdf419d54eb91c8acdeedd30c00"></a><!-- doxytag: member="claset_band.cu::magmablas_claset_band" ref="gad8397cdf419d54eb91c8acdeedd30c00" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1658,7 +1952,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1675,11 +1969,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gaf3333ab68f77df074f2ce236d8cf5425" title="CLASET_BAND_STREAM initializes the main diagonal of dA to DIAG, and the K-1 sub-...">magmablas_claset_band_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga2cf65ca8dd3bc71aa1d7e0e2ec2560b7" title="CLASET_BAND_STREAM initializes the main diagonal of dA to DIAG, and the K-1 sub-...">magmablas_claset_band_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gaf3333ab68f77df074f2ce236d8cf5425"></a><!-- doxytag: member="claset_band.cu::magmablas_claset_band_q" ref="gaf3333ab68f77df074f2ce236d8cf5425" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)" -->
+<a class="anchor" id="ga2cf65ca8dd3bc71aa1d7e0e2ec2560b7"></a><!-- doxytag: member="claset_band.cu::magmablas_claset_band_q" ref="ga2cf65ca8dd3bc71aa1d7e0e2ec2560b7" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t k, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1722,7 +2016,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1770,7 +2064,71 @@
 
 </div>
 </div>
-<a class="anchor" id="gae169738f21bfff6802247b00bc5d077d"></a><!-- doxytag: member="claset.cu::magmablas_claset_q" ref="gae169738f21bfff6802247b00bc5d077d" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)" -->
+<a class="anchor" id="ga73ec76de14156b05923c269179e0446f"></a><!-- doxytag: member="claset.cu::magmablas_claset_batched" ref="ga73ec76de14156b05923c269179e0446f" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dAarray[], magma_int_t ldda, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_claset_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex&nbsp;</td>
+          <td class="paramname"> <em>offdiag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex&nbsp;</td>
+          <td class="paramname"> <em>diag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dAarray</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="see"><dt><b>See also:</b></dt><dd>magmablas_claset_batched_q </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa2292baa9e98daa2b9384983b1829751"></a><!-- doxytag: member="claset.cu::magmablas_claset_q" ref="gaa2292baa9e98daa2b9384983b1829751" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaFloatComplex offdiag, magmaFloatComplex diag, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1807,7 +2165,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1854,7 +2212,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga355ace580bcb413f392daa998d1e77f1"></a><!-- doxytag: member="claswp.cu::magmablas_claswp" ref="ga355ace580bcb413f392daa998d1e77f1" args="(magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)" -->
+<a class="anchor" id="gab1b3737748d618c111884f4acbd93e98"></a><!-- doxytag: member="claswp.cu::magmablas_claswp" ref="gab1b3737748d618c111884f4acbd93e98" args="(magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1867,14 +2225,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1908,11 +2266,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga5d0b1dbc696b3d1ddfd26006faae30ba" title="Purpose: ============= CLASWP performs a series of row interchanges on the matrix...">magmablas_claswp_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gacce599491cd6ccbc8b5b66f22ad64817" title="Purpose: ============= CLASWP performs a series of row interchanges on the matrix...">magmablas_claswp_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga949609c9379e2de51bb5abf3701ad691"></a><!-- doxytag: member="claswp.cu::magmablas_claswp2" ref="ga949609c9379e2de51bb5abf3701ad691" args="(magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *d_ipiv, magma_int_t inci)" -->
+<a class="anchor" id="ga60ee06f25049c3d1b970668c3a03c15e"></a><!-- doxytag: member="claswp.cu::magmablas_claswp2" ref="ga60ee06f25049c3d1b970668c3a03c15e" args="(magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, magmaInt_const_ptr d_ipiv, magma_int_t inci)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1925,14 +2283,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1949,7 +2307,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magma_int_t *&nbsp;</td>
+          <td class="paramtype">magmaInt_const_ptr&nbsp;</td>
           <td class="paramname"> <em>d_ipiv</em>, </td>
         </tr>
         <tr>
@@ -1966,11 +2324,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga6562a24d37dbbdec83cd0314492deb42" title="Purpose: ============= CLASWP2 performs a series of row interchanges on the matrix...">magmablas_claswp2_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gaf83a77cc5fbad3a938cc9044af01f442" title="Purpose: ============= CLASWP2 performs a series of row interchanges on the matrix...">magmablas_claswp2_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga6562a24d37dbbdec83cd0314492deb42"></a><!-- doxytag: member="claswp.cu::magmablas_claswp2_q" ref="ga6562a24d37dbbdec83cd0314492deb42" args="(magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *d_ipiv, magma_int_t inci, magma_queue_t queue)" -->
+<a class="anchor" id="gaf83a77cc5fbad3a938cc9044af01f442"></a><!-- doxytag: member="claswp.cu::magmablas_claswp2_q" ref="gaf83a77cc5fbad3a938cc9044af01f442" args="(magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, magmaInt_const_ptr d_ipiv, magma_int_t inci, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1983,14 +2341,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2007,7 +2365,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magma_int_t *&nbsp;</td>
+          <td class="paramtype">magmaInt_const_ptr&nbsp;</td>
           <td class="paramname"> <em>d_ipiv</em>, </td>
         </tr>
         <tr>
@@ -2039,8 +2397,8 @@
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array on GPU, stored row-wise, dimension (LDA,*) On entry, the matrix of column dimension N to which the row interchanges will be applied. On exit, the permuted matrix.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. (I.e., stride between elements in a column.)</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array on GPU, stored row-wise, dimension (LDDA,*) On entry, the matrix of column dimension N to which the row interchanges will be applied. On exit, the permuted matrix.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. (I.e., stride between elements in a column.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k1</em>&nbsp;</td><td>INTEGER The first element of IPIV for which a row interchange will be done. (One based index.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k2</em>&nbsp;</td><td>INTEGER The last element of IPIV for which a row interchange will be done. (One based index.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d_ipiv</em>&nbsp;</td><td>INTEGER array, on GPU, dimension (K2*abs(INCI)) The vector of pivot indices. Only the elements in positions K1 through K2 of IPIV are accessed. IPIV(K) = L implies rows K and L are to be interchanged.</td></tr>
@@ -2052,7 +2410,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga5d0b1dbc696b3d1ddfd26006faae30ba"></a><!-- doxytag: member="claswp.cu::magmablas_claswp_q" ref="ga5d0b1dbc696b3d1ddfd26006faae30ba" args="(magma_int_t n, magmaFloatComplex *dAT, magma_int_t lda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)" -->
+<a class="anchor" id="gacce599491cd6ccbc8b5b66f22ad64817"></a><!-- doxytag: member="claswp.cu::magmablas_claswp_q" ref="gacce599491cd6ccbc8b5b66f22ad64817" args="(magma_int_t n, magmaFloatComplex_ptr dAT, magma_int_t ldda, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2065,14 +2423,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2120,12 +2478,12 @@
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array on GPU, stored row-wise, dimension (LDA,N) On entry, the matrix of column dimension N to which the row interchanges will be applied. On exit, the permuted matrix.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. lda &gt;= n.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array on GPU, stored row-wise, dimension (LDDA,N) On entry, the matrix of column dimension N to which the row interchanges will be applied. On exit, the permuted matrix.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. ldda &gt;= n.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k1</em>&nbsp;</td><td>INTEGER The first element of IPIV for which a row interchange will be done. (Fortran one-based index: 1 &lt;= k1 &lt;= n.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k2</em>&nbsp;</td><td>INTEGER The last element of IPIV for which a row interchange will be done. (Fortran one-based index: 1 &lt;= k2 &lt;= n.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, on CPU, dimension (K2*abs(INCI)) The vector of pivot indices. Only the elements in positions K1 through K2 of IPIV are accessed. IPIV(K) = L implies rows K and L are to be interchanged.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>inci</em>&nbsp;</td><td>INTEGER The increment between successive values of IPIV. Currently, IPIV &gt; 0. TODO: If IPIV is negative, the pivots are applied in reverse order.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>inci</em>&nbsp;</td><td>INTEGER The increment between successive values of IPIV. Currently, INCI &gt; 0. TODO: If INCI is negative, the pivots are applied in reverse order.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
@@ -2133,7 +2491,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gab277993b71d7c6127746e3df10070be3"></a><!-- doxytag: member="claswp.cu::magmablas_claswpx" ref="gab277993b71d7c6127746e3df10070be3" args="(magma_int_t n, magmaFloatComplex *dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)" -->
+<a class="anchor" id="gada3883b9d8c34a7b281155f145c400b5"></a><!-- doxytag: member="claswp.cu::magmablas_claswpx" ref="gada3883b9d8c34a7b281155f145c400b5" args="(magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2146,7 +2504,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2193,11 +2551,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga66b774a74772d664ea9b5c465684611f" title="Purpose: ============= CLASWPX performs a series of row interchanges on the matrix...">magmablas_claswpx_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga119c244d42d9e28e2ab61f34ada3b7f7" title="Purpose: ============= CLASWPX performs a series of row interchanges on the matrix...">magmablas_claswpx_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga66b774a74772d664ea9b5c465684611f"></a><!-- doxytag: member="claswp.cu::magmablas_claswpx_q" ref="ga66b774a74772d664ea9b5c465684611f" args="(magma_int_t n, magmaFloatComplex *dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)" -->
+<a class="anchor" id="ga119c244d42d9e28e2ab61f34ada3b7f7"></a><!-- doxytag: member="claswp.cu::magmablas_claswpx_q" ref="ga119c244d42d9e28e2ab61f34ada3b7f7" args="(magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldx, magma_int_t ldy, magma_int_t k1, magma_int_t k2, const magma_int_t *ipiv, magma_int_t inci, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2210,7 +2568,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2273,7 +2631,7 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A.</td></tr>
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array on GPU, dimension (*,*) On entry, the matrix of column dimension N to which the row interchanges will be applied. On exit, the permuted matrix.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldx</em>&nbsp;</td><td>INTEGER Stride between elements in same column.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldy</em>&nbsp;</td><td>INTEGER Stride between elements in same row. For A stored row-wise, set ldx=lda and ldy=1. For A stored column-wise, set ldx=1 and ldy=lda.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldy</em>&nbsp;</td><td>INTEGER Stride between elements in same row. For A stored row-wise, set ldx=ldda and ldy=1. For A stored column-wise, set ldx=1 and ldy=ldda.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k1</em>&nbsp;</td><td>INTEGER The first element of IPIV for which a row interchange will be done. (One based index.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k2</em>&nbsp;</td><td>INTEGER The last element of IPIV for which a row interchange will be done. (One based index.)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, on CPU, dimension (K2*abs(INCI)) The vector of pivot indices. Only the elements in positions K1 through K2 of IPIV are accessed. IPIV(K) = L implies rows K and L are to be interchanged.</td></tr>
@@ -2285,7 +2643,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaa301469d05e2671441440e367f1d567f"></a><!-- doxytag: member="cswapdblk.cu::magmablas_cswapdblk" ref="gaa301469d05e2671441440e367f1d567f" args="(magma_int_t n, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t incb)" -->
+<a class="anchor" id="gaec5a16a96655b7410581ec72bbac9290"></a><!-- doxytag: member="cswapdblk.cu::magmablas_cswapdblk" ref="gaec5a16a96655b7410581ec72bbac9290" args="(magma_int_t n, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t incb)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2304,7 +2662,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2322,7 +2680,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -2345,11 +2703,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga2ba2d44d5fc8436bf11bcbf382987e99" title="cswapdblk swaps diagonal blocks of size nb x nb between matrices dA and dB on the...">magmablas_cswapdblk_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga2a63bcc61053472bd0d998368ee5beec" title="cswapdblk swaps diagonal blocks of size nb x nb between matrices dA and dB on the...">magmablas_cswapdblk_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga2ba2d44d5fc8436bf11bcbf382987e99"></a><!-- doxytag: member="cswapdblk.cu::magmablas_cswapdblk_q" ref="ga2ba2d44d5fc8436bf11bcbf382987e99" args="(magma_int_t n, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t incb, magma_queue_t queue)" -->
+<a class="anchor" id="ga2a63bcc61053472bd0d998368ee5beec"></a><!-- doxytag: member="cswapdblk.cu::magmablas_cswapdblk_q" ref="ga2a63bcc61053472bd0d998368ee5beec" args="(magma_int_t n, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t inca, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t incb, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2368,7 +2726,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2386,7 +2744,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -2435,7 +2793,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga400ea96f657e95b6c9b349369b3e5ec4"></a><!-- doxytag: member="csymmetrize.cu::magmablas_csymmetrize" ref="ga400ea96f657e95b6c9b349369b3e5ec4" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda)" -->
+<a class="anchor" id="gac2f1c16daec5e07284746f1aff098863"></a><!-- doxytag: member="csymmetrize.cu::magmablas_csymmetrize" ref="gac2f1c16daec5e07284746f1aff098863" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2454,7 +2812,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2471,11 +2829,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga92663bb9c3be8a7c5eb13a7b99128d52" title="CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa, to make dA a...">magmablas_csymmetrize_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga66e227d63afe3eb4251cd0979fa1cf0a" title="CSYMMETRIZE copies lower triangle to upper triangle, or vice-versa, to make dA a...">magmablas_csymmetrize_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga92663bb9c3be8a7c5eb13a7b99128d52"></a><!-- doxytag: member="csymmetrize.cu::magmablas_csymmetrize_q" ref="ga92663bb9c3be8a7c5eb13a7b99128d52" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)" -->
+<a class="anchor" id="ga66e227d63afe3eb4251cd0979fa1cf0a"></a><!-- doxytag: member="csymmetrize.cu::magmablas_csymmetrize_q" ref="ga66e227d63afe3eb4251cd0979fa1cf0a" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2494,7 +2852,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2537,7 +2895,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaee7e4f971db51ffe154b4cfa5a64d0f8"></a><!-- doxytag: member="csymmetrize_tiles.cu::magmablas_csymmetrize_tiles" ref="gaee7e4f971db51ffe154b4cfa5a64d0f8" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride)" -->
+<a class="anchor" id="ga6cca74632dc09ff44a611d033a2b20fe"></a><!-- doxytag: member="csymmetrize_tiles.cu::magmablas_csymmetrize_tiles" ref="ga6cca74632dc09ff44a611d033a2b20fe" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2556,7 +2914,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2591,11 +2949,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gaf7575daf78a949d8e02702a0182a3224" title="CSYMMETRIZE_TILES copies lower triangle to upper triangle, or vice-versa, to make...">magmablas_csymmetrize_tiles_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gac2b2d999eb505555fce5d17a9fcf77e3" title="CSYMMETRIZE_TILES copies lower triangle to upper triangle, or vice-versa, to make...">magmablas_csymmetrize_tiles_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gaf7575daf78a949d8e02702a0182a3224"></a><!-- doxytag: member="csymmetrize_tiles.cu::magmablas_csymmetrize_tiles_q" ref="gaf7575daf78a949d8e02702a0182a3224" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride, magma_queue_t queue)" -->
+<a class="anchor" id="gac2b2d999eb505555fce5d17a9fcf77e3"></a><!-- doxytag: member="csymmetrize_tiles.cu::magmablas_csymmetrize_tiles_q" ref="gac2b2d999eb505555fce5d17a9fcf77e3" args="(magma_uplo_t uplo, magma_int_t m, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t ntile, magma_int_t mstride, magma_int_t nstride, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2614,7 +2972,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2679,7 +3037,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga046ed25c4abe677543af9a16f8e9b31d"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose" ref="ga046ed25c4abe677543af9a16f8e9b31d" args="(magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dAT, magma_int_t lddat)" -->
+<a class="anchor" id="gaed3fb60914ec4da5a9cd5ce22288013d"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose" ref="gaed3fb60914ec4da5a9cd5ce22288013d" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dAT, magma_int_t lddat)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2698,7 +3056,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2710,7 +3068,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
@@ -2727,11 +3085,148 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gad8545d91733ea5f0c9884a359494317c" title="ctranspose_q copies and transposes a matrix dA to matrix dAT.">magmablas_ctranspose_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga1e0232c48e21130b6c814d6e1ace4f0c" title="ctranspose_q copies and transposes a matrix dA to matrix dAT.">magmablas_ctranspose_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga06d4e027a3b7b556c9c3295da771ca36"></a><!-- doxytag: member="ctranspose_inplace.cu::magmablas_ctranspose_inplace" ref="ga06d4e027a3b7b556c9c3295da771ca36" args="(magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda)" -->
+<a class="anchor" id="ga1cbabd6aed8e75d6971be5ce812df3b8"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose_batched" ref="ga1cbabd6aed8e75d6971be5ce812df3b8" args="(magma_int_t m, magma_int_t n, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dAT_array, magma_int_t lddat, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_ctranspose_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dAT_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#ga39eb26ade5b98d5d78a569a6e7b1a0ee" title="ctranspose_batched_q copies and transposes a matrix dA_array[i] to matrix dAT_array[i]...">magmablas_ctranspose_batched_q</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga39eb26ade5b98d5d78a569a6e7b1a0ee"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose_batched_q" ref="ga39eb26ade5b98d5d78a569a6e7b1a0ee" args="(magma_int_t m, magma_int_t n, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dAT_array, magma_int_t lddat, magma_int_t batchCount, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_ctranspose_batched_q </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dAT_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>ctranspose_batched_q copies and transposes a matrix dA_array[i] to matrix dAT_array[i]. </p>
+<p>Same as ctranspose_batched, but adds queue argument.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix dA. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix dA. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA_array</em>&nbsp;</td><td>COMPLEX* array, dimension (batchCount) array of pointers to the matrices dA, where each dA is of dimension (LDDA,N) The M-by-N matrix dA.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= M.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dAT_array</em>&nbsp;</td><td>COMPLEX* array, dimension (batchCount) array of pointers to the matrices dAT, where each dAT is of dimension (LDDAT,M) The N-by-M matrix dAT.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddat</em>&nbsp;</td><td>INTEGER The leading dimension of the array dAT. LDDAT &gt;= N.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>Number of matrices in dA_array and dAT_array </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gabc9a4abb27d34a6c671675805a9d253b"></a><!-- doxytag: member="ctranspose_inplace.cu::magmablas_ctranspose_inplace" ref="gabc9a4abb27d34a6c671675805a9d253b" args="(magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2744,7 +3239,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2761,11 +3256,11 @@
       </table>
 </div>
 <div class="memdoc">
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gadc466e8d3c3c2f5b1dad3d319313f78c" title="ctranspose_inplace_q transposes a square N-by-N matrix in-place.">magmablas_ctranspose_inplace_q</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="group__magma__caux2.html#gaca08ec48c6cb1a59cf4b8faad140989b" title="ctranspose_inplace_q transposes a square N-by-N matrix in-place.">magmablas_ctranspose_inplace_q</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gadc466e8d3c3c2f5b1dad3d319313f78c"></a><!-- doxytag: member="ctranspose_inplace.cu::magmablas_ctranspose_inplace_q" ref="gadc466e8d3c3c2f5b1dad3d319313f78c" args="(magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_queue_t queue)" -->
+<a class="anchor" id="gaca08ec48c6cb1a59cf4b8faad140989b"></a><!-- doxytag: member="ctranspose_inplace.cu::magmablas_ctranspose_inplace_q" ref="gaca08ec48c6cb1a59cf4b8faad140989b" args="(magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2778,7 +3273,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2816,7 +3311,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gad8545d91733ea5f0c9884a359494317c"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose_q" ref="gad8545d91733ea5f0c9884a359494317c" args="(magma_int_t m, magma_int_t n, const magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dAT, magma_int_t lddat, magma_queue_t queue)" -->
+<a class="anchor" id="ga1e0232c48e21130b6c814d6e1ace4f0c"></a><!-- doxytag: member="ctranspose.cu::magmablas_ctranspose_q" ref="ga1e0232c48e21130b6c814d6e1ace4f0c" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_const_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dAT, magma_int_t lddat, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2835,7 +3330,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -2847,7 +3342,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dAT</em>, </td>
         </tr>
         <tr>
@@ -2879,7 +3374,7 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix dA. N &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array, dimension (LDDA,N) The M-by-N matrix dA.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= M.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array, dimension (LDDA,N) The N-by-M matrix dAT.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dAT</em>&nbsp;</td><td>COMPLEX array, dimension (LDDAT,M) The N-by-M matrix dAT.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddat</em>&nbsp;</td><td>INTEGER The leading dimension of the array dAT. LDDAT &gt;= N.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
@@ -2889,7 +3384,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

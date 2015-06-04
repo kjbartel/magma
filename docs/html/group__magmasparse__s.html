@@ -25,19 +25,31 @@
 [<a class="el" href="group__unfiled.html">Sparse unfiled</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gafefccef840660fde40fb3a1605b9a9da">magma_s_spmv</a> (float alpha, magma_s_sparse_matrix A, magma_s_vector x, float beta, magma_s_vector y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">For a given input matrix A and vectors x, y and scalars alpha, beta the wrapper determines the suitable SpMV computing y = alpha * A * x + beta * y.  <a href="#gafefccef840660fde40fb3a1605b9a9da"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gacf5cea57f023fd006d289849dc9dcbe1">magma_scompactActive</a> (magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_index_t *active)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZCOMPACTACTIVE takes a set of n vectors of size m (in dA) and an array of 1s and 0sindicating which vectors to compact (for 1s) and which to disregard (for 0s).  <a href="#gacf5cea57f023fd006d289849dc9dcbe1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gadb8a94b61031e59e80abe2fd8b3007c8">magma_sgeelltmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, float alpha, float *d_val, magma_index_t *d_colind, float *d_x, float beta, float *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#gadb8a94b61031e59e80abe2fd8b3007c8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga27bc2dd3590f78dfebfad660467ad0cc">magma_sjacobi_diagscal</a> (int num_rows, float *b, float *d, float *c)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga27bc2dd3590f78dfebfad660467ad0cc"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga97b55dd3b093be7e0049a3480a2c7118">magma_sgemvmdot</a> (int n, int k, float *v, float *r, float *d1, float *d2, float *skp)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This is an extension of the merged dot product above by chunking the set of vectors v_i such that the data always fits into cache.  <a href="#ga97b55dd3b093be7e0049a3480a2c7118"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gae976f9c543b5a4751a06e2c45e57f133">magma_sjacobisetup_matrix</a> (magma_s_sparse_matrix A, magma_s_sparse_matrix *M, magma_s_vector *d, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the Matrix M for the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gae976f9c543b5a4751a06e2c45e57f133"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gacc8e49839d2ab3852c1f83842657adf1">magma_sjacobisetup_diagscal</a> (magma_s_sparse_matrix A, magma_s_vector *d, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">It returns a vector d containing the inverse diagonal elements.  <a href="#gacc8e49839d2ab3852c1f83842657adf1"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga5b3128e7c816b86a45738a6ce7694806">magma_sjacobisetup_vector</a> (magma_s_vector b, magma_s_vector d, magma_s_vector *c, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga5b3128e7c816b86a45738a6ce7694806"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga37c3f765e0d5e4f9b059d2cfa62ef5b2">magma_sjacobisetup</a> (magma_s_sparse_matrix A, magma_s_vector b, magma_s_sparse_matrix *M, magma_s_vector *c, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga37c3f765e0d5e4f9b059d2cfa62ef5b2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga5163a6d8be725f927ebbe0eb8599b0d4">magma_sjacobiiter</a> (magma_s_sparse_matrix M, magma_s_vector c, magma_s_vector *x, magma_s_solver_par *solver_par, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#ga5163a6d8be725f927ebbe0eb8599b0d4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gaaf38f08634f037380b58d53056b8819e">magma_sjacobiiter_precond</a> (magma_s_sparse_matrix M, magma_s_vector *x, magma_s_solver_par *solver_par, magma_s_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gaaf38f08634f037380b58d53056b8819e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga2acf576bdc84648e42d7c6382c7dd0e9">magma_s_spmv</a> (float alpha, magma_s_sparse_matrix A, magma_s_vector x, float beta, magma_s_vector y, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">For a given input matrix A and vectors x, y and scalars alpha, beta the wrapper determines the suitable SpMV computing y = alpha * A * x + beta * y.  <a href="#ga2acf576bdc84648e42d7c6382c7dd0e9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gab36a3b5ba87441db5202cb93b3b62607">magma_scompactActive</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaInt_ptr active, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZCOMPACTACTIVE takes a set of n vectors of size m (in dA) and an array of 1s and 0sindicating which vectors to compact (for 1s) and which to disregard (for 0s).  <a href="#gab36a3b5ba87441db5202cb93b3b62607"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gacec5e5472b42444ea8a369e97171142b">magma_sgeelltmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, float alpha, magmaFloat_ptr dval, magmaIndex_ptr dcolind, magmaFloat_ptr dx, float beta, magmaFloat_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#gacec5e5472b42444ea8a369e97171142b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#gad5ec1a5d5f4ebd2e24c2232e0e5af410">magma_sjacobi_diagscal</a> (int num_rows, magma_s_vector d, magma_s_vector b, magma_s_vector *c, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k.  <a href="#gad5ec1a5d5f4ebd2e24c2232e0e5af410"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__s.html#ga7c50853f424c414a6cadc733fc081380">magma_sgemvmdot</a> (int n, int k, magmaFloat_ptr v, magmaFloat_ptr r, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr skp, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This is an extension of the merged dot product above by chunking the set of vectors v_i such that the data always fits into cache.  <a href="#ga7c50853f424c414a6cadc733fc081380"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gafefccef840660fde40fb3a1605b9a9da"></a><!-- doxytag: member="magma_s_blaswrapper.cpp::magma_s_spmv" ref="gafefccef840660fde40fb3a1605b9a9da" args="(float alpha, magma_s_sparse_matrix A, magma_s_vector x, float beta, magma_s_vector y)" -->
+<a class="anchor" id="ga2acf576bdc84648e42d7c6382c7dd0e9"></a><!-- doxytag: member="magma_s_blaswrapper.cpp::magma_s_spmv" ref="ga2acf576bdc84648e42d7c6382c7dd0e9" args="(float alpha, magma_s_sparse_matrix A, magma_s_vector x, float beta, magma_s_vector y, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -69,7 +81,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_s_vector&nbsp;</td>
-          <td class="paramname"> <em>y</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -83,18 +101,19 @@
 <p>For a given input matrix A and vectors x, y and scalars alpha, beta the wrapper determines the suitable SpMV computing y = alpha * A * x + beta * y. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>float scalar alpha</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>A</em>&nbsp;</td><td>magma_s_sparse_matrix sparse matrix A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>x</em>&nbsp;</td><td>magma_s_vector input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>float scalar beta </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>y</em>&nbsp;</td><td>magma_s_vector output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>float scalar alpha</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_s_sparse_matrix sparse matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_s_vector input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>float scalar beta </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>magma_s_vector output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gacf5cea57f023fd006d289849dc9dcbe1"></a><!-- doxytag: member="scompact.cu::magma_scompactActive" ref="gacf5cea57f023fd006d289849dc9dcbe1" args="(magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_index_t *active)" -->
+<a class="anchor" id="gab36a3b5ba87441db5202cb93b3b62607"></a><!-- doxytag: member="scompact.cu::magma_scompactActive" ref="gab36a3b5ba87441db5202cb93b3b62607" args="(magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaInt_ptr active, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -113,7 +132,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -125,8 +144,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>active</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaInt_ptr&nbsp;</td>
+          <td class="paramname"> <em>active</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -142,16 +167,17 @@
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix dA. M &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX REAL array, dimension (LDDA,N) The m by n matrix dA.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>in,out]</em>&nbsp;</td><td>dA COMPLEX REAL array, dimension (LDDA,N) The m by n matrix dA.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,M).</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>active</em>&nbsp;</td><td>INTEGER array, dimension N A mask of 1s and 0s showing if a vector remains or has been removed </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gadb8a94b61031e59e80abe2fd8b3007c8"></a><!-- doxytag: member="sgeelltmv.cu::magma_sgeelltmv" ref="gadb8a94b61031e59e80abe2fd8b3007c8" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, float alpha, float *d_val, magma_index_t *d_colind, float *d_x, float beta, float *d_y)" -->
+<a class="anchor" id="gacec5e5472b42444ea8a369e97171142b"></a><!-- doxytag: member="sgeelltmv.cu::magma_sgeelltmv" ref="gacec5e5472b42444ea8a369e97171142b" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, float alpha, magmaFloat_ptr dval, magmaIndex_ptr dcolind, magmaFloat_ptr dx, float beta, magmaFloat_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -188,20 +214,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -212,8 +238,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -228,23 +260,24 @@
 <p>Input format is ELL.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>float scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>float* array containing values of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>float* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>float scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>float* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>float scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloat_ptr array containing values of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloat_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>float scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloat_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga97b55dd3b093be7e0049a3480a2c7118"></a><!-- doxytag: member="smdot.cu::magma_sgemvmdot" ref="ga97b55dd3b093be7e0049a3480a2c7118" args="(int n, int k, float *v, float *r, float *d1, float *d2, float *skp)" -->
+<a class="anchor" id="ga7c50853f424c414a6cadc733fc081380"></a><!-- doxytag: member="smdot.cu::magma_sgemvmdot" ref="ga7c50853f424c414a6cadc733fc081380" args="(int n, int k, magmaFloat_ptr v, magmaFloat_ptr r, magmaFloat_ptr d1, magmaFloat_ptr d2, magmaFloat_ptr skp, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -263,32 +296,38 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>v</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>r</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>d1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>d2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>skp</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>skp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -305,20 +344,21 @@
 <p>Returns the vector skp.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>int length of v_i and r</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>int # vectors v_i</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>v</em>&nbsp;</td><td>float* v = (v_0 .. v_i.. v_k)</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>r</em>&nbsp;</td><td>float* r</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d1</em>&nbsp;</td><td>float* workspace</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d2</em>&nbsp;</td><td>float* workspace</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>skp</em>&nbsp;</td><td>float* vector[k] of scalar products (&lt;v_i,r&gt;...) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>int length of v_i and r</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>int # vectors v_i</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>v</em>&nbsp;</td><td>magmaFloat_ptr v = (v_0 .. v_i.. v_k)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>r</em>&nbsp;</td><td>magmaFloat_ptr r</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d1</em>&nbsp;</td><td>magmaFloat_ptr workspace</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d2</em>&nbsp;</td><td>magmaFloat_ptr workspace</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>skp</em>&nbsp;</td><td>magmaFloat_ptr vector[k] of scalar products (&lt;v_i,r&gt;...)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga27bc2dd3590f78dfebfad660467ad0cc"></a><!-- doxytag: member="sjacobisetup.cu::magma_sjacobi_diagscal" ref="ga27bc2dd3590f78dfebfad660467ad0cc" args="(int num_rows, float *b, float *d, float *c)" -->
+<a class="anchor" id="gad5ec1a5d5f4ebd2e24c2232e0e5af410"></a><!-- doxytag: member="sjacobisetup.cu::magma_sjacobi_diagscal" ref="gad5ec1a5d5f4ebd2e24c2232e0e5af410" args="(int num_rows, magma_s_vector d, magma_s_vector b, magma_s_vector *c, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -331,20 +371,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
           <td class="paramname"> <em>d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>c</em></td><td>&nbsp;</td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -359,10 +405,328 @@
 <p>Returns the vector c. It calls a GPU kernel</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>num_rows</em>&nbsp;</td><td>magma_int_t number of rows</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>b</em>&nbsp;</td><td>magma_s_vector RHS b</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d</em>&nbsp;</td><td>magma_s_vector vector with diagonal entries</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector* c = D^(-1) * b </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_rows</em>&nbsp;</td><td>magma_int_t number of rows</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_s_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d</em>&nbsp;</td><td>magma_s_vector vector with diagonal entries</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector* c = D^(-1) * b </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga5163a6d8be725f927ebbe0eb8599b0d4"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobiiter" ref="ga5163a6d8be725f927ebbe0eb8599b0d4" args="(magma_s_sparse_matrix M, magma_s_vector c, magma_s_vector *x, magma_s_solver_par *solver_par, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobiiter </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>M</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
+          <td class="paramname"> <em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>M</em>&nbsp;</td><td>magma_s_sparse_matrix input matrix M = D^(-1) * (L+U)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector c = D^(-1) * b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_s_vector* iteration vector x</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_s_solver_par* solver parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaaf38f08634f037380b58d53056b8819e"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobiiter_precond" ref="gaaf38f08634f037380b58d53056b8819e" args="(magma_s_sparse_matrix M, magma_s_vector *x, magma_s_solver_par *solver_par, magma_s_preconditioner *precond, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobiiter_precond </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>M</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_solver_par *&nbsp;</td>
+          <td class="paramname"> <em>solver_par</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Iterates the solution approximation according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>M</em>&nbsp;</td><td>magma_s_sparse_matrix input matrix M = D^(-1) * (L+U)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector c = D^(-1) * b</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_s_vector* iteration vector x</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_s_solver_par* solver parameters</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>solver_par</em>&nbsp;</td><td>magma_s_precond_par* precond parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga37c3f765e0d5e4f9b059d2cfa62ef5b2"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobisetup" ref="ga37c3f765e0d5e4f9b059d2cfa62ef5b2" args="(magma_s_sparse_matrix A, magma_s_vector b, magma_s_sparse_matrix *M, magma_s_vector *c, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobisetup </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_sparse_matrix *&nbsp;</td>
+          <td class="paramname"> <em>M</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_s_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_s_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>M</em>&nbsp;</td><td>magma_s_sparse_matrix* M = D^(-1) * (L+U)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector* c = D^(-1) * b </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gacc8e49839d2ab3852c1f83842657adf1"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobisetup_diagscal" ref="gacc8e49839d2ab3852c1f83842657adf1" args="(magma_s_sparse_matrix A, magma_s_vector *d, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobisetup_diagscal </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>It returns a vector d containing the inverse diagonal elements. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_s_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d</em>&nbsp;</td><td>magma_s_vector* vector with diagonal elements </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gae976f9c543b5a4751a06e2c45e57f133"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobisetup_matrix" ref="gae976f9c543b5a4751a06e2c45e57f133" args="(magma_s_sparse_matrix A, magma_s_sparse_matrix *M, magma_s_vector *d, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobisetup_matrix </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_sparse_matrix *&nbsp;</td>
+          <td class="paramname"> <em>M</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Prepares the Matrix M for the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<p>It returns the preconditioner Matrix M and a vector d containing the diagonal elements.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_s_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>M</em>&nbsp;</td><td>magma_s_sparse_matrix* M = D^(-1) * (L+U)</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d</em>&nbsp;</td><td>magma_s_vector* vector with diagonal elements of A </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga5b3128e7c816b86a45738a6ce7694806"></a><!-- doxytag: member="sjacobi.cpp::magma_sjacobisetup_vector" ref="ga5b3128e7c816b86a45738a6ce7694806" args="(magma_s_vector b, magma_s_vector d, magma_s_vector *c, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sjacobisetup_vector </td>
+          <td>(</td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector&nbsp;</td>
+          <td class="paramname"> <em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_s_vector *&nbsp;</td>
+          <td class="paramname"> <em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Prepares the Jacobi Iteration according to x^(k+1) = D^(-1) * b - D^(-1) * (L+U) * x^k x^(k+1) = c - M * x^k. </p>
+<p>Returns the vector c</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_s_vector RHS b</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d</em>&nbsp;</td><td>magma_s_vector vector with diagonal entries</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>c</em>&nbsp;</td><td>magma_s_vector* c = D^(-1) * b </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
@@ -370,7 +734,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

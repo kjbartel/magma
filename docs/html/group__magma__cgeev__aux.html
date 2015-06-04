@@ -25,19 +25,19 @@
 [<a class="el" href="group__magma__geev__aux.html">Non-symmetric eigenvalue: auxiliary</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#gacc41ec74dc49fe4d10c44e8b35d000ec">magma_clahr2</a> (magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dV, magma_int_t lddv, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *Y, magma_int_t ldy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHR2 reduces the first NB columns of a complex general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#gacc41ec74dc49fe4d10c44e8b35d000ec"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#ga48b820ba44ba0c3425259a7e9e885a34">magma_clahr2</a> (magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dV, magma_int_t lddv, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *Y, magma_int_t ldy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHR2 reduces the first NB columns of a complex general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#ga48b820ba44ba0c3425259a7e9e885a34"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#gac08ca4a4933b6e5f61d23deb6029c183">magma_clahr2_m</a> (magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *Y, magma_int_t ldy, struct cgehrd_data *data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHR2 reduces the first NB columns of a complex general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#gac08ca4a4933b6e5f61d23deb6029c183"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#ga26d3c05f5d9e8d9c3213c47124dde050">magma_clahru</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dY, magma_int_t lddy, magmaFloatComplex *dV, magma_int_t lddv, magmaFloatComplex *dT, magmaFloatComplex *dwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHRU is an auxiliary MAGMA routine that is used in CGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#ga26d3c05f5d9e8d9c3213c47124dde050"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#gaaee7b484d4163ebd8d4f6a99d314306f">magma_clahru</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dY, magma_int_t lddy, magmaFloatComplex_ptr dV, magma_int_t lddv, magmaFloatComplex_ptr dT, magmaFloatComplex_ptr dwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHRU is an auxiliary MAGMA routine that is used in CGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#gaaee7b484d4163ebd8d4f6a99d314306f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#gafd84ca7a226016632592402d5928a5f2">magma_clahru_m</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, struct cgehrd_data *data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLAHRU is an auxiliary MAGMA routine that is used in CGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#gafd84ca7a226016632592402d5928a5f2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgeev__aux.html#gacf80ff653a47cac6a90f7bac4eaa3197">magma_clatrsd</a> (magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag, magma_bool_t normin, magma_int_t n, const magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex lambda, magmaFloatComplex *x, float *scale, float *cnorm, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRSD solves one of the triangular systems with modified diagonal (A - lambda*I) * x = s*b, (A - lambda*I)**T * x = s*b, or (A - lambda*I)**H * x = s*b, with scaling to prevent overflow.  <a href="#gacf80ff653a47cac6a90f7bac4eaa3197"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gacc41ec74dc49fe4d10c44e8b35d000ec"></a><!-- doxytag: member="clahr2.cpp::magma_clahr2" ref="gacc41ec74dc49fe4d10c44e8b35d000ec" args="(magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dV, magma_int_t lddv, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *Y, magma_int_t ldy)" -->
+<a class="anchor" id="ga48b820ba44ba0c3425259a7e9e885a34"></a><!-- doxytag: member="clahr2.cpp::magma_clahr2" ref="ga48b820ba44ba0c3425259a7e9e885a34" args="(magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dV, magma_int_t lddv, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *tau, magmaFloatComplex *T, magma_int_t ldt, magmaFloatComplex *Y, magma_int_t ldy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -62,7 +62,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -74,7 +74,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga26d3c05f5d9e8d9c3213c47124dde050"></a><!-- doxytag: member="clahru.cpp::magma_clahru" ref="ga26d3c05f5d9e8d9c3213c47124dde050" args="(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dY, magma_int_t lddy, magmaFloatComplex *dV, magma_int_t lddv, magmaFloatComplex *dT, magmaFloatComplex *dwork)" -->
+<a class="anchor" id="gaaee7b484d4163ebd8d4f6a99d314306f"></a><!-- doxytag: member="clahru.cpp::magma_clahru" ref="gaaee7b484d4163ebd8d4f6a99d314306f" args="(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dY, magma_int_t lddy, magmaFloatComplex_ptr dV, magma_int_t lddv, magmaFloatComplex_ptr dT, magmaFloatComplex_ptr dwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -341,7 +341,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -353,7 +353,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dY</em>, </td>
         </tr>
         <tr>
@@ -365,7 +365,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
@@ -377,13 +377,13 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -641,22 +641,22 @@
 <p>Define bounds on the components of x after j iterations of the loop: M(j) = bound on x[1:j] G(j) = bound on x[j+1:n] Initially, let M(0) = 0 and G(0) = max{x(i), i=1,...,n}.</p>
 <p>Then for iteration j+1 we have M(j+1) &lt;= G(j) / | A(j+1,j+1) | G(j+1) &lt;= G(j) + M(j+1) * | A[j+2:n,j+1] | &lt;= G(j) ( 1 + CNORM(j+1) / | A(j+1,j+1) | )</p>
 <p>where CNORM(j+1) is greater than or equal to the infinity-norm of column j+1 of A, not counting the diagonal. Hence</p>
-<p>G(j) &lt;= G(0) product ( 1 + CNORM(i) / | A(i,i) | ) 1&lt;=i&lt;=j and</p>
-<p>|x(j)| &lt;= ( G(0) / |A(j,j)| ) product ( 1 + CNORM(i) / |A(i,i)| ) 1&lt;=i&lt; j</p>
+<p>G(j) &lt;= G(0) product ( 1 + CNORM(i) / | A(i,i) | ) 1 &lt;= i &lt;= j and</p>
+<p>|x(j)| &lt;= ( G(0) / |A(j,j)| ) product ( 1 + CNORM(i) / |A(i,i)| ) 1 &lt;= i &lt; j</p>
 <p>Since |x(j)| &lt;= M(j), we use the Level 2 BLAS routine CTRSV if the reciprocal of the largest M(j), j=1,..,n, is larger than max(underflow, 1/overflow).</p>
 <p>The bound on x(j) is also used to determine when a step in the columnwise method can be performed without fear of overflow. If the computed bound is greater than a large constant, x is scaled to prevent overflow, but if the bound overflows, x is set to 0, x(j) to 1, and scale to 0, and a non-trivial solution to A*x = 0 is found.</p>
 <p>Similarly, a row-wise scheme is used to solve A**T *x = b or A**H *x = b. The basic algorithm for upper triangular A is:</p>
 <p>for j = 1, ..., n x(j) := ( b(j) - A[1:j-1,j]' * x[1:j-1] ) / A(j,j) end</p>
-<p>We simultaneously compute two bounds G(j) = bound on ( b(i) - A[1:i-1,i]' * x[1:i-1] ), 1&lt;=i&lt;=j M(j) = bound on x(i), 1&lt;=i&lt;=j</p>
+<p>We simultaneously compute two bounds G(j) = bound on ( b(i) - A[1:i-1,i]' * x[1:i-1] ), 1 &lt;= i &lt;= j M(j) = bound on x(i), 1 &lt;= i &lt;= j</p>
 <p>The initial values are G(0) = 0, M(0) = max{b(i), i=1,..,n}, and we add the constraint G(j) &gt;= G(j-1) and M(j) &gt;= M(j-1) for j &gt;= 1. Then the bound on x(j) is</p>
 <p>M(j) &lt;= M(j-1) * ( 1 + CNORM(j) ) / | A(j,j) |</p>
-<p>&lt;= M(0) * product ( ( 1 + CNORM(i) ) / |A(i,i)| ) 1&lt;=i&lt;=j</p>
+<p>&lt;= M(0) * product ( ( 1 + CNORM(i) ) / |A(i,i)| ) 1 &lt;= i &lt;= j</p>
 <p>and we can safely call CTRSV if 1/M(n) and 1/G(n) are both greater than max(underflow, 1/overflow). </p>
 
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

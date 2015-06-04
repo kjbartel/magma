@@ -25,21 +25,21 @@
 [<a class="el" href="group__magma__sygv__driver.html">Generalized symmetric eigenvalue: driver</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gaf9b4b71545eaeaec49142c25d652cd9f">magma_dsygvd</a> (magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gaf9b4b71545eaeaec49142c25d652cd9f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga6dadec82c302cf91ddac7203bd79648f">magma_dsygvd_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga6dadec82c302cf91ddac7203bd79648f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gad1a4e4b7f833db34fdd61e257bd61483">magma_dsygvdx</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX computes selected eigenvalues and, optionally, eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gad1a4e4b7f833db34fdd61e257bd61483"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga7ac88bbfaf19f46d34059ba394d95ced">magma_dsygvdx_2stage</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga7ac88bbfaf19f46d34059ba394d95ced"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga03dbfbc1cfa198524cb9b8e9c19f09d9">magma_dsygvdx_2stage_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga03dbfbc1cfa198524cb9b8e9c19f09d9"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gabb3fb867e935a409c514d9586f085a0c">magma_dsygvdx_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gabb3fb867e935a409c514d9586f085a0c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gad89fd53c01d7932ed6bb2886221bf206">magma_dsygvd</a> (magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gad89fd53c01d7932ed6bb2886221bf206"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga00b6fffc577128f8089c5e78353f4328">magma_dsygvd_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga00b6fffc577128f8089c5e78353f4328"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga6b2782d93f1c0a1dbc320bf4e2d474ab">magma_dsygvdx</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX computes selected eigenvalues and, optionally, eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga6b2782d93f1c0a1dbc320bf4e2d474ab"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gadb1199df554df2f55a07c9ea0ce5e5e6">magma_dsygvdx_2stage</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gadb1199df554df2f55a07c9ea0ce5e5e6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#gadd0be572f89c957d0b049dfdb67890ff">magma_dsygvdx_2stage_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gadd0be572f89c957d0b049dfdb67890ff"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsygv__driver.html#ga546e55091199ba100ec2aaa6ae9328f6">magma_dsygvdx_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGVD computes all the eigenvalues, and optionally, the eigenvectors of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga546e55091199ba100ec2aaa6ae9328f6"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gaf9b4b71545eaeaec49142c25d652cd9f"></a><!-- doxytag: member="dsygvd.cpp::magma_dsygvd" ref="gaf9b4b71545eaeaec49142c25d652cd9f" args="(magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gad89fd53c01d7932ed6bb2886221bf206"></a><!-- doxytag: member="dsygvd.cpp::magma_dsygvd" ref="gad89fd53c01d7932ed6bb2886221bf206" args="(magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -112,6 +112,18 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
           <td class="paramname"> <em>iwork</em>, </td>
         </tr>
@@ -183,7 +195,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga6dadec82c302cf91ddac7203bd79648f"></a><!-- doxytag: member="dsygvd_m.cpp::magma_dsygvd_m" ref="ga6dadec82c302cf91ddac7203bd79648f" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga00b6fffc577128f8089c5e78353f4328"></a><!-- doxytag: member="dsygvd_m.cpp::magma_dsygvd_m" ref="ga00b6fffc577128f8089c5e78353f4328" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -191,7 +203,7 @@
           <td class="memname">magma_int_t magma_dsygvd_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -262,6 +274,18 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
           <td class="paramname"> <em>iwork</em>, </td>
         </tr>
@@ -291,7 +315,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
@@ -334,7 +358,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gad1a4e4b7f833db34fdd61e257bd61483"></a><!-- doxytag: member="dsygvdx.cpp::magma_dsygvdx" ref="gad1a4e4b7f833db34fdd61e257bd61483" args="(magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga6b2782d93f1c0a1dbc320bf4e2d474ab"></a><!-- doxytag: member="dsygvdx.cpp::magma_dsygvdx" ref="ga6b2782d93f1c0a1dbc320bf4e2d474ab" args="(magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -443,6 +467,18 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
           <td class="paramname"> <em>iwork</em>, </td>
         </tr>
@@ -527,7 +563,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga7ac88bbfaf19f46d34059ba394d95ced"></a><!-- doxytag: member="dsygvdx_2stage.cpp::magma_dsygvdx_2stage" ref="ga7ac88bbfaf19f46d34059ba394d95ced" args="(magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gadb1199df554df2f55a07c9ea0ce5e5e6"></a><!-- doxytag: member="dsygvdx_2stage.cpp::magma_dsygvdx_2stage" ref="gadb1199df554df2f55a07c9ea0ce5e5e6" args="(magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -636,6 +672,18 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
           <td class="paramname"> <em>iwork</em>, </td>
         </tr>
@@ -719,7 +767,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga03dbfbc1cfa198524cb9b8e9c19f09d9"></a><!-- doxytag: member="dsygvdx_2stage_m.cpp::magma_dsygvdx_2stage_m" ref="ga03dbfbc1cfa198524cb9b8e9c19f09d9" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gadd0be572f89c957d0b049dfdb67890ff"></a><!-- doxytag: member="dsygvdx_2stage_m.cpp::magma_dsygvdx_2stage_m" ref="gadd0be572f89c957d0b049dfdb67890ff" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -727,7 +775,7 @@
           <td class="memname">magma_int_t magma_dsygvdx_2stage_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -834,6 +882,18 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
           <td class="paramname"> <em>iwork</em>, </td>
         </tr>
@@ -863,7 +923,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>range</em>&nbsp;</td><td>magma_range_t</p>
 <ul>
@@ -918,7 +978,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gabb3fb867e935a409c514d9586f085a0c"></a><!-- doxytag: member="dsygvdx_m.cpp::magma_dsygvdx_m" ref="gabb3fb867e935a409c514d9586f085a0c" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga546e55091199ba100ec2aaa6ae9328f6"></a><!-- doxytag: member="dsygvdx_m.cpp::magma_dsygvdx_m" ref="ga546e55091199ba100ec2aaa6ae9328f6" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, double *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -926,7 +986,7 @@
           <td class="memname">magma_int_t magma_dsygvdx_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1029,6 +1089,18 @@
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
           <td class="paramname"> <em>lwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lrwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1062,7 +1134,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>range</em>&nbsp;</td><td>magma_range_t</p>
 <ul>
@@ -1118,7 +1190,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

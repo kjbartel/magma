@@ -25,15 +25,15 @@
 [<a class="el" href="group__magma__gels.html">Least Squares</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#ga6bdbca64b45d88b45262bb70d2926cfd">magma_zcgeqrsv_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *dX, magma_int_t lddx, magma_int_t *iter, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZCGEQRSV solves the least squares problem min || A*X - B ||, where A is an M-by-N matrix and X and B are M-by-NRHS matrices.  <a href="#ga6bdbca64b45d88b45262bb70d2926cfd"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#ga9b560a1b3057a7ab41e2991c91297498">magma_zgels3_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#ga9b560a1b3057a7ab41e2991c91297498"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#gabc29e8024670f8369161f94214943e54">magma_zgels_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#gabc29e8024670f8369161f94214943e54"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#gaccc1efc3a9d3f9a97b565183efe98e2c">magma_zcgeqrsv_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex_ptr dX, magma_int_t lddx, magma_int_t *iter, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZCGEQRSV solves the least squares problem min || A*X - B ||, where A is an M-by-N matrix and X and B are M-by-NRHS matrices.  <a href="#gaccc1efc3a9d3f9a97b565183efe98e2c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#ga0f0bd53fa656ae45a231bb8bbba0feda">magma_zgels3_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#ga0f0bd53fa656ae45a231bb8bbba0feda"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgels__driver.html#ga543dd53fccbce2c1bf3093fecd06b85c">magma_zgels_gpu</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the overdetermined, least squares problem min || A*X - C || using the QR factorization A.  <a href="#ga543dd53fccbce2c1bf3093fecd06b85c"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga6bdbca64b45d88b45262bb70d2926cfd"></a><!-- doxytag: member="zcgeqrsv_gpu.cpp::magma_zcgeqrsv_gpu" ref="ga6bdbca64b45d88b45262bb70d2926cfd" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *dX, magma_int_t lddx, magma_int_t *iter, magma_int_t *info)" -->
+<a class="anchor" id="gaccc1efc3a9d3f9a97b565183efe98e2c"></a><!-- doxytag: member="zcgeqrsv_gpu.cpp::magma_zcgeqrsv_gpu" ref="gaccc1efc3a9d3f9a97b565183efe98e2c" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex_ptr dX, magma_int_t lddx, magma_int_t *iter, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -58,7 +58,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -70,7 +70,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -82,7 +82,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dX</em>, </td>
         </tr>
         <tr>
@@ -145,7 +145,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9b560a1b3057a7ab41e2991c91297498"></a><!-- doxytag: member="zgels3_gpu.cpp::magma_zgels3_gpu" ref="ga9b560a1b3057a7ab41e2991c91297498" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga0f0bd53fa656ae45a231bb8bbba0feda"></a><!-- doxytag: member="zgels3_gpu.cpp::magma_zgels3_gpu" ref="ga0f0bd53fa656ae45a231bb8bbba0feda" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -176,7 +176,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -188,7 +188,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -255,7 +255,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gabc29e8024670f8369161f94214943e54"></a><!-- doxytag: member="zgels_gpu.cpp::magma_zgels_gpu" ref="gabc29e8024670f8369161f94214943e54" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga543dd53fccbce2c1bf3093fecd06b85c"></a><!-- doxytag: member="zgels_gpu.cpp::magma_zgels_gpu" ref="ga543dd53fccbce2c1bf3093fecd06b85c" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magmaDoubleComplex *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -286,7 +286,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -366,7 +366,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

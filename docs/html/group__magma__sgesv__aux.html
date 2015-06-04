@@ -29,13 +29,13 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETF2_NOPIV computes an LU factorization of a general m-by-n matrix A without pivoting.  <a href="#gac0641eeb25b7aeab357d2ce2bfdede80"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__aux.html#ga92cb4a797fbd6f348febafddc5b57750">magma_strtri</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, float *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">STRTRI computes the inverse of a real upper or lower triangular matrix A.  <a href="#ga92cb4a797fbd6f348febafddc5b57750"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__aux.html#ga0bc0488293af33c71ffea8915ee0595a">magma_strtri_gpu</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">STRTRI computes the inverse of a real upper or lower triangular matrix dA.  <a href="#ga0bc0488293af33c71ffea8915ee0595a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__aux.html#gae12f30c47a088295158035824d7cc7bf">magma_sgetf2_gpu</a> (magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETF2 computes an LU factorization of a general m-by-n matrix A using partial pivoting with row interchanges.  <a href="#gae12f30c47a088295158035824d7cc7bf"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__aux.html#ga8090fc93f57112f8def0f9ff2de3610d">magma_strtri_gpu</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">STRTRI computes the inverse of a real upper or lower triangular matrix dA.  <a href="#ga8090fc93f57112f8def0f9ff2de3610d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__aux.html#ga023a8db8425806422ce90fe3ee72f4af">magma_sgetf2_gpu</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETF2 computes an LU factorization of a general m-by-n matrix A using partial pivoting with row interchanges.  <a href="#ga023a8db8425806422ce90fe3ee72f4af"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gae12f30c47a088295158035824d7cc7bf"></a><!-- doxytag: member="sgetf2.cu::magma_sgetf2_gpu" ref="gae12f30c47a088295158035824d7cc7bf" args="(magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)" -->
+<a class="anchor" id="ga023a8db8425806422ce90fe3ee72f4af"></a><!-- doxytag: member="sgetf2.cu::magma_sgetf2_gpu" ref="ga023a8db8425806422ce90fe3ee72f4af" args="(magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -54,14 +54,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -253,7 +253,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga0bc0488293af33c71ffea8915ee0595a"></a><!-- doxytag: member="strtri_gpu.cpp::magma_strtri_gpu" ref="ga0bc0488293af33c71ffea8915ee0595a" args="(magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga8090fc93f57112f8def0f9ff2de3610d"></a><!-- doxytag: member="strtri_gpu.cpp::magma_strtri_gpu" ref="ga8090fc93f57112f8def0f9ff2de3610d" args="(magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -278,7 +278,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -335,7 +335,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

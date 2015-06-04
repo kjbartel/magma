@@ -24,16 +24,16 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#gae817827f8a18eeb259216effbf7ad241">magma_zhegvd</a> (magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gae817827f8a18eeb259216effbf7ad241"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga5a85a65a1954a2ff85866bdf8750be18">magma_zhegvd_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga5a85a65a1954a2ff85866bdf8750be18"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga6edeb26d29b05b101ceca6aeeef81c91">magma_zhegvd_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga6edeb26d29b05b101ceca6aeeef81c91"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#gae3d6e2ca8f62065ef8c8a87319f577fa">magma_zhegvdx</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVDX computes selected eigenvalues and, optionally, eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gae3d6e2ca8f62065ef8c8a87319f577fa"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga42d10e3e167dda4dbe2d23fbd641b676">magma_zhegvdx_2stage</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga42d10e3e167dda4dbe2d23fbd641b676"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga86bb10464aedd1081db58e130c87a215">magma_zhegvdx_2stage_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga86bb10464aedd1081db58e130c87a215"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga419391fdabf50b4db406d84c0499a7a2">magma_zhegvdx_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga419391fdabf50b4db406d84c0499a7a2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#gaea23a0e88a3625fd01fac64147f5bc62">magma_zhegvdx_2stage_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVDX_2STAGE computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#gaea23a0e88a3625fd01fac64147f5bc62"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga28f61d591f7dc3d00d3cdd36116af96d">magma_zhegvdx_m</a> (magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga28f61d591f7dc3d00d3cdd36116af96d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#ga01d82620599e377a181806892d3d6951">magma_zhegvr</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *Z, magma_int_t ldz, magma_int_t *isuppz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGVR computes all the eigenvalues, and optionally, the eigenvectors of a complex generalized Hermitian-definite eigenproblem, of the form A*x=(lambda)*B*x, A*Bx=(lambda)*x, or B*A*x=(lambda)*x.  <a href="#ga01d82620599e377a181806892d3d6951"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zhegv__driver.html#gabcf417948c6ebc60a219f68041e6eb40">magma_zhegvx</a> (magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, double abstol, magma_int_t *m, double *w, magmaDoubleComplex *Z, magma_int_t ldz, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)</td></tr>
@@ -199,7 +199,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga5a85a65a1954a2ff85866bdf8750be18"></a><!-- doxytag: member="zhegvd_m.cpp::magma_zhegvd_m" ref="ga5a85a65a1954a2ff85866bdf8750be18" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga6edeb26d29b05b101ceca6aeeef81c91"></a><!-- doxytag: member="zhegvd_m.cpp::magma_zhegvd_m" ref="ga6edeb26d29b05b101ceca6aeeef81c91" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -207,7 +207,7 @@
           <td class="memname">magma_int_t magma_zhegvd_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -319,7 +319,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
@@ -779,7 +779,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga86bb10464aedd1081db58e130c87a215"></a><!-- doxytag: member="zhegvdx_2stage_m.cpp::magma_zhegvdx_2stage_m" ref="ga86bb10464aedd1081db58e130c87a215" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="gaea23a0e88a3625fd01fac64147f5bc62"></a><!-- doxytag: member="zhegvdx_2stage_m.cpp::magma_zhegvdx_2stage_m" ref="gaea23a0e88a3625fd01fac64147f5bc62" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -787,7 +787,7 @@
           <td class="memname">magma_int_t magma_zhegvdx_2stage_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -935,7 +935,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
@@ -993,7 +993,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga419391fdabf50b4db406d84c0499a7a2"></a><!-- doxytag: member="zhegvdx_m.cpp::magma_zhegvdx_m" ref="ga419391fdabf50b4db406d84c0499a7a2" args="(magma_int_t nrgpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga28f61d591f7dc3d00d3cdd36116af96d"></a><!-- doxytag: member="zhegvdx_m.cpp::magma_zhegvdx_m" ref="ga28f61d591f7dc3d00d3cdd36116af96d" args="(magma_int_t ngpu, magma_int_t itype, magma_vec_t jobz, magma_range_t range, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, double vl, double vu, magma_int_t il, magma_int_t iu, magma_int_t *m, double *w, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1001,7 +1001,7 @@
           <td class="memname">magma_int_t magma_zhegvdx_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1149,7 +1149,7 @@
 <p>The divide and conquer algorithm makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER Specifies the problem type to be solved: = 1: A*x = (lambda)*B*x = 2: A*B*x = (lambda)*x = 3: B*A*x = (lambda)*x</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>jobz</em>&nbsp;</td><td>magma_vec_t</p>
 <ul>
@@ -1678,7 +1678,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

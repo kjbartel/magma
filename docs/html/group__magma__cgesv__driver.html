@@ -27,10 +27,151 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#ga9c287ca219a3219a8e53795ecd29de48">magma_cgesv</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magma_int_t *ipiv, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#ga9c287ca219a3219a8e53795ecd29de48"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#gaca9c8ed2dba50100c2daaf9cea346e53">magma_cgesv_gpu</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#gaca9c8ed2dba50100c2daaf9cea346e53"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#ga5d4ed9874286cdc7422b0dcb6400fb55">magma_cgesv_batched</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *dinfo_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#ga5d4ed9874286cdc7422b0dcb6400fb55"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#ga34f671651bbadf0bc280e2f8c9f5635e">magma_cgesv_gpu</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#ga34f671651bbadf0bc280e2f8c9f5635e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#gac30b2af4af15162b64d6177e6f4d54a5">magma_cgesv_nopiv_batched</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#gac30b2af4af15162b64d6177e6f4d54a5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#ga38e06206e88bbd03b0b775d47c1309c9">magma_cgesv_nopiv_gpu</a> (magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices.  <a href="#ga38e06206e88bbd03b0b775d47c1309c9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#gafa464e9adeb3e9662aa85f25c3a34287">magma_cgerfs_nopiv_gpu</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex_ptr dX, magma_int_t lddx, magmaFloatComplex_ptr dworkd, magmaFloatComplex_ptr dAF, magma_int_t *iter, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGERFS improve the computed solution to a system of linear equations.  <a href="#gafa464e9adeb3e9662aa85f25c3a34287"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__driver.html#ga957ef5579e5a686b96b37ff31724414d">magma_cgesv_rbt</a> (magma_bool_t ref, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices.  <a href="#ga957ef5579e5a686b96b37ff31724414d"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="gafa464e9adeb3e9662aa85f25c3a34287"></a><!-- doxytag: member="cgesv_rbt.cpp::magma_cgerfs_nopiv_gpu" ref="gafa464e9adeb3e9662aa85f25c3a34287" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magmaFloatComplex_ptr dX, magma_int_t lddx, magmaFloatComplex_ptr dworkd, magmaFloatComplex_ptr dAF, magma_int_t *iter, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cgerfs_nopiv_gpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_trans_t&nbsp;</td>
+          <td class="paramname"> <em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dworkd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dAF</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>iter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>CGERFS improve the computed solution to a system of linear equations. </p>
+<p>The iterative refinement process is stopped if ITER &gt; ITERMAX or for all the RHS we have: RNRM &lt; SQRT(n)*XNRM*ANRM*EPS*BWDMAX where o ITER is the number of the current iteration in the iterative refinement process o RNRM is the infinity-norm of the residual o XNRM is the infinity-norm of the solution o ANRM is the infinity-operator-norm of the matrix A o EPS is the machine epsilon returned by SLAMCH('Epsilon') The value ITERMAX and BWDMAX are fixed to 30 and 1.0D+00 respectively.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the form of the system of equations:</p>
+<ul>
+<li>= MagmaNoTrans: A * X = B (No transpose)</li>
+<li>= MagmaTrans: A**T * X = B (Transpose)</li>
+<li>= MagmaConjTrans: A**H * X = B (Conjugate transpose)</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of linear equations, i.e., the order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (ldda,N) the N-by-N coefficient matrix A.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. ldda &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (lddb,NRHS) The N-by-NRHS right hand side matrix B.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array dB. lddb &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dX</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (lddx,NRHS) On entry, the solution matrix X, as computed by CGETRS_NOPIV. On exit, the improved solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddx</em>&nbsp;</td><td>INTEGER The leading dimension of the array dX. lddx &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>dworkd</em>&nbsp;</td><td>(workspace) COMPLEX array on the GPU, dimension (N*NRHS) This array is used to hold the residual vectors.</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>dAF</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (ldda,n) The factors L and U from the factorization A = L*U as computed by CGETRF_NOPIV.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>iter</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>&lt; 0: iterative refinement has failed, real factorization has been performed + -1 : the routine fell back to full precision for implementation- or machine-specific reasons + -2 : narrowing the precision induced an overflow, the routine fell back to full precision + -3 : failure of SGETRF + -31: stop the iterative refinement after the 30th iteration</li>
+<li>&gt; 0: iterative refinement has been successfully used. Returns the number of iterations</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if info = -i, the i-th argument had an illegal value</li>
+<li>&gt; 0: if info = i, U(i,i) computed in REAL is exactly zero. The factorization has been completed, but the factor U is exactly singular, so the solution could not be computed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ga9c287ca219a3219a8e53795ecd29de48"></a><!-- doxytag: member="cgesv.cpp::magma_cgesv" ref="ga9c287ca219a3219a8e53795ecd29de48" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magma_int_t *ipiv, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
@@ -115,7 +256,97 @@
 
 </div>
 </div>
-<a class="anchor" id="gaca9c8ed2dba50100c2daaf9cea346e53"></a><!-- doxytag: member="cgesv_gpu.cpp::magma_cgesv_gpu" ref="gaca9c8ed2dba50100c2daaf9cea346e53" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga5d4ed9874286cdc7422b0dcb6400fb55"></a><!-- doxytag: member="cgesv_batched.cpp::magma_cgesv_batched" ref="ga5d4ed9874286cdc7422b0dcb6400fb55" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *dinfo_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cgesv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t **&nbsp;</td>
+          <td class="paramname"> <em>dipiv_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>dinfo_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices. </p>
+<p>The LU decomposition with partial pivoting and row interchanges is used to factor A as A = P * L * U, where P is a permutation matrix, L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDDA,N). On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga34f671651bbadf0bc280e2f8c9f5635e"></a><!-- doxytag: member="cgesv_gpu.cpp::magma_cgesv_gpu" ref="ga34f671651bbadf0bc280e2f8c9f5635e" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -134,7 +365,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -152,7 +383,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -199,8 +430,258 @@
 
 </div>
 </div>
+<a class="anchor" id="gac30b2af4af15162b64d6177e6f4d54a5"></a><!-- doxytag: member="cgesv_nopiv_batched.cpp::magma_cgesv_nopiv_batched" ref="gac30b2af4af15162b64d6177e6f4d54a5" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cgesv_nopiv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices. </p>
+<p>The LU decomposition with partial pivoting and row interchanges is used to factor A as A = P * L * U, where P is a permutation matrix, L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDDA,N). On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga38e06206e88bbd03b0b775d47c1309c9"></a><!-- doxytag: member="cgesv_nopiv_gpu.cpp::magma_cgesv_nopiv_gpu" ref="ga38e06206e88bbd03b0b775d47c1309c9" args="(magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cgesv_nopiv_gpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices. </p>
+<p>The LU decomposition with no pivoting is used to factor A as A = L * U, where L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. n &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. nrhs &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array, dimension (ldda,n). On entry, the n-by-n matrix to be factored. On exit, the factors L and U from the factorization A = L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. ldda &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX array, dimension (lddb,nrhs) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. ldb &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga957ef5579e5a686b96b37ff31724414d"></a><!-- doxytag: member="cgesv_rbt.cpp::magma_cgesv_rbt" ref="ga957ef5579e5a686b96b37ff31724414d" args="(magma_bool_t ref, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cgesv_rbt </td>
+          <td>(</td>
+          <td class="paramtype">magma_bool_t&nbsp;</td>
+          <td class="paramname"> <em>ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general N-by-N matrix and X and B are N-by-NRHS matrices. </p>
+<p>Random Butterfly Tranformation is applied on A and B, then the LU decomposition with no pivoting is used to factor A as A = L * U, where L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B. The solution can then be improved using iterative refinement.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ref</em>&nbsp;</td><td>magma_bool_t Specifies if iterative refinement have to be applied to improve the solution.</p>
+<ul>
+<li>= MagmaTrue: Iterative refinement is applied.</li>
+<li>= MagmaFalse: Iterative refinement is not applied.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX array, dimension (LDA,N). On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>B</em>&nbsp;</td><td>COMPLEX array, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

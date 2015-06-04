@@ -27,22 +27,26 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gaf0f1a16f06b6b09293dfc36a55486ef8">magma_dpotrf</a> (magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#gaf0f1a16f06b6b09293dfc36a55486ef8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga0044d2f0f8303b3003993cd2ee7dd2c8">magma_dpotrf2_mgpu</a> (int num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, double **d_lA, magma_int_t ldda, double **d_lP, magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga0044d2f0f8303b3003993cd2ee7dd2c8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gabc9432eb45441c8431cde8b221ca0770">magma_dpotrf3_mgpu</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, double *d_lA[], magma_int_t ldda, double *d_lP[], magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#gabc9432eb45441c8431cde8b221ca0770"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga49b8e396ff42b498d76ec3c1dec5a485">magma_dpotrf_gpu</a> (magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga49b8e396ff42b498d76ec3c1dec5a485"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gac22638c109b1616ded239fafd9ae0282">magma_dpotrf_m</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF_OOC computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#gac22638c109b1616ded239fafd9ae0282"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga41e80e14ad1a7dded1d21ca2e351712c">magma_dpotrf_mgpu</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, double **d_lA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga41e80e14ad1a7dded1d21ca2e351712c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga538a49e4d252435426c07920af959182">magma_dpotrf3_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDouble_ptr d_lA[], magma_int_t ldda, magmaDouble_ptr d_lP[], magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t queues[][3], magma_event_t events[][5], magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga538a49e4d252435426c07920af959182"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gae5a0337fb4311adabbe7e65e23d1db65">magma_dpotrf_batched</a> (magma_uplo_t uplo, magma_int_t n, double **dA_array, magma_int_t ldda, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#gae5a0337fb4311adabbe7e65e23d1db65"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga95db876a9eb3392b00dbd846f229bc79">magma_dpotrf_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga95db876a9eb3392b00dbd846f229bc79"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga31587a1e9768a115d5fadccfb31e0f84">magma_dpotrf_m</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF_OOC computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#ga31587a1e9768a115d5fadccfb31e0f84"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga80003fa2d525a8bdcc684e82d5d80e70">magma_dpotrf_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr d_lA[], magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#ga80003fa2d525a8bdcc684e82d5d80e70"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gaa32b0ee8745366be2eb7d726821a00bb">magma_dpotrf_mgpu_right</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr d_lA[], magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA.  <a href="#gaa32b0ee8745366be2eb7d726821a00bb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gaaea46c7d21fdc62e0e344fd683a04b7f">magma_dpotri</a> (magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by DPOTRF.  <a href="#gaaea46c7d21fdc62e0e344fd683a04b7f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gaf934c03f3e55c584161aa179e7581baf">magma_dpotri_gpu</a> (magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by DPOTRF.  <a href="#gaf934c03f3e55c584161aa179e7581baf"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#gace97cf7f55f0326a537bc5ccf8eb487f">magma_dpotrs_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, double *dA, magma_int_t ldda, double *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRS solves a system of linear equations A*X = B with a symmetric positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by DPOTRF.  <a href="#gace97cf7f55f0326a537bc5ccf8eb487f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga3c7c8d8bcba5dea50528e7f8c8095a59">magma_dpotri_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by DPOTRF.  <a href="#ga3c7c8d8bcba5dea50528e7f8c8095a59"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga612aa152c1c468e753556f1a9e4d898a">magma_dpotrs_batched</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, double **dA_array, magma_int_t ldda, double **dB_array, magma_int_t lddb, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRS solves a system of linear equations A*X = B with a symmetric positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by DPOTRF.  <a href="#ga612aa152c1c468e753556f1a9e4d898a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dposv__comp.html#ga15514cf1020a8fea8f4fe7c242b09882">magma_dpotrs_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDouble_ptr dA, magma_int_t ldda, magmaDouble_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DPOTRS solves a system of linear equations A*X = B with a symmetric positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by DPOTRF.  <a href="#ga15514cf1020a8fea8f4fe7c242b09882"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gaf0f1a16f06b6b09293dfc36a55486ef8"></a><!-- doxytag: member="dpotrf.cpp::magma_dpotrf" ref="gaf0f1a16f06b6b09293dfc36a55486ef8" args="(magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)" -->
@@ -119,150 +123,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga0044d2f0f8303b3003993cd2ee7dd2c8"></a><!-- doxytag: member="dpotrf2_mgpu.cpp::magma_dpotrf2_mgpu" ref="ga0044d2f0f8303b3003993cd2ee7dd2c8" args="(int num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, double **d_lA, magma_int_t ldda, double **d_lP, magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_dpotrf2_mgpu </td>
-          <td>(</td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_uplo_t&nbsp;</td>
-          <td class="paramname"> <em>uplo</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>m</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>off_i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>off_j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double **&nbsp;</td>
-          <td class="paramname"> <em>d_lP</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lddp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>h</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][3], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_event_t&nbsp;</td>
-          <td class="paramname"> <em>event</em>[][5], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t *&nbsp;</td>
-          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA. </p>
-<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
-<p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
-<ul>
-<li>= MagmaUpper: Upper triangle of dA is stored;</li>
-<li>= MagmaLower: Lower triangle of dA is stored.</li>
-</ul>
-</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>DOUBLE_PRECISION array on the GPU, dimension (LDDA,N) On entry, the symmetric matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
- On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
-<ul>
-<li>= 0: successful exit</li>
-<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
-<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed. </li>
-</ul>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="gabc9432eb45441c8431cde8b221ca0770"></a><!-- doxytag: member="dpotrf3_mgpu.cpp::magma_dpotrf3_mgpu" ref="gabc9432eb45441c8431cde8b221ca0770" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, double *d_lA[], magma_int_t ldda, double *d_lP[], magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)" -->
+<a class="anchor" id="ga538a49e4d252435426c07920af959182"></a><!-- doxytag: member="dpotrf3_mgpu.cpp::magma_dpotrf3_mgpu" ref="ga538a49e4d252435426c07920af959182" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDouble_ptr d_lA[], magma_int_t ldda, magmaDouble_ptr d_lP[], magma_int_t lddp, double *A, magma_int_t lda, magma_int_t h, magma_queue_t queues[][3], magma_event_t events[][5], magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -270,7 +131,7 @@
           <td class="memname">magma_int_t magma_dpotrf3_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -311,7 +172,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
@@ -323,7 +184,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lP</em>[], </td>
         </tr>
         <tr>
@@ -354,13 +215,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][3], </td>
+          <td class="paramname"> <em>queues</em>[][3], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_event_t&nbsp;</td>
-          <td class="paramname"> <em>event</em>[][5], </td>
+          <td class="paramname"> <em>events</em>[][5], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -406,7 +267,84 @@
 
 </div>
 </div>
-<a class="anchor" id="ga49b8e396ff42b498d76ec3c1dec5a485"></a><!-- doxytag: member="dpotrf_gpu.cpp::magma_dpotrf_gpu" ref="ga49b8e396ff42b498d76ec3c1dec5a485" args="(magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="gae5a0337fb4311adabbe7e65e23d1db65"></a><!-- doxytag: member="dpotrf_batched.cpp::magma_dpotrf_batched" ref="gae5a0337fb4311adabbe7e65e23d1db65" args="(magma_uplo_t uplo, magma_int_t n, double **dA_array, magma_int_t ldda, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dpotrf_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA. </p>
+<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
+<p>This is the block version of the algorithm, calling Level 3 BLAS. If the current stream is NULL, this version replaces it with a new stream to overlap computation with communication.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of dA is stored;</li>
+<li>= MagmaLower: Lower triangle of dA is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>DOUBLE_PRECISION array on the GPU, dimension (LDDA,N) On entry, the symmetric matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
+<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga95db876a9eb3392b00dbd846f229bc79"></a><!-- doxytag: member="dpotrf_gpu.cpp::magma_dpotrf_gpu" ref="ga95db876a9eb3392b00dbd846f229bc79" args="(magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -425,7 +363,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -477,7 +415,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gac22638c109b1616ded239fafd9ae0282"></a><!-- doxytag: member="dpotrf_m.cpp::magma_dpotrf_m" ref="gac22638c109b1616ded239fafd9ae0282" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)" -->
+<a class="anchor" id="ga31587a1e9768a115d5fadccfb31e0f84"></a><!-- doxytag: member="dpotrf_m.cpp::magma_dpotrf_m" ref="ga31587a1e9768a115d5fadccfb31e0f84" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -485,7 +423,7 @@
           <td class="memname">magma_int_t magma_dpotrf_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -532,7 +470,7 @@
 <p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs. num_gpus &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of A is stored;</li>
@@ -557,7 +495,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga41e80e14ad1a7dded1d21ca2e351712c"></a><!-- doxytag: member="dpotrf_mgpu.cpp::magma_dpotrf_mgpu" ref="ga41e80e14ad1a7dded1d21ca2e351712c" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, double **d_lA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga80003fa2d525a8bdcc684e82d5d80e70"></a><!-- doxytag: member="dpotrf_mgpu.cpp::magma_dpotrf_mgpu" ref="ga80003fa2d525a8bdcc684e82d5d80e70" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr d_lA[], magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -565,7 +503,7 @@
           <td class="memname">magma_int_t magma_dpotrf_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -582,8 +520,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
+          <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -611,7 +549,7 @@
 <p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs to be used for the factorization.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of dA is stored;</li>
@@ -619,9 +557,86 @@
 </ul>
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>DOUBLE_PRECISION array of pointers on the GPU, dimension (num_gpus) On entry, the symmetric matrix dA distributed over GPUs (d_lA[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>DOUBLE_PRECISION array of pointers on the GPU, dimension (ngpu) On entry, the symmetric matrix dA distributed over GPUs (d_lA[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
  On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array d_lA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
+<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa32b0ee8745366be2eb7d726821a00bb"></a><!-- doxytag: member="dpotrf_mgpu_right.cpp::magma_dpotrf_mgpu_right" ref="gaa32b0ee8745366be2eb7d726821a00bb" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr d_lA[], magma_int_t ldda, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dpotrf_mgpu_right </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ngpu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
+          <td class="paramname"> <em>d_lA</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>DPOTRF computes the Cholesky factorization of a real symmetric positive definite matrix dA. </p>
+<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
+<p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of dA is stored;</li>
+<li>= MagmaLower: Lower triangle of dA is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>DOUBLE_PRECISION array of pointers on the GPU, dimension (ngpu) On entry, the symmetric matrix dA distributed over GPUs (dl_A[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
 <ul>
 <li>= 0: successful exit</li>
@@ -703,7 +718,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf934c03f3e55c584161aa179e7581baf"></a><!-- doxytag: member="dpotri_gpu.cpp::magma_dpotri_gpu" ref="gaf934c03f3e55c584161aa179e7581baf" args="(magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga3c7c8d8bcba5dea50528e7f8c8095a59"></a><!-- doxytag: member="dpotri_gpu.cpp::magma_dpotri_gpu" ref="ga3c7c8d8bcba5dea50528e7f8c8095a59" args="(magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -722,7 +737,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -771,7 +786,95 @@
 
 </div>
 </div>
-<a class="anchor" id="gace97cf7f55f0326a537bc5ccf8eb487f"></a><!-- doxytag: member="dpotrs_gpu.cpp::magma_dpotrs_gpu" ref="gace97cf7f55f0326a537bc5ccf8eb487f" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, double *dA, magma_int_t ldda, double *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga612aa152c1c468e753556f1a9e4d898a"></a><!-- doxytag: member="dpotrs_batched.cpp::magma_dpotrs_batched" ref="ga612aa152c1c468e753556f1a9e4d898a" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, double **dA_array, magma_int_t ldda, double **dB_array, magma_int_t lddb, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_dpotrs_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>DPOTRS solves a system of linear equations A*X = B with a symmetric positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by DPOTRF. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of A is stored;</li>
+<li>= MagmaLower: Lower triangle of A is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>DOUBLE_PRECISION array on the GPU, dimension (LDDA,N) The triangular factor U or L from the Cholesky factorization A = U**H*U or A = L*L**H, as computed by DPOTRF.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>DOUBLE_PRECISION array on the GPU, dimension (LDDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga15514cf1020a8fea8f4fe7c242b09882"></a><!-- doxytag: member="dpotrs_gpu.cpp::magma_dpotrs_gpu" ref="ga15514cf1020a8fea8f4fe7c242b09882" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDouble_ptr dA, magma_int_t ldda, magmaDouble_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -796,7 +899,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -808,7 +911,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -860,7 +963,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

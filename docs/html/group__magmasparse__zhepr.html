@@ -22,20 +22,20 @@
 <div class="contents">
 <h1>double-complex precision</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#ga213e7e7d80ca848a1d68b01a7e454258">magma_zcuiccsetup</a> (magma_z_sparse_matrix A, magma_z_preconditioner *precond)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the IC preconditioner via the asynchronous iteration.  <a href="#ga213e7e7d80ca848a1d68b01a7e454258"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#ga2d3237a1358b62ef1939bce622a8fca0">magma_zapplycuicc_l</a> (magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the left triangular solves using the ICC preconditioner.  <a href="#ga2d3237a1358b62ef1939bce622a8fca0"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#ga18dfa289de5ce750b314e0f7bc374c6e">magma_zapplycuicc_r</a> (magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the right triangular solves using the ICC preconditioner.  <a href="#ga18dfa289de5ce750b314e0f7bc374c6e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#gacdde847389911238b302273c7acec92e">magma_zcumiccsetup</a> (magma_z_sparse_matrix A, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the IC preconditioner via cuSPARSE.  <a href="#gacdde847389911238b302273c7acec92e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#ga47aba8f8d56d5c07abb5361329709656">magma_zapplycumicc_l</a> (magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the left triangular solves using the ICC preconditioner.  <a href="#ga47aba8f8d56d5c07abb5361329709656"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__zhepr.html#ga933ea8fccc48c64a1f58b92482653f02">magma_zapplycumicc_r</a> (magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the right triangular solves using the ICC preconditioner.  <a href="#ga933ea8fccc48c64a1f58b92482653f02"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga2d3237a1358b62ef1939bce622a8fca0"></a><!-- doxytag: member="zcuilu.cpp::magma_zapplycuicc_l" ref="ga2d3237a1358b62ef1939bce622a8fca0" args="(magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond)" -->
+<a class="anchor" id="ga47aba8f8d56d5c07abb5361329709656"></a><!-- doxytag: member="zcumilu.cpp::magma_zapplycumicc_l" ref="ga47aba8f8d56d5c07abb5361329709656" args="(magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">magma_int_t magma_zapplycuicc_l </td>
+          <td class="memname">magma_int_t magma_zapplycumicc_l </td>
           <td>(</td>
           <td class="paramtype">magma_z_vector&nbsp;</td>
           <td class="paramname"> <em>b</em>, </td>
@@ -50,7 +50,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_z_preconditioner *&nbsp;</td>
-          <td class="paramname"> <em>precond</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -64,21 +70,22 @@
 <p>Performs the left triangular solves using the ICC preconditioner. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>b</em>&nbsp;</td><td>magma_z_vector RHS</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>x</em>&nbsp;</td><td>magma_z_vector* vector to precondition</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_z_vector RHS</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_z_vector* vector to precondition</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga18dfa289de5ce750b314e0f7bc374c6e"></a><!-- doxytag: member="zcuilu.cpp::magma_zapplycuicc_r" ref="ga18dfa289de5ce750b314e0f7bc374c6e" args="(magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond)" -->
+<a class="anchor" id="ga933ea8fccc48c64a1f58b92482653f02"></a><!-- doxytag: member="zcumilu.cpp::magma_zapplycumicc_r" ref="ga933ea8fccc48c64a1f58b92482653f02" args="(magma_z_vector b, magma_z_vector *x, magma_z_preconditioner *precond, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">magma_int_t magma_zapplycuicc_r </td>
+          <td class="memname">magma_int_t magma_zapplycumicc_r </td>
           <td>(</td>
           <td class="paramtype">magma_z_vector&nbsp;</td>
           <td class="paramname"> <em>b</em>, </td>
@@ -93,7 +100,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_z_preconditioner *&nbsp;</td>
-          <td class="paramname"> <em>precond</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -107,21 +120,22 @@
 <p>Performs the right triangular solves using the ICC preconditioner. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>b</em>&nbsp;</td><td>magma_z_vector RHS</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>x</em>&nbsp;</td><td>magma_z_vector* vector to precondition</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_z_vector RHS</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_z_vector* vector to precondition</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga213e7e7d80ca848a1d68b01a7e454258"></a><!-- doxytag: member="zcuilu.cpp::magma_zcuiccsetup" ref="ga213e7e7d80ca848a1d68b01a7e454258" args="(magma_z_sparse_matrix A, magma_z_preconditioner *precond)" -->
+<a class="anchor" id="gacdde847389911238b302273c7acec92e"></a><!-- doxytag: member="zcumilu.cpp::magma_zcumiccsetup" ref="gacdde847389911238b302273c7acec92e" args="(magma_z_sparse_matrix A, magma_z_preconditioner *precond, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">magma_int_t magma_zcuiccsetup </td>
+          <td class="memname">magma_int_t magma_zcumiccsetup </td>
           <td>(</td>
           <td class="paramtype">magma_z_sparse_matrix&nbsp;</td>
           <td class="paramname"> <em>A</em>, </td>
@@ -130,7 +144,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_z_preconditioner *&nbsp;</td>
-          <td class="paramname"> <em>precond</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -141,11 +161,12 @@
 </div>
 <div class="memdoc">
 
-<p>Prepares the IC preconditioner via the asynchronous iteration. </p>
+<p>Prepares the IC preconditioner via cuSPARSE. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>A</em>&nbsp;</td><td>magma_z_sparse_matrix input matrix A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_z_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_z_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
@@ -153,7 +174,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

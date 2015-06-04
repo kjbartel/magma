@@ -17,7 +17,7 @@ CSRC = \
 	clauum_gpu.cpp \
 	ctrtri_gpu.cpp \
 	cpotrf_mgpu.cpp \
-	cpotrf2_mgpu.cpp \
+	cpotrf_mgpu_right.cpp \
 	cpotrf3_mgpu.cpp \
 	cposv.cpp \
 	cpotrf.cpp \
@@ -26,13 +26,17 @@ CSRC = \
 	ctrtri.cpp \
 	cpotrf_m.cpp \
 	cgesv_gpu.cpp \
+	cgesv_nopiv_gpu.cpp \
 	cgetrf_gpu.cpp \
 	cgetrf_nopiv_gpu.cpp \
 	cgetri_gpu.cpp \
 	cgetrs_gpu.cpp \
+	cgetrs_nopiv_gpu.cpp \
 	cgetrf_mgpu.cpp \
 	cgetrf2_mgpu.cpp \
+	cgerbt_gpu.cpp \
 	cgesv.cpp \
+	cgesv_rbt.cpp \
 	cgetrf.cpp \
 	cgetf2_nopiv.cpp \
 	cgetrf_nopiv.cpp \
@@ -76,6 +80,12 @@ CSRC = \
 	claqps.cpp \
 	cungqr_m.cpp \
 	cunmqr_m.cpp \
+	chesv.cpp \
+	chetrf.cpp \
+	chetrf_nopiv.cpp \
+	chetrf_nopiv_cpu.cpp \
+	chetrf_nopiv_gpu.cpp \
+	clahef_gpu.cpp \
 	cheevd_gpu.cpp \
 	cheevdx_gpu.cpp \
 	cheevr_gpu.cpp \
@@ -145,7 +155,25 @@ CSRC = \
 	cgesvd.cpp \
 	cgebrd.cpp \
 	clabrd_gpu.cpp \
-	cunmbr.cpp
+	cunmbr.cpp \
+	cgetf2_batched.cpp \
+	cgetf2_nopiv_batched.cpp \
+	cgetrf_panel_batched.cpp \
+	cgetrf_panel_nopiv_batched.cpp \
+	cgetrf_batched.cpp \
+	cgetrf_nopiv_batched.cpp \
+	cgetrs_batched.cpp \
+	cgetrs_nopiv_batched.cpp \
+	cgesv_batched.cpp \
+	cgesv_nopiv_batched.cpp \
+	cgerbt_batched.cpp \
+	cgesv_rbt_batched.cpp \
+	cgetri_outofplace_batched.cpp \
+	cpotf2_batched.cpp \
+	cpotrf_batched.cpp \
+	cpotrf_panel_batched.cpp \
+	cpotrs_batched.cpp \
+	cposv_batched.cpp
 
 DSRC = \
 	cblas_d.cpp \
@@ -157,7 +185,7 @@ DSRC = \
 	dlauum_gpu.cpp \
 	dtrtri_gpu.cpp \
 	dpotrf_mgpu.cpp \
-	dpotrf2_mgpu.cpp \
+	dpotrf_mgpu_right.cpp \
 	dpotrf3_mgpu.cpp \
 	dposv.cpp \
 	dpotrf.cpp \
@@ -168,13 +196,17 @@ DSRC = \
 	dsgesv_gpu.cpp \
 	dsgetrs_gpu.cpp \
 	dgesv_gpu.cpp \
+	dgesv_nopiv_gpu.cpp \
 	dgetrf_gpu.cpp \
 	dgetrf_nopiv_gpu.cpp \
 	dgetri_gpu.cpp \
 	dgetrs_gpu.cpp \
+	dgetrs_nopiv_gpu.cpp \
 	dgetrf_mgpu.cpp \
 	dgetrf2_mgpu.cpp \
+	dgerbt_gpu.cpp \
 	dgesv.cpp \
+	dgesv_rbt.cpp \
 	dgetrf.cpp \
 	dgetf2_nopiv.cpp \
 	dgetrf_nopiv.cpp \
@@ -219,6 +251,12 @@ DSRC = \
 	dlaqps.cpp \
 	dorgqr_m.cpp \
 	dormqr_m.cpp \
+	dsysv.cpp \
+	dsytrf.cpp \
+	dsytrf_nopiv.cpp \
+	dsytrf_nopiv_cpu.cpp \
+	dsytrf_nopiv_gpu.cpp \
+	dlasyf_gpu.cpp \
 	dsytrd2_gpu.cpp \
 	dsytrd_gpu.cpp \
 	dormtr_gpu.cpp \
@@ -258,7 +296,25 @@ DSRC = \
 	dorghr_m.cpp \
 	dgebrd.cpp \
 	dlabrd_gpu.cpp \
-	dormbr.cpp
+	dormbr.cpp \
+	dgetf2_batched.cpp \
+	dgetf2_nopiv_batched.cpp \
+	dgetrf_panel_batched.cpp \
+	dgetrf_panel_nopiv_batched.cpp \
+	dgetrf_batched.cpp \
+	dgetrf_nopiv_batched.cpp \
+	dgetrs_batched.cpp \
+	dgetrs_nopiv_batched.cpp \
+	dgesv_batched.cpp \
+	dgesv_nopiv_batched.cpp \
+	dgerbt_batched.cpp \
+	dgesv_rbt_batched.cpp \
+	dgetri_outofplace_batched.cpp \
+	dpotf2_batched.cpp \
+	dpotrf_batched.cpp \
+	dpotrf_panel_batched.cpp \
+	dpotrs_batched.cpp \
+	dposv_batched.cpp
 
 SSRC = \
 	cblas_s.cpp \
@@ -269,7 +325,7 @@ SSRC = \
 	slauum_gpu.cpp \
 	strtri_gpu.cpp \
 	spotrf_mgpu.cpp \
-	spotrf2_mgpu.cpp \
+	spotrf_mgpu_right.cpp \
 	spotrf3_mgpu.cpp \
 	sposv.cpp \
 	spotrf.cpp \
@@ -278,13 +334,17 @@ SSRC = \
 	strtri.cpp \
 	spotrf_m.cpp \
 	sgesv_gpu.cpp \
+	sgesv_nopiv_gpu.cpp \
 	sgetrf_gpu.cpp \
 	sgetrf_nopiv_gpu.cpp \
 	sgetri_gpu.cpp \
 	sgetrs_gpu.cpp \
+	sgetrs_nopiv_gpu.cpp \
 	sgetrf_mgpu.cpp \
 	sgetrf2_mgpu.cpp \
+	sgerbt_gpu.cpp \
 	sgesv.cpp \
+	sgesv_rbt.cpp \
 	sgetrf.cpp \
 	sgetf2_nopiv.cpp \
 	sgetrf_nopiv.cpp \
@@ -328,6 +388,12 @@ SSRC = \
 	slaqps.cpp \
 	sorgqr_m.cpp \
 	sormqr_m.cpp \
+	ssysv.cpp \
+	ssytrf.cpp \
+	ssytrf_nopiv.cpp \
+	ssytrf_nopiv_cpu.cpp \
+	ssytrf_nopiv_gpu.cpp \
+	slasyf_gpu.cpp \
 	ssyevd_gpu.cpp \
 	ssyevdx_gpu.cpp \
 	ssytrd2_gpu.cpp \
@@ -399,4 +465,22 @@ SSRC = \
 	sgesvd.cpp \
 	sgebrd.cpp \
 	slabrd_gpu.cpp \
-	sormbr.cpp
+	sormbr.cpp \
+	sgetf2_batched.cpp \
+	sgetf2_nopiv_batched.cpp \
+	sgetrf_panel_batched.cpp \
+	sgetrf_panel_nopiv_batched.cpp \
+	sgetrf_batched.cpp \
+	sgetrf_nopiv_batched.cpp \
+	sgetrs_batched.cpp \
+	sgetrs_nopiv_batched.cpp \
+	sgesv_batched.cpp \
+	sgesv_nopiv_batched.cpp \
+	sgerbt_batched.cpp \
+	sgesv_rbt_batched.cpp \
+	sgetri_outofplace_batched.cpp \
+	spotf2_batched.cpp \
+	spotrf_batched.cpp \
+	spotrf_panel_batched.cpp \
+	spotrs_batched.cpp \
+	sposv_batched.cpp

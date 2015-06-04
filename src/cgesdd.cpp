@@ -1,17 +1,18 @@
 /*
-    -- MAGMA (version 1.5.0) --
+    -- MAGMA (version 1.6.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date September 2014
+       @date November 2014
 
        @author Mark Gates
-       @generated from zgesdd.cpp normal z -> c, Wed Sep 17 15:08:32 2014
+       @generated from zgesdd.cpp normal z -> c, Sat Nov 15 19:54:10 2014
 
 */
 #include "common_magma.h"
 
 #define PRECISION_c
+#define COMPLEX
 
 // Version 1 - LAPACK
 // Version 2 - MAGMA
@@ -52,7 +53,7 @@
       -     = MagmaSomeVec: the first min(M,N) columns of U and
                             the first min(M,N) rows of V**H are
                             returned in the arrays U and VT;
-      -     = MagmaOverwriteVec: 
+      -     = MagmaOverwriteVec:
                     If M >= N, the first N columns of U are overwritten
                     on the array A and all rows of V**H are returned in
                     the array VT;
@@ -185,8 +186,11 @@ magma_int_t magma_cgesdd(
     magmaFloatComplex *U, magma_int_t ldu,
     magmaFloatComplex *VT, magma_int_t ldvt,
     magmaFloatComplex *work, magma_int_t lwork,
+    #ifdef COMPLEX
     float *rwork,
-    magma_int_t *iwork, magma_int_t *info)
+    #endif
+    magma_int_t *iwork,
+    magma_int_t *info)
 {
     #define A(i_,j_) (A + (i_) + (j_)*lda)
     #define U(i_,j_) (U + (i_) + (j_)*ldu)

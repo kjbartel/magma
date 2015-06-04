@@ -24,8 +24,8 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">subroutine&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#gaf62d642e821da4fe6a87ffac68e09d91">ZTREVC3</a> (SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR, LDVR, MM, M, WORK, LWORK, RWORK, INFO)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><b>ZTREVC3</b>  <a href="#gaf62d642e821da4fe6a87ffac68e09d91"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#ga0502ce6ce7227a1521bd68a2685bcbe6">magma_zgehrd</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *dT, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEHRD reduces a COMPLEX_16 general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#ga0502ce6ce7227a1521bd68a2685bcbe6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#ga59b3208e254f07a7ca558a04688491d3">magma_zgehrd</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex_ptr dT, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEHRD reduces a COMPLEX_16 general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#ga59b3208e254f07a7ca558a04688491d3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#gaac48785795551dd094537cb973463760">magma_zgehrd2</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEHRD2 reduces a COMPLEX_16 general matrix A to upper Hessenberg form H by an orthogonal similarity transformation: Q' * A * Q = H .  <a href="#gaac48785795551dd094537cb973463760"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#gae2f50969964a565c4a37f0f7350f4f32">magma_zgehrd_m</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *T, magma_int_t *info)</td></tr>
@@ -34,13 +34,13 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZTREVC3 computes some or all of the right and/or left eigenvectors of a complex upper triangular matrix T.  <a href="#ga9f6ca591a54f2908a00788edf8ba04cd"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#ga1f0e1380c51ab50558db79e723795f18">magma_ztrevc3_mt</a> (magma_side_t side, magma_vec_t howmany, magma_int_t *select, magma_int_t n, magmaDoubleComplex *T, magma_int_t ldt, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magma_int_t mm, magma_int_t *mout, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZTREVC3_MT computes some or all of the right and/or left eigenvectors of a complex upper triangular matrix T.  <a href="#ga1f0e1380c51ab50558db79e723795f18"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#gaced47c1e885e8f7affc0d33284caba19">magma_zunghr</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGHR generates a COMPLEX_16 unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by ZGEHRD:.  <a href="#gaced47c1e885e8f7affc0d33284caba19"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#gab299c0844d352d94c5f1070cf358db63">magma_zunghr</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGHR generates a COMPLEX_16 unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by ZGEHRD:.  <a href="#gab299c0844d352d94c5f1070cf358db63"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__comp.html#ga228476d1a2bc93028785b610a6f52848">magma_zunghr_m</a> (magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *T, magma_int_t nb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGHR generates a COMPLEX_16 unitary matrix Q which is defined as the product of IHI-ILO elementary reflectors of order N, as returned by ZGEHRD:.  <a href="#ga228476d1a2bc93028785b610a6f52848"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga0502ce6ce7227a1521bd68a2685bcbe6"></a><!-- doxytag: member="zgehrd.cpp::magma_zgehrd" ref="ga0502ce6ce7227a1521bd68a2685bcbe6" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *dT, magma_int_t *info)" -->
+<a class="anchor" id="ga59b3208e254f07a7ca558a04688491d3"></a><!-- doxytag: member="zgehrd.cpp::magma_zgehrd" ref="ga59b3208e254f07a7ca558a04688491d3" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex_ptr dT, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -95,7 +95,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -709,7 +709,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaced47c1e885e8f7affc0d33284caba19"></a><!-- doxytag: member="zunghr.cpp::magma_zunghr" ref="gaced47c1e885e8f7affc0d33284caba19" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)" -->
+<a class="anchor" id="gab299c0844d352d94c5f1070cf358db63"></a><!-- doxytag: member="zunghr.cpp::magma_zunghr" ref="gab299c0844d352d94c5f1070cf358db63" args="(magma_int_t n, magma_int_t ilo, magma_int_t ihi, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dT, magma_int_t nb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -752,7 +752,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
@@ -1140,7 +1140,7 @@ Univ. of Colorado Denver </dd>
 NAG Ltd.</dd></dl>
 <dl class="date"><dt><b>Date:</b></dt><dd></dd>
 <dd>
-September 2014</dd></dl>
+November 2014</dd></dl>
 <dl class="user"><dt><b>Further Details: </b></dt><dd><div class="fragment"><pre class="fragment">
 
   The algorithm used in this program is basically backward (forward)
@@ -1155,7 +1155,7 @@ September 2014</dd></dl>
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

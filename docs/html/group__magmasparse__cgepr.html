@@ -24,9 +24,160 @@
 <small>
 [<a class="el" href="group__sparse__gepr.html">general preconditioner</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
+<tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cgepr.html#ga8453a4e49d77e16947a57138377388e0">magma_ccumilusetup</a> (magma_c_sparse_matrix A, magma_c_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Prepares the ILU preconditioner via the cuSPARSE.  <a href="#ga8453a4e49d77e16947a57138377388e0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cgepr.html#ga61a628db446f4ecc2639c299fb1d3568">magma_capplycumilu_l</a> (magma_c_vector b, magma_c_vector *x, magma_c_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the left triangular solves using the ILU preconditioner.  <a href="#ga61a628db446f4ecc2639c299fb1d3568"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cgepr.html#ga38d07657bd957433bc7735a2e7868c6f">magma_capplycumilu_r</a> (magma_c_vector b, magma_c_vector *x, magma_c_preconditioner *precond, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs the right triangular solves using the ILU preconditioner.  <a href="#ga38d07657bd957433bc7735a2e7868c6f"></a><br/></td></tr>
 </table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ga61a628db446f4ecc2639c299fb1d3568"></a><!-- doxytag: member="ccumilu.cpp::magma_capplycumilu_l" ref="ga61a628db446f4ecc2639c299fb1d3568" args="(magma_c_vector b, magma_c_vector *x, magma_c_preconditioner *precond, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_capplycumilu_l </td>
+          <td>(</td>
+          <td class="paramtype">magma_c_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<div class="memdoc">
+
+<p>Performs the left triangular solves using the ILU preconditioner. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_c_vector RHS</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_c_vector* vector to precondition</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_c_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga38d07657bd957433bc7735a2e7868c6f"></a><!-- doxytag: member="ccumilu.cpp::magma_capplycumilu_r" ref="ga38d07657bd957433bc7735a2e7868c6f" args="(magma_c_vector b, magma_c_vector *x, magma_c_preconditioner *precond, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_capplycumilu_r </td>
+          <td>(</td>
+          <td class="paramtype">magma_c_vector&nbsp;</td>
+          <td class="paramname"> <em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_vector *&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Performs the right triangular solves using the ILU preconditioner. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>b</em>&nbsp;</td><td>magma_c_vector RHS</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>magma_c_vector* vector to precondition</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_c_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga8453a4e49d77e16947a57138377388e0"></a><!-- doxytag: member="ccumilu.cpp::magma_ccumilusetup" ref="ga8453a4e49d77e16947a57138377388e0" args="(magma_c_sparse_matrix A, magma_c_preconditioner *precond, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_ccumilusetup </td>
+          <td>(</td>
+          <td class="paramtype">magma_c_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_preconditioner *&nbsp;</td>
+          <td class="paramname"> <em>precond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Prepares the ILU preconditioner via the cuSPARSE. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_c_sparse_matrix input matrix A</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>precond</em>&nbsp;</td><td>magma_c_preconditioner* preconditioner parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

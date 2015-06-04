@@ -27,8 +27,8 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgeqp3__comp.html#ga9c8139a19d1ef35060756649d7db3e80">magma_dgeqp3</a> (magma_int_t m, magma_int_t n, double *A, magma_int_t lda, magma_int_t *jpvt, double *tau, double *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#ga9c8139a19d1ef35060756649d7db3e80"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgeqp3__comp.html#ga21635f15ea48fc221c0b8e69ce796aec">magma_dgeqp3_gpu</a> (magma_int_t m, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *jpvt, double *tau, double *dwork, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#ga21635f15ea48fc221c0b8e69ce796aec"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dgeqp3__comp.html#gae205453944b884d91ddb7cd1dc11f172">magma_dgeqp3_gpu</a> (magma_int_t m, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *jpvt, double *tau, magmaDouble_ptr dwork, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DGEQP3 computes a QR factorization with column pivoting of a matrix A: A*P = Q*R using Level 3 BLAS.  <a href="#gae205453944b884d91ddb7cd1dc11f172"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga9c8139a19d1ef35060756649d7db3e80"></a><!-- doxytag: member="dgeqp3.cpp::magma_dgeqp3" ref="ga9c8139a19d1ef35060756649d7db3e80" args="(magma_int_t m, magma_int_t n, double *A, magma_int_t lda, magma_int_t *jpvt, double *tau, double *work, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
@@ -134,7 +134,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga21635f15ea48fc221c0b8e69ce796aec"></a><!-- doxytag: member="dgeqp3_gpu.cpp::magma_dgeqp3_gpu" ref="ga21635f15ea48fc221c0b8e69ce796aec" args="(magma_int_t m, magma_int_t n, double *dA, magma_int_t ldda, magma_int_t *jpvt, double *tau, double *dwork, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
+<a class="anchor" id="gae205453944b884d91ddb7cd1dc11f172"></a><!-- doxytag: member="dgeqp3_gpu.cpp::magma_dgeqp3_gpu" ref="gae205453944b884d91ddb7cd1dc11f172" args="(magma_int_t m, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magma_int_t *jpvt, double *tau, magmaDouble_ptr dwork, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -153,7 +153,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -177,7 +177,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -238,7 +238,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

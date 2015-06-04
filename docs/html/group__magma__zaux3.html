@@ -22,13 +22,13 @@
 <div class="contents">
 <h1>double-complex precision</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zaux3.html#ga6f8c087aa584d7d319bb753106466690">magma_zlarfb_gpu</a> (magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, const magmaDoubleComplex *dV, magma_int_t ldv, const magmaDoubleComplex *dT, magma_int_t ldt, magmaDoubleComplex *dC, magma_int_t ldc, magmaDoubleComplex *dwork, magma_int_t ldwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLARFB applies a complex block reflector H or its transpose H^H to a COMPLEX_16 m by n matrix C, from the left.  <a href="#ga6f8c087aa584d7d319bb753106466690"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zaux3.html#ga511c0d6e2183ca41e49e1ac34a267993">magma_zlarfb_gpu_gemm</a> (magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, const magmaDoubleComplex *dV, magma_int_t ldv, const magmaDoubleComplex *dT, magma_int_t ldt, magmaDoubleComplex *dC, magma_int_t ldc, magmaDoubleComplex *dwork, magma_int_t ldwork, magmaDoubleComplex *dworkvt, magma_int_t ldworkvt)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLARFB applies a complex block reflector H or its transpose H^H to a COMPLEX_16 m by n matrix C, from the left.  <a href="#ga511c0d6e2183ca41e49e1ac34a267993"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zaux3.html#ga6dcbd96bcac68adff0deffe21ef00338">magma_zlarfb_gpu</a> (magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_const_ptr dV, magma_int_t lddv, magmaDoubleComplex_const_ptr dT, magma_int_t lddt, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex_ptr dwork, magma_int_t ldwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLARFB applies a complex block reflector H or its transpose H^H to a COMPLEX_16 m by n matrix C, from the left.  <a href="#ga6dcbd96bcac68adff0deffe21ef00338"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zaux3.html#gaea5c7378ed2d271ffe4aa04b084878c3">magma_zlarfb_gpu_gemm</a> (magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_const_ptr dV, magma_int_t lddv, magmaDoubleComplex_const_ptr dT, magma_int_t lddt, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex_ptr dwork, magma_int_t ldwork, magmaDoubleComplex_ptr dworkvt, magma_int_t ldworkvt)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLARFB applies a complex block reflector H or its transpose H^H to a COMPLEX_16 m by n matrix C, from the left.  <a href="#gaea5c7378ed2d271ffe4aa04b084878c3"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga6f8c087aa584d7d319bb753106466690"></a><!-- doxytag: member="zlarfb_gpu.cpp::magma_zlarfb_gpu" ref="ga6f8c087aa584d7d319bb753106466690" args="(magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, const magmaDoubleComplex *dV, magma_int_t ldv, const magmaDoubleComplex *dT, magma_int_t ldt, magmaDoubleComplex *dC, magma_int_t ldc, magmaDoubleComplex *dwork, magma_int_t ldwork)" -->
+<a class="anchor" id="ga6dcbd96bcac68adff0deffe21ef00338"></a><!-- doxytag: member="zlarfb_gpu.cpp::magma_zlarfb_gpu" ref="ga6dcbd96bcac68adff0deffe21ef00338" args="(magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_const_ptr dV, magma_int_t lddv, magmaDoubleComplex_const_ptr dT, magma_int_t lddt, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex_ptr dwork, magma_int_t ldwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -77,43 +77,43 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldv</em>, </td>
+          <td class="paramname"> <em>lddv</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldt</em>, </td>
+          <td class="paramname"> <em>lddt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldc</em>, </td>
+          <td class="paramname"> <em>lddc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -161,12 +161,12 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix C.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix C.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>INTEGER The order of the matrix T (= the number of elementary reflectors whose product defines the block reflector).</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dV</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDV,K) if STOREV = MagmaColumnwise (LDV,M) if STOREV = MagmaRowwise and SIDE = MagmaLeft (LDV,N) if STOREV = MagmaRowwise and SIDE = MagmaRight The matrix V. See further details.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldv</em>&nbsp;</td><td>INTEGER The leading dimension of the array V. If STOREV = MagmaColumnwise and SIDE = MagmaLeft, LDV &gt;= max(1,M); if STOREV = MagmaColumnwise and SIDE = MagmaRight, LDV &gt;= max(1,N); if STOREV = MagmaRowwise, LDV &gt;= K.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dT</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDT,K) The triangular k by k matrix T in the representation of the block reflector.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldt</em>&nbsp;</td><td>INTEGER The leading dimension of the array T. LDT &gt;= K.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dC</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDC,N) On entry, the m by n matrix C. On exit, C is overwritten by H*C, or H^H*C, or C*H, or C*H^H.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldc</em>&nbsp;</td><td>INTEGER The leading dimension of the array C. LDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dV</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDV,K) if STOREV = MagmaColumnwise (LDDV,M) if STOREV = MagmaRowwise and SIDE = MagmaLeft (LDDV,N) if STOREV = MagmaRowwise and SIDE = MagmaRight The matrix V. See further details.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddv</em>&nbsp;</td><td>INTEGER The leading dimension of the array V. If STOREV = MagmaColumnwise and SIDE = MagmaLeft, LDDV &gt;= max(1,M); if STOREV = MagmaColumnwise and SIDE = MagmaRight, LDDV &gt;= max(1,N); if STOREV = MagmaRowwise, LDDV &gt;= K.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dT</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDT,K) The triangular k by k matrix T in the representation of the block reflector.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddt</em>&nbsp;</td><td>INTEGER The leading dimension of the array T. LDDT &gt;= K.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dC</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDC,N) On entry, the m by n matrix C. On exit, C is overwritten by H*C, or H^H*C, or C*H, or C*H^H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddc</em>&nbsp;</td><td>INTEGER The leading dimension of the array C. LDA &gt;= max(1,M).</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) COMPLEX_16 array, dimension (LDWORK,K)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldwork</em>&nbsp;</td><td>INTEGER The leading dimension of the array WORK. If SIDE = MagmaLeft, LDWORK &gt;= max(1,N); if SIDE = MagmaRight, LDWORK &gt;= max(1,M);</td></tr>
   </table>
@@ -180,7 +180,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga511c0d6e2183ca41e49e1ac34a267993"></a><!-- doxytag: member="zlarfb_gpu_gemm.cpp::magma_zlarfb_gpu_gemm" ref="ga511c0d6e2183ca41e49e1ac34a267993" args="(magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, const magmaDoubleComplex *dV, magma_int_t ldv, const magmaDoubleComplex *dT, magma_int_t ldt, magmaDoubleComplex *dC, magma_int_t ldc, magmaDoubleComplex *dwork, magma_int_t ldwork, magmaDoubleComplex *dworkvt, magma_int_t ldworkvt)" -->
+<a class="anchor" id="gaea5c7378ed2d271ffe4aa04b084878c3"></a><!-- doxytag: member="zlarfb_gpu_gemm.cpp::magma_zlarfb_gpu_gemm" ref="gaea5c7378ed2d271ffe4aa04b084878c3" args="(magma_side_t side, magma_trans_t trans, magma_direct_t direct, magma_storev_t storev, magma_int_t m, magma_int_t n, magma_int_t k, magmaDoubleComplex_const_ptr dV, magma_int_t lddv, magmaDoubleComplex_const_ptr dT, magma_int_t lddt, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex_ptr dwork, magma_int_t ldwork, magmaDoubleComplex_ptr dworkvt, magma_int_t ldworkvt)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -229,43 +229,43 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldv</em>, </td>
+          <td class="paramname"> <em>lddv</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldt</em>, </td>
+          <td class="paramname"> <em>lddt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldc</em>, </td>
+          <td class="paramname"> <em>lddc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -277,7 +277,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dworkvt</em>, </td>
         </tr>
         <tr>
@@ -326,12 +326,12 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix C.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix C.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>INTEGER The order of the matrix T (= the number of elementary reflectors whose product defines the block reflector).</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dV</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDV,K) if STOREV = MagmaColumnwise (LDV,M) if STOREV = MagmaRowwise and SIDE = MagmaLeft (LDV,N) if STOREV = MagmaRowwise and SIDE = MagmaRight The matrix V. See further details.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldv</em>&nbsp;</td><td>INTEGER The leading dimension of the array V. If STOREV = MagmaColumnwise and SIDE = MagmaLeft, LDV &gt;= max(1,M); if STOREV = MagmaColumnwise and SIDE = MagmaRight, LDV &gt;= max(1,N); if STOREV = MagmaRowwise, LDV &gt;= K.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dT</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDT,K) The triangular k by k matrix T in the representation of the block reflector.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldt</em>&nbsp;</td><td>INTEGER The leading dimension of the array T. LDT &gt;= K.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dC</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDC,N) On entry, the m by n matrix C. On exit, C is overwritten by H*C, or H^H*C, or C*H, or C*H^H.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldc</em>&nbsp;</td><td>INTEGER The leading dimension of the array C. LDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dV</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDV,K) if STOREV = MagmaColumnwise (LDDV,M) if STOREV = MagmaRowwise and SIDE = MagmaLeft (LDDV,N) if STOREV = MagmaRowwise and SIDE = MagmaRight The matrix V. See further details.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddv</em>&nbsp;</td><td>INTEGER The leading dimension of the array V. If STOREV = MagmaColumnwise and SIDE = MagmaLeft, LDDV &gt;= max(1,M); if STOREV = MagmaColumnwise and SIDE = MagmaRight, LDDV &gt;= max(1,N); if STOREV = MagmaRowwise, LDDV &gt;= K.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dT</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDT,K) The triangular k by k matrix T in the representation of the block reflector.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddt</em>&nbsp;</td><td>INTEGER The leading dimension of the array T. LDDT &gt;= K.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dC</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDC,N) On entry, the m by n matrix C. On exit, C is overwritten by H*C, or H^H*C, or C*H, or C*H^H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddc</em>&nbsp;</td><td>INTEGER The leading dimension of the array C. LDA &gt;= max(1,M).</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) COMPLEX_16 array, dimension (LDWORK,K)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldwork</em>&nbsp;</td><td>INTEGER The leading dimension of the array WORK. If SIDE = MagmaLeft, LDWORK &gt;= max(1,N); if SIDE = MagmaRight, LDWORK &gt;= max(1,M);</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>dworkvt</em>&nbsp;</td><td>(workspace) COMPLEX_16 array, dimension (LDWORKT,K)</td></tr>
@@ -348,7 +348,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

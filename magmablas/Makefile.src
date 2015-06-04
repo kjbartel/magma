@@ -1,24 +1,26 @@
 # Automatically generated from Makefile ZHDR and ZSRC
 CHDR = \
 	commonblas_c.h \
-	ctrtri.h
+	ctrtri.h \
+	cgerbt.h
 
 DHDR = \
 	commonblas_d.h \
-	dtrtri.h
+	dtrtri.h \
+	dgerbt.h
 
 SHDR = \
 	commonblas_s.h \
-	strtri.h
+	strtri.h \
+	sgerbt.h
 
 CSRC = \
 	cgeadd.cu \
-	cgeadd_batched.cu \
 	cgemm_reduce.cu \
 	cgemv_conjv.cu \
 	chemv.cu \
 	clacpy.cu \
-	clacpy_batched.cu \
+	clacpy_cnjg.cu \
 	clange.cu \
 	clanhe.cu \
 	claqps2_gpu.cu \
@@ -31,6 +33,8 @@ CSRC = \
 	clarfgx-v2.cu \
 	clascl.cu \
 	clascl2.cu \
+	clascl_2x2.cu \
+	clascl_diag.cu \
 	claset.cu \
 	claset_band.cu \
 	claswp.cu \
@@ -49,6 +53,8 @@ CSRC = \
 	ctrtri_diag.cu \
 	ctrtri_lower.cu \
 	ctrtri_upper.cu \
+	cgerbt_kernels.cu \
+	cgerbt.cu \
 	cgemm_fermi.cu \
 	cgemv_fermi.cu \
 	cbcyclic.cu \
@@ -60,20 +66,35 @@ CSRC = \
 	chemm_mgpu_spec.cpp \
 	cher2k_mgpu.cpp \
 	cher2k_mgpu_spec.cpp \
+	cherk_mgpu.cpp \
 	cgetf2.cu \
 	cgeqr2.cu \
 	cgeqr2x_gpu-v4.cu \
-	cpotf2.cu
+	cpotf2.cu \
+	cgeadd_batched.cu \
+	cgemv_batched.cu \
+	cgemm_batched.cu \
+	cgemm_fermi_batched.cu \
+	cgemm_fermi_batched_k32.cu \
+	cgerbt_func_batched.cu \
+	cgetf2_kernels.cu \
+	cherk_batched.cu \
+	cherk_fermi_batched.cu \
+	cherk_fermi_batched_k32.cu \
+	claswp_batched.cu \
+	cpotf2_kernels.cu \
+	cset_pointer.cu \
+	ctrsm_batched.cu \
+	ctrtri_diag_batched.cu
 
 DSRC = \
 	dsaxpycp.cu \
 	dgeadd.cu \
-	dgeadd_batched.cu \
 	dgemm_reduce.cu \
 	dgemv_conjv.cu \
 	dsymv.cu \
 	dlacpy.cu \
-	dlacpy_batched.cu \
+	dlacpy_cnjg.cu \
 	dlag2s.cu \
 	slag2d.cu \
 	dlange.cu \
@@ -88,6 +109,8 @@ DSRC = \
 	dlarfgx-v2.cu \
 	dlascl.cu \
 	dlascl2.cu \
+	dlascl_2x2.cu \
+	dlascl_diag.cu \
 	dlaset.cu \
 	dlaset_band.cu \
 	dlaswp.cu \
@@ -108,6 +131,8 @@ DSRC = \
 	dtrtri_diag.cu \
 	dtrtri_lower.cu \
 	dtrtri_upper.cu \
+	dgerbt_kernels.cu \
+	dgerbt.cu \
 	dgemm_fermi.cu \
 	dgemv_fermi.cu \
 	dbcyclic.cu \
@@ -119,19 +144,34 @@ DSRC = \
 	dsymm_mgpu_spec.cpp \
 	dsyr2k_mgpu.cpp \
 	dsyr2k_mgpu_spec.cpp \
+	dsyrk_mgpu.cpp \
 	dgetf2.cu \
 	dgeqr2.cu \
 	dgeqr2x_gpu-v4.cu \
-	dpotf2.cu
+	dpotf2.cu \
+	dgeadd_batched.cu \
+	dgemv_batched.cu \
+	dgemm_batched.cu \
+	dgemm_fermi_batched.cu \
+	dgemm_fermi_batched_k32.cu \
+	dgerbt_func_batched.cu \
+	dgetf2_kernels.cu \
+	dsyrk_batched.cu \
+	dsyrk_fermi_batched.cu \
+	dsyrk_fermi_batched_k32.cu \
+	dlaswp_batched.cu \
+	dpotf2_kernels.cu \
+	dset_pointer.cu \
+	dtrsm_batched.cu \
+	dtrtri_diag_batched.cu
 
 SSRC = \
 	sgeadd.cu \
-	sgeadd_batched.cu \
 	sgemm_reduce.cu \
 	sgemv_conjv.cu \
 	ssymv.cu \
 	slacpy.cu \
-	slacpy_batched.cu \
+	slacpy_cnjg.cu \
 	slange.cu \
 	slansy.cu \
 	slaqps2_gpu.cu \
@@ -144,6 +184,8 @@ SSRC = \
 	slarfgx-v2.cu \
 	slascl.cu \
 	slascl2.cu \
+	slascl_2x2.cu \
+	slascl_diag.cu \
 	slaset.cu \
 	slaset_band.cu \
 	slaswp.cu \
@@ -161,6 +203,8 @@ SSRC = \
 	strtri_diag.cu \
 	strtri_lower.cu \
 	strtri_upper.cu \
+	sgerbt_kernels.cu \
+	sgerbt.cu \
 	sgemm_tesla.cu \
 	sgemm_tesla_a_0.cu \
 	sgemm_tesla_ab_0.cu \
@@ -181,7 +225,23 @@ SSRC = \
 	ssymm_mgpu_spec.cpp \
 	ssyr2k_mgpu.cpp \
 	ssyr2k_mgpu_spec.cpp \
+	ssyrk_mgpu.cpp \
 	sgetf2.cu \
 	sgeqr2.cu \
 	sgeqr2x_gpu-v4.cu \
-	spotf2.cu
+	spotf2.cu \
+	sgeadd_batched.cu \
+	sgemv_batched.cu \
+	sgemm_batched.cu \
+	sgemm_fermi_batched.cu \
+	sgemm_fermi_batched_k32.cu \
+	sgerbt_func_batched.cu \
+	sgetf2_kernels.cu \
+	ssyrk_batched.cu \
+	ssyrk_fermi_batched.cu \
+	ssyrk_fermi_batched_k32.cu \
+	slaswp_batched.cu \
+	spotf2_kernels.cu \
+	sset_pointer.cu \
+	strsm_batched.cu \
+	strtri_diag_batched.cu

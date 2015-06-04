@@ -38,21 +38,21 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Perform triangular matrix-vector product.  <a href="#ga1d889e133eeb2a1f260bd674a4acf69c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gac2620fe10a2000913639b783c10a17c2">magma_ztrsv</a> (magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag, magma_int_t n, const magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dx, magma_int_t incx)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solve triangular matrix-vector system (one right-hand side).  <a href="#gac2620fe10a2000913639b783c10a17c2"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga4619a97e7a5c6ebced9187f4396be3f3">magmablas_zgemv_batched</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex **A_array, magma_int_t lda, magmaDoubleComplex **x_array, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex **y_array, magma_int_t incy, magma_int_t batchCount)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = A_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1].  <a href="#ga4619a97e7a5c6ebced9187f4396be3f3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga10ad320b4caee8417b9b602ef5a077ff">magmablas_zgemv_conjv</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEMV_CONJV performs the matrix-vector operation.  <a href="#ga10ad320b4caee8417b9b602ef5a077ff"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga7ff7a6dfcc65e99bcc45b497a9d74c3f">magmablas_zhemv_work</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy, magmaDoubleComplex *dwork, magma_int_t lwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv_work performs the matrix-vector operation:  <a href="#ga7ff7a6dfcc65e99bcc45b497a9d74c3f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gaaaa2807dcf946ad4878f4a42a8e3c0b8">magmablas_zhemv</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv performs the matrix-vector operation:  <a href="#gaaaa2807dcf946ad4878f4a42a8e3c0b8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gaa6140d2ec60a23f34a95b2c7c4792651">magmablas_zhemv_mgpu_offset</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex **A, magma_int_t lda, magmaDoubleComplex **x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex **y, magma_int_t incy, magmaDoubleComplex **work, magma_int_t lwork, magma_int_t num_gpus, magma_int_t nb, magma_int_t offset, magma_queue_t stream[][10])</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv performs the matrix-vector operation:  <a href="#gaa6140d2ec60a23f34a95b2c7c4792651"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga97722bc50456f67b43fcf6a04c7997fa">magmablas_zswapblk</a> (magma_order_t order, magma_int_t n, magmaDoubleComplex *dA1T, magma_int_t lda1, magmaDoubleComplex *dA2T, magma_int_t lda2, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga9b42ae91573397e648898da5668f31be">magmablas_zsymv_work</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy, magmaDoubleComplex *dwork, magma_int_t lwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zsymv_work performs the matrix-vector operation:  <a href="#ga9b42ae91573397e648898da5668f31be"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga41a2af01e70080fa0d301da0a0fb70bf">magmablas_zsymv</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zsymv performs the matrix-vector operation:  <a href="#ga41a2af01e70080fa0d301da0a0fb70bf"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gafcecad1edb5269ef5d3b4852970d63c1">magmablas_zgemv_batched</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_ptr dA_array[], magma_int_t ldda, magmaDoubleComplex_ptr dx_array[], magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy_array[], magma_int_t incy, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = dA_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1].  <a href="#gafcecad1edb5269ef5d3b4852970d63c1"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gab68c67ea842d62cca44e485af90d8a0a">magmablas_zgemv_conjv</a> (magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEMV_CONJV performs the matrix-vector operation.  <a href="#gab68c67ea842d62cca44e485af90d8a0a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gaa9569d9b89aae46611c440710426faf9">magmablas_zhemv_work</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy, magmaDoubleComplex_ptr dwork, magma_int_t lwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv_work performs the matrix-vector operation:  <a href="#gaa9569d9b89aae46611c440710426faf9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga0ce3fe8b3e02051ac60bd58d6394971c">magmablas_zhemv</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv performs the matrix-vector operation:  <a href="#ga0ce3fe8b3e02051ac60bd58d6394971c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga3e6c5e32b30bdf33da8a664e41b2e85c">magmablas_zhemv_mgpu_offset</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_ptr dA[], magma_int_t ldda, magmaDoubleComplex_ptr dx[], magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy[], magma_int_t incy, magmaDoubleComplex_ptr dwork[], magma_int_t lwork, magma_int_t ngpu, magma_int_t nb, magma_int_t offset, magma_queue_t queues[][10])</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zhemv performs the matrix-vector operation:  <a href="#ga3e6c5e32b30bdf33da8a664e41b2e85c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga3408e7723b8f1d9167fd150d972a8186">magmablas_zswapblk</a> (magma_order_t order, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#gaf24c7f1e82674b1c756c020577cd0985">magmablas_zsymv_work</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy, magmaDoubleComplex_ptr dwork, magma_int_t lwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zsymv_work performs the matrix-vector operation:  <a href="#gaf24c7f1e82674b1c756c020577cd0985"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zblas2.html#ga95914cef544e492c9f7e1cc88c509cdb">magmablas_zsymv</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_zsymv performs the matrix-vector operation:  <a href="#ga95914cef544e492c9f7e1cc88c509cdb"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gabb6d87d4ae200e7468f1d710bb9aeec0"></a><!-- doxytag: member="blas_z.cpp::magma_zgemv" ref="gabb6d87d4ae200e7468f1d710bb9aeec0" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *dA, magma_int_t ldda, const magmaDoubleComplex *dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *dy, magma_int_t incy)" -->
@@ -739,7 +739,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga4619a97e7a5c6ebced9187f4396be3f3"></a><!-- doxytag: member="zgemv_batched.cu::magmablas_zgemv_batched" ref="ga4619a97e7a5c6ebced9187f4396be3f3" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex **A_array, magma_int_t lda, magmaDoubleComplex **x_array, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex **y_array, magma_int_t incy, magma_int_t batchCount)" -->
+<a class="anchor" id="gafcecad1edb5269ef5d3b4852970d63c1"></a><!-- doxytag: member="zgemv_batched.cu::magmablas_zgemv_batched" ref="gafcecad1edb5269ef5d3b4852970d63c1" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_ptr dA_array[], magma_int_t ldda, magmaDoubleComplex_ptr dx_array[], magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy_array[], magma_int_t incy, magma_int_t batchCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -770,20 +770,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>A_array</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>x_array</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx_array</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -800,8 +800,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>y_array</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy_array</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -824,7 +824,7 @@
 </div>
 <div class="memdoc">
 
-<p>This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = A_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1]. </p>
+<p>This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = dA_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1]. </p>
 <p>This is a batched version.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
@@ -832,21 +832,21 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER. On entry, M specifies the number of rows of the matrix opt(A).</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the number of columns of the matrix opt(A)</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A_array</em>&nbsp;</td><td>A = A_array[i] A: COMPLEX*16 array of dimension ( LDA, n ) on the GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA_array</em>&nbsp;</td><td>A = dA_array[i] A: COMPLEX*16 array of dimension ( LDA, n ) on the GPU.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. LDA specifies the leading dimension of A.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x_array</em>&nbsp;</td><td>x = x_array[i] x: COMPLEX*16 array of dimension. n if trans == MagmaNoTrans. m if trans == MagmaTrans or MagmaConjTrans.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. incx specifies the increment for the elments of x. incx must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>DOUBLE PRECISION. On entry, BETA specifies the scalar beta.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>y_array</em>&nbsp;</td><td>y = y_array[i]: On exit y = alpha opt(A) x + beta y. y: COMPLEX*16 array of dimension. m if trans == MagmaNoTrans. n if trans == MagmaTrans or MagmaConjTrans.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. incy specifies the increment for the elments of y. incy must not be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>INTEGER number of pointers contained in A_array, x_array and y_array. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>INTEGER number of pointers contained in dA_array, x_array and y_array. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga10ad320b4caee8417b9b602ef5a077ff"></a><!-- doxytag: member="zgemv_conjv.cu::magmablas_zgemv_conjv" ref="ga10ad320b4caee8417b9b602ef5a077ff" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)" -->
+<a class="anchor" id="gab68c67ea842d62cca44e485af90d8a0a"></a><!-- doxytag: member="zgemv_conjv.cu::magmablas_zgemv_conjv" ref="gab68c67ea842d62cca44e485af90d8a0a" args="(magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -871,20 +871,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -901,8 +901,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -927,12 +927,12 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER On entry, m specifies the number of rows of the matrix A.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER On entry, n specifies the number of columns of the matrix A</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX_16 On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX_16 array of dimension ( LDA, n ) on the GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array of dimension ( LDA, n ) on the GPU.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER LDA specifies the leading dimension of A.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX_16 array of dimension n</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX_16 array of dimension n</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>Specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>DOUBLE REAL On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>DOUBLE PRECISION array of dimension m</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>DOUBLE PRECISION array of dimension m</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>Specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -940,7 +940,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaaaa2807dcf946ad4878f4a42a8e3c0b8"></a><!-- doxytag: member="zhemv.cu::magmablas_zhemv" ref="gaaaa2807dcf946ad4878f4a42a8e3c0b8" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)" -->
+<a class="anchor" id="ga0ce3fe8b3e02051ac60bd58d6394971c"></a><!-- doxytag: member="zhemv.cu::magmablas_zhemv" ref="ga0ce3fe8b3e02051ac60bd58d6394971c" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -965,20 +965,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -995,8 +995,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1026,12 +1026,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the Hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the Hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the Hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the Hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>COMPLEX*16. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -1039,7 +1039,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaa6140d2ec60a23f34a95b2c7c4792651"></a><!-- doxytag: member="zhemv_fermi_mgpu.cu::magmablas_zhemv_mgpu_offset" ref="gaa6140d2ec60a23f34a95b2c7c4792651" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex **A, magma_int_t lda, magmaDoubleComplex **x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex **y, magma_int_t incy, magmaDoubleComplex **work, magma_int_t lwork, magma_int_t num_gpus, magma_int_t nb, magma_int_t offset, magma_queue_t stream[][10])" -->
+<a class="anchor" id="ga3e6c5e32b30bdf33da8a664e41b2e85c"></a><!-- doxytag: member="zhemv_fermi_mgpu.cu::magmablas_zhemv_mgpu_offset" ref="ga3e6c5e32b30bdf33da8a664e41b2e85c" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_ptr dA[], magma_int_t ldda, magmaDoubleComplex_ptr dx[], magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy[], magma_int_t incy, magmaDoubleComplex_ptr dwork[], magma_int_t lwork, magma_int_t ngpu, magma_int_t nb, magma_int_t offset, magma_queue_t queues[][10])" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1064,20 +1064,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1094,8 +1094,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1106,8 +1106,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>work</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dwork</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1119,7 +1119,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1137,7 +1137,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][10]</td><td>&nbsp;</td>
+          <td class="paramname"> <em>queues</em>[][10]</td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1161,12 +1161,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>COMPLEX*16. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -1174,7 +1174,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga7ff7a6dfcc65e99bcc45b497a9d74c3f"></a><!-- doxytag: member="zhemv.cu::magmablas_zhemv_work" ref="ga7ff7a6dfcc65e99bcc45b497a9d74c3f" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy, magmaDoubleComplex *dwork, magma_int_t lwork)" -->
+<a class="anchor" id="gaa9569d9b89aae46611c440710426faf9"></a><!-- doxytag: member="zhemv.cu::magmablas_zhemv_work" ref="gaa9569d9b89aae46611c440710426faf9" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy, magmaDoubleComplex_ptr dwork, magma_int_t lwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1199,20 +1199,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1229,8 +1229,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1241,7 +1241,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -1272,15 +1272,15 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the Hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the Hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the Hermitian matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the Hermitian matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>COMPLEX*16. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) COMPLEX*16 array on the GPU, dimension (MAX(1, LWORK)),</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER. The dimension of the array DWORK. LWORK &gt;= LDA * ceil( N / NB_X ), where NB_X = 64.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER. The dimension of the array DWORK. LWORK &gt;= LDDA * ceil( N / NB_X ), where NB_X = 64.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1290,7 +1290,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga97722bc50456f67b43fcf6a04c7997fa"></a><!-- doxytag: member="zswapblk.cu::magmablas_zswapblk" ref="ga97722bc50456f67b43fcf6a04c7997fa" args="(magma_order_t order, magma_int_t n, magmaDoubleComplex *dA1T, magma_int_t lda1, magmaDoubleComplex *dA2T, magma_int_t lda2, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)" -->
+<a class="anchor" id="ga3408e7723b8f1d9167fd150d972a8186"></a><!-- doxytag: member="zswapblk.cu::magmablas_zswapblk" ref="ga3408e7723b8f1d9167fd150d972a8186" args="(magma_order_t order, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1309,26 +1309,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>dA1T</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda1</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>dA2T</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda2</em>, </td>
+          <td class="paramname"> <em>lddb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1372,7 +1372,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga41a2af01e70080fa0d301da0a0fb70bf"></a><!-- doxytag: member="zsymv.cu::magmablas_zsymv" ref="ga41a2af01e70080fa0d301da0a0fb70bf" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy)" -->
+<a class="anchor" id="ga95914cef544e492c9f7e1cc88c509cdb"></a><!-- doxytag: member="zsymv.cu::magmablas_zsymv" ref="ga95914cef544e492c9f7e1cc88c509cdb" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1397,20 +1397,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1427,8 +1427,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1458,12 +1458,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>COMPLEX*16. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -1471,7 +1471,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9b42ae91573397e648898da5668f31be"></a><!-- doxytag: member="zsymv.cu::magmablas_zsymv_work" ref="ga9b42ae91573397e648898da5668f31be" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, const magmaDoubleComplex *A, magma_int_t lda, const magmaDoubleComplex *x, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex *y, magma_int_t incy, magmaDoubleComplex *dwork, magma_int_t lwork)" -->
+<a class="anchor" id="gaf24c7f1e82674b1c756c020577cd0985"></a><!-- doxytag: member="zsymv.cu::magmablas_zsymv_work" ref="gaf24c7f1e82674b1c756c020577cd0985" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex_const_ptr dA, magma_int_t ldda, magmaDoubleComplex_const_ptr dx, magma_int_t incx, magmaDoubleComplex beta, magmaDoubleComplex_ptr dy, magma_int_t incy, magmaDoubleComplex_ptr dwork, magma_int_t lwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1496,20 +1496,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1526,8 +1526,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1538,7 +1538,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -1569,12 +1569,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>COMPLEX*16. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX*16 array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>COMPLEX*16. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>COMPLEX*16 array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) COMPLEX*16 array on the GPU, dimension (MAX(1, LWORK)),</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER. The dimension of the array DWORK. LWORK &gt;= LDA * ceil( N / NB_X ), where NB_X = 64.</td></tr>
@@ -1588,7 +1588,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

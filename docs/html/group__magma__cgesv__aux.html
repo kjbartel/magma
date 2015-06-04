@@ -29,13 +29,13 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGETF2_NOPIV computes an LU factorization of a general m-by-n matrix A without pivoting.  <a href="#ga1df41454f3437f0148383b378b681a5d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__aux.html#ga907da833ebb11afba41365eb37291077">magma_ctrtri</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloatComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CTRTRI computes the inverse of a real upper or lower triangular matrix A.  <a href="#ga907da833ebb11afba41365eb37291077"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__aux.html#ga91076241be63bf57017292fc65cd1555">magma_ctrtri_gpu</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CTRTRI computes the inverse of a real upper or lower triangular matrix dA.  <a href="#ga91076241be63bf57017292fc65cd1555"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__aux.html#ga56dbcac3e07c332e4ee8ecf587693846">magma_cgetf2_gpu</a> (magma_int_t m, magma_int_t n, magmaFloatComplex *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGETF2 computes an LU factorization of a general m-by-n matrix A using partial pivoting with row interchanges.  <a href="#ga56dbcac3e07c332e4ee8ecf587693846"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__aux.html#ga9f0fb1b3da0298967547dd2274f53061">magma_ctrtri_gpu</a> (magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CTRTRI computes the inverse of a real upper or lower triangular matrix dA.  <a href="#ga9f0fb1b3da0298967547dd2274f53061"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cgesv__aux.html#ga8f68605e484ebf2ce76f3d96ac1faf17">magma_cgetf2_gpu</a> (magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CGETF2 computes an LU factorization of a general m-by-n matrix A using partial pivoting with row interchanges.  <a href="#ga8f68605e484ebf2ce76f3d96ac1faf17"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga56dbcac3e07c332e4ee8ecf587693846"></a><!-- doxytag: member="cgetf2.cu::magma_cgetf2_gpu" ref="ga56dbcac3e07c332e4ee8ecf587693846" args="(magma_int_t m, magma_int_t n, magmaFloatComplex *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)" -->
+<a class="anchor" id="ga8f68605e484ebf2ce76f3d96ac1faf17"></a><!-- doxytag: member="cgetf2.cu::magma_cgetf2_gpu" ref="ga8f68605e484ebf2ce76f3d96ac1faf17" args="(magma_int_t m, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -54,14 +54,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -253,7 +253,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga91076241be63bf57017292fc65cd1555"></a><!-- doxytag: member="ctrtri_gpu.cpp::magma_ctrtri_gpu" ref="ga91076241be63bf57017292fc65cd1555" args="(magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga9f0fb1b3da0298967547dd2274f53061"></a><!-- doxytag: member="ctrtri_gpu.cpp::magma_ctrtri_gpu" ref="ga9f0fb1b3da0298967547dd2274f53061" args="(magma_uplo_t uplo, magma_diag_t diag, magma_int_t n, magmaFloatComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -278,7 +278,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -335,7 +335,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -25,13 +25,13 @@
 [<a class="el" href="group__magma__geev.html">Non-symmetric eigenvalue</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__driver.html#gad1c91fc92e942d78df4df5cea011bd99">magma_zgeev</a> (magma_vec_t jobvl, magma_vec_t jobvr, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *W, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the eigenvalues and, optionally, the left and/or right eigenvectors.  <a href="#gad1c91fc92e942d78df4df5cea011bd99"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__driver.html#gab62fcecc19de68e6ad9d9822b16006eb">magma_zgeev</a> (magma_vec_t jobvl, magma_vec_t jobvr, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *w, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the eigenvalues and, optionally, the left and/or right eigenvectors.  <a href="#gab62fcecc19de68e6ad9d9822b16006eb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeev__driver.html#ga8619c8e8766deb37b20b72ef997ce1cc">magma_zgeev_m</a> (magma_vec_t jobvl, magma_vec_t jobvr, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *w, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the eigenvalues and, optionally, the left and/or right eigenvectors.  <a href="#ga8619c8e8766deb37b20b72ef997ce1cc"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gad1c91fc92e942d78df4df5cea011bd99"></a><!-- doxytag: member="zgeev.cpp::magma_zgeev" ref="gad1c91fc92e942d78df4df5cea011bd99" args="(magma_vec_t jobvl, magma_vec_t jobvr, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *W, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
+<a class="anchor" id="gab62fcecc19de68e6ad9d9822b16006eb"></a><!-- doxytag: member="zgeev.cpp::magma_zgeev" ref="gab62fcecc19de68e6ad9d9822b16006eb" args="(magma_vec_t jobvl, magma_vec_t jobvr, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *w, magmaDoubleComplex *VL, magma_int_t ldvl, magmaDoubleComplex *VR, magma_int_t ldvr, magmaDoubleComplex *work, magma_int_t lwork, double *rwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -69,7 +69,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>W</em>, </td>
+          <td class="paramname"> <em>w</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -148,20 +148,20 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDA,N) On entry, the N-by-N matrix A. On exit, A has been overwritten.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>W</em>&nbsp;</td><td>COMPLEX_16 array, dimension (N) W contains the computed eigenvalues.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>w</em>&nbsp;</td><td>COMPLEX_16 array, dimension (N) w contains the computed eigenvalues.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>VL</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDVL,N) If JOBVL = MagmaVec, the left eigenvectors u(j) are stored one after another in the columns of VL, in the same order as their eigenvalues. If JOBVL = MagmaNoVec, VL is not referenced. u(j) = VL(:,j), the j-th column of VL.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldvl</em>&nbsp;</td><td>INTEGER The leading dimension of the array VL. LDVL &gt;= 1; if JOBVL = MagmaVec, LDVL &gt;= N.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>VR</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDVR,N) If JOBVR = MagmaVec, the right eigenvectors v(j) are stored one after another in the columns of VR, in the same order as their eigenvalues. If JOBVR = MagmaNoVec, VR is not referenced. v(j) = VR(:,j), the j-th column of VR.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldvr</em>&nbsp;</td><td>INTEGER The leading dimension of the array VR. LDVR &gt;= 1; if JOBVR = MagmaVec, LDVR &gt;= N.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>work</em>&nbsp;</td><td>(workspace) COMPLEX_16 array, dimension (MAX(1,LWORK)) On exit, if INFO = 0, WORK[0] returns the optimal LWORK.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER The dimension of the array WORK. LWORK &gt;= (1+nb)*N. <br/>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER The dimension of the array WORK. LWORK &gt;= (1+nb)*N. For optimal performance, LWORK &gt;= (1+2*nb)*N. <br/>
  If LWORK = -1, then a workspace query is assumed; the routine only calculates the optimal size of the WORK array, returns this value as the first entry of the WORK array, and no error message related to LWORK is issued by XERBLA.</td></tr>
     <tr><td valign="top"></td><td valign="top"><em>rwork</em>&nbsp;</td><td>(workspace) DOUBLE PRECISION array, dimension (2*N)</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
 <ul>
 <li>= 0: successful exit</li>
 <li>&lt; 0: if INFO = -i, the i-th argument had an illegal value.</li>
-<li>&gt; 0: if INFO = i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed; elements and i+1:N of W contain eigenvalues which have converged. </li>
+<li>&gt; 0: if INFO = i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed; elements and i+1:N of w contain eigenvalues which have converged. </li>
 </ul>
 </td></tr>
   </table>
@@ -310,7 +310,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

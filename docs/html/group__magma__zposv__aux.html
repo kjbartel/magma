@@ -24,12 +24,14 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga6eeff9fb7989b4a118c9e1ae7bd7c29e">magma_zlauum</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLAUUM computes the product U * U' or L' * L, where the triangular factor U or L is stored in the upper or lower triangular part of the array A.  <a href="#ga6eeff9fb7989b4a118c9e1ae7bd7c29e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga04973480a9db6efca3c7dd9b65ba1813">magma_zlauum_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLAUUM computes the product U * U' or L' * L, where the triangular factor U or L is stored in the upper or lower triangular part of the array dA.  <a href="#ga04973480a9db6efca3c7dd9b65ba1813"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga03fdfc7dfa7425debe417e42ec53c37e">magma_zpotf2_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">zpotf2 computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#ga03fdfc7dfa7425debe417e42ec53c37e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#gab60622fd1a62e473c9e6c2c03001aa58">magma_zlauum_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLAUUM computes the product U * U' or L' * L, where the triangular factor U or L is stored in the upper or lower triangular part of the array dA.  <a href="#gab60622fd1a62e473c9e6c2c03001aa58"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga8b11119e4b391bbc60fb22113f083a1f">magma_zpotf2_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">zpotf2 computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#ga8b11119e4b391bbc60fb22113f083a1f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga2c2fdbcd49652320ed343a5d9c8e38e3">zlacgv</a> (magma_int_t n, magmaDoubleComplex *x, magma_int_t incx)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLACGV conjugates a complex vector of length N.  <a href="#ga2c2fdbcd49652320ed343a5d9c8e38e3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__aux.html#ga381bf146b9c14557991abea45b314ba1">magma_zpotf2_tile_batched</a> (magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaDoubleComplex **dA_array, magma_int_t lda, magma_int_t *info_array, magma_int_t gbstep, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">zpotf2 computes the Cholesky factorization of a real symmetric positive definite matrix A.  <a href="#ga381bf146b9c14557991abea45b314ba1"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga6eeff9fb7989b4a118c9e1ae7bd7c29e"></a><!-- doxytag: member="zlauum.cpp::magma_zlauum" ref="ga6eeff9fb7989b4a118c9e1ae7bd7c29e" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
@@ -100,7 +102,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga04973480a9db6efca3c7dd9b65ba1813"></a><!-- doxytag: member="zlauum_gpu.cpp::magma_zlauum_gpu" ref="ga04973480a9db6efca3c7dd9b65ba1813" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="gab60622fd1a62e473c9e6c2c03001aa58"></a><!-- doxytag: member="zlauum_gpu.cpp::magma_zlauum_gpu" ref="gab60622fd1a62e473c9e6c2c03001aa58" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -119,7 +121,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -168,7 +170,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga03fdfc7dfa7425debe417e42ec53c37e"></a><!-- doxytag: member="zpotf2.cu::magma_zpotf2_gpu" ref="ga03fdfc7dfa7425debe417e42ec53c37e" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
+<a class="anchor" id="ga8b11119e4b391bbc60fb22113f083a1f"></a><!-- doxytag: member="zpotf2.cu::magma_zpotf2_gpu" ref="ga8b11119e4b391bbc60fb22113f083a1f" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -187,14 +189,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -212,7 +214,7 @@
 <div class="memdoc">
 
 <p>zpotf2 computes the Cholesky factorization of a real symmetric positive definite matrix A. </p>
-<p>The factorization has the form A = U' * U , if UPLO = MagmaUpper, or A = L * L', if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
+<p>The factorization has the form A = U**H * U, if UPLO = MagmaUpper, or A = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
 <p>This is the unblocked version of the algorithm, calling Level 2 BLAS.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
@@ -222,10 +224,99 @@
 <li>= MagmaLower: Lower triangular</li>
 </ul>
 </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0 and N &lt;= 1024. On CUDA architecture 1.x cards, N &lt;= 512.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDA,N) On entry, the symmetric matrix A. If UPLO = MagmaUpper, the leading n by n upper triangular part of A contains the upper triangular part of the matrix A, and the strictly lower triangular part of A is not referenced. If UPLO = MagmaLower, the leading n by n lower triangular part of A contains the lower triangular part of the matrix A, and the strictly upper triangular part of A is not referenced. <br/>
- On exit, if INFO = 0, the factor U or L from the Cholesky factorization A = U'*U or A = L*L'.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0 and N &lt;= 512.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDDA,N) On entry, the symmetric matrix A. If UPLO = MagmaUpper, the leading n by n upper triangular part of A contains the upper triangular part of the matrix A, and the strictly lower triangular part of A is not referenced. If UPLO = MagmaLower, the leading n by n lower triangular part of A contains the lower triangular part of the matrix A, and the strictly upper triangular part of A is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization A = U**H * U or A = L * L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -k, the k-th argument had an illegal value</li>
+<li>&gt; 0: if INFO = k, the leading minor of order k is not positive definite, and the factorization could not be completed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga381bf146b9c14557991abea45b314ba1"></a><!-- doxytag: member="zpotf2_kernels.cu::magma_zpotf2_tile_batched" ref="ga381bf146b9c14557991abea45b314ba1" args="(magma_uplo_t uplo, magma_int_t m, magma_int_t n, magmaDoubleComplex **dA_array, magma_int_t lda, magma_int_t *info_array, magma_int_t gbstep, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zpotf2_tile_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>gbstep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>zpotf2 computes the Cholesky factorization of a real symmetric positive definite matrix A. </p>
+<p>The factorization has the form A = U**H * U, if UPLO = MagmaUpper, or A = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
+<p>This is the unblocked version of the algorithm, calling Level 2 BLAS.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t Specifies whether the upper or lower triangular part of the symmetric matrix A is stored.</p>
+<ul>
+<li>= MagmaUpper: Upper triangular</li>
+<li>= MagmaLower: Lower triangular</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0 and N &lt;= 512.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array, dimension (LDDA,N) On entry, the symmetric matrix A. If UPLO = MagmaUpper, the leading n by n upper triangular part of A contains the upper triangular part of the matrix A, and the strictly lower triangular part of A is not referenced. If UPLO = MagmaLower, the leading n by n lower triangular part of A contains the lower triangular part of the matrix A, and the strictly upper triangular part of A is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization A = U**H * U or A = L * L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,N).</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
 <ul>
 <li>= 0: successful exit</li>
@@ -283,7 +374,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

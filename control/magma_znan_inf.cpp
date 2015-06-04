@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.5.0) --
+    -- MAGMA (version 1.6.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date September 2014
+       @date November 2014
 
        @author Mark Gates
        @precisions normal z -> s d c
@@ -114,8 +114,6 @@ magma_int_t magma_znan_inf(
         info = -2;
     else if ( n < 0 )
         info = -3;
-    else if ( magma_is_devptr( A ) == 1 )
-        info = -4;
     else if ( lda < max(1,m) )
         info = -5;
     
@@ -212,7 +210,7 @@ magma_int_t magma_znan_inf(
 extern "C"
 magma_int_t magma_znan_inf_gpu(
     magma_uplo_t uplo, magma_int_t m, magma_int_t n,
-    const magmaDoubleComplex *dA, magma_int_t ldda,
+    magmaDoubleComplex_const_ptr dA, magma_int_t ldda,
     magma_int_t *cnt_nan,
     magma_int_t *cnt_inf )
 {
@@ -223,8 +221,6 @@ magma_int_t magma_znan_inf_gpu(
         info = -2;
     else if ( n < 0 )
         info = -3;
-    else if ( magma_is_devptr( dA ) == 0 )
-        info = -4;
     else if ( ldda < max(1,m) )
         info = -5;
     

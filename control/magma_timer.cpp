@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.5.0) --
+    -- MAGMA (version 1.6.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       @date September 2014
+       @date November 2014
 */
 
 #include "common_magma.h"
@@ -30,11 +30,14 @@
    -- Emulate gettimeofday on Windows.
 */ 
 #if defined( _WIN32 ) || defined( _WIN64 )
+#ifndef _TIMEZONE_DEFINED
+#define _TIMEZONE_DEFINED
 struct timezone
 {
     int  tz_minuteswest; /* minutes W of Greenwich */
     int  tz_dsttime;     /* type of dst correction */
 };
+#endif
 
 extern "C"
 int gettimeofday(struct timeval* tv, struct timezone* tz)

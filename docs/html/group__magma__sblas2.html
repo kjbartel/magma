@@ -39,17 +39,19 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Perform triangular matrix-vector product.  <a href="#gaa153ac1a3ee1da277453e1cc2ff75a1a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gaff7a99b1c9383a3900c25d32ddc0d3c1">magma_strsv</a> (magma_uplo_t uplo, magma_trans_t trans, magma_diag_t diag, magma_int_t n, const float *dA, magma_int_t ldda, float *dx, magma_int_t incx)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solve triangular matrix-vector system (one right-hand side).  <a href="#gaff7a99b1c9383a3900c25d32ddc0d3c1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga4938d49975d89ed3408de3357142a9b5">magmablas_sgemv_conjv</a> (magma_int_t m, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGEMV_CONJV performs the matrix-vector operation.  <a href="#ga4938d49975d89ed3408de3357142a9b5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gacbe3e33fe80658b179ccaea84d108352">magmablas_sgemv_batched</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, float alpha, magmaFloat_ptr dA_array[], magma_int_t ldda, magmaFloat_ptr dx_array[], magma_int_t incx, float beta, magmaFloat_ptr dy_array[], magma_int_t incy, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = dA_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1].  <a href="#gacbe3e33fe80658b179ccaea84d108352"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga985d2c1a38865feb672aa944cefe211e">magmablas_sgemv_conjv</a> (magma_int_t m, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGEMV_CONJV performs the matrix-vector operation.  <a href="#ga985d2c1a38865feb672aa944cefe211e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga30914087a8638511c308bc6082da1ef4">magmablas_sgemv_tesla</a> (magma_trans_t trans, magma_int_t m, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes: 1) y = A x if trans == 'N' or 'n', alpha == 1, beta == 0, and incx == incy == 1 (using magmablas code) 2) y = alpha A^T x if trans == 'T' or 't', beta == 0, and incx == incy == 1 (using magmablas code) 3) y = alpha A^TRANS x + beta y otherwise, using CUBLAS.  <a href="#ga30914087a8638511c308bc6082da1ef4"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga9fae121fa32ee8cd396be57e003d2e8a">magmablas_sswapblk</a> (magma_order_t order, magma_int_t n, float *dA1T, magma_int_t lda1, float *dA2T, magma_int_t lda2, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gabd4f38924b980022433fbd6cfbe6eb6d">magmablas_ssymv_work</a> (magma_uplo_t uplo, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy, float *dwork, magma_int_t lwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv_work performs the matrix-vector operation:  <a href="#gabd4f38924b980022433fbd6cfbe6eb6d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gaac2b3023e64526273cad970f7cc291b7">magmablas_ssymv</a> (magma_uplo_t uplo, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv performs the matrix-vector operation:  <a href="#gaac2b3023e64526273cad970f7cc291b7"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga2f9953f967766f84f74566425d612029">magmablas_ssymv_mgpu_offset</a> (magma_uplo_t uplo, magma_int_t n, float alpha, float **A, magma_int_t lda, float **x, magma_int_t incx, float beta, float **y, magma_int_t incy, float **work, magma_int_t lwork, magma_int_t num_gpus, magma_int_t nb, magma_int_t offset, magma_queue_t stream[][10])</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv performs the matrix-vector operation:  <a href="#ga2f9953f967766f84f74566425d612029"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gae3a27bf2bb3cdd1ef58699d1c3459005">magmablas_sswapblk</a> (magma_order_t order, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gab8e92ae941cef2d6944533b53756e6a7">magmablas_ssymv_work</a> (magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy, magmaFloat_ptr dwork, magma_int_t lwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv_work performs the matrix-vector operation:  <a href="#gab8e92ae941cef2d6944533b53756e6a7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#gaba9cbcefff617e9f6ffd4404fbfa2e05">magmablas_ssymv</a> (magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv performs the matrix-vector operation:  <a href="#gaba9cbcefff617e9f6ffd4404fbfa2e05"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sblas2.html#ga2bbe4f88d6acd38ce398888cedc37dc4">magmablas_ssymv_mgpu_offset</a> (magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_ptr dA[], magma_int_t ldda, magmaFloat_ptr dx[], magma_int_t incx, float beta, magmaFloat_ptr dy[], magma_int_t incy, magmaFloat_ptr dwork[], magma_int_t lwork, magma_int_t ngpu, magma_int_t nb, magma_int_t offset, magma_queue_t queues[][10])</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">magmablas_ssymv performs the matrix-vector operation:  <a href="#ga2bbe4f88d6acd38ce398888cedc37dc4"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gac4609eb19600b2e52d17626e1f5b105b"></a><!-- doxytag: member="blas_s.cpp::magma_sgemv" ref="gac4609eb19600b2e52d17626e1f5b105b" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, float alpha, const float *dA, magma_int_t ldda, const float *dx, magma_int_t incx, float beta, float *dy, magma_int_t incy)" -->
@@ -651,7 +653,114 @@
 
 </div>
 </div>
-<a class="anchor" id="ga4938d49975d89ed3408de3357142a9b5"></a><!-- doxytag: member="sgemv_conjv.cu::magmablas_sgemv_conjv" ref="ga4938d49975d89ed3408de3357142a9b5" args="(magma_int_t m, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy)" -->
+<a class="anchor" id="gacbe3e33fe80658b179ccaea84d108352"></a><!-- doxytag: member="sgemv_batched.cu::magmablas_sgemv_batched" ref="gacbe3e33fe80658b179ccaea84d108352" args="(magma_trans_t trans, magma_int_t m, magma_int_t n, float alpha, magmaFloat_ptr dA_array[], magma_int_t ldda, magmaFloat_ptr dx_array[], magma_int_t incx, float beta, magmaFloat_ptr dy_array[], magma_int_t incy, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void magmablas_sgemv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_trans_t&nbsp;</td>
+          <td class="paramname"> <em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx_array</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy_array</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>incy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>This routine computes Y = alpha opt(A) x + beta y, on the GPU, where A = dA_array[i],x = x_array[i] and y = y_array[i], i=[0,batchCount-1]. </p>
+<p>This is a batched version.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>CHARACTER*1. On entry, TRANS specifies the form of op( A ) to be used in the matrix multiplication as follows: = 'N': op( A ) = A. = 'T': op( A ) = A**T. = 'C': op( A ) = A**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER. On entry, M specifies the number of rows of the matrix opt(A).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the number of columns of the matrix opt(A)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>REAL. On entry, ALPHA specifies the scalar alpha.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA_array</em>&nbsp;</td><td>A = dA_array[i] A: REAL array of dimension ( LDA, n ) on the GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. LDA specifies the leading dimension of A.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x_array</em>&nbsp;</td><td>x = x_array[i] x: REAL array of dimension. n if trans == MagmaNoTrans. m if trans == MagmaTrans or MagmaConjTrans.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. incx specifies the increment for the elments of x. incx must not be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>REAL. On entry, BETA specifies the scalar beta.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>y_array</em>&nbsp;</td><td>y = y_array[i]: On exit y = alpha opt(A) x + beta y. y: REAL array of dimension. m if trans == MagmaNoTrans. n if trans == MagmaTrans or MagmaConjTrans.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. incy specifies the increment for the elments of y. incy must not be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>batchCount</em>&nbsp;</td><td>INTEGER number of pointers contained in dA_array, x_array and y_array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga985d2c1a38865feb672aa944cefe211e"></a><!-- doxytag: member="sgemv_conjv.cu::magmablas_sgemv_conjv" ref="ga985d2c1a38865feb672aa944cefe211e" args="(magma_int_t m, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -676,20 +785,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -706,8 +815,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -732,12 +841,12 @@
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER On entry, m specifies the number of rows of the matrix A.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER On entry, n specifies the number of columns of the matrix A</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>REAL On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>REAL array of dimension ( LDA, n ) on the GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array of dimension ( LDA, n ) on the GPU.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER LDA specifies the leading dimension of A.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>REAL array of dimension n</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>REAL array of dimension n</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>Specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>DOUBLE REAL On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>REAL array of dimension m</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>REAL array of dimension m</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>Specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -850,7 +959,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9fae121fa32ee8cd396be57e003d2e8a"></a><!-- doxytag: member="sswapblk.cu::magmablas_sswapblk" ref="ga9fae121fa32ee8cd396be57e003d2e8a" args="(magma_order_t order, magma_int_t n, float *dA1T, magma_int_t lda1, float *dA2T, magma_int_t lda2, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)" -->
+<a class="anchor" id="gae3a27bf2bb3cdd1ef58699d1c3459005"></a><!-- doxytag: member="sswapblk.cu::magmablas_sswapblk" ref="gae3a27bf2bb3cdd1ef58699d1c3459005" args="(magma_order_t order, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t i1, magma_int_t i2, const magma_int_t *ipiv, magma_int_t inci, magma_int_t offset)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -869,26 +978,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>dA1T</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda1</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>dA2T</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda2</em>, </td>
+          <td class="paramname"> <em>lddb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -932,7 +1041,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaac2b3023e64526273cad970f7cc291b7"></a><!-- doxytag: member="ssymv.cu::magmablas_ssymv" ref="gaac2b3023e64526273cad970f7cc291b7" args="(magma_uplo_t uplo, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy)" -->
+<a class="anchor" id="gaba9cbcefff617e9f6ffd4404fbfa2e05"></a><!-- doxytag: member="ssymv.cu::magmablas_ssymv" ref="gaba9cbcefff617e9f6ffd4404fbfa2e05" args="(magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -957,20 +1066,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -987,8 +1096,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1018,12 +1127,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>REAL. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>REAL array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>REAL. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -1031,7 +1140,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga2f9953f967766f84f74566425d612029"></a><!-- doxytag: member="ssymv_fermi_mgpu.cu::magmablas_ssymv_mgpu_offset" ref="ga2f9953f967766f84f74566425d612029" args="(magma_uplo_t uplo, magma_int_t n, float alpha, float **A, magma_int_t lda, float **x, magma_int_t incx, float beta, float **y, magma_int_t incy, float **work, magma_int_t lwork, magma_int_t num_gpus, magma_int_t nb, magma_int_t offset, magma_queue_t stream[][10])" -->
+<a class="anchor" id="ga2bbe4f88d6acd38ce398888cedc37dc4"></a><!-- doxytag: member="ssymv_fermi_mgpu.cu::magmablas_ssymv_mgpu_offset" ref="ga2bbe4f88d6acd38ce398888cedc37dc4" args="(magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_ptr dA[], magma_int_t ldda, magmaFloat_ptr dx[], magma_int_t incx, float beta, magmaFloat_ptr dy[], magma_int_t incy, magmaFloat_ptr dwork[], magma_int_t lwork, magma_int_t ngpu, magma_int_t nb, magma_int_t offset, magma_queue_t queues[][10])" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1056,20 +1165,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float **&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float **&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1086,8 +1195,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float **&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1098,8 +1207,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float **&nbsp;</td>
-          <td class="paramname"> <em>work</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dwork</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1111,7 +1220,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1129,7 +1238,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][10]</td><td>&nbsp;</td>
+          <td class="paramname"> <em>queues</em>[][10]</td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1153,12 +1262,12 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>REAL. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>REAL array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>REAL. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero. </td></tr>
   </table>
   </dd>
@@ -1166,7 +1275,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gabd4f38924b980022433fbd6cfbe6eb6d"></a><!-- doxytag: member="ssymv.cu::magmablas_ssymv_work" ref="gabd4f38924b980022433fbd6cfbe6eb6d" args="(magma_uplo_t uplo, magma_int_t n, float alpha, const float *A, magma_int_t lda, const float *x, magma_int_t incx, float beta, float *y, magma_int_t incy, float *dwork, magma_int_t lwork)" -->
+<a class="anchor" id="gab8e92ae941cef2d6944533b53756e6a7"></a><!-- doxytag: member="ssymv.cu::magmablas_ssymv_work" ref="gab8e92ae941cef2d6944533b53756e6a7" args="(magma_uplo_t uplo, magma_int_t n, float alpha, magmaFloat_const_ptr dA, magma_int_t ldda, magmaFloat_const_ptr dx, magma_int_t incx, float beta, magmaFloat_ptr dy, magma_int_t incy, magmaFloat_ptr dwork, magma_int_t lwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1191,20 +1300,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
+          <td class="paramname"> <em>ldda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float *&nbsp;</td>
-          <td class="paramname"> <em>x</em>, </td>
+          <td class="paramtype">magmaFloat_const_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1221,8 +1330,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>y</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1233,7 +1342,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -1264,15 +1373,15 @@
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER. On entry, N specifies the order of the matrix A. N must be at least zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>REAL. On entry, ALPHA specifies the scalar alpha.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>REAL array of DIMENSION ( LDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lda</em>&nbsp;</td><td>INTEGER. On entry, LDA specifies the first dimension of A as declared in the calling (sub) program. LDA must be at least max( 1, n ). It is recommended that lda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>x</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array of DIMENSION ( LDDA, n ). Before entry with UPLO = MagmaUpper, the leading n by n upper triangular part of the array A must contain the upper triangular part of the symmetric matrix and the strictly lower triangular part of A is not referenced. Before entry with UPLO = MagmaLower, the leading n by n lower triangular part of the array A must contain the lower triangular part of the symmetric matrix and the strictly upper triangular part of A is not referenced. Note that the imaginary parts of the diagonal elements need not be set and are assumed to be zero.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER. On entry, LDDA specifies the first dimension of A as declared in the calling (sub) program. LDDA must be at least max( 1, n ). It is recommended that ldda is multiple of 16. Otherwise performance would be deteriorated as the memory accesses would not be fully coalescent.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCX ) ). Before entry, the incremented array X must contain the n element vector x.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incx</em>&nbsp;</td><td>INTEGER. On entry, INCX specifies the increment for the elements of X. INCX must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>REAL. On entry, BETA specifies the scalar beta. When BETA is supplied as zero then Y need not be set on input.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>y</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>REAL array of dimension at least ( 1 + ( n - 1 )*abs( INCY ) ). Before entry, the incremented array Y must contain the n element vector y. On exit, Y is overwritten by the updated vector y.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>incy</em>&nbsp;</td><td>INTEGER. On entry, INCY specifies the increment for the elements of Y. INCY must not be zero.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) REAL array on the GPU, dimension (MAX(1, LWORK)),</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER. The dimension of the array DWORK. LWORK &gt;= LDA * ceil( N / NB_X ), where NB_X = 64.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER. The dimension of the array DWORK. LWORK &gt;= LDDA * ceil( N / NB_X ), where NB_X = 64.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1283,7 +1392,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

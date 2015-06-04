@@ -27,8 +27,10 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cposv__driver.html#ga204dd8f5eef2228eb18fc24f98fe3861">magma_cposv</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CPOSV computes the solution to a complex system of linear equations A * X = B, where A is an N-by-N Hermitian positive definite matrix and X and B are N-by-NRHS matrices.  <a href="#ga204dd8f5eef2228eb18fc24f98fe3861"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cposv__driver.html#ga3ac004079c830e9befee6e00ce479ce8">magma_cposv_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CPOSV computes the solution to a complex system of linear equations A * X = B, where A is an N-by-N Hermitian positive definite matrix and X and B are N-by-NRHS matrices.  <a href="#ga3ac004079c830e9befee6e00ce479ce8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cposv__driver.html#ga8331ad188300d281c93a1d1f29b13153">magma_cposv_batched</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *dinfo_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CPOSV computes the solution to a complex system of linear equations A * X = B, where A is an N-by-N Hermitian positive definite matrix and X and B are N-by-NRHS matrices.  <a href="#ga8331ad188300d281c93a1d1f29b13153"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cposv__driver.html#ga8c046a4f555e590dcdb70a0145faa73d">magma_cposv_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CPOSV computes the solution to a complex system of linear equations A * X = B, where A is an N-by-N Hermitian positive definite matrix and X and B are N-by-NRHS matrices.  <a href="#ga8c046a4f555e590dcdb70a0145faa73d"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga204dd8f5eef2228eb18fc24f98fe3861"></a><!-- doxytag: member="cposv.cpp::magma_cposv" ref="ga204dd8f5eef2228eb18fc24f98fe3861" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *A, magma_int_t lda, magmaFloatComplex *B, magma_int_t ldb, magma_int_t *info)" -->
@@ -121,7 +123,103 @@
 
 </div>
 </div>
-<a class="anchor" id="ga3ac004079c830e9befee6e00ce479ce8"></a><!-- doxytag: member="cposv_gpu.cpp::magma_cposv_gpu" ref="ga3ac004079c830e9befee6e00ce479ce8" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga8331ad188300d281c93a1d1f29b13153"></a><!-- doxytag: member="cposv_batched.cpp::magma_cposv_batched" ref="ga8331ad188300d281c93a1d1f29b13153" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex **dA_array, magma_int_t ldda, magmaFloatComplex **dB_array, magma_int_t lddb, magma_int_t *dinfo_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_cposv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>dinfo_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>CPOSV computes the solution to a complex system of linear equations A * X = B, where A is an N-by-N Hermitian positive definite matrix and X and B are N-by-NRHS matrices. </p>
+<p>The Cholesky decomposition is used to factor A as A = U**H * U, if UPLO = MagmaUpper, or A = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is a lower triangular matrix. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of A is stored;</li>
+<li>= MagmaLower: Lower triangle of A is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDDA,N) On entry, the Hermitian matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H*U or dA = L*L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga8c046a4f555e590dcdb70a0145faa73d"></a><!-- doxytag: member="cposv_gpu.cpp::magma_cposv_gpu" ref="ga8c046a4f555e590dcdb70a0145faa73d" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -146,7 +244,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -158,7 +256,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -212,7 +310,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

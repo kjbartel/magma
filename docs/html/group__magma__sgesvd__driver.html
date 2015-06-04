@@ -25,13 +25,13 @@
 [<a class="el" href="group__magma__gesvd__driver.html">SVD: driver</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__driver.html#ga1af7fbb2b1ea64aa347fc95e3924aca5">magma_sgesdd</a> (magma_vec_t jobz, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGESDD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and right singular vectors, by using divide-and-conquer method.  <a href="#ga1af7fbb2b1ea64aa347fc95e3924aca5"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__driver.html#ga96e26a734d9c48e5c994863c4e2d83f1">magma_sgesvd</a> (magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGESVD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and/or right singular vectors.  <a href="#ga96e26a734d9c48e5c994863c4e2d83f1"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__driver.html#ga8df63bf7db0980ba88ae50438461eead">magma_sgesdd</a> (magma_vec_t jobz, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, float *rwork, magma_int_t *iwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGESDD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and right singular vectors, by using divide-and-conquer method.  <a href="#ga8df63bf7db0980ba88ae50438461eead"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__driver.html#gace559652f005a7a289f1831c66299579">magma_sgesvd</a> (magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, float *rwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGESVD computes the singular value decomposition (SVD) of a real M-by-N matrix A, optionally computing the left and/or right singular vectors.  <a href="#gace559652f005a7a289f1831c66299579"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga1af7fbb2b1ea64aa347fc95e3924aca5"></a><!-- doxytag: member="sgesdd.cpp::magma_sgesdd" ref="ga1af7fbb2b1ea64aa347fc95e3924aca5" args="(magma_vec_t jobz, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t *info)" -->
+<a class="anchor" id="ga8df63bf7db0980ba88ae50438461eead"></a><!-- doxytag: member="sgesdd.cpp::magma_sgesdd" ref="ga8df63bf7db0980ba88ae50438461eead" args="(magma_vec_t jobz, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, float *rwork, magma_int_t *iwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -106,6 +106,12 @@
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
           <td class="paramname"> <em>lwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -195,7 +201,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga96e26a734d9c48e5c994863c4e2d83f1"></a><!-- doxytag: member="sgesvd.cpp::magma_sgesvd" ref="ga96e26a734d9c48e5c994863c4e2d83f1" args="(magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gace559652f005a7a289f1831c66299579"></a><!-- doxytag: member="sgesvd.cpp::magma_sgesvd" ref="gace559652f005a7a289f1831c66299579" args="(magma_vec_t jobu, magma_vec_t jobvt, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, float *s, float *U, magma_int_t ldu, float *VT, magma_int_t ldvt, float *work, magma_int_t lwork, float *rwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -276,6 +282,12 @@
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
           <td class="paramname"> <em>lwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>rwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -365,7 +377,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -11,11 +11,6 @@ SHDR = \
 CSRC = \
 	magma_c_blaswrapper.cpp \
 	cbajac_csr.cu \
-	cbcsrswp.cu \
-	cbcsrtrsv.cu \
-	cbcsrcpy.cu \
-	cbcsrlugemm.cu \
-	cbcsrlupivloc.cu \
 	cgecsrmv.cu \
 	cgeellmv.cu \
 	cgeelltmv.cu \
@@ -35,19 +30,12 @@ CSRC = \
 	cmgeelltmv.cu \
 	cmgesellcmmv.cu \
 	cpipelinedgmres.cu \
-	ccompact.cu
+	ccompact.cu \
+	magma_cmcsrcompressor_gpu.cu
 
 DSRC = \
-	slag2d_sparse.cu \
 	magma_d_blaswrapper.cpp \
-	magma_slag2d.cpp \
-	magma_dlag2s.cpp \
 	dbajac_csr.cu \
-	dbcsrswp.cu \
-	dbcsrtrsv.cu \
-	dbcsrcpy.cu \
-	dbcsrlugemm.cu \
-	dbcsrlupivloc.cu \
 	dgecsrmv.cu \
 	dgeellmv.cu \
 	dgeelltmv.cu \
@@ -55,7 +43,6 @@ DSRC = \
 	dgesellcmv.cu \
 	dgesellcmmv.cu \
 	djacobisetup.cu \
-	dlag2s_sparse.cu \
 	dlobpcg_shift.cu \
 	dlobpcg_residuals.cu \
 	dlobpcg_maxpy.cu \
@@ -68,16 +55,12 @@ DSRC = \
 	dmgeelltmv.cu \
 	dmgesellcmmv.cu \
 	dpipelinedgmres.cu \
-	dcompact.cu
+	dcompact.cu \
+	magma_dmcsrcompressor_gpu.cu
 
 SSRC = \
 	magma_s_blaswrapper.cpp \
 	sbajac_csr.cu \
-	sbcsrswp.cu \
-	sbcsrtrsv.cu \
-	sbcsrcpy.cu \
-	sbcsrlugemm.cu \
-	sbcsrlupivloc.cu \
 	sgecsrmv.cu \
 	sgeellmv.cu \
 	sgeelltmv.cu \
@@ -97,4 +80,5 @@ SSRC = \
 	smgeelltmv.cu \
 	smgesellcmmv.cu \
 	spipelinedgmres.cu \
-	scompact.cu
+	scompact.cu \
+	magma_smcsrcompressor_gpu.cu

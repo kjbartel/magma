@@ -25,35 +25,154 @@
 [<a class="el" href="group__sparse__blas.html">Sparse BLAS</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga345c9017de3c9f4ff0da2f887e7598e2">magma_cgecsrmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#ga345c9017de3c9f4ff0da2f887e7598e2"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gaffde3695d679f393e82aecf4de91a814">magma_cgecsrmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * ( A -lambda I ) * x + beta * y on the GPU.  <a href="#gaffde3695d679f393e82aecf4de91a814"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga74ca2786774cdf06c97ff0f174f52dcc">magma_cgeellmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#ga74ca2786774cdf06c97ff0f174f52dcc"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga02e6664d36452bf820ff48baf429d10d">magma_cgeellmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha *( A - lambda I ) * x + beta * y on the GPU.  <a href="#ga02e6664d36452bf820ff48baf429d10d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gafb8c5e65512611b511928162a7ba8710">magma_cgeellrtmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowlength, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y, magma_int_t alignment, magma_int_t blocksize)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#gafb8c5e65512611b511928162a7ba8710"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gad8395078938729486ae6acfc2c1a25ee">magma_cgeelltmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha *( A - lambda I ) * x + beta * y on the GPU.  <a href="#gad8395078938729486ae6acfc2c1a25ee"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga28efaeea647ccf7d4233e4cb6453de82">magma_cgesellpmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#ga28efaeea647ccf7d4233e4cb6453de82"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga77203e6aa1d34dcd503bd1ee7b7ff53e">magma_cgesellcmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#ga77203e6aa1d34dcd503bd1ee7b7ff53e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga916f9f24bf1562bf8ae0ef5c0dce2170">magma_cmdotc</a> (int n, int k, magmaFloatComplex *v, magmaFloatComplex *r, magmaFloatComplex *d1, magmaFloatComplex *d2, magmaFloatComplex *skp)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Computes the scalar product of a set of vectors v_i such that.  <a href="#ga916f9f24bf1562bf8ae0ef5c0dce2170"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga46d486fc7fb4357376c929ed79e06e25">magma_cmgecsrmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#ga46d486fc7fb4357376c929ed79e06e25"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga886d94894c73794fa266d9a8e4c689fc">magma_cmgeellmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#ga886d94894c73794fa266d9a8e4c689fc"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga614cbc34e9d75e8f0f98634d5e6a3c58">magma_cmgeelltmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#ga614cbc34e9d75e8f0f98634d5e6a3c58"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gade785abc57f9e55d38cd47bd3d50d97d">magma_cmgesellpmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A^t * X + beta * Y on the GPU.  <a href="#gade785abc57f9e55d38cd47bd3d50d97d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gad5536ecfece0b356a721b5cbde25f91c">magma_ccuspaxpy</a> (magmaFloatComplex *alpha, magma_c_sparse_matrix A, magmaFloatComplex *beta, magma_c_sparse_matrix B, magma_c_sparse_matrix *AB, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This is an interface to the cuSPARSE routine csrgeam computing the sum of two sparse matrices stored in csr format:.  <a href="#gad5536ecfece0b356a721b5cbde25f91c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga758fbc29879f67b0a920924895346b8f">magma_ccuspmm</a> (magma_c_sparse_matrix A, magma_c_sparse_matrix B, magma_c_sparse_matrix *AB, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This is an interface to the cuSPARSE routine csrmm computing the product of two sparse matrices stored in csr format.  <a href="#ga758fbc29879f67b0a920924895346b8f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga0962837cc1eafc9e51b8da10e14bb320">magma_cgecsrmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#ga0962837cc1eafc9e51b8da10e14bb320"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gab759e4c25c40d84fb776e5967eb0d5ab">magma_cgecsrmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magmaIndex_ptr addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * ( A -lambda I ) * x + beta * y on the GPU.  <a href="#gab759e4c25c40d84fb776e5967eb0d5ab"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga7b2796d223af0b8939ed8c95c6f9a7ad">magma_cgeellmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#ga7b2796d223af0b8939ed8c95c6f9a7ad"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gac438c6275009c6cc4f25ed89d4ecc934">magma_cgeellmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha *( A - lambda I ) * x + beta * y on the GPU.  <a href="#gac438c6275009c6cc4f25ed89d4ecc934"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gab742a423b085f403fafc9b4d7d8a9181">magma_cgeellrtmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowlength, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_int_t alignment, magma_int_t blocksize, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A * x + beta * y on the GPU.  <a href="#gab742a423b085f403fafc9b4d7d8a9181"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga4671c3259d9ba1f6e104868bcc79c67e">magma_cgeelltmv_shift</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha *( A - lambda I ) * x + beta * y on the GPU.  <a href="#ga4671c3259d9ba1f6e104868bcc79c67e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga24db627974b3ef2d8cf10484da895ea2">magma_cgesellpmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#ga24db627974b3ef2d8cf10484da895ea2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga737a7223d9690b0179014b4ab319ebae">magma_cgesellcmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes y = alpha * A^t * x + beta * y on the GPU.  <a href="#ga737a7223d9690b0179014b4ab319ebae"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga2b6261764fc848baf9cf1d955f732952">magma_cmdotc</a> (int n, int k, magmaFloatComplex_ptr v, magmaFloatComplex_ptr r, magmaFloatComplex_ptr d1, magmaFloatComplex_ptr d2, magmaFloatComplex_ptr skp, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Computes the scalar product of a set of vectors v_i such that.  <a href="#ga2b6261764fc848baf9cf1d955f732952"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga0e7c9bca1fbb80a681a968f154a9a2b8">magma_cmgecsrmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#ga0e7c9bca1fbb80a681a968f154a9a2b8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga1e3bd8c40a8f448ee709e0e2775560c5">magma_cmgeellmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#ga1e3bd8c40a8f448ee709e0e2775560c5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#gafc6dd51d7f97b1b6d9a33a1ae49b869c">magma_cmgeelltmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A * X + beta * Y for X and Y sets of num_vec vectors on the GPU.  <a href="#gafc6dd51d7f97b1b6d9a33a1ae49b869c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magmasparse__cblas.html#ga27d19c5918252f403bd4c51835316cc3">magma_cmgesellpmv</a> (magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This routine computes Y = alpha * A^t * X + beta * Y on the GPU.  <a href="#ga27d19c5918252f403bd4c51835316cc3"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga345c9017de3c9f4ff0da2f887e7598e2"></a><!-- doxytag: member="cgecsrmv.cu::magma_cgecsrmv" ref="ga345c9017de3c9f4ff0da2f887e7598e2" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="gad5536ecfece0b356a721b5cbde25f91c"></a><!-- doxytag: member="magma_ccuspaxpy.cpp::magma_ccuspaxpy" ref="gad5536ecfece0b356a721b5cbde25f91c" args="(magmaFloatComplex *alpha, magma_c_sparse_matrix A, magmaFloatComplex *beta, magma_c_sparse_matrix B, magma_c_sparse_matrix *AB, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_ccuspaxpy </td>
+          <td>(</td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramname"> <em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_sparse_matrix *&nbsp;</td>
+          <td class="paramname"> <em>AB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>This is an interface to the cuSPARSE routine csrgeam computing the sum of two sparse matrices stored in csr format:. </p>
+<p>C = alpha * A + beta * B</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex* scalar</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_c_sparse_matrix input matrix</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex* scalar</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>B</em>&nbsp;</td><td>magma_c_sparse_matrix input matrix</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>AB</em>&nbsp;</td><td>magma_c_sparse_matrix* output matrix AB = alpha * A + beta * B</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga758fbc29879f67b0a920924895346b8f"></a><!-- doxytag: member="magma_ccuspmm.cpp::magma_ccuspmm" ref="ga758fbc29879f67b0a920924895346b8f" args="(magma_c_sparse_matrix A, magma_c_sparse_matrix B, magma_c_sparse_matrix *AB, magma_queue_t queue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_ccuspmm </td>
+          <td>(</td>
+          <td class="paramtype">magma_c_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_sparse_matrix&nbsp;</td>
+          <td class="paramname"> <em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_c_sparse_matrix *&nbsp;</td>
+          <td class="paramname"> <em>AB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>This is an interface to the cuSPARSE routine csrmm computing the product of two sparse matrices stored in csr format. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>magma_c_sparse_matrix input matrix</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>B</em>&nbsp;</td><td>magma_c_sparse_matrix input matrix</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>AB</em>&nbsp;</td><td>magma_c_sparse_matrix* output matrix AB = A * B</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga0962837cc1eafc9e51b8da10e14bb320"></a><!-- doxytag: member="cgecsrmv.cu::magma_cgecsrmv" ref="ga0962837cc1eafc9e51b8da10e14bb320" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -84,26 +203,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -114,8 +233,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -130,23 +255,24 @@
 <p>The input format is CSR (val, row, col).</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gaffde3695d679f393e82aecf4de91a814"></a><!-- doxytag: member="cgecsrmv.cu::magma_cgecsrmv_shift" ref="gaffde3695d679f393e82aecf4de91a814" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="gab759e4c25c40d84fb776e5967eb0d5ab"></a><!-- doxytag: member="cgecsrmv.cu::magma_cgecsrmv_shift" ref="gab759e4c25c40d84fb776e5967eb0d5ab" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magmaIndex_ptr addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -183,26 +309,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -225,14 +351,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>add_rows</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>addrows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -247,27 +379,28 @@
 <p>It is a shifted version of the CSR-SpMV.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>add_rows</em>&nbsp;</td><td>magma_int_t* in case the matrixpowerskernel is used</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>addrows</em>&nbsp;</td><td>magmaIndex_ptr in case the matrixpowerskernel is used</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga74ca2786774cdf06c97ff0f174f52dcc"></a><!-- doxytag: member="cgeellmv.cu::magma_cgeellmv" ref="ga74ca2786774cdf06c97ff0f174f52dcc" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga7b2796d223af0b8939ed8c95c6f9a7ad"></a><!-- doxytag: member="cgeellmv.cu::magma_cgeellmv" ref="ga7b2796d223af0b8939ed8c95c6f9a7ad" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -304,20 +437,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -328,8 +461,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -344,23 +483,24 @@
 <p>Input format is ELLPACK.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga02e6664d36452bf820ff48baf429d10d"></a><!-- doxytag: member="cgeellmv.cu::magma_cgeellmv_shift" ref="ga02e6664d36452bf820ff48baf429d10d" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="gac438c6275009c6cc4f25ed89d4ecc934"></a><!-- doxytag: member="cgeellmv.cu::magma_cgeellmv_shift" ref="gac438c6275009c6cc4f25ed89d4ecc934" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -403,20 +543,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -440,13 +580,19 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>add_rows</em>, </td>
+          <td class="paramname"> <em>addrows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -461,27 +607,28 @@
 <p>Input format is ELLPACK. It is the shifted version of the ELLPACK SpMV.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>add_rows</em>&nbsp;</td><td>magma_int_t* in case the matrixpowerskernel is used</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>addrows</em>&nbsp;</td><td>magma_int_t* in case the matrixpowerskernel is used</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gafb8c5e65512611b511928162a7ba8710"></a><!-- doxytag: member="cgeellrtmv.cu::magma_cgeellrtmv" ref="gafb8c5e65512611b511928162a7ba8710" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowlength, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y, magma_int_t alignment, magma_int_t blocksize)" -->
+<a class="anchor" id="gab742a423b085f403fafc9b4d7d8a9181"></a><!-- doxytag: member="cgeellrtmv.cu::magma_cgeellrtmv" ref="gab742a423b085f403fafc9b4d7d8a9181" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowlength, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_int_t alignment, magma_int_t blocksize, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -518,26 +665,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowlength</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowlength</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -548,8 +695,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -561,7 +708,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>blocksize</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>blocksize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -577,26 +730,27 @@
     vector product with GPUs", (CIT 2010), and modified to provide correct values.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t max number of nonzeros in a row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar alpha</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* val array</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* col indices</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowlength</em>&nbsp;</td><td>magma_int_t* number of elements in each row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar beta</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* output vector y</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t threads per block</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t threads assigned to each row </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t max number of nonzeros in a row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar alpha</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr val array</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr col indices</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowlength</em>&nbsp;</td><td>magmaIndex_ptr number of elements in each row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar beta</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t threads per block</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t threads assigned to each row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gad8395078938729486ae6acfc2c1a25ee"></a><!-- doxytag: member="cgeelltmv.cu::magma_cgeelltmv_shift" ref="gad8395078938729486ae6acfc2c1a25ee" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *add_rows, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga4671c3259d9ba1f6e104868bcc79c67e"></a><!-- doxytag: member="cgeelltmv.cu::magma_cgeelltmv_shift" ref="ga4671c3259d9ba1f6e104868bcc79c67e" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex lambda, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, int offset, int blocksize, magma_index_t *addrows, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -639,20 +793,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -676,13 +830,19 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>add_rows</em>, </td>
+          <td class="paramname"> <em>addrows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -697,27 +857,28 @@
 <p>Input format is ELL.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>add_rows</em>&nbsp;</td><td>magma_int_t* in case the matrixpowerskernel is used</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lambda</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>offset</em>&nbsp;</td><td>magma_int_t in case not the main diagonal is scaled</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t in case of processing multiple vectors</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>addrows</em>&nbsp;</td><td>magma_int_t* in case the matrixpowerskernel is used</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga77203e6aa1d34dcd503bd1ee7b7ff53e"></a><!-- doxytag: member="cgesellcmv.cu::magma_cgesellcmv" ref="ga77203e6aa1d34dcd503bd1ee7b7ff53e" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga737a7223d9690b0179014b4ab319ebae"></a><!-- doxytag: member="cgesellcmv.cu::magma_cgesellcmv" ref="ga737a7223d9690b0179014b4ab319ebae" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -766,26 +927,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -796,8 +957,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -812,26 +979,27 @@
 <p>Input format is SELLC/SELLP.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row (=1)</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in SELLC/P</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in SELLC/P</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row (=1)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in SELLC/P</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in SELLC/P</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga28efaeea647ccf7d4233e4cb6453de82"></a><!-- doxytag: member="cgesellcmmv.cu::magma_cgesellpmv" ref="ga28efaeea647ccf7d4233e4cb6453de82" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga24db627974b3ef2d8cf10484da895ea2"></a><!-- doxytag: member="cgesellcmmv.cu::magma_cgesellpmv" ref="ga24db627974b3ef2d8cf10484da895ea2" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -880,26 +1048,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -910,8 +1078,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -926,26 +1100,27 @@
 <p>Input format is SELLP.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magmaIndex_ptr rowpointer of SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga916f9f24bf1562bf8ae0ef5c0dce2170"></a><!-- doxytag: member="cmdot.cu::magma_cmdotc" ref="ga916f9f24bf1562bf8ae0ef5c0dce2170" args="(int n, int k, magmaFloatComplex *v, magmaFloatComplex *r, magmaFloatComplex *d1, magmaFloatComplex *d2, magmaFloatComplex *skp)" -->
+<a class="anchor" id="ga2b6261764fc848baf9cf1d955f732952"></a><!-- doxytag: member="cmdot.cu::magma_cmdotc" ref="ga2b6261764fc848baf9cf1d955f732952" args="(int n, int k, magmaFloatComplex_ptr v, magmaFloatComplex_ptr r, magmaFloatComplex_ptr d1, magmaFloatComplex_ptr d2, magmaFloatComplex_ptr skp, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -964,32 +1139,38 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>v</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>r</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>d1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>d2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>skp</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>skp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1005,20 +1186,21 @@
 <p>Returns the vector skp.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>int length of v_i and r</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>k</em>&nbsp;</td><td>int # vectors v_i</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>v</em>&nbsp;</td><td>magmaFloatComplex* v = (v_0 .. v_i.. v_k)</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>r</em>&nbsp;</td><td>magmaFloatComplex* r</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d1</em>&nbsp;</td><td>magmaFloatComplex* workspace</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d2</em>&nbsp;</td><td>magmaFloatComplex* workspace</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>skp</em>&nbsp;</td><td>magmaFloatComplex* vector[k] of scalar products (&lt;v_i,r&gt;...) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>int length of v_i and r</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>k</em>&nbsp;</td><td>int # vectors v_i</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>v</em>&nbsp;</td><td>magmaFloatComplex_ptr v = (v_0 .. v_i.. v_k)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>r</em>&nbsp;</td><td>magmaFloatComplex_ptr r</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d1</em>&nbsp;</td><td>magmaFloatComplex_ptr workspace</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>d2</em>&nbsp;</td><td>magmaFloatComplex_ptr workspace</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>skp</em>&nbsp;</td><td>magmaFloatComplex_ptr vector[k] of scalar products (&lt;v_i,r&gt;...)</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga46d486fc7fb4357376c929ed79e06e25"></a><!-- doxytag: member="cmgecsrmv.cu::magma_cmgecsrmv" ref="ga46d486fc7fb4357376c929ed79e06e25" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_rowptr, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga0e7c9bca1fbb80a681a968f154a9a2b8"></a><!-- doxytag: member="cmgecsrmv.cu::magma_cmgecsrmv" ref="ga0e7c9bca1fbb80a681a968f154a9a2b8" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr drowptr, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1055,26 +1237,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1085,8 +1267,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1101,24 +1289,25 @@
 <p>Input format is CSR.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in CSR</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in CSR</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga886d94894c73794fa266d9a8e4c689fc"></a><!-- doxytag: member="cmgeellmv.cu::magma_cmgeellmv" ref="ga886d94894c73794fa266d9a8e4c689fc" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga1e3bd8c40a8f448ee709e0e2775560c5"></a><!-- doxytag: member="cmgeellmv.cu::magma_cmgeellmv" ref="ga1e3bd8c40a8f448ee709e0e2775560c5" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1161,20 +1350,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1185,8 +1374,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1201,24 +1396,25 @@
 <p>Input format is ELLPACK.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELLPACK</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELLPACK</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga614cbc34e9d75e8f0f98634d5e6a3c58"></a><!-- doxytag: member="cmgeelltmv.cu::magma_cmgeelltmv" ref="ga614cbc34e9d75e8f0f98634d5e6a3c58" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="gafc6dd51d7f97b1b6d9a33a1ae49b869c"></a><!-- doxytag: member="cmgeelltmv.cu::magma_cmgeelltmv" ref="gafc6dd51d7f97b1b6d9a33a1ae49b869c" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t nnz_per_row, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1261,20 +1457,20 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1285,8 +1481,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1301,24 +1503,25 @@
 <p>Input format is ELL.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in ELL</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transposition parameter for A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>mama_int_t number of vectors</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nnz_per_row</em>&nbsp;</td><td>magma_int_t number of elements in the longest row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in ELL</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gade785abc57f9e55d38cd47bd3d50d97d"></a><!-- doxytag: member="cmgesellcmmv.cu::magma_cmgesellpmv" ref="gade785abc57f9e55d38cd47bd3d50d97d" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex *d_val, magma_index_t *d_colind, magma_index_t *d_rowptr, magmaFloatComplex *d_x, magmaFloatComplex beta, magmaFloatComplex *d_y)" -->
+<a class="anchor" id="ga27d19c5918252f403bd4c51835316cc3"></a><!-- doxytag: member="cmgesellcmmv.cu::magma_cmgesellpmv" ref="ga27d19c5918252f403bd4c51835316cc3" args="(magma_trans_t transA, magma_int_t m, magma_int_t n, magma_int_t num_vecs, magma_int_t blocksize, magma_int_t slices, magma_int_t alignment, magmaFloatComplex alpha, magmaFloatComplex_ptr dval, magmaIndex_ptr dcolind, magmaIndex_ptr drowptr, magmaFloatComplex_ptr dx, magmaFloatComplex beta, magmaFloatComplex_ptr dy, magma_queue_t queue)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1373,26 +1576,26 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_val</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dval</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_colind</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dcolind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magma_index_t *&nbsp;</td>
-          <td class="paramname"> <em>d_rowptr</em>, </td>
+          <td class="paramtype">magmaIndex_ptr&nbsp;</td>
+          <td class="paramname"> <em>drowptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_x</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1403,8 +1606,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>d_y</em></td><td>&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_queue_t&nbsp;</td>
+          <td class="paramname"> <em>queue</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1419,20 +1628,21 @@
 <p>Input format is SELLP. Note, that the input format for X is row-major while the output format for Y is column major!</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transpose A?</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>magma_int_t number of columns in X and Y</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_val</em>&nbsp;</td><td>magmaFloatComplex* array containing values of A in SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_colind</em>&nbsp;</td><td>magma_int_t* columnindices of A in SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_rowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of SELLP</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_x</em>&nbsp;</td><td>magmaFloatComplex* input vector x</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>d_y</em>&nbsp;</td><td>magmaFloatComplex* input/output vector y </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transA</em>&nbsp;</td><td>magma_trans_t transpose A?</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>magma_int_t number of rows in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>magma_int_t number of columns in A</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_vecs</em>&nbsp;</td><td>magma_int_t number of columns in X and Y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>blocksize</em>&nbsp;</td><td>magma_int_t number of rows in one ELL-slice</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>slices</em>&nbsp;</td><td>magma_int_t number of slices in matrix</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alignment</em>&nbsp;</td><td>magma_int_t number of threads assigned to one row</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>alpha</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dval</em>&nbsp;</td><td>magmaFloatComplex_ptr array containing values of A in SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dcolind</em>&nbsp;</td><td>magmaIndex_ptr columnindices of A in SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>drowptr</em>&nbsp;</td><td>magma_int_t* rowpointer of SELLP</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dx</em>&nbsp;</td><td>magmaFloatComplex_ptr input vector x</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>beta</em>&nbsp;</td><td>magmaFloatComplex scalar multiplier</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dy</em>&nbsp;</td><td>magmaFloatComplex_ptr input/output vector y</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queue</em>&nbsp;</td><td>magma_queue_t Queue to execute in. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1440,7 +1650,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

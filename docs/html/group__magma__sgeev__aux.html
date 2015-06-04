@@ -25,19 +25,19 @@
 [<a class="el" href="group__magma__geev__aux.html">Non-symmetric eigenvalue: auxiliary</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#gae9ddfbb8a36ca14ced754179b9254bca">magma_slahr2</a> (magma_int_t n, magma_int_t k, magma_int_t nb, float *dA, magma_int_t ldda, float *dV, magma_int_t lddv, float *A, magma_int_t lda, float *tau, float *T, magma_int_t ldt, float *Y, magma_int_t ldy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHR2 reduces the first NB columns of a real general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#gae9ddfbb8a36ca14ced754179b9254bca"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#gac99d701f405ab12a1725ac7cf594c4ee">magma_slahr2</a> (magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dV, magma_int_t lddv, float *A, magma_int_t lda, float *tau, float *T, magma_int_t ldt, float *Y, magma_int_t ldy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHR2 reduces the first NB columns of a real general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#gac99d701f405ab12a1725ac7cf594c4ee"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#ga08e96428de2e63d49d29bbbf2324dff4">magma_slahr2_m</a> (magma_int_t n, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, float *tau, float *T, magma_int_t ldt, float *Y, magma_int_t ldy, struct sgehrd_data *data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHR2 reduces the first NB columns of a real general n-BY-(n-k+1) matrix A so that elements below the k-th subdiagonal are zero.  <a href="#ga08e96428de2e63d49d29bbbf2324dff4"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#ga9c8d8123548297948e7b1b439150be45">magma_slahru</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, float *dA, magma_int_t ldda, float *dY, magma_int_t lddy, float *dV, magma_int_t lddv, float *dT, float *dwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHRU is an auxiliary MAGMA routine that is used in SGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#ga9c8d8123548297948e7b1b439150be45"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#gad75819e356cae9be8504a1075e54476b">magma_slahru</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dY, magma_int_t lddy, magmaFloat_ptr dV, magma_int_t lddv, magmaFloat_ptr dT, magmaFloat_ptr dwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHRU is an auxiliary MAGMA routine that is used in SGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#gad75819e356cae9be8504a1075e54476b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#ga71cba043adcb464ba130a8f249d27268">magma_slahru_m</a> (magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, struct sgehrd_data *data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAHRU is an auxiliary MAGMA routine that is used in SGEHRD to update the trailing sub-matrices after the reductions of the corresponding panels.  <a href="#ga71cba043adcb464ba130a8f249d27268"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgeev__aux.html#ga9da2eeaaaf0396e82d2561db3b9a10a4">magma_slaqtrsd</a> (magma_trans_t trans, magma_int_t n, const float *T, magma_int_t ldt, float *x, magma_int_t ldx, const float *cnorm, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLAQTRSD is used by STREVC to solve one of the (singular) quasi-triangular systems with modified diagonal (T - lambda*I) * x = 0 or (T - lambda*I)**T * x = 0 with scaling to prevent overflow.  <a href="#ga9da2eeaaaf0396e82d2561db3b9a10a4"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gae9ddfbb8a36ca14ced754179b9254bca"></a><!-- doxytag: member="slahr2.cpp::magma_slahr2" ref="gae9ddfbb8a36ca14ced754179b9254bca" args="(magma_int_t n, magma_int_t k, magma_int_t nb, float *dA, magma_int_t ldda, float *dV, magma_int_t lddv, float *A, magma_int_t lda, float *tau, float *T, magma_int_t ldt, float *Y, magma_int_t ldy)" -->
+<a class="anchor" id="gac99d701f405ab12a1725ac7cf594c4ee"></a><!-- doxytag: member="slahr2.cpp::magma_slahr2" ref="gac99d701f405ab12a1725ac7cf594c4ee" args="(magma_int_t n, magma_int_t k, magma_int_t nb, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dV, magma_int_t lddv, float *A, magma_int_t lda, float *tau, float *T, magma_int_t ldt, float *Y, magma_int_t ldy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -62,7 +62,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -74,7 +74,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9c8d8123548297948e7b1b439150be45"></a><!-- doxytag: member="slahru.cpp::magma_slahru" ref="ga9c8d8123548297948e7b1b439150be45" args="(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, float *dA, magma_int_t ldda, float *dY, magma_int_t lddy, float *dV, magma_int_t lddv, float *dT, float *dwork)" -->
+<a class="anchor" id="gad75819e356cae9be8504a1075e54476b"></a><!-- doxytag: member="slahru.cpp::magma_slahru" ref="gad75819e356cae9be8504a1075e54476b" args="(magma_int_t n, magma_int_t ihi, magma_int_t k, magma_int_t nb, float *A, magma_int_t lda, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dY, magma_int_t lddy, magmaFloat_ptr dV, magma_int_t lddv, magmaFloat_ptr dT, magmaFloat_ptr dwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -341,7 +341,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -353,7 +353,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dY</em>, </td>
         </tr>
         <tr>
@@ -365,7 +365,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dV</em>, </td>
         </tr>
         <tr>
@@ -377,13 +377,13 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -562,8 +562,8 @@
 
 <p>SLAQTRSD is used by STREVC to solve one of the (singular) quasi-triangular systems with modified diagonal (T - lambda*I) * x = 0 or (T - lambda*I)**T * x = 0 with scaling to prevent overflow. </p>
 <p>Here T is an upper quasi-triangular matrix with 1x1 or 2x2 diagonal blocks, A**T denotes the transpose of A, and x is an n-element real or complex vector. The eigenvalue lambda is computed from the block diagonal of T. It does not modify T during the computation.</p>
-<p>If trans = MagmaNoTrans, lambda is an eigenvalue for the lower 1x1 or 2x2 block, and it solves ( [ That u ] - lambda*I ) * x = 0, ( [ 0 lambda ] ) which becomes (That - lambda*I) * w = -s*u, with x = [ w ; 1 ] and scaling s. If the lower block is 1x1, lambda and x are real; if the lower block is 2x2, lambda and x are complex.</p>
-<p>If trans = MagmaTrans, lambda is an eigenvalue for the upper 1x1 or 2x2 block, and it solves ( [ lambda v^T ] - lambda I )**T * x = 0, ( [ 0 That ] ) which becomes (That - lambda*I)**T * w = -s*v, with x = [ 1 ; w ] and scaling s. If the upper block is 1x1, lambda and x are real; if the upper block is 2x2, lambda and x are complex.</p>
+<p>If trans = MagmaNoTrans, lambda is an eigenvalue for the lower 1x1 or 2x2 block, and it solves ( [ That u ] - lambda*I ) * x = 0, ( [ 0 lambda ] ) which becomes (That - lambda*I) * w = -s*u, with x = [ w; 1 ] and scaling s. If the lower block is 1x1, lambda and x are real; if the lower block is 2x2, lambda and x are complex.</p>
+<p>If trans = MagmaTrans, lambda is an eigenvalue for the upper 1x1 or 2x2 block, and it solves ( [ lambda v^T ] - lambda I )**T * x = 0, ( [ 0 That ] ) which becomes (That - lambda*I)**T * w = -s*v, with x = [ 1; w ] and scaling s. If the upper block is 1x1, lambda and x are real; if the upper block is 2x2, lambda and x are complex.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the operation applied to T.</p>
@@ -591,7 +591,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

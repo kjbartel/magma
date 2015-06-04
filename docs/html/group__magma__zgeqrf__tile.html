@@ -25,11 +25,11 @@
 [<a class="el" href="group__orthogonal.html">Orthogonal factorizations</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__tile.html#gaa2c13c33df9c2079b427fb0d32e44df4">magma_ztsqrt_gpu</a> (magma_int_t *m, magma_int_t *n, magmaDoubleComplex *A1, magmaDoubleComplex *A2, magma_int_t *lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t *lwork, magmaDoubleComplex *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#gaa2c13c33df9c2079b427fb0d32e44df4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgeqrf__tile.html#ga7ed9970612a5b114f8e6fe2fdb80c403">magma_ztsqrt_gpu</a> (magma_int_t *m, magma_int_t *n, magmaDoubleComplex *A1, magmaDoubleComplex *A2, magma_int_t *lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t *lwork, magmaDoubleComplex_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZGEQRF computes a QR factorization of a complex M-by-N matrix A: A = Q * R.  <a href="#ga7ed9970612a5b114f8e6fe2fdb80c403"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gaa2c13c33df9c2079b427fb0d32e44df4"></a><!-- doxytag: member="ztsqrt_gpu.cpp::magma_ztsqrt_gpu" ref="gaa2c13c33df9c2079b427fb0d32e44df4" args="(magma_int_t *m, magma_int_t *n, magmaDoubleComplex *A1, magmaDoubleComplex *A2, magma_int_t *lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t *lwork, magmaDoubleComplex *dwork, magma_int_t *info)" -->
+<a class="anchor" id="ga7ed9970612a5b114f8e6fe2fdb80c403"></a><!-- doxytag: member="ztsqrt_gpu.cpp::magma_ztsqrt_gpu" ref="ga7ed9970612a5b114f8e6fe2fdb80c403" args="(magma_int_t *m, magma_int_t *n, magmaDoubleComplex *A1, magmaDoubleComplex *A2, magma_int_t *lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t *lwork, magmaDoubleComplex_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -84,7 +84,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -133,7 +133,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

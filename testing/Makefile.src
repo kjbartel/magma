@@ -9,7 +9,6 @@ SHDR = \
 	
 
 CSRC = \
-	testing_c_cublas_v2.cpp \
 	testing_cgemm.cpp \
 	testing_cgemv.cpp \
 	testing_chemv.cpp \
@@ -27,9 +26,7 @@ CSRC = \
 	testing_blas_c.cpp \
 	testing_cblas_c.cpp \
 	testing_cgeadd.cpp \
-	testing_cgeadd_batched.cpp \
 	testing_clacpy.cpp \
-	testing_clacpy_batched.cpp \
 	testing_clange.cpp \
 	testing_clanhe.cpp \
 	testing_clarfg.cpp \
@@ -42,6 +39,8 @@ CSRC = \
 	testing_csymmetrize_tiles.cpp \
 	testing_cswap.cpp \
 	testing_ctranspose.cpp \
+	testing_chesv.cpp \
+	testing_chetrf.cpp \
 	testing_cposv_gpu.cpp \
 	testing_cpotrf_gpu.cpp \
 	testing_cpotf2_gpu.cpp \
@@ -56,6 +55,7 @@ CSRC = \
 	testing_cgetri_gpu.cpp \
 	testing_cgetrf_mgpu.cpp \
 	testing_cgesv.cpp \
+	testing_cgesv_rbt.cpp \
 	testing_cgetrf.cpp \
 	testing_cgegqr_gpu.cpp \
 	testing_cgelqf_gpu.cpp \
@@ -98,12 +98,23 @@ CSRC = \
 	testing_cgesvd.cpp \
 	testing_cgebrd.cpp \
 	testing_cunmbr.cpp \
+	testing_cgeadd_batched.cpp \
+	testing_clacpy_batched.cpp \
+	testing_ctrsm_batched.cpp \
+	testing_cgemm_batched.cpp \
+	testing_cherk_batched.cpp \
+	testing_cgetrf_batched.cpp \
+	testing_cgetri_batched.cpp \
+	testing_cgesv_batched.cpp \
+	testing_cgetrf_nopiv_batched.cpp \
+	testing_cgesv_nopiv_batched.cpp \
+	testing_cpotrf_batched.cpp \
+	testing_cposv_batched.cpp \
 	magma_cutil.cpp \
 	testing_cgetrf_gpu_f.F90 \
 	testing_cgetrf_f.f90
 
 DSRC = \
-	testing_d_cublas_v2.cpp \
 	testing_dgemm.cpp \
 	testing_dgemv.cpp \
 	testing_dsymv.cpp \
@@ -120,9 +131,7 @@ DSRC = \
 	testing_blas_d.cpp \
 	testing_cblas_d.cpp \
 	testing_dgeadd.cpp \
-	testing_dgeadd_batched.cpp \
 	testing_dlacpy.cpp \
-	testing_dlacpy_batched.cpp \
 	testing_dlag2s.cpp \
 	testing_dlange.cpp \
 	testing_dlansy.cpp \
@@ -137,6 +146,8 @@ DSRC = \
 	testing_dsymmetrize_tiles.cpp \
 	testing_dswap.cpp \
 	testing_dtranspose.cpp \
+	testing_dsysv.cpp \
+	testing_dsytrf.cpp \
 	testing_dsposv_gpu.cpp \
 	testing_dposv_gpu.cpp \
 	testing_dpotrf_gpu.cpp \
@@ -153,6 +164,7 @@ DSRC = \
 	testing_dgetri_gpu.cpp \
 	testing_dgetrf_mgpu.cpp \
 	testing_dgesv.cpp \
+	testing_dgesv_rbt.cpp \
 	testing_dgetrf.cpp \
 	testing_dsgeqrsv_gpu.cpp \
 	testing_dgegqr_gpu.cpp \
@@ -192,12 +204,23 @@ DSRC = \
 	testing_dgesvd.cpp \
 	testing_dgebrd.cpp \
 	testing_dormbr.cpp \
+	testing_dgeadd_batched.cpp \
+	testing_dlacpy_batched.cpp \
+	testing_dtrsm_batched.cpp \
+	testing_dgemm_batched.cpp \
+	testing_dsyrk_batched.cpp \
+	testing_dgetrf_batched.cpp \
+	testing_dgetri_batched.cpp \
+	testing_dgesv_batched.cpp \
+	testing_dgetrf_nopiv_batched.cpp \
+	testing_dgesv_nopiv_batched.cpp \
+	testing_dpotrf_batched.cpp \
+	testing_dposv_batched.cpp \
 	magma_dutil.cpp \
 	testing_dgetrf_gpu_f.F90 \
 	testing_dgetrf_f.f90
 
 SSRC = \
-	testing_s_cublas_v2.cpp \
 	testing_sgemm.cpp \
 	testing_sgemv.cpp \
 	testing_ssymv.cpp \
@@ -214,9 +237,7 @@ SSRC = \
 	testing_blas_s.cpp \
 	testing_cblas_s.cpp \
 	testing_sgeadd.cpp \
-	testing_sgeadd_batched.cpp \
 	testing_slacpy.cpp \
-	testing_slacpy_batched.cpp \
 	testing_slange.cpp \
 	testing_slansy.cpp \
 	testing_slarfg.cpp \
@@ -229,6 +250,8 @@ SSRC = \
 	testing_ssymmetrize_tiles.cpp \
 	testing_sswap.cpp \
 	testing_stranspose.cpp \
+	testing_ssysv.cpp \
+	testing_ssytrf.cpp \
 	testing_sposv_gpu.cpp \
 	testing_spotrf_gpu.cpp \
 	testing_spotf2_gpu.cpp \
@@ -243,6 +266,7 @@ SSRC = \
 	testing_sgetri_gpu.cpp \
 	testing_sgetrf_mgpu.cpp \
 	testing_sgesv.cpp \
+	testing_sgesv_rbt.cpp \
 	testing_sgetrf.cpp \
 	testing_sgegqr_gpu.cpp \
 	testing_sgelqf_gpu.cpp \
@@ -285,6 +309,18 @@ SSRC = \
 	testing_sgesvd.cpp \
 	testing_sgebrd.cpp \
 	testing_sormbr.cpp \
+	testing_sgeadd_batched.cpp \
+	testing_slacpy_batched.cpp \
+	testing_strsm_batched.cpp \
+	testing_sgemm_batched.cpp \
+	testing_ssyrk_batched.cpp \
+	testing_sgetrf_batched.cpp \
+	testing_sgetri_batched.cpp \
+	testing_sgesv_batched.cpp \
+	testing_sgetrf_nopiv_batched.cpp \
+	testing_sgesv_nopiv_batched.cpp \
+	testing_spotrf_batched.cpp \
+	testing_sposv_batched.cpp \
 	magma_sutil.cpp \
 	testing_sgetrf_gpu_f.F90 \
 	testing_sgetrf_f.f90

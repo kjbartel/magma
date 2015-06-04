@@ -25,13 +25,13 @@
 [<a class="el" href="group__magma__gels__comp.html">Least Squares solve: computational</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgels__comp.html#gaebf19dad8d8a1389771ef726b5b72b43">magma_sgeqrs3_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, float *tau, float *dT, float *dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the least squares problem min || A*X - C || using the QR factorization A = Q*R computed by SGEQRF3_GPU.  <a href="#gaebf19dad8d8a1389771ef726b5b72b43"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgels__comp.html#gaba157ece8657d09645b1802b5baed524">magma_sgeqrs_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, float *tau, float *dT, float *dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the least squares problem min || A*X - C || using the QR factorization A = Q*R computed by SGEQRF_GPU.  <a href="#gaba157ece8657d09645b1802b5baed524"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgels__comp.html#ga07000f9f7b19bae521b7833ba46b112d">magma_sgeqrs3_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, float *tau, magmaFloat_ptr dT, magmaFloat_ptr dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the least squares problem min || A*X - C || using the QR factorization A = Q*R computed by SGEQRF3_GPU.  <a href="#ga07000f9f7b19bae521b7833ba46b112d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgels__comp.html#gaa04d371b318f1f29e2a9f3bb521ce8a6">magma_sgeqrs_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, float *tau, magmaFloat_ptr dT, magmaFloat_ptr dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves the least squares problem min || A*X - C || using the QR factorization A = Q*R computed by SGEQRF_GPU.  <a href="#gaa04d371b318f1f29e2a9f3bb521ce8a6"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gaebf19dad8d8a1389771ef726b5b72b43"></a><!-- doxytag: member="sgeqrs3_gpu.cpp::magma_sgeqrs3_gpu" ref="gaebf19dad8d8a1389771ef726b5b72b43" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, float *tau, float *dT, float *dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga07000f9f7b19bae521b7833ba46b112d"></a><!-- doxytag: member="sgeqrs3_gpu.cpp::magma_sgeqrs3_gpu" ref="ga07000f9f7b19bae521b7833ba46b112d" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, float *tau, magmaFloat_ptr dT, magmaFloat_ptr dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -56,7 +56,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -74,13 +74,13 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -143,7 +143,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaba157ece8657d09645b1802b5baed524"></a><!-- doxytag: member="sgeqrs_gpu.cpp::magma_sgeqrs_gpu" ref="gaba157ece8657d09645b1802b5baed524" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, float *tau, float *dT, float *dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gaa04d371b318f1f29e2a9f3bb521ce8a6"></a><!-- doxytag: member="sgeqrs_gpu.cpp::magma_sgeqrs_gpu" ref="gaa04d371b318f1f29e2a9f3bb521ce8a6" args="(magma_int_t m, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, float *tau, magmaFloat_ptr dT, magmaFloat_ptr dB, magma_int_t lddb, float *hwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -168,7 +168,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -186,13 +186,13 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dT</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -256,7 +256,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

@@ -24,24 +24,26 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga54e1d2593c112d13b430650b1872eb2c">magma_zpotrf</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix A.  <a href="#ga54e1d2593c112d13b430650b1872eb2c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gac4a77c228e41112ad1aab5298cfe2b38">magma_zpotrf_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#gac4a77c228e41112ad1aab5298cfe2b38"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gacd31ab820b6eb3276a01d58d0558f201">magma_zpotrf2_mgpu</a> (int num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex **d_lA, magma_int_t ldda, magmaDoubleComplex **d_lP, magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#gacd31ab820b6eb3276a01d58d0558f201"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga89908fc9f56bfda0c7f9ab6e710fa77e">magma_zpotrf3_mgpu</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex *d_lA[], magma_int_t ldda, magmaDoubleComplex *d_lP[], magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga89908fc9f56bfda0c7f9ab6e710fa77e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga480bcfe9a7f73a6409e97e09cd852767">magma_zpotrf_m</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF_OOC computes the Cholesky factorization of a complex Hermitian positive definite matrix A.  <a href="#ga480bcfe9a7f73a6409e97e09cd852767"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga302f9a23d72e8a24d22419bd1990bdc0">magma_zpotrf_mgpu</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **d_lA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga302f9a23d72e8a24d22419bd1990bdc0"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gacf51a8ee3d63d755dc811dfe77526d0c">magma_zpotrf_mgpu_right</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **d_lA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#gacf51a8ee3d63d755dc811dfe77526d0c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga123bf118b2f8562076a64f57a9f945ad">magma_zpotrf3_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magmaDoubleComplex_ptr d_lP[], magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t queues[][3], magma_event_t events[][5], magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga123bf118b2f8562076a64f57a9f945ad"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga92ba831d0ced9c2472f7309e789f2857">magma_zpotrf_batched</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **dA_array, magma_int_t ldda, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga92ba831d0ced9c2472f7309e789f2857"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga8b3257063d4dca90fc64cd6709c4a7dd">magma_zpotrf_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga8b3257063d4dca90fc64cd6709c4a7dd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gae4e9f7e8272cb75031524671c277be8c">magma_zpotrf_m</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF_OOC computes the Cholesky factorization of a complex Hermitian positive definite matrix A.  <a href="#gae4e9f7e8272cb75031524671c277be8c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga18c57d9b673a6f87cc01f9d22e37d61c">magma_zpotrf_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga18c57d9b673a6f87cc01f9d22e37d61c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga58fa9644b488be64cd39aba6bc87f596">magma_zpotrf_mgpu_right</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA.  <a href="#ga58fa9644b488be64cd39aba6bc87f596"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gae2c12bee6bd4d6dee3b3c002aef0dcf1">magma_zpotri</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by ZPOTRF.  <a href="#gae2c12bee6bd4d6dee3b3c002aef0dcf1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gaf4e89d5a5966e29fb380cd0f8b429d4f">magma_zpotri_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by ZPOTRF.  <a href="#gaf4e89d5a5966e29fb380cd0f8b429d4f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga54609aa69540cf1f0157776b7cbede05">magma_zpotrs_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRS solves a system of linear equations A*X = B with a Hermitian positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by ZPOTRF.  <a href="#ga54609aa69540cf1f0157776b7cbede05"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gaaa48028a79fe088631d2832c7b85fa73">magma_zpotri_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRI computes the inverse of a real symmetric positive definite matrix A using the Cholesky factorization A = U**T*U or A = L*L**T computed by ZPOTRF.  <a href="#gaaa48028a79fe088631d2832c7b85fa73"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#ga751deb81965d5f7e3c9b218981d4bc82">magma_zpotrs_batched</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex **dA_array, magma_int_t ldda, magmaDoubleComplex **dB_array, magma_int_t lddb, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRS solves a system of linear equations A*X = B with a Hermitian positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by ZPOTRF.  <a href="#ga751deb81965d5f7e3c9b218981d4bc82"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zposv__comp.html#gaf7fe5a94d4667bb4b5246ee408201020">magma_zpotrs_gpu</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZPOTRS solves a system of linear equations A*X = B with a Hermitian positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by ZPOTRF.  <a href="#gaf7fe5a94d4667bb4b5246ee408201020"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga54e1d2593c112d13b430650b1872eb2c"></a><!-- doxytag: member="zpotrf.cpp::magma_zpotrf" ref="ga54e1d2593c112d13b430650b1872eb2c" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
@@ -118,150 +120,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacd31ab820b6eb3276a01d58d0558f201"></a><!-- doxytag: member="zpotrf2_mgpu.cpp::magma_zpotrf2_mgpu" ref="gacd31ab820b6eb3276a01d58d0558f201" args="(int num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex **d_lA, magma_int_t ldda, magmaDoubleComplex **d_lP, magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">magma_int_t magma_zpotrf2_mgpu </td>
-          <td>(</td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_uplo_t&nbsp;</td>
-          <td class="paramname"> <em>uplo</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>m</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>off_i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>off_j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>ldda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>d_lP</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lddp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>lda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>h</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][3], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_event_t&nbsp;</td>
-          <td class="paramname"> <em>event</em>[][5], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">magma_int_t *&nbsp;</td>
-          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA. </p>
-<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
-<p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
-<ul>
-<li>= MagmaUpper: Upper triangle of dA is stored;</li>
-<li>= MagmaLower: Lower triangle of dA is stored.</li>
-</ul>
-</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDA,N) On entry, the Hermitian matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
- On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
-<ul>
-<li>= 0: successful exit</li>
-<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
-<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed. </li>
-</ul>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga89908fc9f56bfda0c7f9ab6e710fa77e"></a><!-- doxytag: member="zpotrf3_mgpu.cpp::magma_zpotrf3_mgpu" ref="ga89908fc9f56bfda0c7f9ab6e710fa77e" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex *d_lA[], magma_int_t ldda, magmaDoubleComplex *d_lP[], magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t stream[][3], magma_event_t event[][5], magma_int_t *info)" -->
+<a class="anchor" id="ga123bf118b2f8562076a64f57a9f945ad"></a><!-- doxytag: member="zpotrf3_mgpu.cpp::magma_zpotrf3_mgpu" ref="ga123bf118b2f8562076a64f57a9f945ad" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t m, magma_int_t n, magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magmaDoubleComplex_ptr d_lP[], magma_int_t lddp, magmaDoubleComplex *A, magma_int_t lda, magma_int_t h, magma_queue_t queues[][3], magma_event_t events[][5], magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -269,7 +128,7 @@
           <td class="memname">magma_int_t magma_zpotrf3_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -310,7 +169,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
@@ -322,7 +181,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lP</em>[], </td>
         </tr>
         <tr>
@@ -353,13 +212,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][3], </td>
+          <td class="paramname"> <em>queues</em>[][3], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_event_t&nbsp;</td>
-          <td class="paramname"> <em>event</em>[][5], </td>
+          <td class="paramname"> <em>events</em>[][5], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -405,12 +264,12 @@
 
 </div>
 </div>
-<a class="anchor" id="gac4a77c228e41112ad1aab5298cfe2b38"></a><!-- doxytag: member="zpotrf2_gpu.cpp::magma_zpotrf_gpu" ref="gac4a77c228e41112ad1aab5298cfe2b38" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga92ba831d0ced9c2472f7309e789f2857"></a><!-- doxytag: member="zpotrf_batched.cpp::magma_zpotrf_batched" ref="ga92ba831d0ced9c2472f7309e789f2857" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **dA_array, magma_int_t ldda, magma_int_t *info_array, magma_int_t batchCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">magma_int_t magma_zpotrf_gpu </td>
+          <td class="memname">magma_int_t magma_zpotrf_batched </td>
           <td>(</td>
           <td class="paramtype">magma_uplo_t&nbsp;</td>
           <td class="paramname"> <em>uplo</em>, </td>
@@ -424,8 +283,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
-          <td class="paramname"> <em>dA</em>, </td>
+          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -437,7 +296,13 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t *&nbsp;</td>
-          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -449,30 +314,6 @@
 <div class="memdoc">
 
 <p>ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA. </p>
-<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
-<p>This is the block version of the algorithm, calling Level 3 BLAS. This version assumes the computation runs through the NULL stream and therefore is not overlapping some computation with communication.</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
-<ul>
-<li>= MagmaUpper: Upper triangle of dA is stored;</li>
-<li>= MagmaLower: Lower triangle of dA is stored.</li>
-</ul>
-</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDA,N) On entry, the Hermitian matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
- On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
-<ul>
-<li>= 0: successful exit</li>
-<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
-<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed.</li>
-</ul>
-</td></tr>
-  </table>
-  </dd>
-</dl>
 <p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
 <p>This is the block version of the algorithm, calling Level 3 BLAS. If the current stream is NULL, this version replaces it with a new stream to overlap computation with communication.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
@@ -500,7 +341,78 @@
 
 </div>
 </div>
-<a class="anchor" id="ga480bcfe9a7f73a6409e97e09cd852767"></a><!-- doxytag: member="zpotrf_m.cpp::magma_zpotrf_m" ref="ga480bcfe9a7f73a6409e97e09cd852767" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
+<a class="anchor" id="ga8b3257063d4dca90fc64cd6709c4a7dd"></a><!-- doxytag: member="zpotrf_gpu.cpp::magma_zpotrf_gpu" ref="ga8b3257063d4dca90fc64cd6709c4a7dd" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zpotrf_gpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>ZPOTRF computes the Cholesky factorization of a complex Hermitian positive definite matrix dA. </p>
+<p>The factorization has the form dA = U**H * U, if UPLO = MagmaUpper, or dA = L * L**H, if UPLO = MagmaLower, where U is an upper triangular matrix and L is lower triangular.</p>
+<p>This is the block version of the algorithm, calling Level 3 BLAS. If the current stream is NULL, this version replaces it with a new stream to overlap computation with communication.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of dA is stored;</li>
+<li>= MagmaLower: Lower triangle of dA is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDA,N) On entry, the Hermitian matrix dA. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+ On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
+<li>&gt; 0: if INFO = i, the leading minor of order i is not positive definite, and the factorization could not be completed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gae4e9f7e8272cb75031524671c277be8c"></a><!-- doxytag: member="zpotrf_m.cpp::magma_zpotrf_m" ref="gae4e9f7e8272cb75031524671c277be8c" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -508,7 +420,7 @@
           <td class="memname">magma_int_t magma_zpotrf_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -555,7 +467,7 @@
 <p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs. num_gpus &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of A is stored;</li>
@@ -580,7 +492,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga302f9a23d72e8a24d22419bd1990bdc0"></a><!-- doxytag: member="zpotrf_mgpu.cpp::magma_zpotrf_mgpu" ref="ga302f9a23d72e8a24d22419bd1990bdc0" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **d_lA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga18c57d9b673a6f87cc01f9d22e37d61c"></a><!-- doxytag: member="zpotrf_mgpu.cpp::magma_zpotrf_mgpu" ref="ga18c57d9b673a6f87cc01f9d22e37d61c" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -588,7 +500,7 @@
           <td class="memname">magma_int_t magma_zpotrf_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -605,8 +517,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -634,7 +546,7 @@
 <p>This is the block version of the algorithm, calling Level 3 BLAS.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs to be used for the factorization.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of dA is stored;</li>
@@ -642,7 +554,7 @@
 </ul>
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>COMPLEX_16 array of pointers on the GPU, dimension (num_gpus) On entry, the Hermitian matrix dA distributed over GPUs (d_lA[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>COMPLEX_16 array of pointers on the GPU, dimension (ngpu) On entry, the Hermitian matrix dA distributed over GPUs (d_lA[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
  On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array d_lA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
@@ -658,7 +570,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacf51a8ee3d63d755dc811dfe77526d0c"></a><!-- doxytag: member="zpotrf_mgpu_right.cpp::magma_zpotrf_mgpu_right" ref="gacf51a8ee3d63d755dc811dfe77526d0c" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex **d_lA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="ga58fa9644b488be64cd39aba6bc87f596"></a><!-- doxytag: member="zpotrf_mgpu_right.cpp::magma_zpotrf_mgpu_right" ref="ga58fa9644b488be64cd39aba6bc87f596" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr d_lA[], magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -666,7 +578,7 @@
           <td class="memname">magma_int_t magma_zpotrf_mgpu_right </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -683,8 +595,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -719,7 +631,7 @@
 </ul>
 </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix dA. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>COMPLEX_16 array of pointers on the GPU, dimension (num_gpus) On entry, the Hermitian matrix dA distributed over GPUs (dl_A[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>COMPLEX_16 array of pointers on the GPU, dimension (ngpu) On entry, the Hermitian matrix dA distributed over GPUs (dl_A[d] points to the local matrix on the d-th GPU). It is distributed in 1D block column or row cyclic (with the block size of nb) if UPLO = MagmaUpper or MagmaLower, respectively. If UPLO = MagmaUpper, the leading N-by-N upper triangular part of dA contains the upper triangular part of the matrix dA, and the strictly lower triangular part of dA is not referenced. If UPLO = MagmaLower, the leading N-by-N lower triangular part of dA contains the lower triangular part of the matrix dA, and the strictly upper triangular part of dA is not referenced. <br/>
  On exit, if INFO = 0, the factor U or L from the Cholesky factorization dA = U**H * U or dA = L * L**H.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array dA. LDDA &gt;= max(1,N). To benefit from coalescent memory accesses LDDA must be divisible by 16.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
@@ -803,7 +715,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf4e89d5a5966e29fb380cd0f8b429d4f"></a><!-- doxytag: member="zpotri_gpu.cpp::magma_zpotri_gpu" ref="gaf4e89d5a5966e29fb380cd0f8b429d4f" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="gaaa48028a79fe088631d2832c7b85fa73"></a><!-- doxytag: member="zpotri_gpu.cpp::magma_zpotri_gpu" ref="gaaa48028a79fe088631d2832c7b85fa73" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -822,7 +734,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -871,7 +783,95 @@
 
 </div>
 </div>
-<a class="anchor" id="ga54609aa69540cf1f0157776b7cbede05"></a><!-- doxytag: member="zpotrs_gpu.cpp::magma_zpotrs_gpu" ref="ga54609aa69540cf1f0157776b7cbede05" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga751deb81965d5f7e3c9b218981d4bc82"></a><!-- doxytag: member="zpotrs_batched.cpp::magma_zpotrs_batched" ref="ga751deb81965d5f7e3c9b218981d4bc82" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex **dA_array, magma_int_t ldda, magmaDoubleComplex **dB_array, magma_int_t lddb, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_zpotrs_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_uplo_t&nbsp;</td>
+          <td class="paramname"> <em>uplo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaDoubleComplex **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>ZPOTRS solves a system of linear equations A*X = B with a Hermitian positive definite matrix A using the Cholesky factorization A = U**H*U or A = L*L**H computed by ZPOTRF. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
+<ul>
+<li>= MagmaUpper: Upper triangle of A is stored;</li>
+<li>= MagmaLower: Lower triangle of A is stored.</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDA,N) The triangular factor U or L from the Cholesky factorization A = U**H*U or A = L*L**H, as computed by ZPOTRF.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>COMPLEX_16 array on the GPU, dimension (LDDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf7fe5a94d4667bb4b5246ee408201020"></a><!-- doxytag: member="zpotrs_gpu.cpp::magma_zpotrs_gpu" ref="gaf7fe5a94d4667bb4b5246ee408201020" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nrhs, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -896,7 +896,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -908,7 +908,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -960,7 +960,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

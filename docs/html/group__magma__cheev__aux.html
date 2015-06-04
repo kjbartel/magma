@@ -25,15 +25,15 @@
 [<a class="el" href="group__magma__syev__aux.html">Symmetric eigenvalue: auxiliary</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#ga4a5ea393fa2e81ea160ddbd351cdd9c6">magma_clatrd</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dW, magma_int_t lddw)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#ga4a5ea393fa2e81ea160ddbd351cdd9c6"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#ga43e864091525627c1044e11e4f21026e">magma_clatrd2</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dwork, magma_int_t ldwork)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD2 reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#ga43e864091525627c1044e11e4f21026e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#ga3f0d2290c7aa93d268ae6a1baf625218">magma_clatrd_mgpu</a> (magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n0, magma_int_t n, magma_int_t nb, magma_int_t nb0, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex **dA, magma_int_t ldda, magma_int_t offset, magmaFloatComplex **dW, magma_int_t lddw, magmaFloatComplex *dwork[MagmaMaxGPUs], magma_int_t ldwork, magma_int_t k, magmaFloatComplex *dx[MagmaMaxGPUs], magmaFloatComplex *dy[MagmaMaxGPUs], magmaFloatComplex *work, magma_queue_t stream[][10], float *times)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#ga3f0d2290c7aa93d268ae6a1baf625218"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#ga85c7f8242c61a4f61fbf123a9c56ba3a">magma_clatrd</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dW, magma_int_t lddw)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#ga85c7f8242c61a4f61fbf123a9c56ba3a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#gaafa72a38ad1ef67402edcc3726578548">magma_clatrd2</a> (magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dW, magma_int_t lddw, magmaFloatComplex_ptr dwork, magma_int_t ldwork)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD2 reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#gaafa72a38ad1ef67402edcc3726578548"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__cheev__aux.html#ga2cba7e47720b298b6c59f6e7f14e3130">magma_clatrd_mgpu</a> (magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n0, magma_int_t n, magma_int_t nb, magma_int_t nb0, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA[], magma_int_t ldda, magma_int_t offset, magmaFloatComplex_ptr dW[], magma_int_t lddw, magmaFloatComplex_ptr dwork[], magma_int_t ldwork, magma_int_t k, magmaFloatComplex_ptr dx[], magmaFloatComplex_ptr dy[], magmaFloatComplex *work, magma_queue_t queues[][10], float *times)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">CLATRD reduces NB rows and columns of a complex Hermitian matrix A to Hermitian tridiagonal form by an orthogonal similarity transformation Q' * A * Q, and returns the matrices V and W which are needed to apply the transformation to the unreduced part of A.  <a href="#ga2cba7e47720b298b6c59f6e7f14e3130"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga4a5ea393fa2e81ea160ddbd351cdd9c6"></a><!-- doxytag: member="clatrd.cpp::magma_clatrd" ref="ga4a5ea393fa2e81ea160ddbd351cdd9c6" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dW, magma_int_t lddw)" -->
+<a class="anchor" id="ga85c7f8242c61a4f61fbf123a9c56ba3a"></a><!-- doxytag: member="clatrd.cpp::magma_clatrd" ref="ga85c7f8242c61a4f61fbf123a9c56ba3a" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dW, magma_int_t lddw)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -94,7 +94,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -106,7 +106,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dW</em>, </td>
         </tr>
         <tr>
@@ -169,7 +169,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga43e864091525627c1044e11e4f21026e"></a><!-- doxytag: member="clatrd2.cpp::magma_clatrd2" ref="ga43e864091525627c1044e11e4f21026e" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex *dA, magma_int_t ldda, magmaFloatComplex *dW, magma_int_t lddw, magmaFloatComplex *dwork, magma_int_t ldwork)" -->
+<a class="anchor" id="gaafa72a38ad1ef67402edcc3726578548"></a><!-- doxytag: member="clatrd2.cpp::magma_clatrd2" ref="gaafa72a38ad1ef67402edcc3726578548" args="(magma_uplo_t uplo, magma_int_t n, magma_int_t nb, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA, magma_int_t ldda, magmaFloatComplex_ptr dW, magma_int_t lddw, magmaFloatComplex_ptr dwork, magma_int_t ldwork)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -230,7 +230,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -242,7 +242,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dW</em>, </td>
         </tr>
         <tr>
@@ -254,7 +254,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -317,7 +317,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga3f0d2290c7aa93d268ae6a1baf625218"></a><!-- doxytag: member="clatrd_mgpu.cpp::magma_clatrd_mgpu" ref="ga3f0d2290c7aa93d268ae6a1baf625218" args="(magma_int_t num_gpus, magma_uplo_t uplo, magma_int_t n0, magma_int_t n, magma_int_t nb, magma_int_t nb0, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex **dA, magma_int_t ldda, magma_int_t offset, magmaFloatComplex **dW, magma_int_t lddw, magmaFloatComplex *dwork[MagmaMaxGPUs], magma_int_t ldwork, magma_int_t k, magmaFloatComplex *dx[MagmaMaxGPUs], magmaFloatComplex *dy[MagmaMaxGPUs], magmaFloatComplex *work, magma_queue_t stream[][10], float *times)" -->
+<a class="anchor" id="ga2cba7e47720b298b6c59f6e7f14e3130"></a><!-- doxytag: member="clatrd_mgpu.cpp::magma_clatrd_mgpu" ref="ga2cba7e47720b298b6c59f6e7f14e3130" args="(magma_int_t ngpu, magma_uplo_t uplo, magma_int_t n0, magma_int_t n, magma_int_t nb, magma_int_t nb0, magmaFloatComplex *A, magma_int_t lda, float *e, magmaFloatComplex *tau, magmaFloatComplex *W, magma_int_t ldw, magmaFloatComplex_ptr dA[], magma_int_t ldda, magma_int_t offset, magmaFloatComplex_ptr dW[], magma_int_t lddw, magmaFloatComplex_ptr dwork[], magma_int_t ldwork, magma_int_t k, magmaFloatComplex_ptr dx[], magmaFloatComplex_ptr dy[], magmaFloatComplex *work, magma_queue_t queues[][10], float *times)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -325,7 +325,7 @@
           <td class="memname">magma_int_t magma_clatrd_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -396,8 +396,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dA</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -414,8 +414,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex **&nbsp;</td>
-          <td class="paramname"> <em>dW</em>, </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dW</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -426,8 +426,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>dwork</em>[MagmaMaxGPUs], </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dwork</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -444,14 +444,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>dx</em>[MagmaMaxGPUs], </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dx</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaFloatComplex *&nbsp;</td>
-          <td class="paramname"> <em>dy</em>[MagmaMaxGPUs], </td>
+          <td class="paramtype">magmaFloatComplex_ptr&nbsp;</td>
+          <td class="paramname"> <em>dy</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -463,7 +463,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][10], </td>
+          <td class="paramname"> <em>queues</em>[][10], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -526,7 +526,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

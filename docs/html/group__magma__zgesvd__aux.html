@@ -25,13 +25,13 @@
 <a href="#_details">More...</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgesvd__aux.html#ga0fa23c0b1dfae14cb4bf0b17212dfb16">magma_zlabrd_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nb, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tauq, magmaDoubleComplex *taup, magmaDoubleComplex *X, magma_int_t ldx, magmaDoubleComplex *dX, magma_int_t lddx, magmaDoubleComplex *Y, magma_int_t ldy, magmaDoubleComplex *dY, magma_int_t lddy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLABRD reduces the first NB rows and columns of a complex general m by n matrix A to upper or lower bidiagonal form by an orthogonal transformation Q' * A * P, and returns the matrices X and Y which are needed to apply the transformation to the unreduced part of A.  <a href="#ga0fa23c0b1dfae14cb4bf0b17212dfb16"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zgesvd__aux.html#gaae5049ca4e0d759df606eec7b874dea4">magma_zlabrd_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nb, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tauq, magmaDoubleComplex *taup, magmaDoubleComplex *X, magma_int_t ldx, magmaDoubleComplex_ptr dX, magma_int_t lddx, magmaDoubleComplex *Y, magma_int_t ldy, magmaDoubleComplex_ptr dY, magma_int_t lddy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZLABRD reduces the first NB rows and columns of a complex general m by n matrix A to upper or lower bidiagonal form by an orthogonal transformation Q' * A * P, and returns the matrices X and Y which are needed to apply the transformation to the unreduced part of A.  <a href="#gaae5049ca4e0d759df606eec7b874dea4"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>------------------------------------------------------------ </p>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga0fa23c0b1dfae14cb4bf0b17212dfb16"></a><!-- doxytag: member="zlabrd_gpu.cpp::magma_zlabrd_gpu" ref="ga0fa23c0b1dfae14cb4bf0b17212dfb16" args="(magma_int_t m, magma_int_t n, magma_int_t nb, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tauq, magmaDoubleComplex *taup, magmaDoubleComplex *X, magma_int_t ldx, magmaDoubleComplex *dX, magma_int_t lddx, magmaDoubleComplex *Y, magma_int_t ldy, magmaDoubleComplex *dY, magma_int_t lddy)" -->
+<a class="anchor" id="gaae5049ca4e0d759df606eec7b874dea4"></a><!-- doxytag: member="zlabrd_gpu.cpp::magma_zlabrd_gpu" ref="gaae5049ca4e0d759df606eec7b874dea4" args="(magma_int_t m, magma_int_t n, magma_int_t nb, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tauq, magmaDoubleComplex *taup, magmaDoubleComplex *X, magma_int_t ldx, magmaDoubleComplex_ptr dX, magma_int_t lddx, magmaDoubleComplex *Y, magma_int_t ldy, magmaDoubleComplex_ptr dY, magma_int_t lddy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -68,7 +68,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -116,7 +116,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dX</em>, </td>
         </tr>
         <tr>
@@ -140,7 +140,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dY</em>, </td>
         </tr>
         <tr>
@@ -209,7 +209,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

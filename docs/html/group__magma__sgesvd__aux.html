@@ -25,11 +25,11 @@
 [<a class="el" href="group__magma__gesvd__aux.html">SVD: auxiliary</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__aux.html#gaf8c8f506e61454168979cd7c26a30194">magma_slabrd_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nb, float *A, magma_int_t lda, float *dA, magma_int_t ldda, float *d, float *e, float *tauq, float *taup, float *X, magma_int_t ldx, float *dX, magma_int_t lddx, float *Y, magma_int_t ldy, float *dY, magma_int_t lddy)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLABRD reduces the first NB rows and columns of a real general m by n matrix A to upper or lower bidiagonal form by an orthogonal transformation Q' * A * P, and returns the matrices X and Y which are needed to apply the transformation to the unreduced part of A.  <a href="#gaf8c8f506e61454168979cd7c26a30194"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesvd__aux.html#ga4acc87865b6d0c2c47b969f5b790d92e">magma_slabrd_gpu</a> (magma_int_t m, magma_int_t n, magma_int_t nb, float *A, magma_int_t lda, magmaFloat_ptr dA, magma_int_t ldda, float *d, float *e, float *tauq, float *taup, float *X, magma_int_t ldx, magmaFloat_ptr dX, magma_int_t lddx, float *Y, magma_int_t ldy, magmaFloat_ptr dY, magma_int_t lddy)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SLABRD reduces the first NB rows and columns of a real general m by n matrix A to upper or lower bidiagonal form by an orthogonal transformation Q' * A * P, and returns the matrices X and Y which are needed to apply the transformation to the unreduced part of A.  <a href="#ga4acc87865b6d0c2c47b969f5b790d92e"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="gaf8c8f506e61454168979cd7c26a30194"></a><!-- doxytag: member="slabrd_gpu.cpp::magma_slabrd_gpu" ref="gaf8c8f506e61454168979cd7c26a30194" args="(magma_int_t m, magma_int_t n, magma_int_t nb, float *A, magma_int_t lda, float *dA, magma_int_t ldda, float *d, float *e, float *tauq, float *taup, float *X, magma_int_t ldx, float *dX, magma_int_t lddx, float *Y, magma_int_t ldy, float *dY, magma_int_t lddy)" -->
+<a class="anchor" id="ga4acc87865b6d0c2c47b969f5b790d92e"></a><!-- doxytag: member="slabrd_gpu.cpp::magma_slabrd_gpu" ref="ga4acc87865b6d0c2c47b969f5b790d92e" args="(magma_int_t m, magma_int_t n, magma_int_t nb, float *A, magma_int_t lda, magmaFloat_ptr dA, magma_int_t ldda, float *d, float *e, float *tauq, float *taup, float *X, magma_int_t ldx, magmaFloat_ptr dX, magma_int_t lddx, float *Y, magma_int_t ldy, magmaFloat_ptr dY, magma_int_t lddy)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -66,7 +66,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -114,7 +114,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dX</em>, </td>
         </tr>
         <tr>
@@ -138,7 +138,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dY</em>, </td>
         </tr>
         <tr>
@@ -207,7 +207,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

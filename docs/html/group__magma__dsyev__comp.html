@@ -29,28 +29,28 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORGTR generates a real unitary matrix Q which is defined as the product of n-1 elementary reflectors of order N, as returned by DSYTRD:.  <a href="#gaba9eb3b3ba9aad7e64baac4d4de1014e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga829949906bb96858703e9af38abe4d4f">magma_dormtr</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *tau, double *C, magma_int_t ldc, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORMTR overwrites the general real M-by-N matrix C with.  <a href="#ga829949906bb96858703e9af38abe4d4f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga3dd3068abc6a925acd43a519485b29b0">magma_dormtr_gpu</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *dA, magma_int_t ldda, double *tau, double *dC, magma_int_t lddc, double *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORMTR overwrites the general real M-by-N matrix C with.  <a href="#ga3dd3068abc6a925acd43a519485b29b0"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga67198bf9d32c0a1b11a978b1ab6ccc6b">magma_dormtr_m</a> (magma_int_t nrgpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *tau, double *C, magma_int_t ldc, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORMTR overwrites the general real M-by-N matrix C with.  <a href="#ga67198bf9d32c0a1b11a978b1ab6ccc6b"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gae59454db975021c4b9756d6f504f0660">magma_dstedx</a> (magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, double *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSTEDX computes some eigenvalues and, optionally, eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#gae59454db975021c4b9756d6f504f0660"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gabed8dabe02b3291d159cebe3f0435db0">magma_dstedx_m</a> (magma_int_t nrgpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSTEDX computes some eigenvalues and, optionally, eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#gabed8dabe02b3291d159cebe3f0435db0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gacc8393b62d62f60d1adb60159e45f1ec">magma_dormtr_gpu</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *tau, magmaDouble_ptr dC, magma_int_t lddc, double *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORMTR overwrites the general real M-by-N matrix C with.  <a href="#gacc8393b62d62f60d1adb60159e45f1ec"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga9b28a09e3245a7f31f1b4040007bfbc3">magma_dormtr_m</a> (magma_int_t ngpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *tau, double *C, magma_int_t ldc, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DORMTR overwrites the general real M-by-N matrix C with.  <a href="#ga9b28a09e3245a7f31f1b4040007bfbc3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga894ce156db4fe17a0997135548f3db20">magma_dstedx</a> (magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magmaDouble_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSTEDX computes some eigenvalues and, optionally, eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga894ce156db4fe17a0997135548f3db20"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga7a2db17db761047f9a4f32e57c9c21df">magma_dstedx_m</a> (magma_int_t ngpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSTEDX computes some eigenvalues and, optionally, eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga7a2db17db761047f9a4f32e57c9c21df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga9490b0e0440579cc806c5070a4c605df">magma_dsygst</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGST reduces a real symmetric-definite generalized eigenproblem to standard form.  <a href="#ga9490b0e0440579cc806c5070a4c605df"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga5fc9d3648608f921706bfc6782abaee8">magma_dsygst_gpu</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGST_GPU reduces a real symmetric-definite generalized eigenproblem to standard form.  <a href="#ga5fc9d3648608f921706bfc6782abaee8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gab05e406a9d889e88c5d0902d86e6e985">magma_dsygst_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGST_M reduces a real symmetric-definite generalized eigenproblem to standard form.  <a href="#gab05e406a9d889e88c5d0902d86e6e985"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga37dabf1bf650679188bae05c173006ea">magma_dsygst_gpu</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magmaDouble_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGST_GPU reduces a real symmetric-definite generalized eigenproblem to standard form.  <a href="#ga37dabf1bf650679188bae05c173006ea"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga744698b0b1b1d5cb435329470277cdc4">magma_dsygst_m</a> (magma_int_t ngpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYGST_M reduces a real symmetric-definite generalized eigenproblem to standard form.  <a href="#ga744698b0b1b1d5cb435329470277cdc4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga46c485cec62267b9f24ffc3eb4305c69">magma_dsytrd</a> (magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *d, double *e, double *tau, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga46c485cec62267b9f24ffc3eb4305c69"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga2ab5847e342b9f5a49182af3f7114aa1">magma_dsytrd2_gpu</a> (magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, double *dwork, magma_int_t ldwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD2_GPU reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga2ab5847e342b9f5a49182af3f7114aa1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gacf7412210473e5b65539291e603124f8">magma_dsytrd_gpu</a> (magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD_GPU reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gacf7412210473e5b65539291e603124f8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga2b33ea1967706029d337b8de8226aa57">magma_dsytrd_mgpu</a> (magma_int_t num_gpus, magma_int_t num_streams, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *d, double *e, double *tau, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga2b33ea1967706029d337b8de8226aa57"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gadfcf65a00bbe01620426a2462b899044">magma_dsytrd2_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magmaDouble_ptr dwork, magma_int_t ldwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD2_GPU reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gadfcf65a00bbe01620426a2462b899044"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#gaf8d769f460e01f69b8bfdd566b30a7a0">magma_dsytrd_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD_GPU reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gaf8d769f460e01f69b8bfdd566b30a7a0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__dsyev__comp.html#ga12c2cfab95004950c4f37d9da5a8f512">magma_dsytrd_mgpu</a> (magma_int_t ngpu, magma_int_t nqueue, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *d, double *e, double *tau, double *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">DSYTRD reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga12c2cfab95004950c4f37d9da5a8f512"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gaba9eb3b3ba9aad7e64baac4d4de1014e"></a><!-- doxytag: member="dorgtr.cpp::magma_dorgtr" ref="gaba9eb3b3ba9aad7e64baac4d4de1014e" args="(magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *tau, double *work, magma_int_t lwork, double *dT, magma_int_t nb, magma_int_t *info)" -->
@@ -296,7 +296,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga3dd3068abc6a925acd43a519485b29b0"></a><!-- doxytag: member="dormtr_gpu.cpp::magma_dormtr_gpu" ref="ga3dd3068abc6a925acd43a519485b29b0" args="(magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *dA, magma_int_t ldda, double *tau, double *dC, magma_int_t lddc, double *wA, magma_int_t ldwa, magma_int_t *info)" -->
+<a class="anchor" id="gacc8393b62d62f60d1adb60159e45f1ec"></a><!-- doxytag: member="dormtr_gpu.cpp::magma_dormtr_gpu" ref="gacc8393b62d62f60d1adb60159e45f1ec" args="(magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *tau, magmaDouble_ptr dC, magma_int_t lddc, double *wA, magma_int_t ldwa, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -333,7 +333,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -351,7 +351,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
@@ -433,7 +433,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga67198bf9d32c0a1b11a978b1ab6ccc6b"></a><!-- doxytag: member="dormtr_m.cpp::magma_dormtr_m" ref="ga67198bf9d32c0a1b11a978b1ab6ccc6b" args="(magma_int_t nrgpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *tau, double *C, magma_int_t ldc, double *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga9b28a09e3245a7f31f1b4040007bfbc3"></a><!-- doxytag: member="dormtr_m.cpp::magma_dormtr_m" ref="ga9b28a09e3245a7f31f1b4040007bfbc3" args="(magma_int_t ngpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, double *A, magma_int_t lda, double *tau, double *C, magma_int_t ldc, double *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -441,7 +441,7 @@
           <td class="memname">magma_int_t magma_dormtr_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -537,7 +537,7 @@
 <p>if UPLO = MagmaLower, Q = H(1) H(2) . . . H(nq-1).</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>side</em>&nbsp;</td><td>magma_side_t</p>
 <ul>
 <li>= MagmaLeft: apply Q or Q**H from the Left;</li>
@@ -578,7 +578,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gae59454db975021c4b9756d6f504f0660"></a><!-- doxytag: member="dstedx.cpp::magma_dstedx" ref="gae59454db975021c4b9756d6f504f0660" args="(magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, double *dwork, magma_int_t *info)" -->
+<a class="anchor" id="ga894ce156db4fe17a0997135548f3db20"></a><!-- doxytag: member="dstedx.cpp::magma_dstedx" ref="ga894ce156db4fe17a0997135548f3db20" args="(magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magmaDouble_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -669,7 +669,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -728,7 +728,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gabed8dabe02b3291d159cebe3f0435db0"></a><!-- doxytag: member="dstedx_m.cpp::magma_dstedx_m" ref="gabed8dabe02b3291d159cebe3f0435db0" args="(magma_int_t nrgpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga7a2db17db761047f9a4f32e57c9c21df"></a><!-- doxytag: member="dstedx_m.cpp::magma_dstedx_m" ref="ga7a2db17db761047f9a4f32e57c9c21df" args="(magma_int_t ngpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, double *Z, magma_int_t ldz, double *work, magma_int_t lwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -736,7 +736,7 @@
           <td class="memname">magma_int_t magma_dstedx_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -841,7 +841,7 @@
 <p>This code makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none. See DLAEX3 for details.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>range</em>&nbsp;</td><td>magma_range_t</p>
 <ul>
 <li>= MagmaRangeAll: all eigenvalues will be found.</li>
@@ -970,7 +970,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga5fc9d3648608f921706bfc6782abaee8"></a><!-- doxytag: member="dsygst_gpu.cpp::magma_dsygst_gpu" ref="ga5fc9d3648608f921706bfc6782abaee8" args="(magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga37dabf1bf650679188bae05c173006ea"></a><!-- doxytag: member="dsygst_gpu.cpp::magma_dsygst_gpu" ref="ga37dabf1bf650679188bae05c173006ea" args="(magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, magmaDouble_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -995,7 +995,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1007,7 +1007,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -1062,7 +1062,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gab05e406a9d889e88c5d0902d86e6e985"></a><!-- doxytag: member="dsygst_m.cpp::magma_dsygst_m" ref="gab05e406a9d889e88c5d0902d86e6e985" args="(magma_int_t nrgpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, magma_int_t *info)" -->
+<a class="anchor" id="ga744698b0b1b1d5cb435329470277cdc4"></a><!-- doxytag: member="dsygst_m.cpp::magma_dsygst_m" ref="ga744698b0b1b1d5cb435329470277cdc4" args="(magma_int_t ngpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *B, magma_int_t ldb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1070,7 +1070,7 @@
           <td class="memname">magma_int_t magma_dsygst_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1135,7 +1135,7 @@
 <p>B must have been previously factorized as U**H*U or L*L**H by DPOTRF.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER = 1: compute inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H); = 2 or 3: compute U*A*U**H or L**H*A*L.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
@@ -1278,7 +1278,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga2ab5847e342b9f5a49182af3f7114aa1"></a><!-- doxytag: member="dsytrd2_gpu.cpp::magma_dsytrd2_gpu" ref="ga2ab5847e342b9f5a49182af3f7114aa1" args="(magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, double *dwork, magma_int_t ldwork, magma_int_t *info)" -->
+<a class="anchor" id="gadfcf65a00bbe01620426a2462b899044"></a><!-- doxytag: member="dsytrd2_gpu.cpp::magma_dsytrd2_gpu" ref="gadfcf65a00bbe01620426a2462b899044" args="(magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magmaDouble_ptr dwork, magma_int_t ldwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1297,7 +1297,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1351,7 +1351,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -1424,7 +1424,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacf7412210473e5b65539291e603124f8"></a><!-- doxytag: member="dsytrd_gpu.cpp::magma_dsytrd_gpu" ref="gacf7412210473e5b65539291e603124f8" args="(magma_uplo_t uplo, magma_int_t n, double *dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gaf8d769f460e01f69b8bfdd566b30a7a0"></a><!-- doxytag: member="dsytrd_gpu.cpp::magma_dsytrd_gpu" ref="gaf8d769f460e01f69b8bfdd566b30a7a0" args="(magma_uplo_t uplo, magma_int_t n, magmaDouble_ptr dA, magma_int_t ldda, double *d, double *e, double *tau, double *wA, magma_int_t ldwa, double *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1443,7 +1443,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1555,7 +1555,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga2b33ea1967706029d337b8de8226aa57"></a><!-- doxytag: member="dsytrd_mgpu.cpp::magma_dsytrd_mgpu" ref="ga2b33ea1967706029d337b8de8226aa57" args="(magma_int_t num_gpus, magma_int_t num_streams, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *d, double *e, double *tau, double *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga12c2cfab95004950c4f37d9da5a8f512"></a><!-- doxytag: member="dsytrd_mgpu.cpp::magma_dsytrd_mgpu" ref="ga12c2cfab95004950c4f37d9da5a8f512" args="(magma_int_t ngpu, magma_int_t nqueue, magma_uplo_t uplo, magma_int_t n, double *A, magma_int_t lda, double *d, double *e, double *tau, double *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1563,13 +1563,13 @@
           <td class="memname">magma_int_t magma_dsytrd_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_streams</em>, </td>
+          <td class="paramname"> <em>nqueue</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1643,8 +1643,8 @@
 <p>DSYTRD reduces a real symmetric matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs. num_gpus &gt; 0.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_streams</em>&nbsp;</td><td>INTEGER The number of GPU streams used for update. 10 &gt;= num_streams &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nqueue</em>&nbsp;</td><td>INTEGER The number of GPU streams used for update. 10 &gt;= nqueue &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of A is stored;</li>
@@ -1687,7 +1687,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

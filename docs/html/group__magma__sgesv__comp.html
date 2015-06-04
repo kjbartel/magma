@@ -25,26 +25,346 @@
 [<a class="el" href="group__magma__gesv__comp.html">LU solve: computational</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga1953d36d4c2d989f90a93c5d245548da">magma_sgerbt_batched</a> (magma_bool_t gen, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, float *U, float *V, magma_int_t *info, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices.  <a href="#ga1953d36d4c2d989f90a93c5d245548da"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gaaecfb7fcb071258cf6ae9b7d62870364">magma_sgerbt_gpu</a> (magma_bool_t gen, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, float *U, float *V, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices.  <a href="#gaaecfb7fcb071258cf6ae9b7d62870364"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gaa7b295addf4b2788db0bf552e23d87c5">magma_sgesv_rbt_batched</a> (magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU.  <a href="#gaa7b295addf4b2788db0bf552e23d87c5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gae9a9c2cbdb42500efe4afe86b1ad906b">magma_sgetrf</a> (magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gae9a9c2cbdb42500efe4afe86b1ad906b"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gacb168f51bb63f4cf9d8b684cc6cc2314">magma_sgetrf2_mgpu</a> (magma_int_t num_gpus, magma_int_t m, magma_int_t n, magma_int_t nb, magma_int_t offset, float *d_lAT[], magma_int_t lddat, magma_int_t *ipiv, float *d_lAP[], float *w, magma_int_t ldw, magma_queue_t stream[][2], magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gacb168f51bb63f4cf9d8b684cc6cc2314"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga7a1f107dadfec447dcdef41168dc013a">magma_sgetrf_gpu</a> (magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#ga7a1f107dadfec447dcdef41168dc013a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga98a890be37d40140938192db8ec8f146">magma_sgetrf_m</a> (magma_int_t num_gpus, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF_m computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#ga98a890be37d40140938192db8ec8f146"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga233dd9ee1a3209b3c2bac634e2467d0a">magma_sgetrf_mgpu</a> (magma_int_t num_gpus, magma_int_t m, magma_int_t n, float **d_lA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#ga233dd9ee1a3209b3c2bac634e2467d0a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga4156f2a57f8eea48966b811389e103bf">magma_sgetrf2_mgpu</a> (magma_int_t ngpu, magma_int_t m, magma_int_t n, magma_int_t nb, magma_int_t offset, magmaFloat_ptr d_lAT[], magma_int_t lddat, magma_int_t *ipiv, magmaFloat_ptr d_lAP[], float *W, magma_int_t ldw, magma_queue_t queues[][2], magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#ga4156f2a57f8eea48966b811389e103bf"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gac6da5edab86bd5ab4aa99c6c14341f21">magma_sgetrf_batched</a> (magma_int_t m, magma_int_t n, float **dA_array, magma_int_t ldda, magma_int_t **ipiv_array, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gac6da5edab86bd5ab4aa99c6c14341f21"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gae1751a9b0d4ca3137eb6fbcd28ea2d55">magma_sgetrf_gpu</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gae1751a9b0d4ca3137eb6fbcd28ea2d55"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga69e5a5981166ebf61da2fd67dad03afe">magma_sgetrf_m</a> (magma_int_t ngpu, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF_m computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#ga69e5a5981166ebf61da2fd67dad03afe"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gab0c894efbd8bb8d9299051b504ac78aa">magma_sgetrf_mgpu</a> (magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaFloat_ptr d_lA[], magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gab0c894efbd8bb8d9299051b504ac78aa"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga29a5ad9a59aec9b61367593076177b84">magma_sgetrf_nopiv</a> (magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF_NOPIV computes an LU factorization of a general M-by-N matrix A without pivoting.  <a href="#ga29a5ad9a59aec9b61367593076177b84"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gafc477f593b75350ab554946f1d3343b5">magma_sgetrf_nopiv_gpu</a> (magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF_NOPIV_GPU computes an LU factorization of a general M-by-N matrix A without any pivoting.  <a href="#gafc477f593b75350ab554946f1d3343b5"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gad970488f797ebcc6db16bacd549b6182">magma_sgetri_gpu</a> (magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *ipiv, float *dwork, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRI computes the inverse of a matrix using the LU factorization computed by SGETRF.  <a href="#gad970488f797ebcc6db16bacd549b6182"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gafde7fb29cd16d0d80f28f36a912c4f60">magma_sgetrs_gpu</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, magma_int_t *ipiv, float *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU.  <a href="#gafde7fb29cd16d0d80f28f36a912c4f60"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gafba65ba51a0a16676894df2f97bfe14c">magma_sgetrf_nopiv_batched</a> (magma_int_t m, magma_int_t n, float **dA_array, magma_int_t lda, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.  <a href="#gafba65ba51a0a16676894df2f97bfe14c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gab78188f0150a5917a04ae291f75d1052">magma_sgetrf_nopiv_gpu</a> (magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRF_NOPIV_GPU computes an LU factorization of a general M-by-N matrix A without any pivoting.  <a href="#gab78188f0150a5917a04ae291f75d1052"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gae112d08b5dec4f6eecad0cc759ca07cd">magma_sgetri_gpu</a> (magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloat_ptr dwork, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRI computes the inverse of a matrix using the LU factorization computed by SGETRF.  <a href="#gae112d08b5dec4f6eecad0cc759ca07cd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga9db3e3e8c88b3446c8d4af3f3d000681">magma_sgetri_outofplace_batched</a> (magma_int_t n, float **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, float **dinvA_array, magma_int_t lddia, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">SGETRI computes the inverse of a matrix using the LU factorization computed by SGETRF.  <a href="#ga9db3e3e8c88b3446c8d4af3f3d000681"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga271368405903af13f7de6b565f0ee03a">magma_sgetrs_batched</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, float **dB_array, magma_int_t lddb, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU.  <a href="#ga271368405903af13f7de6b565f0ee03a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga1b09a525bd3d678a726625280ea8b5a8">magma_sgetrs_gpu</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU.  <a href="#ga1b09a525bd3d678a726625280ea8b5a8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#ga66a5156befa59b3fb786ddea5d674154">magma_sgetrs_nopiv_batched</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU.  <a href="#ga66a5156befa59b3fb786ddea5d674154"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__sgesv__comp.html#gadd6ff752033294e46e5ad282c89d24ad">magma_sgetrs_nopiv_gpu</a> (magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_NOPIV_GPU.  <a href="#gadd6ff752033294e46e5ad282c89d24ad"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ga1953d36d4c2d989f90a93c5d245548da"></a><!-- doxytag: member="sgerbt_batched.cpp::magma_sgerbt_batched" ref="ga1953d36d4c2d989f90a93c5d245548da" args="(magma_bool_t gen, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, float *U, float *V, magma_int_t *info, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgerbt_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_bool_t&nbsp;</td>
+          <td class="paramname"> <em>gen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>U</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices. </p>
+<p>Random Butterfly Tranformation is applied on A and B, then the LU decomposition with no pivoting is used to factor A as A = L * U, where L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>gen</em>&nbsp;</td><td>magma_bool_t</p>
+<ul>
+<li>= MagmaTrue: new matrices are generated for U and V</li>
+<li>= MagmaFalse: matrices U and V given as parameter are used</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. n &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. nrhs &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array, dimension (LDA,n). On entry, the M-by-n matrix to be factored. On exit, the factors L and U from the factorization A = L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>REAL array, dimension (LDB,nrhs) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>U</em>&nbsp;</td><td>REAL array, dimension (2,n) Random butterfly matrix, if gen = MagmaTrue U is generated and returned as output; else we use U given as input. CPU memory</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>V</em>&nbsp;</td><td>REAL array, dimension (2,n) Random butterfly matrix, if gen = MagmaTrue V is generated and returned as output; else we use U given as input. CPU memory</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value or another error occured, such as memory allocation failed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaaecfb7fcb071258cf6ae9b7d62870364"></a><!-- doxytag: member="sgerbt_gpu.cpp::magma_sgerbt_gpu" ref="gaaecfb7fcb071258cf6ae9b7d62870364" args="(magma_bool_t gen, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, float *U, float *V, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgerbt_gpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_bool_t&nbsp;</td>
+          <td class="paramname"> <em>gen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>U</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B where A is a general n-by-n matrix and X and B are n-by-nrhs matrices. </p>
+<p>Random Butterfly Tranformation is applied on A and B, then the LU decomposition with no pivoting is used to factor A as A = L * U, where L is unit lower triangular, and U is upper triangular. The factored form of A is then used to solve the system of equations A * X = B.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>gen</em>&nbsp;</td><td>magma_bool_t</p>
+<ul>
+<li>= MagmaTrue: new matrices are generated for U and V</li>
+<li>= MagmaFalse: matrices U and V given as parameter are used</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. n &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. nrhs &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array, dimension (LDA,n). On entry, the M-by-n matrix to be factored. On exit, the factors L and U from the factorization A = L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>REAL array, dimension (LDB,nrhs) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,n).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>U</em>&nbsp;</td><td>REAL array, dimension (2,n) Random butterfly matrix, if gen = MagmaTrue U is generated and returned as output; else we use U given as input. CPU memory</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>V</em>&nbsp;</td><td>REAL array, dimension (2,n) Random butterfly matrix, if gen = MagmaTrue V is generated and returned as output; else we use U given as input. CPU memory</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value or another error occured, such as memory allocation failed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa7b295addf4b2788db0bf552e23d87c5"></a><!-- doxytag: member="sgesv_rbt_batched.cpp::magma_sgesv_rbt_batched" ref="gaa7b295addf4b2788db0bf552e23d87c5" args="(magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgesv_rbt_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the form of the system of equations:</p>
+<ul>
+<li>= MagmaNoTrans: A * X = B (No transpose)</li>
+<li>= MagmaTrans: A**T * X = B (Transpose)</li>
+<li>= MagmaConjTrans: A**H * X = B (Conjugate transpose)</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDA,N) The factors L and U from the factorization A = P*L*U as computed by SGETRF_GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (N) The pivot indices from SGETRF; for 1 &lt;= i &lt;= N, row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="gae9a9c2cbdb42500efe4afe86b1ad906b"></a><!-- doxytag: member="sgetrf.cpp::magma_sgetrf" ref="gae9a9c2cbdb42500efe4afe86b1ad906b" args="(magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
@@ -120,7 +440,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacb168f51bb63f4cf9d8b684cc6cc2314"></a><!-- doxytag: member="sgetrf2_mgpu.cpp::magma_sgetrf2_mgpu" ref="gacb168f51bb63f4cf9d8b684cc6cc2314" args="(magma_int_t num_gpus, magma_int_t m, magma_int_t n, magma_int_t nb, magma_int_t offset, float *d_lAT[], magma_int_t lddat, magma_int_t *ipiv, float *d_lAP[], float *w, magma_int_t ldw, magma_queue_t stream[][2], magma_int_t *info)" -->
+<a class="anchor" id="ga4156f2a57f8eea48966b811389e103bf"></a><!-- doxytag: member="sgetrf2_mgpu.cpp::magma_sgetrf2_mgpu" ref="ga4156f2a57f8eea48966b811389e103bf" args="(magma_int_t ngpu, magma_int_t m, magma_int_t n, magma_int_t nb, magma_int_t offset, magmaFloat_ptr d_lAT[], magma_int_t lddat, magma_int_t *ipiv, magmaFloat_ptr d_lAP[], float *W, magma_int_t ldw, magma_queue_t queues[][2], magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -128,7 +448,7 @@
           <td class="memname">magma_int_t magma_sgetrf2_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -157,7 +477,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lAT</em>[], </td>
         </tr>
         <tr>
@@ -175,14 +495,14 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>d_lAP</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float *&nbsp;</td>
-          <td class="paramname"> <em>w</em>, </td>
+          <td class="paramname"> <em>W</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -194,7 +514,7 @@
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_queue_t&nbsp;</td>
-          <td class="paramname"> <em>stream</em>[][2], </td>
+          <td class="paramname"> <em>queues</em>[][2], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -216,16 +536,16 @@
 <p>This is the right-looking Level 3 BLAS version of the algorithm. Use two buffer to send panels.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs to be used for the factorization.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lAT</em>&nbsp;</td><td>REAL array of pointers on the GPU, dimension (num_gpus). On entry, the M-by-N matrix A distributed over GPUs (d_lAT[d] points to the local matrix on d-th GPU). It uses a 1D block column cyclic format (with the block size nb), and each local matrix is stored by row. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lAT</em>&nbsp;</td><td>REAL array of pointers on the GPU, dimension (ngpu). On entry, the M-by-N matrix A distributed over GPUs (d_lAT[d] points to the local matrix on d-th GPU). It uses a 1D block column cyclic format (with the block size nb), and each local matrix is stored by row. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddat</em>&nbsp;</td><td>INTEGER The leading dimension of the array d_lAT[d]. LDDA &gt;= max(1,M).</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>(workspace)</em>&nbsp;</td><td>on device d_lAP REAL array of pointers on the GPU, dimension (num_gpus). d_lAP[d] is the workspace on d-th GPU. Each local workspace must be of size (3+num_gpus)*nb*maxm, where maxm is m rounded up to a multiple of 32 and nb is the block size.</td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>(workspace)</em>&nbsp;</td><td>w REAL array, dimension (num_gpus*nb*maxm). It is used to store panel on CPU.</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>(workspace)</em>&nbsp;</td><td>on device d_lAP REAL array of pointers on the GPU, dimension (ngpu). d_lAP[d] is the workspace on d-th GPU. Each local workspace must be of size (3+ngpu)*nb*maxm, where maxm is m rounded up to a multiple of 32 and nb is the block size.</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>(workspace)</em>&nbsp;</td><td>W REAL array, dimension (ngpu*nb*maxm). It is used to store panel on CPU.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldw</em>&nbsp;</td><td>INTEGER The leading dimension of the workspace w.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stream</em>&nbsp;</td><td>magma_queue_t stream[d] points to the streams for the d-th GPU to execute in. Each GPU require two streams.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>queues</em>&nbsp;</td><td>magma_queue_t queues[d] points to the streams for the d-th GPU to execute in. Each GPU require two streams.</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
 <ul>
 <li>= 0: successful exit</li>
@@ -239,7 +559,86 @@
 
 </div>
 </div>
-<a class="anchor" id="ga7a1f107dadfec447dcdef41168dc013a"></a><!-- doxytag: member="sgetrf_gpu.cpp::magma_sgetrf_gpu" ref="ga7a1f107dadfec447dcdef41168dc013a" args="(magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
+<a class="anchor" id="gac6da5edab86bd5ab4aa99c6c14341f21"></a><!-- doxytag: member="sgetrf_batched.cpp::magma_sgetrf_batched" ref="gac6da5edab86bd5ab4aa99c6c14341f21" args="(magma_int_t m, magma_int_t n, float **dA_array, magma_int_t ldda, magma_int_t **ipiv_array, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetrf_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t **&nbsp;</td>
+          <td class="paramname"> <em>ipiv_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges. </p>
+<p>The factorization has the form A = P * L * U where P is a permutation matrix, L is lower triangular with unit diagonal elements (lower trapezoidal if m &gt; n), and U is upper triangular (upper trapezoidal if m &lt; n).</p>
+<p>This is the right-looking Level 3 BLAS version of the algorithm.</p>
+<p>If the current stream is NULL, this version replaces it with a new stream to overlap computation with communication.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDDA,N). On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value or another error occured, such as memory allocation failed.</li>
+<li>&gt; 0: if INFO = i, U(i,i) is exactly zero. The factorization has been completed, but the factor U is exactly singular, and division by zero will occur if it is used to solve a system of equations. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gae1751a9b0d4ca3137eb6fbcd28ea2d55"></a><!-- doxytag: member="sgetrf_gpu.cpp::magma_sgetrf_gpu" ref="gae1751a9b0d4ca3137eb6fbcd28ea2d55" args="(magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -258,7 +657,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -312,7 +711,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga98a890be37d40140938192db8ec8f146"></a><!-- doxytag: member="sgetrf_m.cpp::magma_sgetrf_m" ref="ga98a890be37d40140938192db8ec8f146" args="(magma_int_t num_gpus, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)" -->
+<a class="anchor" id="ga69e5a5981166ebf61da2fd67dad03afe"></a><!-- doxytag: member="sgetrf_m.cpp::magma_sgetrf_m" ref="ga69e5a5981166ebf61da2fd67dad03afe" args="(magma_int_t ngpu, magma_int_t m, magma_int_t n, float *A, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -320,7 +719,7 @@
           <td class="memname">magma_int_t magma_sgetrf_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -374,7 +773,7 @@
 <p>Note: The factorization of big panel is done calling multiple-gpu-interface. Pivots are applied on GPU within the big panel.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs. num_gpus &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>A</em>&nbsp;</td><td>REAL array, dimension (LDA,N) On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored. <br/>
@@ -394,7 +793,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga233dd9ee1a3209b3c2bac634e2467d0a"></a><!-- doxytag: member="sgetrf_mgpu.cpp::magma_sgetrf_mgpu" ref="ga233dd9ee1a3209b3c2bac634e2467d0a" args="(magma_int_t num_gpus, magma_int_t m, magma_int_t n, float **d_lA, magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
+<a class="anchor" id="gab0c894efbd8bb8d9299051b504ac78aa"></a><!-- doxytag: member="sgetrf_mgpu.cpp::magma_sgetrf_mgpu" ref="gab0c894efbd8bb8d9299051b504ac78aa" args="(magma_int_t ngpu, magma_int_t m, magma_int_t n, magmaFloat_ptr d_lA[], magma_int_t ldda, magma_int_t *ipiv, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -402,7 +801,7 @@
           <td class="memname">magma_int_t magma_sgetrf_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -419,8 +818,8 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float **&nbsp;</td>
-          <td class="paramname"> <em>d_lA</em>, </td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>d_lA</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -454,10 +853,10 @@
 <p>This is the right-looking Level 3 BLAS version of the algorithm.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs to be used for the factorization.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
-    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>REAL array of pointers on the GPU, dimension (num_gpus). On entry, the M-by-N matrix A distributed over GPUs (d_lA[d] points to the local matrix on d-th GPU). It uses 1D block column cyclic format with the block size of nb, and each local matrix is stored by column. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>d_lA</em>&nbsp;</td><td>REAL array of pointers on the GPU, dimension (ngpu). On entry, the M-by-N matrix A distributed over GPUs (d_lA[d] points to the local matrix on d-th GPU). It uses 1D block column cyclic format with the block size of nb, and each local matrix is stored by column. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array d_lA. LDDA &gt;= max(1,M).</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
@@ -538,7 +937,80 @@
 
 </div>
 </div>
-<a class="anchor" id="gafc477f593b75350ab554946f1d3343b5"></a><!-- doxytag: member="sgetrf_nopiv_gpu.cpp::magma_sgetrf_nopiv_gpu" ref="gafc477f593b75350ab554946f1d3343b5" args="(magma_int_t m, magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *info)" -->
+<a class="anchor" id="gafba65ba51a0a16676894df2f97bfe14c"></a><!-- doxytag: member="sgetrf_nopiv_batched.cpp::magma_sgetrf_nopiv_batched" ref="gafba65ba51a0a16676894df2f97bfe14c" args="(magma_int_t m, magma_int_t n, float **dA_array, magma_int_t lda, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetrf_nopiv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>SGETRF computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges. </p>
+<p>The factorization has the form A = P * L * U where P is a permutation matrix, L is lower triangular with unit diagonal elements (lower trapezoidal if m &gt; n), and U is upper triangular (upper trapezoidal if m &lt; n).</p>
+<p>This is the right-looking Level 3 BLAS version of the algorithm.</p>
+<p>If the current stream is NULL, this version replaces it with a new stream to overlap computation with communication.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>m</em>&nbsp;</td><td>INTEGER The number of rows of the matrix A. M &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The number of columns of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDDA,N). On entry, the M-by-N matrix to be factored. On exit, the factors L and U from the factorization A = P*L*U; the unit diagonal elements of L are not stored.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,M).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (min(M,N)) The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value or another error occured, such as memory allocation failed.</li>
+<li>&gt; 0: if INFO = i, U(i,i) is exactly zero. The factorization has been completed, but the factor U is exactly singular, and division by zero will occur if it is used to solve a system of equations. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gab78188f0150a5917a04ae291f75d1052"></a><!-- doxytag: member="sgetrf_nopiv_gpu.cpp::magma_sgetrf_nopiv_gpu" ref="gab78188f0150a5917a04ae291f75d1052" args="(magma_int_t m, magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -557,7 +1029,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -603,7 +1075,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gad970488f797ebcc6db16bacd549b6182"></a><!-- doxytag: member="sgetri_gpu.cpp::magma_sgetri_gpu" ref="gad970488f797ebcc6db16bacd549b6182" args="(magma_int_t n, float *dA, magma_int_t ldda, magma_int_t *ipiv, float *dwork, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gae112d08b5dec4f6eecad0cc759ca07cd"></a><!-- doxytag: member="sgetri_gpu.cpp::magma_sgetri_gpu" ref="gae112d08b5dec4f6eecad0cc759ca07cd" args="(magma_int_t n, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloat_ptr dwork, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -616,7 +1088,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -634,7 +1106,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -683,7 +1155,189 @@
 
 </div>
 </div>
-<a class="anchor" id="gafde7fb29cd16d0d80f28f36a912c4f60"></a><!-- doxytag: member="sgetrs_gpu.cpp::magma_sgetrs_gpu" ref="gafde7fb29cd16d0d80f28f36a912c4f60" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float *dA, magma_int_t ldda, magma_int_t *ipiv, float *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga9db3e3e8c88b3446c8d4af3f3d000681"></a><!-- doxytag: member="sgetri_outofplace_batched.cpp::magma_sgetri_outofplace_batched" ref="ga9db3e3e8c88b3446c8d4af3f3d000681" args="(magma_int_t n, float **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, float **dinvA_array, magma_int_t lddia, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetri_outofplace_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t **&nbsp;</td>
+          <td class="paramname"> <em>dipiv_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dinvA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>SGETRI computes the inverse of a matrix using the LU factorization computed by SGETRF. </p>
+<p>This method inverts U and then computes inv(A) by solving the system inv(A)*L = inv(U) for inv(A).</p>
+<p>Note that it is generally both faster and more accurate to use SGESV, or SGETRF and SGETRS, to solve the system AX = B, rather than inverting the matrix and multiplying to form X = inv(A)*B. Only in special instances should an explicit inverse be computed with this routine.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDDA,N) On entry, the factors L and U from the factorization A = P*L*U as computed by SGETRF_GPU. On exit, if INFO = 0, the inverse of the original matrix A.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (N) The pivot indices from SGETRF; for 1 &lt;= i &lt;= N, row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dwork</em>&nbsp;</td><td>(workspace) REAL array on the GPU, dimension (MAX(1,LWORK))</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lwork</em>&nbsp;</td><td>INTEGER The dimension of the array DWORK. LWORK &gt;= N*NB, where NB is the optimal blocksize returned by magma_get_sgetri_nb(n). <br/>
+ Unlike LAPACK, this version does not currently support a workspace query, because the workspace is on the GPU.</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value</li>
+<li>&gt; 0: if INFO = i, U(i,i) is exactly zero; the matrix is singular and its cannot be computed. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga271368405903af13f7de6b565f0ee03a"></a><!-- doxytag: member="sgetrs_batched.cpp::magma_sgetrs_batched" ref="ga271368405903af13f7de6b565f0ee03a" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, magma_int_t **dipiv_array, float **dB_array, magma_int_t lddb, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetrs_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_trans_t&nbsp;</td>
+          <td class="paramname"> <em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t **&nbsp;</td>
+          <td class="paramname"> <em>dipiv_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the form of the system of equations:</p>
+<ul>
+<li>= MagmaNoTrans: A * X = B (No transpose)</li>
+<li>= MagmaTrans: A**T * X = B (Transpose)</li>
+<li>= MagmaConjTrans: A**H * X = B (Conjugate transpose)</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDA,N) The factors L and U from the factorization A = P*L*U as computed by SGETRF_GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (N) The pivot indices from SGETRF; for 1 &lt;= i &lt;= N, row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga1b09a525bd3d678a726625280ea8b5a8"></a><!-- doxytag: member="sgetrs_gpu.cpp::magma_sgetrs_gpu" ref="ga1b09a525bd3d678a726625280ea8b5a8" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magma_int_t *ipiv, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -708,7 +1362,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -726,7 +1380,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -779,8 +1433,198 @@
 
 </div>
 </div>
+<a class="anchor" id="ga66a5156befa59b3fb786ddea5d674154"></a><!-- doxytag: member="sgetrs_nopiv_batched.cpp::magma_sgetrs_nopiv_batched" ref="ga66a5156befa59b3fb786ddea5d674154" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, float **dA_array, magma_int_t ldda, float **dB_array, magma_int_t lddb, magma_int_t *info_array, magma_int_t batchCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetrs_nopiv_batched </td>
+          <td>(</td>
+          <td class="paramtype">magma_trans_t&nbsp;</td>
+          <td class="paramname"> <em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dA_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float **&nbsp;</td>
+          <td class="paramname"> <em>dB_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>batchCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_GPU. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the form of the system of equations:</p>
+<ul>
+<li>= MagmaNoTrans: A * X = B (No transpose)</li>
+<li>= MagmaTrans: A**T * X = B (Transpose)</li>
+<li>= MagmaConjTrans: A**H * X = B (Conjugate transpose)</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDA,N) The factors L and U from the factorization A = P*L*U as computed by SGETRF_GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ipiv</em>&nbsp;</td><td>INTEGER array, dimension (N) The pivot indices from SGETRF; for 1 &lt;= i &lt;= N, row i of the matrix was interchanged with row IPIV(i).</td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>dB</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gadd6ff752033294e46e5ad282c89d24ad"></a><!-- doxytag: member="sgetrs_nopiv_gpu.cpp::magma_sgetrs_nopiv_gpu" ref="gadd6ff752033294e46e5ad282c89d24ad" args="(magma_trans_t trans, magma_int_t n, magma_int_t nrhs, magmaFloat_ptr dA, magma_int_t ldda, magmaFloat_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">magma_int_t magma_sgetrs_nopiv_gpu </td>
+          <td>(</td>
+          <td class="paramtype">magma_trans_t&nbsp;</td>
+          <td class="paramname"> <em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>nrhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>ldda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magmaFloat_ptr&nbsp;</td>
+          <td class="paramname"> <em>dB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t&nbsp;</td>
+          <td class="paramname"> <em>lddb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">magma_int_t *&nbsp;</td>
+          <td class="paramname"> <em>info</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Solves a system of linear equations A * X = B, A**T * X = B, or A**H * X = B with a general N-by-N matrix A using the LU factorization computed by SGETRF_NOPIV_GPU. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>trans</em>&nbsp;</td><td>magma_trans_t Specifies the form of the system of equations:</p>
+<ul>
+<li>= MagmaNoTrans: A * X = B (No transpose)</li>
+<li>= MagmaTrans: A**T * X = B (Transpose)</li>
+<li>= MagmaConjTrans: A**H * X = B (Conjugate transpose)</li>
+</ul>
+</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>n</em>&nbsp;</td><td>INTEGER The order of the matrix A. N &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrhs</em>&nbsp;</td><td>INTEGER The number of right hand sides, i.e., the number of columns of the matrix B. NRHS &gt;= 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>dA</em>&nbsp;</td><td>REAL array on the GPU, dimension (LDA,N) The factors L and U from the factorization A = P*L*U as computed by SGETRF_GPU.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ldda</em>&nbsp;</td><td>INTEGER The leading dimension of the array A. LDA &gt;= max(1,N).</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>param[in,out] dB REAL array on the GPU, dimension (LDB,NRHS) On entry, the right hand side matrix B. On exit, the solution matrix X.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>lddb</em>&nbsp;</td><td>INTEGER The leading dimension of the array B. LDB &gt;= max(1,N).</td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>info</em>&nbsp;</td><td>INTEGER</p>
+<ul>
+<li>= 0: successful exit</li>
+<li>&lt; 0: if INFO = -i, the i-th argument had an illegal value </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

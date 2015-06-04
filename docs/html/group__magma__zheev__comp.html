@@ -24,30 +24,30 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gaf4d875ad69e36d51a54a896fce0e3a77">magma_zhegst</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGST reduces a complex Hermitian-definite generalized eigenproblem to standard form.  <a href="#gaf4d875ad69e36d51a54a896fce0e3a77"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga76c736a693008618e533fec717bcd7b6">magma_zhegst_gpu</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGST_GPU reduces a complex Hermitian-definite generalized eigenproblem to standard form.  <a href="#ga76c736a693008618e533fec717bcd7b6"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga9d438c81d5bcee068189884d7789d317">magma_zhegst_m</a> (magma_int_t nrgpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGST_M reduces a complex Hermitian-definite generalized eigenproblem to standard form.  <a href="#ga9d438c81d5bcee068189884d7789d317"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga5919c546578b9d0f3aa450f0e418f9cf">magma_zhegst_gpu</a> (magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGST_GPU reduces a complex Hermitian-definite generalized eigenproblem to standard form.  <a href="#ga5919c546578b9d0f3aa450f0e418f9cf"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gac5b918d43ccdb7d8f55612f66e82085e">magma_zhegst_m</a> (magma_int_t ngpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHEGST_M reduces a complex Hermitian-definite generalized eigenproblem to standard form.  <a href="#gac5b918d43ccdb7d8f55612f66e82085e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga83a4184e4c72a7a1a319f48acb5b8b70">magma_zhetrd</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga83a4184e4c72a7a1a319f48acb5b8b70"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga0d0f90f8da3db648f7ad857e48d540de">magma_zhetrd2_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *dwork, magma_int_t ldwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD2_GPU reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga0d0f90f8da3db648f7ad857e48d540de"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gaf521a7b4a905b4ffbaf5299e083f44f2">magma_zhetrd_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD_GPU reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gaf521a7b4a905b4ffbaf5299e083f44f2"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gabaf1d96c35e625cdacdcbd89a6e28867">magma_zhetrd_mgpu</a> (magma_int_t num_gpus, magma_int_t num_streams, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gabaf1d96c35e625cdacdcbd89a6e28867"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga62c1a73e8efe05a399f69145e550aba8">magma_zstedx</a> (magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, double *dwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZSTEDX computes some eigenvalues and eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga62c1a73e8efe05a399f69145e550aba8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga05d8352baea646182e2482cffdbb235a">magma_zstedx_m</a> (magma_int_t nrgpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZSTEDX computes some eigenvalues and eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga05d8352baea646182e2482cffdbb235a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gac7351d0e527b079965173dc46f01658a">magma_zhetrd2_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex_ptr dwork, magma_int_t ldwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD2_GPU reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#gac7351d0e527b079965173dc46f01658a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga3b58eaa43b388f5acdcda7442e50fefd">magma_zhetrd_gpu</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD_GPU reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga3b58eaa43b388f5acdcda7442e50fefd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga1765fa39c6d67a61d4ddf759b988902c">magma_zhetrd_mgpu</a> (magma_int_t ngpu, magma_int_t nqueue, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZHETRD reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T.  <a href="#ga1765fa39c6d67a61d4ddf759b988902c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga602e5ff0c13993676dc9a80871cd8f65">magma_zstedx</a> (magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magmaDouble_ptr dwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZSTEDX computes some eigenvalues and eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga602e5ff0c13993676dc9a80871cd8f65"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga0be2d55ead100c9ca2bb299f4e7bb190">magma_zstedx_m</a> (magma_int_t ngpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZSTEDX computes some eigenvalues and eigenvectors of a symmetric tridiagonal matrix using the divide and conquer method.  <a href="#ga0be2d55ead100c9ca2bb299f4e7bb190"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga6c072fda35e2938bcbfedebd44d18b5b">magma_zungtr</a> (magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *dT, magma_int_t nb, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNGTR generates a complex unitary matrix Q which is defined as the product of n-1 elementary reflectors of order N, as returned by ZHETRD:.  <a href="#ga6c072fda35e2938bcbfedebd44d18b5b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gae93e463065313593847aa4cfcbc41b6d">magma_zunmtr</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMTR overwrites the general complex M-by-N matrix C with.  <a href="#gae93e463065313593847aa4cfcbc41b6d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gaca06d99c3a34a495e4cd253a9acfd4b1">magma_zunmtr_gpu</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMTR overwrites the general complex M-by-N matrix C with.  <a href="#gaca06d99c3a34a495e4cd253a9acfd4b1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#ga3f12b07cbc128d901e274db7efaa8043">magma_zunmtr_m</a> (magma_int_t nrgpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMTR overwrites the general complex M-by-N matrix C with.  <a href="#ga3f12b07cbc128d901e274db7efaa8043"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gac51f747c0e2948d4c2ea88fb195974b8">magma_zunmtr_gpu</a> (magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMTR overwrites the general complex M-by-N matrix C with.  <a href="#gac51f747c0e2948d4c2ea88fb195974b8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">magma_int_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__magma__zheev__comp.html#gafafda241dfa9217b64dd69fa1a81c9d0">magma_zunmtr_m</a> (magma_int_t ngpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ZUNMTR overwrites the general complex M-by-N matrix C with.  <a href="#gafafda241dfa9217b64dd69fa1a81c9d0"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gaf4d875ad69e36d51a54a896fce0e3a77"></a><!-- doxytag: member="zhegst.cpp::magma_zhegst" ref="gaf4d875ad69e36d51a54a896fce0e3a77" args="(magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)" -->
@@ -142,7 +142,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga76c736a693008618e533fec717bcd7b6"></a><!-- doxytag: member="zhegst_gpu.cpp::magma_zhegst_gpu" ref="ga76c736a693008618e533fec717bcd7b6" args="(magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *dB, magma_int_t lddb, magma_int_t *info)" -->
+<a class="anchor" id="ga5919c546578b9d0f3aa450f0e418f9cf"></a><!-- doxytag: member="zhegst_gpu.cpp::magma_zhegst_gpu" ref="ga5919c546578b9d0f3aa450f0e418f9cf" args="(magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex_ptr dB, magma_int_t lddb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -167,7 +167,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -179,7 +179,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dB</em>, </td>
         </tr>
         <tr>
@@ -234,7 +234,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga9d438c81d5bcee068189884d7789d317"></a><!-- doxytag: member="zhegst_m.cpp::magma_zhegst_m" ref="ga9d438c81d5bcee068189884d7789d317" args="(magma_int_t nrgpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)" -->
+<a class="anchor" id="gac5b918d43ccdb7d8f55612f66e82085e"></a><!-- doxytag: member="zhegst_m.cpp::magma_zhegst_m" ref="gac5b918d43ccdb7d8f55612f66e82085e" args="(magma_int_t ngpu, magma_int_t itype, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *B, magma_int_t ldb, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -242,7 +242,7 @@
           <td class="memname">magma_int_t magma_zhegst_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -307,7 +307,7 @@
 <p>B must have been previously factorized as U**H*U or L*L**H by ZPOTRF.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>itype</em>&nbsp;</td><td>INTEGER = 1: compute inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H); = 2 or 3: compute U*A*U**H or L**H*A*L.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
@@ -450,7 +450,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga0d0f90f8da3db648f7ad857e48d540de"></a><!-- doxytag: member="zhetrd2_gpu.cpp::magma_zhetrd2_gpu" ref="ga0d0f90f8da3db648f7ad857e48d540de" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex *dwork, magma_int_t ldwork, magma_int_t *info)" -->
+<a class="anchor" id="gac7351d0e527b079965173dc46f01658a"></a><!-- doxytag: member="zhetrd2_gpu.cpp::magma_zhetrd2_gpu" ref="gac7351d0e527b079965173dc46f01658a" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magmaDoubleComplex_ptr dwork, magma_int_t ldwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -469,7 +469,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -523,7 +523,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -596,7 +596,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaf521a7b4a905b4ffbaf5299e083f44f2"></a><!-- doxytag: member="zhetrd_gpu.cpp::magma_zhetrd_gpu" ref="gaf521a7b4a905b4ffbaf5299e083f44f2" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga3b58eaa43b388f5acdcda7442e50fefd"></a><!-- doxytag: member="zhetrd_gpu.cpp::magma_zhetrd_gpu" ref="ga3b58eaa43b388f5acdcda7442e50fefd" args="(magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *wA, magma_int_t ldwa, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -615,7 +615,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -727,7 +727,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gabaf1d96c35e625cdacdcbd89a6e28867"></a><!-- doxytag: member="zhetrd_mgpu.cpp::magma_zhetrd_mgpu" ref="gabaf1d96c35e625cdacdcbd89a6e28867" args="(magma_int_t num_gpus, magma_int_t num_streams, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="ga1765fa39c6d67a61d4ddf759b988902c"></a><!-- doxytag: member="zhetrd_mgpu.cpp::magma_zhetrd_mgpu" ref="ga1765fa39c6d67a61d4ddf759b988902c" args="(magma_int_t ngpu, magma_int_t nqueue, magma_uplo_t uplo, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, double *d, double *e, magmaDoubleComplex *tau, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -735,13 +735,13 @@
           <td class="memname">magma_int_t magma_zhetrd_mgpu </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_gpus</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>num_streams</em>, </td>
+          <td class="paramname"> <em>nqueue</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -815,8 +815,8 @@
 <p>ZHETRD reduces a complex Hermitian matrix A to real symmetric tridiagonal form T by an orthogonal similarity transformation: Q**H * A * Q = T. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_gpus</em>&nbsp;</td><td>INTEGER The number of GPUs. num_gpus &gt; 0.</td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>num_streams</em>&nbsp;</td><td>INTEGER The number of GPU streams used for update. 10 &gt;= num_streams &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nqueue</em>&nbsp;</td><td>INTEGER The number of GPU streams used for update. 10 &gt;= nqueue &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uplo</em>&nbsp;</td><td>magma_uplo_t</p>
 <ul>
 <li>= MagmaUpper: Upper triangle of A is stored;</li>
@@ -858,7 +858,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga62c1a73e8efe05a399f69145e550aba8"></a><!-- doxytag: member="zstedx.cpp::magma_zstedx" ref="ga62c1a73e8efe05a399f69145e550aba8" args="(magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, double *dwork, magma_int_t *info)" -->
+<a class="anchor" id="ga602e5ff0c13993676dc9a80871cd8f65"></a><!-- doxytag: member="zstedx.cpp::magma_zstedx" ref="ga602e5ff0c13993676dc9a80871cd8f65" args="(magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magmaDouble_ptr dwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -949,7 +949,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramtype">magmaDouble_ptr&nbsp;</td>
           <td class="paramname"> <em>dwork</em>, </td>
         </tr>
         <tr>
@@ -1008,7 +1008,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga05d8352baea646182e2482cffdbb235a"></a><!-- doxytag: member="zstedx_m.cpp::magma_zstedx_m" ref="ga05d8352baea646182e2482cffdbb235a" args="(magma_int_t nrgpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
+<a class="anchor" id="ga0be2d55ead100c9ca2bb299f4e7bb190"></a><!-- doxytag: member="zstedx_m.cpp::magma_zstedx_m" ref="ga0be2d55ead100c9ca2bb299f4e7bb190" args="(magma_int_t ngpu, magma_range_t range, magma_int_t n, double vl, double vu, magma_int_t il, magma_int_t iu, double *d, double *e, magmaDoubleComplex *Z, magma_int_t ldz, double *rwork, magma_int_t lrwork, magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1016,7 +1016,7 @@
           <td class="memname">magma_int_t magma_zstedx_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1121,7 +1121,7 @@
 <p>This code makes very mild assumptions about floating point arithmetic. It will work on machines with a guard digit in add/subtract, or on those binary machines without guard digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or Cray-2. It could conceivably fail on hexadecimal or decimal machines without guard digits, but we know of none. See DLAEX3 for details.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>range</em>&nbsp;</td><td>magma_range_t</p>
 <ul>
 <li>= MagmaRangeAll: all eigenvalues will be found.</li>
@@ -1401,7 +1401,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gaca06d99c3a34a495e4cd253a9acfd4b1"></a><!-- doxytag: member="zunmtr_gpu.cpp::magma_zunmtr_gpu" ref="gaca06d99c3a34a495e4cd253a9acfd4b1" args="(magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex *dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)" -->
+<a class="anchor" id="gac51f747c0e2948d4c2ea88fb195974b8"></a><!-- doxytag: member="zunmtr_gpu.cpp::magma_zunmtr_gpu" ref="gac51f747c0e2948d4c2ea88fb195974b8" args="(magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex_ptr dA, magma_int_t ldda, magmaDoubleComplex *tau, magmaDoubleComplex_ptr dC, magma_int_t lddc, magmaDoubleComplex *wA, magma_int_t ldwa, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1438,7 +1438,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dA</em>, </td>
         </tr>
         <tr>
@@ -1456,7 +1456,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">magmaDoubleComplex *&nbsp;</td>
+          <td class="paramtype">magmaDoubleComplex_ptr&nbsp;</td>
           <td class="paramname"> <em>dC</em>, </td>
         </tr>
         <tr>
@@ -1538,7 +1538,7 @@
 
 </div>
 </div>
-<a class="anchor" id="ga3f12b07cbc128d901e274db7efaa8043"></a><!-- doxytag: member="zunmtr_m.cpp::magma_zunmtr_m" ref="ga3f12b07cbc128d901e274db7efaa8043" args="(magma_int_t nrgpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
+<a class="anchor" id="gafafda241dfa9217b64dd69fa1a81c9d0"></a><!-- doxytag: member="zunmtr_m.cpp::magma_zunmtr_m" ref="gafafda241dfa9217b64dd69fa1a81c9d0" args="(magma_int_t ngpu, magma_side_t side, magma_uplo_t uplo, magma_trans_t trans, magma_int_t m, magma_int_t n, magmaDoubleComplex *A, magma_int_t lda, magmaDoubleComplex *tau, magmaDoubleComplex *C, magma_int_t ldc, magmaDoubleComplex *work, magma_int_t lwork, magma_int_t *info)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1546,7 +1546,7 @@
           <td class="memname">magma_int_t magma_zunmtr_m </td>
           <td>(</td>
           <td class="paramtype">magma_int_t&nbsp;</td>
-          <td class="paramname"> <em>nrgpu</em>, </td>
+          <td class="paramname"> <em>ngpu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1642,7 +1642,7 @@
 <p>if UPLO = MagmaLower, Q = H(1) H(2) . . . H(nq-1).</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nrgpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ngpu</em>&nbsp;</td><td>INTEGER Number of GPUs to use. ngpu &gt; 0.</td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>side</em>&nbsp;</td><td>magma_side_t</p>
 <ul>
 <li>= MagmaLeft: apply Q or Q**H from the Left;</li>
@@ -1684,7 +1684,7 @@
 </div>
 </div>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 17 Sep 2014 for MAGMA by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 15 Nov 2014 for MAGMA by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
