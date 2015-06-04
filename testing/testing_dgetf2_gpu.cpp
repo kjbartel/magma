@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:53 2013
+       @generated d Tue Aug 13 16:46:00 2013
 */
 // includes, system
 #include <stdlib.h>
@@ -71,7 +71,7 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
 
-    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     double          error;
     double *h_A, *h_R;
     double *d_A;

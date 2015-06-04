@@ -1,20 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
 
        @precisions normal z -> c
 */
 #include "common_magma.h"
-
-extern "C"{
-
-    magma_int_t get_zstedx_smlsize();  // defined in zstedx.cpp
-}
 
 extern "C" magma_int_t
 magma_zstedx_m(magma_int_t nrgpu, char range, magma_int_t n, double vl, double vu,
@@ -24,11 +19,11 @@ magma_zstedx_m(magma_int_t nrgpu, char range, magma_int_t n, double vl, double v
                magma_int_t* iwork, magma_int_t liwork,
                magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -165,7 +160,7 @@ magma_zstedx_m(magma_int_t nrgpu, char range, magma_int_t n, double vl, double v
     if (*info == 0) {
         // Compute the workspace requirements
 
-        smlsiz = get_zstedx_smlsize();
+        smlsiz = magma_get_smlsize_divideconquer();
         if( n <= 1 ){
             lrwmin = 1;
             liwmin = 1;

@@ -323,5 +323,5 @@ cleanall: clean
 #zchkaa.o: zchkaa.f
 #	$(FORT) $(F77OPTS) -c $< -o $@
 
-../fortran.o : $(CUDADIR)/src/fortran.c
-	$(CC) $(OPTS) $(INC) -c $< -o $@
+../fortran.o:
+	cd .. && make fortran.o

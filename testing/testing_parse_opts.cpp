@@ -6,24 +6,25 @@ int main( int argc, char** argv )
     parse_opts( argc, argv, &opts );
     
     for( int i = 0; i < opts.ntest; ++i ) {
-        printf( "m %5d, n %5d, k %5d\n", opts.msize[i], opts.nsize[i], opts.ksize[i] );
+        printf( "m %5d, n %5d, k %5d\n",
+                (int) opts.msize[i], (int) opts.nsize[i], (int) opts.ksize[i] );
     }
     printf( "\n" );
     
-    printf( "ntest    %d\n", opts.ntest );
-    printf( "mmax     %d\n", opts.mmax  );
-    printf( "nmax     %d\n", opts.nmax  );
-    printf( "kmax     %d\n", opts.kmax  );
+    printf( "ntest    %d\n", (int) opts.ntest );
+    printf( "mmax     %d\n", (int) opts.mmax  );
+    printf( "nmax     %d\n", (int) opts.nmax  );
+    printf( "kmax     %d\n", (int) opts.kmax  );
     printf( "\n" );
     
-    printf( "nb       %d\n", opts.nb       ); 
-    printf( "nrhs     %d\n", opts.nrhs     );
-    printf( "nstream  %d\n", opts.nstream  );
-    printf( "ngpu     %d\n", opts.ngpu     );
-    printf( "niter    %d\n", opts.niter    );
-    printf( "nthread  %d\n", opts.nthread  );
-    printf( "itype    %d\n", opts.itype    );
-    printf( "svd_work %d\n", opts.svd_work );
+    printf( "nb       %d\n", (int) opts.nb       ); 
+    printf( "nrhs     %d\n", (int) opts.nrhs     );
+    printf( "nstream  %d\n", (int) opts.nstream  );
+    printf( "ngpu     %d\n", (int) opts.ngpu     );
+    printf( "niter    %d\n", (int) opts.niter    );
+    printf( "nthread  %d\n", (int) opts.nthread  );
+    printf( "itype    %d\n", (int) opts.itype    );
+    printf( "svd_work %d\n", (int) opts.svd_work );
     printf( "\n" );
     
     printf( "check    %s\n", (opts.check  ? "true" : "false") );

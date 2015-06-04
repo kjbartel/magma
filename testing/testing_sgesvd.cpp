@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:34:07 2013
+       @generated s Wed Aug 14 12:18:12 2013
        @author Mark Gates
 
 */
@@ -41,9 +41,12 @@ int main( int argc, char** argv)
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     char jobu, jobvt;
+    magma_int_t status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    float tol = opts.tolerance * lapackf77_slamch("E");
     
     jobu  = opts.jobu;
     jobvt = opts.jobvt;
@@ -52,7 +55,7 @@ int main( int argc, char** argv)
     
     if ( opts.check && (jobu == 'N' || jobvt == 'N')) {
         printf( "NOTE: some checks require that singular vectors are computed;\n"
-                "      set both jobu (%c) and jobvt (%c) to be S, O, or A.\n", jobu, jobvt );
+                "      set both jobu (option -U[NASO]) and jobvt (option -V[NASO]) to be S, O, or A.\n\n" );
     }
     printf("jobu jobv     M     N  CPU time (sec)  GPU time (sec)  |S1-S2|/.  |A-USV'|/. |I-UU'|/M  |I-VV'|/N  S sorted\n");
     printf("===========================================================================================================\n");
@@ -125,7 +128,7 @@ int main( int argc, char** argv)
                        (int) info, magma_strerror( info ));
             
             float eps = lapackf77_slamch( "E" );
-            float result[4] = { -1/eps, -1/eps, -1/eps, -1/eps };
+            float result[5] = { -1/eps, -1/eps, -1/eps, -1/eps, -1/eps };
             if ( opts.check ) {
                 /* =====================================================================
                    Check the results following the LAPACK's [zcds]drvbd routine.
@@ -227,25 +230,27 @@ int main( int argc, char** argv)
                 /* =====================================================================
                    Check the result compared to LAPACK
                    =================================================================== */
-                float work[1], error = 1., mone = -1;
+                float work[1], c_neg_one = -1;
                 magma_int_t one = 1;
                 
-                error = lapackf77_slange("f", &min_mn, &one, S1, &min_mn, work);
-                blasf77_saxpy(&min_mn, &mone, S1, &one, S2, &one);
-                error = lapackf77_slange("f", &min_mn, &one, S2, &min_mn, work) / error;
+                blasf77_saxpy(&min_mn, &c_neg_one, S1, &one, S2, &one);
+                result[4]  = lapackf77_slange("f", &min_mn, &one, S2, &min_mn, work);
+                result[4] /= lapackf77_slange("f", &min_mn, &one, S1, &min_mn, work);
                 
                 printf("   %c    %c %5d %5d  %7.2f         %7.2f         %8.2e",
-                       jobu, jobvt, (int) M, (int) N, cpu_time, gpu_time, error );
+                       jobu, jobvt, (int) M, (int) N, cpu_time, gpu_time, result[4] );
             }
             else {
                 printf("   %c    %c %5d %5d    ---           %7.2f           ---   ",
                        jobu, jobvt, (int) M, (int) N, gpu_time );
             }
             if ( opts.check ) {
-                if ( result[0] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[0] ); }
-                if ( result[1] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[1] ); }
-                if ( result[2] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[2] ); }
-                printf("   %s\n", (result[3] == 0. ? "okay" : "fail"));
+                if ( result[0] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[0]); }
+                if ( result[1] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[1]); }
+                if ( result[2] < 0. ) { printf("     ---   "); } else { printf("  %#9.3g", result[2]); }
+                int success = (result[0] < tol) && (result[1] < tol) && (result[2] < tol) && (result[3] == 0.) && (result[4] < tol);
+                printf("   %3s%s\n", (result[3] == 0. ? "yes" : "no"), (success ? "" : "  failed"));
+                status |= ! success;
             }
             else {
                 printf("\n");
@@ -268,5 +273,5 @@ int main( int argc, char** argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

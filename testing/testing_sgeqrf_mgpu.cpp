@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:58 2013
+       @generated s Wed Aug 14 12:18:07 2013
 */
 // includes, system
 #include <stdlib.h>
@@ -30,7 +30,7 @@ int main( int argc, char** argv )
 {
     TESTING_INIT();
 
-    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     float           error, work[1];
     float c_neg_one = MAGMA_S_NEG_ONE;
     float *h_A, *h_R, *tau, *h_work, tmp[1];
@@ -38,15 +38,25 @@ int main( int argc, char** argv )
     magma_int_t M, N, n2, lda, ldda, n_local, ngpu;
     magma_int_t info, min_mn, nb, lhwork;
     magma_int_t ione     = 1;
-    magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t ISEED[4] = {0,0,0,1}, ISEED2[4];
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
-    opts.lapack |= opts.check;  // check (-c) implies lapack (-l)
-    
-    printf("ngpu %d\n", opts.ngpu );
-    printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R||_F / ||A||_F\n");
-    printf("=======================================================================\n");
+    opts.lapack |= (opts.check == 2);  // check (-c2) implies lapack (-l)
+ 
+    magma_int_t status = 0;
+    float tol, eps = lapackf77_slamch("E");
+    tol = opts.tolerance * eps;
+
+    printf("ngpu %d\n", (int) opts.ngpu );
+    if ( opts.check == 1 ) {
+        printf("  M     N     CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R-Q'A||_1 / (M*||A||_1) ||I-Q'Q||_1 / M\n");
+        printf("================================================================================================\n");
+
+    } else {
+        printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R||_F /(M*||A||_F)\n");
+        printf("==========================================================================\n");
+    }
     for( int i = 0; i < opts.ntest; ++i ) {
         for( int iter = 0; iter < opts.niter; ++iter ) {
             M = opts.msize[i];
@@ -87,6 +97,7 @@ int main( int argc, char** argv )
             }
             
             /* Initialize the matrix */
+            for ( int j=0; j<4; j++ ) ISEED2[j] = ISEED[j]; // saving seeds
             lapackf77_slarnv( &ione, ISEED, &n2, h_A );
             lapackf77_slacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
             
@@ -94,6 +105,8 @@ int main( int argc, char** argv )
                Performs operation using LAPACK
                =================================================================== */
             if ( opts.lapack ) {
+                float *tau;
+                TESTING_MALLOC( tau, float, min_mn );
                 cpu_time = magma_wtime();
                 lapackf77_sgeqrf( &M, &N, h_A, &M, tau, h_work, &lhwork, &info );
                 cpu_time = magma_wtime() - cpu_time;
@@ -101,6 +114,7 @@ int main( int argc, char** argv )
                 if (info != 0)
                     printf("lapack_sgeqrf returned error %d: %s.\n",
                            (int) info, magma_strerror( info ));
+                TESTING_FREE( tau );
             }
             
             /* ====================================================================
@@ -119,20 +133,61 @@ int main( int argc, char** argv )
             magma_sgetmatrix_1D_col_bcyclic( M, N, d_lA, ldda, h_R, lda, ngpu, nb );
             magma_queue_sync( NULL );
             
-            /* =====================================================================
-               Check the result compared to LAPACK
-               =================================================================== */
-            if ( opts.lapack ) {
+            if ( opts.check == 1 ) {
+                /* =====================================================================
+                   Check the result 
+                   =================================================================== */
+                magma_int_t lwork = n2+N;
+                float *h_W1, *h_W2, *h_W3;
+                float *h_RW, results[2];
+    
+                TESTING_MALLOC( h_W1, float, n2 ); // Q
+                TESTING_MALLOC( h_W2, float, n2 ); // R
+                TESTING_MALLOC( h_W3, float, lwork ); // WORK
+                TESTING_MALLOC( h_RW, float, M );  // RWORK
+                lapackf77_slarnv( &ione, ISEED2, &n2, h_A );
+                lapackf77_sqrt02( &M, &N, &min_mn, h_A, h_R, h_W1, h_W2, &lda, tau, h_W3, &lwork,
+                                  h_RW, results );
+                results[0] *= eps;
+                results[1] *= eps;
+
+                if ( opts.lapack ) {
+                    printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e                 %8.2e",
+                           (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time, results[0],results[1] );
+                    printf("%s\n", (results[0] < tol ? "" : "  failed"));
+                } else {
+                    printf("%5d %5d     ---   (  ---  )   %7.2f (%7.2f)    %8.2e                 %8.2e",
+                           (int) M, (int) N, gpu_perf, gpu_time, results[0],results[1] );
+                    printf("%s\n", (results[0] < tol ? "" : "  failed"));
+                }
+                status |= ! (results[0] < tol);
+
+                TESTING_FREE( h_W1 );
+                TESTING_FREE( h_W2 );
+                TESTING_FREE( h_W3 );
+                TESTING_FREE( h_RW );
+            } else if ( opts.check == 2 ) {
+                /* =====================================================================
+                   Check the result compared to LAPACK
+                   =================================================================== */
                 error = lapackf77_slange("f", &M, &N, h_A, &lda, work );
                 blasf77_saxpy( &n2, &c_neg_one, h_A, &ione, h_R, &ione );
-                error = lapackf77_slange("f", &M, &N, h_R, &lda, work ) / error;
+                error = lapackf77_slange("f", &M, &N, h_R, &lda, work ) / (min_mn*error);
                 
-                printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
+                printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e",
                        (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                printf("%s\n", (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
             }
             else {
-                printf("%5d %5d     ---   (  ---  )   %7.2f (%7.2f)     ---\n",
-                       (int) M, (int) N, gpu_perf, gpu_time );
+                if ( opts.lapack ) {
+                    printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   ---\n",
+                           (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time );
+                } else {
+                    printf("%5d %5d     ---   (  ---  )   %7.2f (%7.2f)     ---  \n",
+                           (int) M, (int) N, gpu_perf, gpu_time);
+                }
+
             }
             
             TESTING_FREE( tau );
@@ -150,5 +205,5 @@ int main( int argc, char** argv )
     }
     
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

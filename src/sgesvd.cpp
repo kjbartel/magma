@@ -1,11 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
     
-       @generated s Fri Jun 28 19:32:50 2013
+       @author Stan Tomov
+       @generated s Tue Aug 13 16:44:54 2013
 
 */
 #include "common_magma.h"
@@ -20,11 +21,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
              float *work, magma_int_t lwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
     
     Purpose
     =======
@@ -177,6 +178,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
     minmn = min(m,n);
     mnthr = (magma_int_t)( minmn * 1.6 );
     bdspac = 5*n;
+    ie = 0;
     
     want_ua  = lapackf77_lsame(jobu_, "A");
     want_us  = lapackf77_lsame(jobu_, "S");
@@ -271,7 +273,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             if (want_un) {
                 // Path 1 (M much larger than N, JOBU='N')
                 // No left singular vectors to be computed
-                
+                // printf("Path 1\n");
                 itau = 1;
                 iwork = itau + n;
                 
@@ -327,7 +329,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                 // Path 2 (M much larger than N, JOBU='O', JOBVT='N')
                 // N left singular vectors to be overwritten on A and
                 // no right singular vectors to be computed
-                
+                // printf("Path 2\n");
                 if (lwork >= n*n + max(wrkbrd, bdspac)) {
                     // Sufficient workspace for a fast algorithm
                     ir = 1;
@@ -375,8 +377,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Generate Q in A
                     // (Workspace: need N*N + 2*N, prefer N*N + N + N*NB)
                     i__2 = lwork - iwork + 1;
-                    lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                     &work[itau], &work[iwork], &i__2, &ierr);
+
+                    // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                    //                  &work[itau], &work[iwork], &i__2, &ierr);
+                    magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                     ie = itau;
                     itauq = ie + n;
                     itaup = itauq + n;
@@ -455,7 +460,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                 // Path 3 (M much larger than N, JOBU='O', JOBVT='S' or 'A')
                 // N left singular vectors to be overwritten on A and
                 // N right singular vectors to be computed in VT
-                
+                // printf("Path 3\n");
                 if (lwork >= n*n + max(wrkbrd, bdspac)) {
                     // Sufficient workspace for a fast algorithm
                     ir = 1;
@@ -505,8 +510,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Generate Q in A
                     // (Workspace: need N*N + 2*N, prefer N*N + N + N*NB)
                     i__3 = lwork - iwork + 1;
-                    lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                     &work[itau], &work[iwork], &i__3, &ierr);
+
+                    // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                    //                  &work[itau], &work[iwork], &i__3, &ierr);
+                    magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                     ie = itau;
                     itauq = ie + n;
                     itaup = itauq + n;
@@ -587,8 +595,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Generate Q in A
                     // (Workspace: need 2*N, prefer N + N*NB)
                     i__2 = lwork - iwork + 1;
-                    lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                     &work[itau], &work[iwork], &i__2, &ierr);
+
+                    // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                    //                  &work[itau], &work[iwork], &i__2, &ierr);
+                    magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                     ie = itau;
                     itauq = ie + n;
                     itaup = itauq + n;
@@ -629,7 +640,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 4 (M much larger than N, JOBU='S', JOBVT='N')
                     // N left singular vectors to be computed in U and
                     // no right singular vectors to be computed
-                    
+                    // printf("Path 4\n");
                     if (lwork >= n*n + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         ir = 1;
@@ -662,8 +673,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in A
                         // (Workspace: need N*N + 2*N, prefer N*N + N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -715,8 +729,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need 2*N, prefer N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &n, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, U, ldu, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -755,7 +772,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 5 (M much larger than N, JOBU='S', JOBVT='O')
                     // N left singular vectors to be computed in U and
                     // N right singular vectors to be overwritten on A
-                    
+                    // printf("Path 5\n");
                     if (lwork >= 2*n*n + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -798,8 +815,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in A
                         // (Workspace: need 2*N*N + 2*N, prefer 2*N*N + N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -871,8 +891,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need 2*N, prefer N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &n, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, U, ldu, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -918,7 +941,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 6 (M much larger than N, JOBU='S', JOBVT='S' or 'A')
                     // N left singular vectors to be computed in U and
                     // N right singular vectors to be computed in VT
-                    
+                    // printf("Path 6\n");
                     if (lwork >= n*n + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -938,7 +961,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         i__2 = lwork - iwork + 1;
                         lapackf77_sgeqrf(&m, &n, A, &lda, &work[itau],
                                          &work[iwork], &i__2, &ierr);
-                        
+                                                
                         // Copy R to WORK(IU), zeroing out below it
                         lapackf77_slacpy("U", &n, &n,
                                          A, &lda,
@@ -951,8 +974,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in A
                         // (Workspace: need N*N + 2*N, prefer N*N + N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, A, &lda,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &n, &n, A, &lda,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, A, lda, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -1007,6 +1033,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         i__2 = lwork - iwork + 1;
                         lapackf77_sgeqrf(&m, &n, A, &lda, &work[itau],
                                          &work[iwork], &i__2, &ierr);
+
                         lapackf77_slacpy("L", &m, &n,
                                          A, &lda,
                                          U, &ldu);
@@ -1014,9 +1041,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need 2*N, prefer N + N*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &n, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
-                        
+
+                        // lapackf77_sorgqr(&m, &n, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, n, n, U, ldu, &work[itau], &ierr);                       
+ 
                         // Copy R to VT, zeroing out below it
                         lapackf77_slacpy("U", &n, &n,
                                          A, &lda,
@@ -1068,7 +1097,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 7 (M much larger than N, JOBU='A', JOBVT='N')
                     // M left singular vectors to be computed in U and
                     // no right singular vectors to be computed
-                    
+                    // printf("Path 7\n");
                     if (lwork >= n*n + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         ir = 1;
@@ -1104,8 +1133,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need N*N + N + M, prefer N*N + N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -1162,8 +1194,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need N + M, prefer N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -1202,7 +1237,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 8 (M much larger than N, JOBU='A', JOBVT='O')
                     // M left singular vectors to be computed in U and
                     // N right singular vectors to be overwritten on A
-                    
+                    // printf("Path 8\n");
                     if (lwork >= 2*n*n + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -1239,8 +1274,10 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need 2*N*N + N + M, prefer 2*N*N + N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
                         
                         // Copy R to WORK(IU), zeroing out below it
                         lapackf77_slacpy("U", &n, &n,
@@ -1322,8 +1359,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need N + M, prefer N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
+
                         ie = itau;
                         itauq = ie + n;
                         itaup = itauq + n;
@@ -1369,7 +1409,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 9 (M much larger than N, JOBU='A', JOBVT='S' or 'A')
                     // M left singular vectors to be computed in U and
                     // N right singular vectors to be computed in VT
-                    
+                    // printf("Path 9\n");
                     if (lwork >= n*n + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -1387,8 +1427,13 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Compute A=Q*R, copying result to U
                         // (Workspace: need N*N + 2*N, prefer N*N + N + N*NB)
                         i__2 = lwork - iwork + 1;
+                        float t1;
+
+                        t1 = magma_wtime();
                         lapackf77_sgeqrf(&m, &n, A, &lda, &work[itau],
                                          &work[iwork], &i__2, &ierr);
+                        // printf("QR time %10.6f\n", magma_wtime() - t1);
+
                         lapackf77_slacpy("L", &m, &n,
                                          A, &lda,
                                          U, &ldu);
@@ -1396,8 +1441,12 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need N*N + N + M, prefer N*N + N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        t1 = magma_wtime();
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
+                        // printf("SORGQR time %10.6f\n", magma_wtime() - t1);
                         
                         // Copy R to WORK(IU), zeroing out below it
                         lapackf77_slacpy("U", &n, &n,
@@ -1416,8 +1465,10 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // (Workspace: need N*N + 4*N, prefer N*N + 3*N + 2*N*NB)
                         i__2 = lwork - iwork + 1;
                         //printf("path 9-a\n");
+                        t1 = magma_wtime();
                         magma_sgebrd(n, n, &work[iu], ldwrku, s, &work[ie],
                                      &work[itauq], &work[itaup], &work[iwork], i__2, &ierr);
+                        // printf("SGEBRD time %10.6f\n", magma_wtime() - t1);
                         lapackf77_slacpy("U", &n, &n,
                                          &work[iu], &ldwrku,
                                          VT, &ldvt);
@@ -1425,9 +1476,11 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate left bidiagonalizing vectors in WORK(IU)
                         // (Workspace: need N*N + 4*N, prefer N*N + 3*N + N*NB)
                         i__2 = lwork - iwork + 1;
+                        t1 = magma_wtime();
                         lapackf77_sorgbr("Q", &n, &n, &n, &work[iu], &ldwrku,
                                          &work[itauq], &work[iwork], &i__2, &ierr);
-                        
+                        // printf("SORGBR time %10.6f\n", magma_wtime() - t1);
+
                         // Generate right bidiagonalizing vectors in VT
                         // (Workspace: need N*N + 4*N-1, prefer N*N + 3*N + (N-1)*NB)
                         i__2 = lwork - iwork + 1;
@@ -1439,18 +1492,22 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // singular vectors of R in WORK(IU) and computing
                         // right singular vectors of R in VT
                         // (Workspace: need N*N + BDSPAC)
+                        t1 = magma_wtime();
                         lapackf77_sbdsqr("U", &n, &n, &n, &izero, s, &work[ie],
                                          VT, &ldvt, &work[iu], &ldwrku,
                                          cdummy, &ione, &work[iwork], info);
-                        
+                        // printf("SBDSQR time %10.6f\n", magma_wtime() - t1);
+ 
                         // Multiply Q in U by left singular vectors of R in
                         // WORK(IU), storing result in A
                         // (Workspace: need N*N)
+                        t1 = magma_wtime();
                         blasf77_sgemm("N", "N", &m, &n, &n,
                                       &c_one,  U, &ldu,
                                                &work[iu], &ldwrku,
                                       &c_zero, A, &lda);
-                        
+                        // printf("SGEMMtime %10.6f\n", magma_wtime() - t1);
+
                         // Copy left singular vectors of A from A to U
                         lapackf77_slacpy("F", &m, &n,
                                          A, &lda,
@@ -1473,8 +1530,10 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                         // Generate Q in U
                         // (Workspace: need N + M, prefer N + M*NB)
                         i__2 = lwork - iwork + 1;
-                        lapackf77_sorgqr(&m, &m, &n, U, &ldu,
-                                         &work[itau], &work[iwork], &i__2, &ierr);
+
+                        // lapackf77_sorgqr(&m, &m, &n, U, &ldu,
+                        //                  &work[itau], &work[iwork], &i__2, &ierr);
+                        magma_sorgqr2(m, m, n, U, ldu, &work[itau], &ierr);
                         
                         // Copy R from A to VT, zeroing out below it
                         lapackf77_slacpy("U", &n, &n,
@@ -1527,7 +1586,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             // M < MNTHR
             // Path 10 (M at least N, but not much larger)
             // Reduce to bidiagonal form without QR decomposition
-            
+            // printf("Path 10\n");
             ie = 1;
             itauq = ie + n;
             itaup = itauq + n;
@@ -1537,9 +1596,13 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             // (Workspace: need 3*N + M, prefer 3*N + (M + N)*NB)
             i__2 = lwork - iwork + 1;
             //printf("path 10\n");
+
+            float t1 = magma_wtime();
             magma_sgebrd(m, n, A, lda, s, &work[ie],
                          &work[itauq], &work[itaup], &work[iwork], i__2, &ierr);
+            // printf("SGEBRD time %10.6f\n", magma_wtime() - t1);
             
+            t1 = magma_wtime();
             if (want_uas) {
                 // If left singular vectors desired in U, copy result to U
                 // and generate left bidiagonalizing vectors in U
@@ -1584,6 +1647,8 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                 lapackf77_sorgbr("P", &n, &n, &n, A, &lda,
                                  &work[itaup], &work[iwork], &i__2, &ierr);
             }
+            // printf("SORGBR time %10.6f\n", magma_wtime() - t1);
+
             iwork = ie + n;
             if (want_uas || want_uo) {
                 nru = m;
@@ -1597,6 +1662,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             if (want_vn) {
                 ncvt = 0;
             }
+            t1 = magma_wtime();
             if (! want_uo && ! want_vo) {
                 // Perform bidiagonal QR iteration, if desired, computing
                 // left singular vectors in U and computing right singular
@@ -1624,6 +1690,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                                  VT, &ldvt, A, &lda,
                                  cdummy, &ione, &work[iwork], info);
             }
+            // printf("SBDSQR time %10.6f\n", magma_wtime() - t1);            
         }
     }
     else {
@@ -1634,7 +1701,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             if (want_vn) {
                 // Path 1t (N much larger than M, JOBVT='N')
                 // No right singular vectors to be computed
-                
+                // printf("Path 1t\n");
                 itau = 1;
                 iwork = itau + m;
                 
@@ -1691,7 +1758,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                 // Path 2t (N much larger than M, JOBU='N', JOBVT='O')
                 // M right singular vectors to be overwritten on A and
                 // no left singular vectors to be computed
-                
+                // printf("Path 2t\n");
                 if (lwork >= m*m + max(wrkbrd, bdspac)) {
                     // Sufficient workspace for a fast algorithm
                     ir = 1;
@@ -1820,7 +1887,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                 // Path 3t (N much larger than M, JOBU='S' or 'A', JOBVT='O')
                 // M right singular vectors to be overwritten on A and
                 // M left singular vectors to be computed in U
-                
+                // printf("Path 3t\n");
                 if (lwork >= m*m + max(wrkbrd, bdspac)) {
                     // Sufficient workspace for a fast algorithm
                     ir = 1;
@@ -1989,7 +2056,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 4t (N much larger than M, JOBU='N', JOBVT='S')
                     // M right singular vectors to be computed in VT and
                     // no left singular vectors to be computed
-                    
+                    // printf("Path 4t\n");
                     if (lwork >= m*m + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         ir = 1;
@@ -2114,7 +2181,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 5t (N much larger than M, JOBU='O', JOBVT='S')
                     // M right singular vectors to be computed in VT and
                     // M left singular vectors to be overwritten on A
-                    
+                    // printf("Path 5t\n");
                     if (lwork >= 2*m*m + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -2270,7 +2337,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 6t (N much larger than M, JOBU='S' or 'A', JOBVT='S')
                     // M right singular vectors to be computed in VT and
                     // M left singular vectors to be computed in U
-                    
+                    // printf("Path 6t\n");
                     if (lwork >= m*m + max(wrkbrd, bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -2414,7 +2481,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 7t (N much larger than M, JOBU='N', JOBVT='A')
                     // N right singular vectors to be computed in VT and
                     // no left singular vectors to be computed
-                    
+                    // printf("Path 7t\n");
                     if (lwork >= m*m + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         ir = 1;
@@ -2544,7 +2611,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 8t (N much larger than M, JOBU='O', JOBVT='A')
                     // N right singular vectors to be computed in VT and
                     // M left singular vectors to be overwritten on A
-                    
+                    // printf("Path 8t\n");
                     if (lwork >= 2*m*m + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -2706,7 +2773,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
                     // Path 9t (N much larger than M, JOBU='S' or 'A', JOBVT='A')
                     // N right singular vectors to be computed in VT and
                     // M left singular vectors to be computed in U
-                    
+                    // printf("Path 9t\n");
                     if (lwork >= m*m + max( max(n + m, wrkbrd), bdspac)) {
                         // Sufficient workspace for a fast algorithm
                         iu = 1;
@@ -2858,7 +2925,7 @@ magma_sgesvd(char jobu, char jobvt, magma_int_t m, magma_int_t n,
             // N < MNTHR
             // Path 10t (N greater than M, but not much larger)
             // Reduce to bidiagonal form without LQ decomposition
-            
+            // printf("Path 10t\n");
             ie = 1;
             itauq = ie + m;
             itaup = itauq + m;

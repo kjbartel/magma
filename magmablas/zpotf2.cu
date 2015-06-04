@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @precisions normal z -> s d c
 */
@@ -35,11 +35,11 @@ magma_zpotf2_gpu(
     magmaDoubleComplex *A, magma_int_t lda,
     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -213,7 +213,7 @@ void zpotf2_zdotc(magma_int_t n, magmaDoubleComplex *x, magma_int_t incx)
 
 */
     if (n > zdotc_max_bs) {
-        printf("n = %d > %d is not supported in zpotf2_zdotc\n", n, zdotc_max_bs);
+        printf("n = %d > %d is not supported in zpotf2_zdotc\n", (int) n, (int) zdotc_max_bs);
         exit(1);
     }
     int threadSize;

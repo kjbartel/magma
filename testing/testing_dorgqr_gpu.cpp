@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:58 2013
+       @generated d Wed Aug 14 12:18:06 2013
        
        @author Stan Tomov
        @author Mathieu Faverge
@@ -56,7 +56,7 @@ int main( int argc, char** argv)
             n = opts.nsize[i];
             k = opts.ksize[i];
             if ( m < n || n < k ) {
-                printf( "skipping m %d, n %d, k %d because m < n or n < k\n", m, n, k );
+                printf( "skipping m %d, n %d, k %d because m < n or n < k\n", (int) m, (int) n, (int) k );
                 continue;
             }
             
@@ -122,11 +122,13 @@ int main( int argc, char** argv)
                 error = lapackf77_dlange("f", &m, &n, hR, &lda, work) / error;
                 
                 printf("%5d %5d %5d   %7.1f (%7.2f)   %7.1f (%7.2f)   %8.2e\n",
-                       m, n, k, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                       (int) m, (int) n, (int) k,
+                       cpu_perf, cpu_time, gpu_perf, gpu_time, error );
             }
             else {
                 printf("%5d %5d %5d     ---   (  ---  )   %7.1f (%7.2f)     ---  \n",
-                       m, n, k, gpu_perf, gpu_time );
+                       (int) m, (int) n, (int) k,
+                       gpu_perf, gpu_time );
             }
             
             TESTING_HOSTFREE( hA     );

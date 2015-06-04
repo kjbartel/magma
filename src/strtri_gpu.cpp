@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:05 2013
+       @generated s Tue Aug 13 16:44:05 2013
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ extern "C" magma_int_t
 magma_strtri_gpu(char uplo, char diag, magma_int_t n,
              float *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -71,7 +71,7 @@ magma_strtri_gpu(char uplo, char diag, magma_int_t n,
     char uplo_[2] = {uplo, 0};
     char diag_[2] = {diag, 0};
     magma_int_t     nb, nn, j, jb;
-    float c_zero     = MAGMA_S_ZERO;
+    //float c_zero     = MAGMA_S_ZERO;
     float c_one      = MAGMA_S_ONE;
     float c_neg_one  = MAGMA_S_NEG_ONE;
     float *work;

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:49 2013
+       @generated c Tue Aug 13 16:44:53 2013
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ magma_clahru_m(
     magmaFloatComplex *A, magma_int_t lda,
     struct cgehrd_data* data )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

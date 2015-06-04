@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
 
@@ -26,11 +26,11 @@ magma_ztrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
          magma_int_t m, magma_int_t n, magmaDoubleComplex alpha, magmaDoubleComplex *a,
          magma_int_t lda, magmaDoubleComplex *b, magma_int_t ldb)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -140,7 +140,7 @@ magma_ztrsm_m (magma_int_t nrgpu, char side, char uplo, char transa, char diag,
     magma_int_t nb = magma_get_ztrsm_m_nb();
     magma_int_t igpu = 0;
     magma_int_t info;
-    magma_int_t k,j,jj,kb,jb,jjb;
+    magma_int_t k, j, kb, jb;
     magma_int_t ldda, dima, lddb, dimb;
     int gpu_b;
     magma_getdevice(&gpu_b);

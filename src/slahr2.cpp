@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:47 2013
+       @generated s Tue Aug 13 16:44:50 2013
        @author Stan Tomov
        @author Mark Gates
 */
@@ -22,11 +22,11 @@ magma_slahr2(
     float *T, magma_int_t ldt,
     float *Y, magma_int_t ldy )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -147,7 +147,7 @@ magma_slahr2(
     float scale;
 
     magma_int_t i;
-    float ei;
+    float ei = MAGMA_S_ZERO;
 
     // adjust from 1-based indexing
     k -= 1;

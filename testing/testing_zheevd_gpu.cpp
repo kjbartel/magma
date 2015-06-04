@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     @author Raffaele Solca
     @author Azzam Haidar
@@ -47,6 +47,9 @@ int main( int argc, char** argv)
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    double tol    = opts.tolerance * lapackf77_dlamch("E");
+    double tolulp = opts.tolerance * lapackf77_dlamch("P");
     
     if ( opts.check && opts.jobz == MagmaNoVec ) {
         fprintf( stderr, "checking results requires vectors; setting jobz=V (option -JV)\n" );
@@ -159,7 +162,7 @@ int main( int argc, char** argv)
                     temp1 = max(temp1, absv(w2[j]));
                     temp2 = max(temp2, absv(w1[j]-w2[j]));
                 }
-                result[2] = temp2 / temp1;
+                result[2] = temp2 / (((double)N)*temp1);
             }
             
             /* =====================================================================
@@ -191,9 +194,9 @@ int main( int argc, char** argv)
                =================================================================== */
             if ( opts.check ) {
                 printf("Testing the factorization A = U S U' for correctness:\n");
-                printf("(1)    | A - U S U' | / (|A| N)     = %8.2e\n",   result[0]*eps );
-                printf("(2)    | I -   U'U  | /  N          = %8.2e\n",   result[1]*eps );
-                printf("(3)    | S(w/ U) - S(w/o U) | / |S| = %8.2e\n\n", result[2]     );
+                printf("(1)    | A - U S U' | / (|A| N)     = %8.2e%s\n",   result[0]*eps, (result[0]*eps < tol ? "" : "  failed") );
+                printf("(2)    | I -   U'U  | /  N          = %8.2e%s\n",   result[1]*eps, (result[1]*eps < tol ? "" : "  failed") );
+                printf("(3)    | S(w/ U) - S(w/o U) | / |S| = %8.2e%s\n\n", result[2]    , (result[2]  < tolulp ? "" : "  failed") );
             }
 
             TESTING_FREE(     h_A    );

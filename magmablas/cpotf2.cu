@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
-       @generated c Fri Jun 28 19:33:20 2013
+       @generated c Wed Aug 14 12:16:44 2013
 */
 
 #include <stdio.h>
@@ -35,11 +35,11 @@ magma_cpotf2_gpu(
     magmaFloatComplex *A, magma_int_t lda,
     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -213,7 +213,7 @@ void cpotf2_cdotc(magma_int_t n, magmaFloatComplex *x, magma_int_t incx)
 
 */
     if (n > cdotc_max_bs) {
-        printf("n = %d > %d is not supported in cpotf2_cdotc\n", n, cdotc_max_bs);
+        printf("n = %d > %d is not supported in cpotf2_cdotc\n", (int) n, (int) cdotc_max_bs);
         exit(1);
     }
     int threadSize;

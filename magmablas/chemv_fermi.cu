@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:06 2013
+       @generated c Tue Aug 13 16:45:10 2013
 
 */
 #include "common_magma.h"
@@ -1734,11 +1734,11 @@ magmablas_chemv2_200(
     else
     {
         magma_int_t blocks    = n / chemv_bs + (n % chemv_bs != 0);
-        magma_int_t workspace = lda * (blocks + 1);
+        magma_int_t workspace = n * (blocks );
 
         if (lwork < workspace) {
             printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-                   lwork, workspace);
+                   (int) lwork, (int) workspace);
             exit(1);
         }
         //printf("You are using chemv_bs=%d\n", chemv_bs);

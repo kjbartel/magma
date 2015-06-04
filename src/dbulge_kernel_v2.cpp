@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated d Fri Jun 28 19:32:37 2013
+ *     @generated d Tue Aug 13 16:44:40 2013
  *
  */
 
@@ -37,7 +37,6 @@ magma_dlarfxsym_v2(magma_int_t n,
     magma_int_t ione = 1;
     double dtmp;
     double c_zero   =  MAGMA_D_ZERO;
-    double c_one    =  MAGMA_D_ONE;
     double c_neg_one=  MAGMA_D_NEG_ONE;
     double c_half   =  MAGMA_D_HALF;
 

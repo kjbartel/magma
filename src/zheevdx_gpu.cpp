@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
     
        @author Raffaele Solca
        @author Azzam Haidar
@@ -25,11 +25,11 @@ magma_zheevdx_gpu(char jobz, char range, char uplo,
                   magma_int_t *iwork, magma_int_t liwork,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -279,19 +279,23 @@ magma_zheevdx_gpu(char jobz, char range, char uplo,
         return *info;
     }
 
-    /* Quick return if possible */
-    if (n == 0) {
-        return *info;
-    }
-
-    if (n == 1) {
-        magmaDoubleComplex tmp;
-        magma_zgetvector( 1, da, 1, &tmp, 1 );
-        w[0] = MAGMA_Z_REAL(tmp);
-        if (wantz) {
-            tmp = MAGMA_Z_ONE;
-            magma_zsetvector( 1, &tmp, 1, da, 1 );
-        }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128) {
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        magmaDoubleComplex *a = (magmaDoubleComplex *) malloc( n * n * sizeof(magmaDoubleComplex) );
+        magma_zgetmatrix(n, n, da, ldda, a, n);
+        lapackf77_zheevd(jobz_, uplo_,
+                         &n, a, &n,
+                         w, work, &lwork,
+                         rwork, &lrwork,
+                         iwork, &liwork, info);
+        magma_zsetmatrix( n, n, a, n, da, ldda);
+        free(a);
+        *m=n;
         return *info;
     }
 
@@ -325,6 +329,7 @@ magma_zheevdx_gpu(char jobz, char range, char uplo,
     /* Scale matrix to allowable range, if necessary. */
     anrm = magmablas_zlanhe('M', uplo, n, da, ldda, dwork);
     iscale = 0;
+    sigma  = 1;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;

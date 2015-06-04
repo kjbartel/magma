@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
@@ -14,9 +14,10 @@
 #include "common_magma.h"
 #include "magma_bulge.h"
 #include "magma_zbulge.h"
+#define PRECISION_z
 
-extern "C" 
-magma_int_t magma_zhegvdx_2stage_m(magma_int_t nrgpu, 
+extern "C" magma_int_t 
+magma_zhegvdx_2stage_m(magma_int_t nrgpu, 
                              magma_int_t itype, char jobz, char range, char uplo, 
                              magma_int_t n,
                              magmaDoubleComplex *a, magma_int_t lda, 
@@ -28,11 +29,11 @@ magma_int_t magma_zhegvdx_2stage_m(magma_int_t nrgpu,
                              magma_int_t *iwork, magma_int_t liwork, 
                              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -223,6 +224,10 @@ magma_int_t magma_zhegvdx_2stage_m(magma_int_t nrgpu,
 //    magma_int_t lropt;
     magma_int_t lrwmin;
 
+    /* determine the number of threads */
+    magma_int_t threads = magma_get_numthreads();
+    magma_setlapack_numthreads(threads);
+    
     wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     alleig = lapackf77_lsame(range_, "A");
@@ -259,8 +264,8 @@ magma_int_t magma_zhegvdx_2stage_m(magma_int_t nrgpu,
         }
     }
 
-    magma_int_t nb = magma_get_zbulge_nb_mgpu(n);
-    magma_int_t lq2 = magma_zbulge_get_lq2(n);
+    magma_int_t nb = magma_get_zbulge_nb(n, threads);
+    magma_int_t lq2 = magma_zbulge_get_lq2(n, threads);
 
     if (wantz) {
         lwmin = lq2 + 2 * n + n * n;
@@ -296,10 +301,24 @@ magma_int_t magma_zhegvdx_2stage_m(magma_int_t nrgpu,
         return *info;
     }
 
-    /* determine the number of threads */
-    magma_int_t threads = magma_get_numthreads();
-    magma_setlapack_numthreads(threads);
-    
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_zhegvd(&itype, jobz_, uplo_,
+                         &n, a, &lda, b, &ldb,
+                         w, work, &lwork,
+#if defined(PRECISION_z) || defined(PRECISION_c)
+                         rwork, &lrwork, 
+#endif  
+                         iwork, &liwork, info);
+        *m = n;
+        return *info;
+    }
+
     /*     Form a Cholesky factorization of B. */
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;

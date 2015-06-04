@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -12,6 +12,7 @@ include ../Makefile.internal
 # ----------
 # BLAS and auxiliary
 ZSRC += \
+	testing_z_cublas_v2.cpp	\
 	testing_zgemm.cpp	\
 	testing_zgemv.cpp	\
 	testing_zhemv.cpp	\
@@ -93,6 +94,7 @@ ZSRC += \
 	testing_zunmqr_gpu.cpp	\
 	\
 	testing_zgeqrf_mgpu.cpp	\
+
 
 # QR, CPU interface
 ZSRC += \
@@ -182,7 +184,7 @@ LIBEXE  := $(LIBOBJ:.o=)
 # strip out fake exe files generated from LIBSRC
 EXE := $(filter-out $(LIBEXE), $(EXE))
 
-.PHONY: all lib clean cleanall
+.PHONY: all lib clean cleanall cleanexe
 
 all: $(EXE)
 
@@ -208,15 +210,17 @@ clean:
 	cd matgen && $(MAKE) clean
 	rm -f *.o *~ $(LIBTEST)
 
-cleanall: clean
+cleanexe:
 	rm -f $(EXE)
+
+cleanall: clean cleanexe
 
 ifeq ($(FORT), pgfortran)
 testing_%.o : testing_%.cuf
-	$(FORT) $(FOPTS) $(INC) -c $< -o $@ 
+	$(FORT) $(FOPTS) $(INC_MAGMA) -c $< -o $@ 
 else
 testing_%.o : testing_%.f90
-	$(FORT) $(FOPTS) $(INC) -c $< -o $@ 
+	$(FORT) $(FOPTS) $(INC_MAGMA) -c $< -o $@ 
 endif
 
 testing_%_f : testing_%_f.o $(FOBJ)
@@ -237,10 +241,10 @@ testing_% : testing_%.o
 #
 fortran.o : OPTS += -DCUBLAS_GFORTRAN
 fortran.o : $(CUDADIR)/src/fortran.c
-	$(CC) $(OPTS) $(INC) -c $< -o $@
+	$(CC) $(OPTS) $(INC_MAGMA) -c $< -o $@
 
 fortran_thunking.o : $(CUDADIR)/src/fortran_thunking.c
-	$(CC) $(OPTS) $(INC) -c $< -o $@
+	$(CC) $(OPTS) $(INC_MAGMA) -c $< -o $@
 
 # keep intermediate object files, to speed up re-compiling when library changes
 .SECONDARY: $(ALLOBJ)

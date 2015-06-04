@@ -1,11 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:24 2013
+       @author Stan Tomov
+       @generated s Tue Aug 13 16:44:26 2013
 
 */
 #include "common_magma.h"
@@ -16,17 +17,20 @@ magma_sgeqrf(magma_int_t m, magma_int_t n,
              float *work, magma_int_t lwork,
              magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
     SGEQRF computes a QR factorization of a REAL M-by-N matrix A:
     A = Q * R. This version does not require work space on the GPU
     passed as input. GPU memory is allocated in the routine.
+
+    If the current stream is NULL, this version replaces it with user defined
+    stream to overlap computation with communication.
 
     Arguments
     =========
@@ -145,73 +149,86 @@ magma_sgeqrf(magma_int_t m, magma_int_t n,
         return magma_sgeqrf_ooc(m, n, A, lda, tau, work, lwork, info);
     }
 
-    magma_queue_t stream[2];
+    /* Define user stream if current stream is NULL */
+    magma_queue_t stream[3], current_stream;
+    magmablasGetKernelStream(&current_stream);
+
     magma_queue_create( &stream[0] );
-    magma_queue_create( &stream[1] );
+    magma_queue_create( &stream[2] );
+    if (current_stream == NULL) {
+      magma_queue_create( &stream[1] );
+      magmablasSetKernelStream(stream[1]);
+    }
+    else
+      stream[1] = current_stream;
 
     dwork = dA + n*ldda;
     dT    = dA + n*ldda + nb*lddwork;
 
     if ( (nb > 1) && (nb < k) ) {
-        /* Use blocked code initially */
+        /* Use blocked code initially.
+           Asynchronously send the matrix to the GPU except the first panel. */
         magma_ssetmatrix_async( m, n-nb,
                                 A(0,nb),  lda,
-                                dA(0,nb), ldda, stream[0] );
+                                dA(0,nb), ldda, stream[2] );
 
         old_i = 0;
         old_ib = nb;
         for (i = 0; i < k-nb; i += nb) {
             ib = min(k-i, nb);
             if (i>0) {
+                /* download i-th panel */
+                magma_queue_sync( stream[1] ); 
                 magma_sgetmatrix_async( m-i, ib,
                                         dA(i,i), ldda,
-                                        A(i,i),  lda, stream[1] );
-
-                magma_sgetmatrix_async( i, ib,
-                                        dA(0,i), ldda,
-                                        A(0,i),  lda, stream[0] );
+                                        A(i,i),  lda, stream[0] );
 
                 /* Apply H' to A(i:m,i+2*ib:n) from the left */
-                //printf( "m %4d, n %4d, nb %4d, i %4d, larfb m %4d, n %4d, k %4d\n",
-                //        m, n, nb, i, m-old_i, n-old_i-2*old_ib, old_ib );
                 magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
                                   m-old_i, n-old_i-2*old_ib, old_ib,
                                   dA(old_i, old_i),          ldda, dT,    nb,
                                   dA(old_i, old_i+2*old_ib), ldda, dwork, lddwork);
+
+                magma_sgetmatrix_async( i, ib,
+                                        dA(0,i), ldda,
+                                        A(0,i),  lda, stream[2] );
+                magma_queue_sync( stream[0] );
             }
 
-            magma_queue_sync( stream[1] );
             magma_int_t rows = m-i;
             lapackf77_sgeqrf(&rows, &ib, A(i,i), &lda, tau+i, work, &lwork, info);
             /* Form the triangular factor of the block reflector
                H = H(i) H(i+1) . . . H(i+ib-1) */
             lapackf77_slarft( MagmaForwardStr, MagmaColumnwiseStr,
                               &rows, &ib, A(i,i), &lda, tau+i, work, &ib);
+
             spanel_to_q(MagmaUpper, ib, A(i,i), lda, work+ib*ib);
-            magma_ssetmatrix( rows, ib, A(i,i), lda, dA(i,i), ldda );
-            sq_to_panel(MagmaUpper, ib, A(i,i), lda, work+ib*ib);
+
+            /* download the i-th V matrix */
+            magma_ssetmatrix_async( rows, ib, A(i,i), lda, dA(i,i), ldda, stream[0] );
+
+            /* download the T matrix */
+            magma_ssetmatrix_async( ib, ib, work, ib, dT, nb, stream[0] );
+            magma_queue_sync( stream[0] );
 
             if (i + ib < n) {
-                magma_ssetmatrix( ib, ib, work, ib, dT, nb );
 
                 if (i+ib < k-nb) {
                     /* Apply H' to A(i:m,i+ib:i+2*ib) from the left (look-ahead) */
-                    //printf( "m %4d, n %4d, nb %4d, i %4d, larfb m %4d, n %4d, k %4d, lddwork %4d (lookahead 1)\n",
-                    //        m, n, nb, i, rows, ib, ib, lddwork );
                     magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
                                       rows, ib, ib,
                                       dA(i, i   ), ldda, dT,    nb,
                                       dA(i, i+ib), ldda, dwork, lddwork);
+                    sq_to_panel(MagmaUpper, ib, A(i,i), lda, work+ib*ib);
                 }
                 else {
                     /* After last panel, update whole trailing matrix. */
                     /* Apply H' to A(i:m,i+ib:n) from the left */
-                    //printf( "m %4d, n %4d, nb %4d, i %4d, larfb m %4d, n %4d, k %4d, lddwork %4d (last)\n",
-                    //        m, n, nb, i, rows, n-i-ib, ib, lddwork );
                     magma_slarfb_gpu( MagmaLeft, MagmaTrans, MagmaForward, MagmaColumnwise,
                                       rows, n-i-ib, ib,
                                       dA(i, i   ), ldda, dT,    nb,
                                       dA(i, i+ib), ldda, dwork, lddwork);
+                    sq_to_panel(MagmaUpper, ib, A(i,i), lda, work+ib*ib);
                 }
 
                 old_i  = i;
@@ -233,7 +250,12 @@ magma_sgeqrf(magma_int_t m, magma_int_t n,
     }
 
     magma_queue_destroy( stream[0] );
-    magma_queue_destroy( stream[1] );
+    magma_queue_destroy( stream[2] );
+    if (current_stream == NULL) {
+      magma_queue_destroy( stream[1] );
+      magmablasSetKernelStream(NULL);
+    }
+
     magma_free( dA );
     
     return *info;

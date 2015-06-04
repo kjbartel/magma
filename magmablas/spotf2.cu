@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
-       @generated s Fri Jun 28 19:33:20 2013
+       @generated s Wed Aug 14 12:16:43 2013
 */
 
 #include <stdio.h>
@@ -35,11 +35,11 @@ magma_spotf2_gpu(
     float *A, magma_int_t lda,
     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -213,7 +213,7 @@ void spotf2_sdot(magma_int_t n, float *x, magma_int_t incx)
 
 */
     if (n > sdot_max_bs) {
-        printf("n = %d > %d is not supported in spotf2_sdot\n", n, sdot_max_bs);
+        printf("n = %d > %d is not supported in spotf2_sdot\n", (int) n, (int) sdot_max_bs);
         exit(1);
     }
     int threadSize;

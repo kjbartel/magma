@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Azzam Haidar
        @author Stan Tomov
        @author Raffaele Solca
        
-       @generated s Fri Jun 28 19:32:38 2013
+       @generated s Tue Aug 13 16:44:42 2013
 
  */
 #include "common_magma.h"
@@ -17,7 +17,7 @@
 #include "magma_sbulge.h"
 #include <cblas.h>
 
-#ifdef SETAFFINITY
+#ifdef MAGMA_SETAFFINITY
 #include "affinity.h"
 #endif
 
@@ -129,26 +129,33 @@ magma_sbulge_back(magma_int_t threads, char uplo,
     float f= 1.;
     magma_int_t n_gpu = ne;
 
-#if defined(PRECISION_s) || defined(PRECISION_d)
-    float gpu_cpu_perf = 32;  // gpu over cpu performance  //100% ev // SandyB. - Kepler (K20c)
+//#if defined(PRECISION_s) || defined(PRECISION_d)
+    //float gpu_cpu_perf = 50;  // gpu over cpu performance  //100% ev // SandyB. - Kepler (K20c)
     //float gpu_cpu_perf = 16;  // gpu over cpu performance  //100% ev // SandyB. - Fermi (M2090)
-#else
+//#else
 //    float gpu_cpu_perf = 27.5;  // gpu over cpu performance  //100% ev // Westmere - Fermi (M2090)
-    float gpu_cpu_perf = 32;  // gpu over cpu performance  //100% ev // SandyB. - Kepler (K20c)
+    //float gpu_cpu_perf = 37;  // gpu over cpu performance  //100% ev // SandyB. - Kepler (K20c)
 //    float gpu_cpu_perf = 130;  // gpu over cpu performance  //100% ev // Bulldozer - Kepler (K20X)
-#endif
+//#endif
 
+    magma_int_t gpu_cpu_perf = magma_get_sbulge_gcperf();
     if(threads>1){
-        f = 1. / (1. + (float)(threads-1)/ (gpu_cpu_perf));
+        f = 1. / (1. + (float)(threads-1)/ ((float)gpu_cpu_perf)    );
         n_gpu = (magma_int_t)(f*ne);
     }
 
     /****************************************************
      *  apply V2 from left to the eigenvectors Z. dZ = (I-V2*T2*V2')*Z
      * **************************************************/
-
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//n_gpu=ne;
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     timeaplQ2 = magma_wtime();
-
     /*============================
      *  use GPU+CPU's
      *==========================*/
@@ -241,11 +248,17 @@ static void *magma_sapplyQ_parallel_section(void *arg)
 
     magma_int_t info;
 
+    #ifdef ENABLE_TIMER
     real_Double_t timeQcpu=0.0, timeQgpu=0.0;
+    #endif
 
     magma_int_t n_cpu = ne - n_gpu;
 
-#ifdef SETAFFINITY
+    // with MKL and when using omp_set_num_threads instead of mkl_set_num_threads
+    // it need that all threads setting it to 1.
+    magma_setlapack_numthreads(1);
+
+#ifdef MAGMA_SETAFFINITY
     //#define PRINTAFFINITY
 #ifdef PRINTAFFINITY
     affinity_set print_set;
@@ -315,7 +328,7 @@ static void *magma_sapplyQ_parallel_section(void *arg)
 
     } // END if my_core_id
 
-#ifdef SETAFFINITY
+#ifdef MAGMA_SETAFFINITY
     // unbind threads
     if (check == 0){
         check2 = original_set.set_affinity();
@@ -429,7 +442,7 @@ static void magma_stile_bulge_applyQ(magma_int_t core_id, char side, magma_int_t
                         lapackf77_slarfb( "L", "N", "F", "C", &vlen, &ib_loc, &vnb, V(vpos), &ldv, T(tpos), &ldt, E(fst,i*nb_loc), &lde, work, &ib_loc);
                     }
                     if(INFO!=0)
-                        printf("ERROR SORMQR INFO %d \n",INFO);
+                        printf("ERROR SORMQR INFO %d \n", (int) INFO);
                 }
             }
         }else if (side=='R'){

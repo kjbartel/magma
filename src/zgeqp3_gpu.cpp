@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
   
        @precisions normal z -> c d s
 
@@ -23,11 +23,11 @@ magma_zgeqp3_gpu( magma_int_t m, magma_int_t n,
 #endif
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -103,8 +103,9 @@ magma_zgeqp3_gpu( magma_int_t m, magma_int_t n,
 
     magma_int_t ione = 1;
 
+    //magma_int_t na;
     magma_int_t n_j;
-    magma_int_t j, jb, na, nb, sm, sn, fjb, nfxd, minmn;
+    magma_int_t j, jb, nb, sm, sn, fjb, nfxd, minmn;
     magma_int_t topbmn, sminmn, lwkopt, lquery;
     
     *info = 0;
@@ -117,12 +118,12 @@ magma_zgeqp3_gpu( magma_int_t m, magma_int_t n,
         *info = -4;
     }
     
+    nb = magma_get_zgeqp3_nb(min(m, n));
     if (*info == 0) {
         minmn = min(m,n);
         if (minmn == 0) {
             lwkopt = 1;
         } else {
-            nb = magma_get_zgeqp3_nb(min(m, n));
             lwkopt = (n + 1)*nb;
 #if defined(PRECISION_d) || defined(PRECISION_s)
             lwkopt += 2*n;

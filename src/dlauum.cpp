@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:32:08 2013
+       @generated d Tue Aug 13 16:44:09 2013
 
 */
 #include "common_magma.h"
@@ -18,11 +18,11 @@ extern "C" magma_int_t
 magma_dlauum(char uplo, magma_int_t n,
          double *a, magma_int_t lda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

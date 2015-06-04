@@ -8,7 +8,7 @@
  *     @author Stan Tomov
  *     @author Raffaele Solca
  *
- *     @generated d Fri Jun 28 19:32:36 2013
+ *     @generated d Wed Aug 14 12:16:16 2013
  *
  */
 
@@ -103,24 +103,31 @@ magma_dbulge_applyQ_v2(char side,
 
 
     // Azzam 21/11/2012
-    // NOTE THAT dwork was of size 2*lddwork*Vblksiz+...
-    // but I am thinking why not modifing it to lddwork*Vblksiz+...
-    double *dwork, *dT0, *dV0, *dT1, *dV1, *dwvt;
-    magma_int_t lddv = ldv; //NB + Vblksiz - 1;
-    magma_int_t lddt = ldt; // Vblksiz;
-    magma_int_t lddwvt = ldv; 
+    // NOTE THAT dwork was of size 2*NE*Vblksiz+...
+    // but I am thinking why not modifing it to NE*Vblksiz+...
+    // BUT NO because the 2* is used because of making 2 streams working and so 
+    // they might be using dwork in parallel
+    double *dwork, *dwork0, *dwork1, *dwvt0, *dwvt1;
+    double *dT0, *dV0, *dT1, *dV1;
+    magma_int_t lddv = ldv;
+    magma_int_t lddt = ldt; 
+    magma_int_t lddw = 0;
+    magma_int_t lddwork  = ((NE+31)/32)*32;
+    magma_int_t dwVTsiz  = lddv*Vblksiz; // lddv*lddv + lddv*lddwork;(v2) // lddv*Vblksiz; (v1,v3)
+    magma_int_t dworksiz = lddwork*Vblksiz;  // lddv*Vblksiz; (v2)   // NE*Vblksiz=lddwork*Vblksiz; (v1,v3)
 
-
-    magma_int_t lddwork = NE;
-    if(MAGMA_SUCCESS != magma_dmalloc( &dwork, 2*lddwork*Vblksiz +  2*Vchunksiz* (Vblksiz* (lddv+lddt)) + lddwvt*Vblksiz )) {
+    if(MAGMA_SUCCESS != magma_dmalloc( &dwork, 2*dworksiz + 2*dwVTsiz +  2*Vchunksiz* (Vblksiz* (lddv+lddt)) )) {
        printf ("!!!!  magma_dbulge_applyQ magma_alloc failed for: dwork\n" );
        exit(-1);
     }
-    dV0 = dwork + 2*lddwork*Vblksiz;
-    dT0 = dV0 + Vchunksiz*Vblksiz*lddv;
-    dV1 = dT0 + Vchunksiz*Vblksiz*lddt;
-    dT1 = dV1 + Vchunksiz*Vblksiz*lddv;
-    dwvt= dT1 + Vchunksiz*Vblksiz*lddt;
+    dwork0 = dwork;               // size = dworksiz;
+    dwork1 = dwork0 + dworksiz;   // size = dworksiz;
+    dwvt0  = dwork + 2*dworksiz;  // size = dwVTsiz;
+    dwvt1  = dwvt0 + dwVTsiz;     // size = dwVTsiz;
+    dV0    = dwork + 2*dworksiz + 2*dwVTsiz;
+    dT0    = dV0 + Vchunksiz*Vblksiz*lddv;
+    dV1    = dT0 + Vchunksiz*Vblksiz*lddt;
+    dT1    = dV1 + Vchunksiz*Vblksiz*lddv;
 
 
     // make overlapped copy
@@ -129,13 +136,12 @@ magma_dbulge_applyQ_v2(char side,
     magma_int_t blkcnt,nothing, mysiz, flip, vld,tld, locpos;
     findVTsiz(N, NB, Vblksiz, &blkcnt, &nothing);
 
-
-
+    flip = 0;
 
     // performance loss if the reflector are applied to a big number of eigenvectors (~10000)
     // => apply the reflectors to blocks of eigenvectors.
-    magma_int_t nr_bl = magma_ceildiv(NE,10000);        //nr of blocks
-    magma_int_t sz_bl = magma_ceildiv(NE,nr_bl*64)*64; //maximum size of blocks (to have blocks of around the same size and multiple of 64)
+    //magma_int_t nr_bl = magma_ceildiv(NE,10000);        //nr of blocks
+    magma_int_t sz_bl = NE; //magma_ceildiv(NE,nr_bl*64)*64; //maximum size of blocks (to have blocks of around the same size and multiple of 64)
     magma_int_t ib;                                      //size of current block
 
 
@@ -243,8 +249,9 @@ magma_dbulge_applyQ_v2(char side,
                             cudaStreamWaitEvent(stream[0], myevent[1], 0);
                             for(magma_int_t i=0; i<NE; i+= sz_bl){
                                 ib = min(sz_bl, NE-i);
-                                //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork, ib);
-                                magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork, ib, dwvt, Vm);
+                                lddw = min(lddwork,sz_bl);
+                                //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork0, lddw);
+                                magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0+lcvpos, lddv, dT0+lctpos, lddt, dE(myrow,i), ldde, dwork0, lddw, dwvt0, lddv);
                             }
                             cudaEventRecord(myevent[0], stream[0]);
                         }else{
@@ -252,8 +259,9 @@ magma_dbulge_applyQ_v2(char side,
                             cudaStreamWaitEvent(stream[1], myevent[0], 0);
                             for(magma_int_t i=0; i<NE; i+= sz_bl){
                                 ib = min(sz_bl, NE-i);
-                                //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork, ib);
-                                magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork, ib, dwvt, Vm);
+                                lddw = min(lddwork,sz_bl);
+                                //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork1, lddw);
+                                magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1+lcvpos, lddv, dT1+lctpos, lddt, dE(myrow,i), ldde, dwork1, lddw, dwvt1, lddv);
                             }
                             cudaEventRecord(myevent[1], stream[1]);
                         }
@@ -393,6 +401,7 @@ magma_dbulge_applyQ_v2(char side,
     cudaEventDestroy(myevent[1]);
     magma_queue_destroy( stream[0] );
     magma_queue_destroy( stream[1] );
+    magma_free(dwork);
 
 
     return MAGMA_SUCCESS;

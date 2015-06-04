@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:32:27 2013
+       @generated d Tue Aug 13 16:44:29 2013
 
 */
 
@@ -24,11 +24,11 @@ magma_dlaqps(magma_int_t m, magma_int_t n, magma_int_t offset,
              double *F,  magma_int_t ldf,
              double *dF, magma_int_t lddf)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

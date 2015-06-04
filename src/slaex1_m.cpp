@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
        
-       @generated s Fri Jun 28 19:32:35 2013
+       @generated s Wed Aug 14 12:16:15 2013
 */
 #include "common_magma.h"
 
@@ -32,11 +32,11 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
                char range, float vl, float vu,
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -74,7 +74,7 @@ magma_slaex1_m(magma_int_t nrgpu, magma_int_t n, float* d, float* q, magma_int_t
     problem.
     
     The final stage consists of computing the updated eigenvectors
-    directly using the updated eigenvalues.  The eigenvectors for
+    sirectly using the updated eigenvalues.  The eigenvectors for
     the current problem are multiplied with the eigenvectors from
     the overall problem.
 

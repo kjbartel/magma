@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:34:06 2013
+       @generated s Tue Aug 13 16:46:14 2013
 
 */
 
@@ -26,7 +26,7 @@
 #define PRECISION_s
 
 /* ////////////////////////////////////////////////////////////////////////////
-   -- Testing sgehrd2
+   -- Testing sgehrd
 */
 int main( int argc, char** argv)
 {
@@ -41,11 +41,14 @@ int main( int argc, char** argv)
     magma_int_t N, n2, lda, nb, lwork, ltwork, info;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t status = 0;
     
     eps   = lapackf77_slamch( "E" );
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    float tol = opts.tolerance * lapackf77_slamch("E");
     
     printf("    N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   |A-QHQ'|/N|A|   |I-QQ'|/N\n");
     printf("=========================================================================\n");
@@ -128,7 +131,7 @@ int main( int argc, char** argv)
                 cpu_time = magma_wtime() - cpu_time;
                 cpu_perf = gflops / cpu_time;
                 if (info != 0)
-                    printf("lapack_sgehrd returned error %d: %s.\n",
+                    printf("lapackf77_sgehrd returned error %d: %s.\n",
                            (int) info, magma_strerror( info ));
             }
             
@@ -144,8 +147,11 @@ int main( int argc, char** argv)
                        (int) N, gpu_perf, gpu_time );
             }
             if ( opts.check ) {
-                printf("   %8.2e        %8.2e\n",
-                       result[0]*eps, result[1]*eps );
+                printf("   %8.2e        %8.2e%s\n",
+                       result[0]*eps, result[1]*eps,
+                       ( ( (result[0]*eps < tol) && (result[1]*eps < tol) ) ? "" : "  failed")  );
+                status |= ! (result[0]*eps < tol);
+                status |= ! (result[1]*eps < tol);
             }
             else {
                 printf("     ---             ---\n");
@@ -163,5 +169,5 @@ int main( int argc, char** argv)
     }
     
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:31:29 2013
+       @generated c Tue Aug 13 16:43:28 2013
 */
 
 #ifndef MAGMA_CLAPACK_H
@@ -71,6 +71,8 @@ extern "C" {
 #define lapackf77_chbtrd   FORTRAN_NAME( chbtrd, CHBTRD )
 #define lapackf77_cheev    FORTRAN_NAME( cheev,  CHEEV  )
 #define lapackf77_cheevd   FORTRAN_NAME( cheevd, CHEEVD )
+#define lapackf77_cheevr   FORTRAN_NAME( cheevr, CHEEVR )
+#define lapackf77_cheevx   FORTRAN_NAME( cheevx, CHEEVX )
 #define lapackf77_chegs2   FORTRAN_NAME( chegs2, CHEGS2 )
 #define lapackf77_chegst   FORTRAN_NAME( chegst, CHEGST )
 #define lapackf77_chegvd   FORTRAN_NAME( chegvd, CHEGVD )
@@ -453,6 +455,26 @@ void   lapackf77_cheevd( const char *jobz, const char *uplo,
                          DWORKFORZ_AND_LD
                          magma_int_t *iwork, const magma_int_t *liwork,
                          magma_int_t *info );
+
+void   lapackf77_cheevr( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         magmaFloatComplex *A, const magma_int_t *lda,
+                         float *vl, float *vu, 
+                         magma_int_t *il, magma_int_t *iu, float *abstol, 
+                         magma_int_t *m, float *w, magmaFloatComplex *z__, 
+                         magma_int_t *ldz, magma_int_t *isuppz, 
+                         magmaFloatComplex *work, magma_int_t *lwork, 
+                         float *rwork, magma_int_t *lrwork, 
+                         magma_int_t *iwork, magma_int_t *liwork, magma_int_t *info);
+
+void   lapackf77_cheevx( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         magmaFloatComplex *A, const magma_int_t *lda,
+                         float *vl, float *vu,
+                         magma_int_t *il, magma_int_t *iu, float *abstol,
+                         magma_int_t *m, float *w, magmaFloatComplex *z__,
+                         magma_int_t *ldz, magmaFloatComplex *work, magma_int_t *lwork,
+                         float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info);
 
 void   lapackf77_chegs2( const magma_int_t *itype, const char *uplo,
                          const magma_int_t *n,

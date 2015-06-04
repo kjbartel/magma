@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 
@@ -123,11 +123,13 @@ int main( int argc, char** argv )
                 error = lapackf77_zlange("f", &m, &n, hR, &lda, work) / error;
                 
                 printf("%5d %5d %5d   %7.1f (%7.2f)   %7.1f (%7.2f)   %8.2e\n",
-                       m, n, k, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                       (int) m, (int) n, (int) k,
+                       cpu_perf, cpu_time, gpu_perf, gpu_time, error );
             }
             else {
                 printf("%5d %5d %5d     ---   (  ---  )   %7.1f (%7.2f)     ---  \n",
-                       m, n, k, gpu_perf, gpu_time );
+                       (int) m, (int) n, (int) k,
+                       gpu_perf, gpu_time );
             }
             
             TESTING_HOSTFREE( hA     );

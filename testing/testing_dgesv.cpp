@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:54 2013
+       @generated d Tue Aug 13 16:46:01 2013
        @author Mark Gates
 */
 // includes, system
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     TESTING_INIT();
 
     real_Double_t   gflops, cpu_perf, cpu_time, gpu_perf, gpu_time;
-    double          Rnorm, Anorm, Xnorm, *work;
+    double          error, Rnorm, Anorm, Xnorm, *work;
     double c_one     = MAGMA_D_ONE;
     double c_neg_one = MAGMA_D_NEG_ONE;
     double *h_A, *h_LU, *h_B, *h_X;
@@ -38,15 +38,18 @@ int main(int argc, char **argv)
     magma_int_t N, nrhs, lda, ldb, info, sizeA, sizeB;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
     
+    double tol = opts.tolerance * lapackf77_dlamch("E");
+    
     nrhs = opts.nrhs;
     
-    printf("ngpu %d\n", opts.ngpu );
-    printf("    N  NRHS   CPU Gflop/s (sec)   GPU GFlop/s (sec)   ||B - AX|| / ||A||*||X||\n");
-    printf("==============================================================================\n");
+    printf("ngpu %d\n", (int) opts.ngpu );
+    printf("    N  NRHS   CPU Gflop/s (sec)   GPU GFlop/s (sec)   ||B - AX|| / N*||A||*||X||\n");
+    printf("================================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ) {
         for( int iter = 0; iter < opts.niter; ++iter ) {
             N = opts.nsize[i];
@@ -94,7 +97,8 @@ int main(int argc, char **argv)
                            &c_neg_one, h_B, &ldb);
             
             Rnorm = lapackf77_dlange("I", &N, &nrhs, h_B, &ldb, work);
-            
+            error = Rnorm/(N*Anorm*Xnorm);
+            status |= ! (error < tol);
             
             /* ====================================================================
                Performs operation using LAPACK
@@ -108,12 +112,14 @@ int main(int argc, char **argv)
                     printf("lapackf77_dgesv returned error %d: %s.\n",
                            (int) info, magma_strerror( info ));
                 
-                printf( "%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
-                        (int) N, (int) nrhs, cpu_perf, cpu_time, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+                printf( "%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e%s\n",
+                        (int) N, (int) nrhs, cpu_perf, cpu_time, gpu_perf, gpu_time,
+                        error, (error < tol ? "" : "  failed"));
             }
             else {
-                printf( "%5d %5d     ---   (  ---  )   %7.2f (%7.2f)   %8.2e\n",
-                        (int) N, (int) nrhs, gpu_perf, gpu_time, Rnorm/(Anorm*Xnorm) );
+                printf( "%5d %5d     ---   (  ---  )   %7.2f (%7.2f)   %8.2e%s\n",
+                        (int) N, (int) nrhs, gpu_perf, gpu_time,
+                        error, (error < tol ? "" : "  failed"));
             }
             
             TESTING_FREE( h_A  );
@@ -129,5 +135,5 @@ int main(int argc, char **argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

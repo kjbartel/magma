@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Mark Gates
 
-       @generated s Fri Jun 28 19:32:30 2013
+       @generated s Tue Aug 13 16:44:32 2013
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_ssyevd(char jobz, char uplo,
              magma_int_t *iwork, magma_int_t liwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -156,6 +156,7 @@ magma_ssyevd(char jobz, char uplo,
     lquery = lwork == -1 || liwork == -1;
 
     *info = 0;
+
     if (! (wantz || lapackf77_lsame(jobz_, MagmaNoVecStr))) {
         *info = -1;
     } else if (! (lower || lapackf77_lsame(uplo_, MagmaUpperStr))) {
@@ -208,6 +209,20 @@ magma_ssyevd(char jobz, char uplo,
         if (wantz) {
             a[0] = 1.;
         }
+        return *info;
+    }
+    
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_ssyevd(jobz_, uplo_,
+                         &n, a, &lda,
+                         w, work, &lwork,
+                         iwork, &liwork, info);
         return *info;
     }
 
@@ -275,6 +290,7 @@ magma_ssyevd(char jobz, char uplo,
             return *info;
         }
 
+        // TTT Possible bug for n < 128
         magma_sstedx('A', n, 0., 0., 0, 0, w, &work[inde],
                      &work[indwrk], n, &work[indwk2],
                      llwrk2, iwork, liwork, dwork, info);

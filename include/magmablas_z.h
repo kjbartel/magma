@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 */
@@ -135,16 +135,16 @@ magma_int_t magma_zhtodhe(
 magma_int_t magma_zhtodpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-    magmaDoubleComplex  *h_A,  magma_int_t lda,
-    magmaDoubleComplex **d_lA, magma_int_t ldda,
+    magmaDoubleComplex  *h_A,   magma_int_t lda,
+    magmaDoubleComplex *d_lA[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 // in src/zpotrf3_mgpu.cpp
 magma_int_t magma_zdtohpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magma_int_t NB,
-    magmaDoubleComplex  *a,    magma_int_t lda,
-    magmaDoubleComplex **work, magma_int_t ldda,
+    magmaDoubleComplex  *a,     magma_int_t lda,
+    magmaDoubleComplex *work[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 magma_int_t magmablas_zhemv_mgpu_offset(
@@ -615,8 +615,7 @@ void magmablas_ztrsm_work(
     magmaDoubleComplex alpha,
     magmaDoubleComplex_const_ptr dA, magma_int_t ldda,
     magmaDoubleComplex_ptr       db, magma_int_t lddb,
-    magmaDoubleComplex_ptr d_dinvA,
-    magmaDoubleComplex_ptr dx );
+    int flag, magmaDoubleComplex_ptr d_dinvA, magmaDoubleComplex_ptr dx );
 #endif
 
   /*

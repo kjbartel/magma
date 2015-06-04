@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:45 2013
+       @generated d Wed Aug 14 12:18:00 2013
        @author Mark Gates
 
 */
@@ -48,7 +48,7 @@ int main( int argc, char** argv)
     mstride = 2*mb;
     nstride = 3*nb;
     
-    printf("mb=%d, nb=%d, mstride=%d, nstride=%d\n", mb, nb, mstride, nstride );
+    printf("mb=%d, nb=%d, mstride=%d, nstride=%d\n", (int) mb, (int) nb, (int) mstride, (int) nstride );
     printf("    M    N ntile   CPU GFlop/s (sec)   GPU GFlop/s (sec)   check\n");
     printf("=================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ) {
@@ -124,7 +124,7 @@ int main( int argc, char** argv)
             printf("%5d %5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %s\n",
                    (int) M, (int) N, (int) ntile,
                    cpu_perf, cpu_time, gpu_perf, gpu_time,
-                   (error == 0. ? "okay" : "fail") );
+                   (error == 0. ? "ok" : "failed") );
             
             TESTING_FREE( h_A );
             TESTING_FREE( h_B );

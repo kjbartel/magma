@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
        
-       @generated s Fri Jun 28 19:32:35 2013
+       @generated s Tue Aug 13 16:44:38 2013
 */
 #include "common_magma.h"
 
@@ -21,9 +21,8 @@ extern "C" {
                                char range, float vl, float vu,
                                magma_int_t il, magma_int_t iu, magma_int_t* info);
 
-    int magma_get_slaex3_m_nb();       // defined in slaex3_m.cpp
+    magma_int_t magma_get_slaex3_m_nb();       // defined in slaex3_m.cpp
 
-    magma_int_t get_slaex0_smlsize();  // defined in slaex0.cpp
 }
 
 extern "C" magma_int_t
@@ -32,11 +31,11 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
                char range, float vl, float vu,
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -119,7 +118,7 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
 
     magma_int_t ione = 1;
     char range_;
-    magma_int_t curlvl, curprb, i, indxq;
+    magma_int_t curlvl, i, indxq;
     magma_int_t igpu, j, k, matsiz, msd2, smlsiz;
     magma_int_t submat, subpbs, tlvls;
     float* dw[MagmaMaxGPUs];
@@ -169,7 +168,7 @@ magma_slaex0_m(magma_int_t nrgpu, magma_int_t n, float* d, float* e, float* q, m
         magma_queue_create( &stream[igpu][1] );
     }
 
-    smlsiz = get_slaex0_smlsize();
+    smlsiz = magma_get_smlsize_divideconquer();
 
     // Determine the size and placement of the submatrices, and save in
     // the leading elements of IWORK.

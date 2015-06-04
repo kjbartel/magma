@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
        
@@ -21,9 +21,8 @@ extern "C" {
                                char range, double vl, double vu,
                                magma_int_t il, magma_int_t iu, magma_int_t* info);
 
-    int magma_get_dlaex3_m_nb();       // defined in dlaex3_m.cpp
+    magma_int_t magma_get_dlaex3_m_nb();       // defined in dlaex3_m.cpp
 
-    magma_int_t get_dlaex0_smlsize();  // defined in dlaex0.cpp
 }
 
 extern "C" magma_int_t
@@ -32,11 +31,11 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
                char range, double vl, double vu,
                magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -119,7 +118,7 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
 
     magma_int_t ione = 1;
     char range_;
-    magma_int_t curlvl, curprb, i, indxq;
+    magma_int_t curlvl, i, indxq;
     magma_int_t igpu, j, k, matsiz, msd2, smlsiz;
     magma_int_t submat, subpbs, tlvls;
     double* dw[MagmaMaxGPUs];
@@ -169,7 +168,7 @@ magma_dlaex0_m(magma_int_t nrgpu, magma_int_t n, double* d, double* e, double* q
         magma_queue_create( &stream[igpu][1] );
     }
 
-    smlsiz = get_dlaex0_smlsize();
+    smlsiz = magma_get_smlsize_divideconquer();
 
     // Determine the size and placement of the submatrices, and save in
     // the leading elements of IWORK.

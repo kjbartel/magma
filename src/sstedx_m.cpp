@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
        
-       @generated s Fri Jun 28 19:32:35 2013
+       @generated s Tue Aug 13 16:44:38 2013
 */
 #include "common_magma.h"
 
@@ -18,11 +18,6 @@ extern "C"{
                                float* work, magma_int_t* iwork,
                                char range, float vl, float vu,
                                magma_int_t il, magma_int_t iu, magma_int_t* info);
-
-    magma_int_t get_sstedx_m_smlsize()
-    {
-        return 25;
-    }
 }
 
 extern "C" magma_int_t
@@ -31,11 +26,11 @@ magma_sstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
                float* work, magma_int_t lwork, magma_int_t* iwork, magma_int_t liwork,
                magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -192,7 +187,7 @@ magma_sstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
     if (*info == 0) {
         // Compute the workspace requirements
 
-        smlsiz = get_sstedx_m_smlsize();
+        smlsiz = magma_get_smlsize_divideconquer();
         if( n <= 1 ){
             lwmin = 1;
             liwmin = 1;
@@ -232,7 +227,7 @@ magma_sstedx_m(magma_int_t nrgpu, char range, magma_int_t n, float vl, float vu,
     magma_setlapack_numthreads(threads);
 
 #ifdef ENABLE_DEBUG
-    printf("D&C is using %d threads\n", threads);
+    printf("  D&C_m is using %d threads\n", threads);
 #endif
 
     // If N is smaller than the minimum divide size (SMLSIZ+1), then

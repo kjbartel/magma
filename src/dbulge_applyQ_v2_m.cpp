@@ -8,7 +8,7 @@
  *     @author Stan Tomov
  *     @author Raffaele Solca
  *
- *     @generated d Fri Jun 28 19:32:41 2013
+ *     @generated d Tue Aug 13 16:44:44 2013
  *
  */
 
@@ -107,41 +107,49 @@ magma_dbulge_applyQ_v2_m(magma_int_t ngpu, char side,
         }
     }
 
+
+
     // Azzam 21/11/2012
-    // NOTE THAT dwork was of size 2*lddwork*Vblksiz+...
-    // but I am thinking why not modifing it to lddwork*Vblksiz+...
-    double *dE[MagmaMaxGPUs], *dwork[MagmaMaxGPUs], *dwvt[MagmaMaxGPUs];
+    // NOTE THAT dwork was of size 2*NE*Vblksiz+...
+    // but I am thinking why not modifing it to NE*Vblksiz+...
+    // BUT NO because the 2* is used because of making 2 streams working and so 
+    // they might be using dwork in parallel
+    double *dE[MagmaMaxGPUs];
+    double *dwork[MagmaMaxGPUs], *dwork0[MagmaMaxGPUs], *dwork1[MagmaMaxGPUs];
+    //double *dwvt[MagmaMaxGPUs];
+    double *dwvt0[MagmaMaxGPUs], *dwvt1[MagmaMaxGPUs];
     double *dT0[MagmaMaxGPUs], *dV0[MagmaMaxGPUs], *dT1[MagmaMaxGPUs], *dV1[MagmaMaxGPUs];
     magma_int_t dev;
     magma_int_t ldde = N;
     magma_int_t lddv = ldv;
     magma_int_t lddt = ldt;
-    magma_int_t lddwvt = ldv; 
-    magma_int_t lddwork = NE;
     magma_int_t ne_loc = magma_ceildiv(NE, ngpu);
-
     if (ne_loc<256)
        ne_loc=256;
+    magma_int_t dwVTsiz  = lddv*Vblksiz;  // lddv*lddv + lddv*NE;// lddv*Vblksiz;
+    magma_int_t dworksiz = ne_loc*Vblksiz;  // lddv*Vblksiz;     // NE*Vblksiz;
 
     ngpu = min(ngpu, magma_ceildiv(NE,ne_loc)); // Don't use GPU that will not have data.
-
     // copy dE to GPUs 
     for (dev=0; dev < ngpu; ++dev){
         magma_setdevice( dev );
-        lddwork = ne_loc;
         if(MAGMA_SUCCESS != magma_dmalloc( &dE[dev], ldde * ne_loc)) {
             printf ("!!!!  magma_dbulge_applyQ magma_alloc failed for: dE\n" );
             exit(-1);
         }
-        if(MAGMA_SUCCESS != magma_dmalloc( &dwork[dev], 2*lddwork*Vblksiz + 2*Vchunksiz* (Vblksiz* (lddv+lddt)) + lddwvt*Vblksiz )) {
+        if(MAGMA_SUCCESS != magma_dmalloc( &dwork[dev], 2*dworksiz + 2*dwVTsiz + 2*Vchunksiz* (Vblksiz* (lddv+lddt)) )) {
             printf ("!!!!  magma_dbulge_applyQ magma_alloc failed for: dwork\n" );
             exit(-1);
         }
-        dV0[dev] = dwork[dev] + 2*lddwork*Vblksiz;
-        dT0[dev] = dV0[dev] + Vchunksiz*Vblksiz*lddv;
-        dV1[dev] = dT0[dev] + Vchunksiz*Vblksiz*lddt;
-        dT1[dev] = dV1[dev] + Vchunksiz*Vblksiz*lddv;
-        dwvt[dev]= dT1[dev] + Vchunksiz*Vblksiz*lddt;
+
+        dwork0[dev] = dwork[dev];               // size = dworksiz;
+        dwork1[dev] = dwork0[dev] + dworksiz;   // size = dworksiz;
+        dwvt0[dev]  = dwork[dev] + 2*dworksiz;  // size = dwVTsiz;
+        dwvt1[dev]  = dwvt0[dev] + dwVTsiz;     // size = dwVTsiz;
+        dV0[dev]    = dwork[dev] + 2*dworksiz + 2*dwVTsiz;
+        dT0[dev]    = dV0[dev]   + Vchunksiz*Vblksiz*lddv;
+        dV1[dev]    = dT0[dev]   + Vchunksiz*Vblksiz*lddt;
+        dT1[dev]    = dV1[dev]   + Vchunksiz*Vblksiz*lddv;
 
         magma_int_t ie_loc = min(ne_loc, NE - ne_loc*dev);
         magma_dsetmatrix_async( N, ie_loc, E+lde*ne_loc*dev, lde, dE(dev, 0, 0), ldde, streams[dev][1] );
@@ -153,6 +161,8 @@ magma_dbulge_applyQ_v2_m(magma_int_t ngpu, char side,
     magma_int_t copyed=0, copyst=0;
     magma_int_t blkcnt,nothing, mysiz, flip, vld,tld, locpos;
     findVTsiz(N, NB, Vblksiz, &blkcnt, &nothing);
+    
+    flip = 0;
 
 
     /* SIDE LEFT  meaning apply E = Q*E = (q_1*q_2*.....*q_n) * E ==> so traverse Vs in reverse order (forward) from q_n to q_1
@@ -275,8 +285,8 @@ magma_dbulge_applyQ_v2_m(magma_int_t ngpu, char side,
                                 cudaStreamWaitEvent(streams[dev][0], myevent[dev][1], 0);
                                 for(magma_int_t i=0; i<ie_loc; i+= sz_bl){
                                     ib = min(sz_bl, ie_loc-i);
-                                    //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0[dev]+lcvpos, lddv, dT0[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork[dev], lddwork);
-                                    magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0[dev]+lcvpos, lddv, dT0[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork[dev], ib, dwvt[dev], Vm);
+                                    //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0[dev]+lcvpos, lddv, dT0[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork0[dev], ib);
+                                    magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV0[dev]+lcvpos, lddv, dT0[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork0[dev], ib, dwvt0[dev], Vm);
                                 }
                                 cudaEventRecord(myevent[dev][0], streams[dev][0]);
                             }
@@ -291,8 +301,8 @@ magma_dbulge_applyQ_v2_m(magma_int_t ngpu, char side,
                                 cudaStreamWaitEvent(streams[dev][1], myevent[dev][0], 0);
                                 for(magma_int_t i=0; i<ie_loc; i+= sz_bl){
                                     ib = min(sz_bl, ie_loc-i);
-                                    //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1[dev]+lcvpos, lddv, dT1[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork[dev], ib);
-                                    magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1[dev]+lcvpos, lddv, dT1[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork[dev], ib, dwvt[dev], Vm);
+                                    //magma_dlarfb_gpu( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1[dev]+lcvpos, lddv, dT1[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork1[dev], ib);
+                                    magma_dlarfb_gpu_gemm( MagmaLeft, MagmaNoTrans, MagmaForward, MagmaColumnwise, Vm, ib, Vn, dV1[dev]+lcvpos, lddv, dT1[dev]+lctpos, lddt, dE(dev,myrow,i), ldde, dwork1[dev], ib, dwvt1[dev], Vm);
                                 }
                                 cudaEventRecord(myevent[dev][1], streams[dev][1]);
                             }

@@ -37,9 +37,21 @@ MAGMA README FILE
       setenv ATLASDIR  /opt/atlas
       setenv LAPACKDIR /opt/LAPACK
   
-  After proper modification of the make.inc file, typing 'make' will create 
-      1) libmagma.a library in directory 'lib'
-      2) testing drivers in directory 'testing'.
+  After proper modification of the make.inc file, running:
+  
+      make
+  
+  will create libmagma.a in 'lib' and testing drivers in 'testing'.
+  To create a shared library, libmagma.so, copy make.inc.mkl-shared to make.inc,
+  modify as needed, and run:
+  
+      make shared
+  
+  To install libraries and include files in a given prefix, run:
+  
+      make install prefix=/usr/local/magma
+  
+  The default prefix is /usr/local/magma. You can also set prefix in make.inc.
   
   For multi-GPU functions, set $MAGMA_NUM_GPUS to set the number of GPUs to use.
   For multi-core BLAS libraries, set $OMP_NUM_THREADS or $MKL_NUM_THREADS or

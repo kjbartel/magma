@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated d Fri Jun 28 19:32:37 2013
+ *     @generated d Wed Aug 14 12:16:17 2013
  *
  */
 
@@ -45,10 +45,10 @@ void magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, doubl
 
 extern "C" void 
 magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, double *TAU) {
-  magma_int_t j, IONE=1; 
+  magma_int_t IONE=1; 
   double dtmp;
   double Z_ZERO =  MAGMA_D_ZERO;
-  double Z_ONE  =  MAGMA_D_ONE;
+  //double Z_ONE  =  MAGMA_D_ONE;
   double Z_MONE =  MAGMA_D_NEG_ONE;
   double Z_HALF =  MAGMA_D_HALF;
   //double WORK[N];
@@ -61,7 +61,7 @@ magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, double *TA
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
    dtmp = Z_ZERO;
-   for (j = 0; j < N ; j++)
+   for (magma_int_t j = 0; j < N ; j++)
       dtmp = dtmp + MAGMA_D_CNJG(WORK[j]) * V[j];
    //cblas_ddot_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
@@ -88,10 +88,11 @@ magma_dlarfxsym(magma_int_t N, double *A, magma_int_t LDA, double *V, double *TA
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_dtrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, double *A, magma_int_t LDA, double *V, double *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  double conjtmp;
+  //double conjtmp;
   double Z_ONE  =  MAGMA_D_ONE;
   double *WORK  = (double *) malloc( N * sizeof(double) );
 
@@ -125,7 +126,8 @@ extern "C" void magma_dtrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_dtrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, double *A, magma_int_t LDA, double *V, double *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, len, lem, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    i, j;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
   double conjtmp;
   double Z_ONE  =  MAGMA_D_ONE;
@@ -171,10 +173,11 @@ extern "C" void magma_dtrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, doub
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_dtrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, double *A, magma_int_t LDA, double *V, double *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  //magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  double conjtmp;
+  //double conjtmp;
   double *WORK  = (double *) malloc( N * sizeof(double) );
 
 

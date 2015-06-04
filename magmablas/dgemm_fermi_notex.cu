@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal d
 
@@ -572,11 +572,11 @@ magmablas_dgemm_fermi( char TRANSA, char TRANSB, int m , int n , int k ,
                                      const double *B, int ldb, 
                        double beta,        double *C, int ldc ) 
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
    Purpose
    =======

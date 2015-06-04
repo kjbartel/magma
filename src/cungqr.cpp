@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:25 2013
+       @generated c Wed Aug 14 12:16:12 2013
 
        @author Stan Tomov
        @author Mark Gates
@@ -19,11 +19,11 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
              magmaFloatComplex *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -85,7 +85,7 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
 
     magma_int_t  m_kk, n_kk, k_kk, mi;
     magma_int_t lwork, ldda;
-    magma_int_t i, ib, ki, kk, iinfo;
+    magma_int_t i, ib, ki, kk;  //, iinfo;
     magma_int_t lddwork;
     magmaFloatComplex *dA, *dV, *dW;
     magmaFloatComplex *work;
@@ -110,10 +110,12 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
     }
 
     // first kk columns are handled by blocked method.
+    // ki is start of 2nd-to-last block
     if ((nb > 1) && (nb < k)) {
         ki = (k - nb - 1) / nb * nb;
         kk = min(k, ki + nb);
     } else {
+        ki = 0;
         kk = 0;
     }
 
@@ -131,13 +133,14 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
     dW = dA + ldda*n + ldda*nb;
 
     // Allocate CPU work space
-    lwork = n * nb;
+    lwork = (n+m+nb) * nb;
     magma_cmalloc_cpu( &work, lwork );
     if (work == NULL) {
         magma_free( dA );
         *info = MAGMA_ERR_HOST_ALLOC;
         return *info;
     }
+    magmaFloatComplex *V = work + (n+nb)*nb;
 
     magma_queue_t stream;
     magma_queue_create( &stream );
@@ -147,16 +150,31 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
         m_kk = m - kk;
         n_kk = n - kk;
         k_kk = k - kk;
-        lapackf77_cungqr( &m_kk, &n_kk, &k_kk,
-                          A(kk, kk), &lda,
-                          &tau[kk], work, &lwork, &iinfo );
+        /*
+            // Replacing this with the following 4 routines works but cungqr is slow for
+            // k smaller than the cungqr's blocking size (new version can be up to 60x faster) 
+            lapackf77_cungqr( &m_kk, &n_kk, &k_kk,
+                              A(kk, kk), &lda,
+                              &tau[kk], work, &lwork, &iinfo );
+        */
+        lapackf77_clacpy( MagmaUpperLowerStr, &m_kk, &k_kk, A(kk,kk), &lda, V, &m_kk);
+        lapackf77_claset( MagmaUpperLowerStr, &m_kk, &n_kk, &c_zero, &c_one, A(kk, kk), &lda );
+
+        lapackf77_clarft( MagmaForwardStr, MagmaColumnwiseStr,
+                          &m_kk, &k_kk,
+                          V, &m_kk, &tau[kk], work, &k_kk);
+        lapackf77_clarfb( MagmaLeftStr, MagmaNoTransStr, MagmaForwardStr, MagmaColumnwiseStr,
+                          &m_kk, &n_kk, &k_kk,
+                          V, &m_kk, work, &k_kk, A(kk, kk), &lda, work+k_kk*k_kk, &n_kk );
         
-        magma_csetmatrix( m_kk, n_kk,
-                          A(kk, kk),  lda,
-                          dA(kk, kk), ldda );
+        if (kk > 0) {
+            magma_csetmatrix( m_kk, n_kk,
+                              A(kk, kk),  lda,
+                              dA(kk, kk), ldda );
         
-        // Set A(1:kk,kk+1:n) to zero.
-        magmablas_claset( MagmaUpperLower, kk, n - kk, dA(0, kk), ldda );
+            // Set A(1:kk,kk+1:n) to zero.
+            magmablas_claset( MagmaUpperLower, kk, n - kk, dA(0, kk), ldda );
+        }
     }
 
     if (kk > 0) {
@@ -187,11 +205,11 @@ magma_cungqr(magma_int_t m, magma_int_t n, magma_int_t k,
                                   dA(i, i), ldda, dW, lddwork );
             }
         }
+    
+        // copy result back to CPU
+        magma_cgetmatrix( m, n,
+                          dA(0, 0), ldda, A(0, 0), lda);
     }
-
-    // copy result back to CPU
-    magma_cgetmatrix( m, n,
-                      dA(0, 0), ldda, A(0, 0), lda);
 
     magmablasSetKernelStream( NULL );
     magma_queue_destroy( stream );

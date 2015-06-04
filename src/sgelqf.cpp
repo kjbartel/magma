@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:23 2013
+       @generated s Tue Aug 13 16:44:25 2013
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_sgelqf( magma_int_t m, magma_int_t n,
               float *a,    magma_int_t lda,   float *tau,
               float *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

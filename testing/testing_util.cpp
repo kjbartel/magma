@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> c d s
        @author Mark Gates
@@ -67,6 +67,7 @@ const char *usage =
 "  --work  [123]    SVD workspace size, from min (1) to max (3), default 1.\n"
 "  --version x      version of routine, e.g., during development, default 1.\n"
 "  --fraction x     fraction of eigenvectors to compute, default 1.\n"
+"  --tolerance x    accuracy tolerance, multiplied by machine epsilon, default 30.\n"
 "  -L -U -F         uplo   = Lower*, Upper, or Full.\n"
 "  -[NTC][NTC]      transA = NoTrans*, Trans, or ConjTrans (first letter) and\n"
 "                   transB = NoTrans*, Trans, or ConjTrans (second letter).\n"
@@ -99,6 +100,7 @@ void parse_opts( int argc, char** argv, magma_opts *opts )
     opts->svd_work = 1;
     opts->version  = 1;
     opts->fraction = 1.;
+    opts->tolerance = 30.;
     
     opts->check     = (getenv("MAGMA_TESTINGS_CHECK") != NULL);
     opts->lapack    = (getenv("MAGMA_RUN_LAPACK")     != NULL);
@@ -254,6 +256,11 @@ void parse_opts( int argc, char** argv, magma_opts *opts )
             opts->fraction = atof( argv[++i] );
             magma_assert( opts->fraction >= 0 && opts->fraction <= 1,
                           "error: --fraction %s is invalid; ensure fraction in [0,1].\n", argv[i] );
+        }
+        else if ( strcmp("--tolerance", argv[i]) == 0 && i+1 < argc ) {
+            opts->tolerance = atof( argv[++i] );
+            magma_assert( opts->tolerance >= 0 && opts->tolerance <= 1000,
+                          "error: --tolerance %s is invalid; ensure tolerance in [0,1000].\n", argv[i] );
         }
         
         // ----- boolean arguments

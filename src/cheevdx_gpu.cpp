@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
     
        @author Raffaele Solca
        @author Azzam Haidar
     
-       @generated c Fri Jun 28 19:32:28 2013
+       @generated c Tue Aug 13 16:44:31 2013
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
                   magma_int_t *iwork, magma_int_t liwork,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -279,19 +279,23 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
         return *info;
     }
 
-    /* Quick return if possible */
-    if (n == 0) {
-        return *info;
-    }
-
-    if (n == 1) {
-        magmaFloatComplex tmp;
-        magma_cgetvector( 1, da, 1, &tmp, 1 );
-        w[0] = MAGMA_C_REAL(tmp);
-        if (wantz) {
-            tmp = MAGMA_C_ONE;
-            magma_csetvector( 1, &tmp, 1, da, 1 );
-        }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128) {
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        magmaFloatComplex *a = (magmaFloatComplex *) malloc( n * n * sizeof(magmaFloatComplex) );
+        magma_cgetmatrix(n, n, da, ldda, a, n);
+        lapackf77_cheevd(jobz_, uplo_,
+                         &n, a, &n,
+                         w, work, &lwork,
+                         rwork, &lrwork,
+                         iwork, &liwork, info);
+        magma_csetmatrix( n, n, a, n, da, ldda);
+        free(a);
+        *m=n;
         return *info;
     }
 
@@ -325,6 +329,7 @@ magma_cheevdx_gpu(char jobz, char range, char uplo,
     /* Scale matrix to allowable range, if necessary. */
     anrm = magmablas_clanhe('M', uplo, n, da, ldda, dwork);
     iscale = 0;
+    sigma  = 1;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;

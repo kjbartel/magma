@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal s -> s
 
@@ -1305,11 +1305,11 @@ magmablas_ssyr2k(char UPLO, char TRANS, magma_int_t m , magma_int_t k, float alp
                  const float *A, magma_int_t lda , const float *B, magma_int_t ldb, 
                  float beta, float *C, magma_int_t ldc)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

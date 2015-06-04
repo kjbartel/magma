@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Stan Tomov
 
-       @generated d Fri Jun 28 19:32:29 2013
+       @generated d Tue Aug 13 16:44:32 2013
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_dsytrd_gpu(char uplo, magma_int_t n,
                  double *work, magma_int_t lwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -175,10 +175,10 @@ magma_dsytrd_gpu(char uplo, magma_int_t n,
         *info = -11;
     }
 
+    /* Determine the block size. */
+    ldw = lddw = n;
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        ldw = lddw = n;
-        lwkopt = n * nb;
         MAGMA_D_SET2REAL( work[0], lwkopt );
     }
 

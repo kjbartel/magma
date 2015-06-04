@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     @author Raffaele Solca
     @author Azzam Haidar
@@ -62,6 +62,9 @@ int main( int argc, char** argv)
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    double tol    = opts.tolerance * lapackf77_dlamch("E");
+    double tolulp = opts.tolerance * lapackf77_dlamch("P");
 
     char jobz = opts.jobz;
     int checkres = opts.check;
@@ -74,7 +77,8 @@ int main( int argc, char** argv)
         jobz = MagmaVec;
     }
 
-    printf("using: nrgpu = %d, itype = %d, jobz = %c, uplo = %c, checkres = %d\n", opts.ngpu, itype, jobz, uplo, checkres);
+    printf("using: nrgpu = %d, itype = %d, jobz = %c, uplo = %c, checkres = %d\n",
+           (int) opts.ngpu, (int) itype, jobz, uplo, (int) checkres);
 
     printf("  N     M   nr GPU     MGPU Time(s) \n");
     printf("====================================\n");
@@ -85,6 +89,12 @@ int main( int argc, char** argv)
 #if defined(PRECISION_z) || defined(PRECISION_c)
             magma_int_t lwork = 2*N + N*N;
             magma_int_t lrwork = 1 + 5*N +2*N*N;
+            // MKL's zhegvd has a bug for small N - it looks like what is returned by a 
+            // query (consistent with LAPACK's number above) is different from a the memory
+            // requirement ckeck (that returns info -11). The lwork increase below is needed
+            // to pass this check.  
+            if (N<32)
+                lwork = 34*32;
 #else
             magma_int_t lwork  = 1 + 6*N + 2*N*N;
 #endif
@@ -248,26 +258,26 @@ int main( int argc, char** argv)
                     temp1 = max(temp1, absv(w2[j]));
                     temp2 = max(temp2, absv(w1[j]-w2[j]));
                 }
-                double result2 = temp2 / temp1;
+                double result2 = temp2 / (((double)N)*temp1);
 
                 /* =====================================================================
                  Print execution time
                  =================================================================== */
                 printf("%5d     %6.2f         %6.2f         %6.2f\n",
-                       N, cpu_time, gpu_time, mgpu_time);
+                       (int) N, cpu_time, gpu_time, mgpu_time);
                 printf("Testing the eigenvalues and eigenvectors for correctness:\n");
                 if(itype==1)
-                    printf("(1)    | A Z - B Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | A Z - B Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
                 else if(itype==2)
-                    printf("(1)    | A B Z - Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | A B Z - Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
                 else if(itype==3)
-                    printf("(1)    | B A Z - Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | B A Z - Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
 
-                printf("(3)    | D(MGPU)-D(LAPACK) |/ |D| = %e\n\n", result2);
+                printf(    "(3)    | D(MGPU)-D(LAPACK) |/ |D|    = %8.2e%s\n\n", result2, (result2 < tolulp ? "" : "  failed") );
             }
             else {
                 printf("%5d     ------         ------         %6.2f\n",
-                       N, mgpu_time);
+                       (int) N, mgpu_time);
             }
 
             /* Memory clean up */

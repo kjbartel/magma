@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Stan Tomov
@@ -27,11 +27,11 @@ magma_zhetrd2_gpu(char uplo, magma_int_t n,
                   magmaDoubleComplex *dwork, magma_int_t ldwork,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -107,8 +107,8 @@ magma_zhetrd2_gpu(char uplo, magma_int_t n,
     DWORK   (workspace/output) COMPLEX_16 array on the GPU, dim (MAX(1,LDWORK))
 
     LDWORK  (input) INTEGER
-            The dimension of the array DWORK.  LDWORK >= 1.
-            To be done: determine the precise dimension needed
+            The dimension of the array DWORK.  
+            LDWORK >= (n*n+64-1)/64 + 2*n*nb, where nb = magma_get_zhetrd_nb(n)
 
     INFO    (output) INTEGER
             = 0:  successful exit
@@ -186,10 +186,10 @@ magma_zhetrd2_gpu(char uplo, magma_int_t n,
         *info = -11;
     }
 
+    /* Determine the block size. */
+    ldw = lddw = n;
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        ldw = lddw = n;
-        lwkopt = n * nb;
         MAGMA_Z_SET2REAL( work[0], lwkopt );
     }
 
@@ -211,10 +211,10 @@ magma_zhetrd2_gpu(char uplo, magma_int_t n,
     else
         nx = 300;
 
-    if (2*ldw*nb > ldwork){
-        printf("Not enough work space passed in zhetrd2_gpu. Exit\n");
-        exit(1);
-    }
+    if (ldwork<(ldw*n+64-1)/64 + 2*ldw*nb) {
+      *info = MAGMA_ERR_DEVICE_ALLOC;
+      return *info;
+    } 
 
     if (upper) {
         /*  Reduce the upper triangle of A.
@@ -302,5 +302,6 @@ magma_zhetrd2_gpu(char uplo, magma_int_t n,
     }
     
     MAGMA_Z_SET2REAL( work[0], lwkopt );
+
     return *info;
 } /* zhetrd2_gpu */

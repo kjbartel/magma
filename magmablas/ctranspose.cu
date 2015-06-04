@@ -1,12 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:14 2013
+       @generated c Wed Aug 14 12:16:41 2013
 
+       @author Stan Tomov
 */
 #include "common_magma.h"
 #define PRECISION_c

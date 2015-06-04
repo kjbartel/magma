@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
@@ -36,11 +36,11 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
                magmaDoubleComplex *work, magma_int_t lwork,
                magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -129,7 +129,7 @@ magma_zunmqr_m(magma_int_t nrgpu, char side, char trans,
     magma_int_t nb = 128;
     magmaDoubleComplex *t ;
     magma_zmalloc_pinned (&t, nb*nb);
-    printf("calling zunmqr_m with nb=%d\n",nb);
+    //printf("calling zunmqr_m with nb=%d\n", (int) nb);
 
     magmaDoubleComplex* dw[MagmaMaxGPUs];
     magma_queue_t stream [MagmaMaxGPUs][2];

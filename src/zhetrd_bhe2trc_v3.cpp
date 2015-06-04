@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Azzam Haidar
        @author Stan Tomov
@@ -1108,7 +1108,7 @@ static void *parallel_section(void *thread_id)
     magmaDoubleComplex *NOTUSED;
     real_Double_t timeB=0.0, timeT=0.0, timeall=0.0, timeaplQ1=0.0;
 
-#if defined(SETAFFINITY)    
+#if defined(MAGMA_SETAFFINITY)    
     // bind threads 
     cpu_set_t set;
     // bind threads 
@@ -1293,7 +1293,7 @@ static void *parallel_section(void *thread_id)
         *(core_in_all.timeblg) = timeall;     
     }
 
-#if defined(SETAFFINITY)    
+#if defined(MAGMA_SETAFFINITY)    
     // unbind threads 
     sys_corenbr = sysconf(_SC_NPROCESSORS_ONLN);
     CPU_ZERO( &set );
@@ -1340,7 +1340,7 @@ static void *applyQ_parallel_section(void *thread_id)
             return 0;
 
 
-#if defined(SETAFFINITY)    
+#if defined(MAGMA_SETAFFINITY)    
     cpu_set_t set;
     CPU_ZERO( &set );
     CPU_SET( my_core_id, &set );
@@ -1506,7 +1506,7 @@ static void *applyQ_parallel_section(void *thread_id)
 
 
 
-#if defined(SETAFFINITY)    
+#if defined(MAGMA_SETAFFINITY)    
     // unbind threads 
     sys_corenbr = sysconf(_SC_NPROCESSORS_ONLN);
     CPU_ZERO( &set );

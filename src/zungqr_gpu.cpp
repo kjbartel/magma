@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 
@@ -21,11 +21,11 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
                  magmaDoubleComplex *dT, magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -110,10 +110,12 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     }
 
     // first kk columns are handled by blocked method.
+    // ki is start of 2nd-to-last block
     if ((nb > 1) && (nb < k)) {
         ki = (k - nb - 1) / nb * nb;
         kk = min( k, ki+nb );
     } else {
+        ki = 0;
         kk = 0;
     }
 
@@ -150,7 +152,7 @@ magma_zungqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
         m_kk = m - kk;
         n_kk = n - kk;
         k_kk = k - kk;
-        magma_zgetmatrix( m_kk, n_kk,
+        magma_zgetmatrix( m_kk, k_kk,
                           dA(kk, kk), ldda, panel, m_kk );
         
         lapackf77_zungqr( &m_kk, &n_kk, &k_kk,

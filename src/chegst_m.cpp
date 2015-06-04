@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated c Fri Jun 28 19:32:44 2013
+       @generated c Wed Aug 14 12:16:20 2013
 */
 #include "common_magma.h"
 #include <cblas.h>
@@ -31,11 +31,11 @@ magma_chegst_m(magma_int_t nrgpu, magma_int_t itype, char uplo, magma_int_t n,
                magmaFloatComplex *a, magma_int_t lda,
                magmaFloatComplex *b, magma_int_t ldb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

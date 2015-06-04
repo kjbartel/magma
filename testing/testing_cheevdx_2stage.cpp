@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -8,7 +8,7 @@
     @author Raffaele Solca
     @author Azzam Haidar
 
-    @generated c Fri Jun 28 19:34:03 2013
+    @generated c Wed Aug 14 12:18:09 2013
 
 */
 
@@ -25,6 +25,7 @@
 #include "magma_lapack.h"
 #include "testings.h"
 #include "magma_cbulge.h"
+#include "magma_threadsetting.h"
 
 #define PRECISION_c
 #define absv(v1) ((v1)>0? (v1): -(v1))
@@ -33,6 +34,7 @@
 static magma_int_t check_orthogonality(magma_int_t, magma_int_t, magmaFloatComplex*, magma_int_t, float);
 static magma_int_t check_reduction(magma_int_t, magma_int_t, magma_int_t, magmaFloatComplex*, float*, magma_int_t, magmaFloatComplex*, float);
 static magma_int_t check_solution(magma_int_t, float*, float*, float);
+
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing chegvdx
 */
@@ -43,7 +45,7 @@ int main( int argc, char** argv)
 
     real_Double_t gpu_time;
 
-    magmaFloatComplex *h_A, *h_R, *h_B, *h_S, *h_work;
+    magmaFloatComplex *h_A, *h_R, *h_work;
 
 #if defined(PRECISION_z) || defined(PRECISION_c)
     float *rwork;
@@ -51,12 +53,9 @@ int main( int argc, char** argv)
 #endif
 
     /* Matrix size */
-    float *w1, *w2, result[2];
+    float *w1, *w2;
     magma_int_t *iwork;
     magma_int_t N, n2, info, lwork, liwork;
-    magmaFloatComplex c_zero    = MAGMA_C_ZERO;
-    magmaFloatComplex c_one     = MAGMA_C_ONE;
-    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};;
     magma_int_t info_ortho     = 0;
@@ -85,19 +84,21 @@ int main( int argc, char** argv)
         jobz = MagmaVec;
     }
 
-    printf("using: itype = %d, jobz = %c,range = %c, uplo = %c, checkres = %d, fraction = %6.4f\n", itype, jobz, range, uplo, checkres, f);
+    printf("using: itype = %d, jobz = %c, range = %c, uplo = %c, checkres = %d, fraction = %6.4f\n",
+           (int) itype, jobz, range, uplo, (int) checkres, f);
 
     printf("  N     M     GPU Time(s) \n");
     printf("==========================\n");
+    magma_int_t threads = magma_get_numthreads();
     for( magma_int_t i = 0; i < opts.ntest; ++i ) {
         for( magma_int_t iter = 0; iter < opts.niter; ++iter ) {
             N = opts.nsize[i];
             n2     = N*N;
 #if defined(PRECISION_z) || defined(PRECISION_c)
-            lwork  = magma_cbulge_get_lq2(N) + 2*N + N*N;
+            lwork  = magma_cbulge_get_lq2(N, threads) + 2*N + N*N;
             lrwork = 1 + 5*N +2*N*N;
 #else
-            lwork  = magma_cbulge_get_lq2(N) + 1 + 6*N + 2*N*N;
+            lwork  = magma_cbulge_get_lq2(N, threads) + 1 + 6*N + 2*N*N;
 #endif
             liwork = 3 + 5*N;
 
@@ -128,7 +129,7 @@ int main( int argc, char** argv)
             magma_int_t iu = 0;
             if (range == 'I'){
                 il = 1;
-                iu = f*N;
+                iu = (int) (f*N);
             }
 
             if(opts.warmup){
@@ -150,7 +151,7 @@ int main( int argc, char** argv)
                                     &info);
                
                 }else{
-                    printf("calling cheevdx_2stage_m %d GPU\n", ngpu);
+                    printf("calling cheevdx_2stage_m %d GPU\n", (int) ngpu);
                     magma_cheevdx_2stage_m(ngpu, jobz, range, uplo, N, 
                                     h_R, N, 
                                     vl, vu, il, iu, 
@@ -184,7 +185,7 @@ int main( int argc, char** argv)
                                 &info);
            
             }else{
-                printf("calling cheevdx_2stage_m %d GPU\n", ngpu);
+                printf("calling cheevdx_2stage_m %d GPU\n", (int) ngpu);
                 magma_cheevdx_2stage_m(ngpu, jobz, range, uplo, N, 
                                 h_R, N, 
                                 vl, vu, il, iu, 
@@ -203,11 +204,11 @@ int main( int argc, char** argv)
                 float eps   = lapackf77_slamch("E");
                 printf("\n");
                 printf("------ TESTS FOR MAGMA CHEEVD ROUTINE -------  \n");
-                printf("        Size of the Matrix %d by %d\n", N, N);
+                printf("        Size of the Matrix %d by %d\n", (int) N, (int) N);
                 printf("\n");
                 printf(" The matrix A is randomly generated for each test.\n");
                 printf("============\n");
-                printf(" The relative machine precision (eps) is to be %e \n",eps);
+                printf(" The relative machine precision (eps) is %8.2e\n",eps);
                 printf(" Computational tests pass if scaled residuals are less than 60.\n");
               
                 /* Check the orthogonality, reduction and the eigen solutions */
@@ -243,7 +244,7 @@ int main( int argc, char** argv)
              Print execution time
              =================================================================== */
             printf("%5d %5d     %6.2f\n",
-                   (magma_int_t) N, (magma_int_t) m1, gpu_time);
+                   (int) N, (int) m1, gpu_time);
 
             TESTING_FREE(       h_A);
             TESTING_FREE(        w1);
@@ -340,7 +341,10 @@ static magma_int_t check_reduction(magma_int_t uplo, magma_int_t N, magma_int_t 
     lapackf77_clacpy("A", &N, &N, A, &LDA, Residual, &N);        
     blasf77_cgemm("N", "C", &N, &N, &N, &c_neg_one, TEMP, &N, Q, &LDA, &c_one, Residual,     &N);
 
-    Rnorm = lapackf77_clange("1", &N, &N, Residual, &N,   work);
+    // since A has been generated by larnv and we did not symmetrize, 
+    // so only the uplo portion of A should be equal to Q*LAMBDA*Q^H 
+    // for that Rnorm use clanhe instead of clange
+    Rnorm = lapackf77_clanhe("1", &luplo, &N, Residual, &N, work);
     Anorm = lapackf77_clanhe("1", &luplo, &N, A,        &LDA, work);
 
     result = Rnorm / ( Anorm * N * eps);

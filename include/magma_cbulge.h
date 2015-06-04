@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:31:29 2013
+       @generated c Tue Aug 13 16:43:29 2013
 */
 
 #ifndef MAGMA_CBULGE_H
@@ -94,8 +94,7 @@ magma_int_t magma_cungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 
 
 
-magma_int_t magma_cbulge_get_lq2(magma_int_t n);
-magma_int_t magma_cbulge_get_Vblksiz(magma_int_t n, magma_int_t nb);
+magma_int_t magma_cbulge_get_lq2(magma_int_t n, magma_int_t threads);
 
 #ifdef __cplusplus
 }

@@ -1,12 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
+       @author Stan Tomov
        @author Mark Gates
-       @generated c Fri Jun 28 19:32:20 2013
+       @generated c Wed Aug 14 12:16:09 2013
 */
 #include "common_magma.h"
 
@@ -18,9 +19,9 @@ magma_clarfb_gpu( char side, char trans, char direct, char storev,
                   magmaFloatComplex *dC,          magma_int_t ldc,
                   magmaFloatComplex *dwork,       magma_int_t ldwork )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Univ. of California Berkeley
-       June 2013
+       August 2013
 
     Purpose
     =======

@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 # GPU_TARGET specifies for which GPU you want to compile MAGMA:
@@ -23,9 +23,12 @@ ARCHFLAGS = cr
 RANLIB    = ranlib
 
 # Defining MAGMA_ILP64 changes magma_int_t to int64_t in include/magma_types.h
-OPTS      = -O3 -DADD_ -fopenmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY -DMAGMA_ILP64 -DMKL_ILP64
-F77OPTS   = -O3 -DADD_ -fdefault-integer-8
-FOPTS     = -O3 -DADD_ -fdefault-integer-8 -x f95-cpp-input
+# Compiling with -std=c++98 -pedantic finds non-standard things like variable length arrays
+OPTS      = -O3 -DADD_ -Wall -fno-strict-aliasing -fopenmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY -DMAGMA_ILP64 -DMKL_ILP64
+OPTS     += -std=c++98 -pedantic -Wno-long-long
+#OPTS     += -Werror  # uncomment to ensure all warnings are dealt with
+F77OPTS   = -O3 -DADD_ -Wall -fdefault-integer-8
+FOPTS     = -O3 -DADD_ -Wall -fdefault-integer-8 -x f95-cpp-input
 NVOPTS    = -O3 -DADD_ -Xcompiler -fno-strict-aliasing -DMAGMA_ILP64 -DMKL_ILP64
 LDOPTS    = -fopenmp
 
@@ -35,7 +38,7 @@ LDOPTS    = -fopenmp
 # see MKL Link Advisor at http://software.intel.com/sites/products/mkl/
 # gcc with MKL 10.3, GNU threads, 64-bit int
 # note -DMAGMA_ILP64 -DMKL_ILP64 and -fdefault-integer-8 in OPTS above
-LIB       = -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm
+LIB       = -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm -lgfortran
 
 # define library directories here or in your environment
 # for MKL run, e.g.: source /opt/intel/composerxe/mkl/bin/mklvars.sh intel64
@@ -44,8 +47,8 @@ LIB       = -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core -lpthread -lcublas -lcuda
 
 # check for directories and give user hint how to set them
 ifeq ($(MKLROOT),)
-    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.sh|')
-    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.csh|')
+    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.sh|')
+    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.csh|')
     ifeq ($(vars_sh),)
         vars_sh  := /opt/intel/composerxe/mkl/bin/mklvars.sh
         vars_csh := /opt/intel/composerxe/mkl/bin/mklvars.csh
@@ -64,4 +67,4 @@ endif
 LIBDIR    = -L$(MKLROOT)/lib/intel64 \
             -L$(CUDADIR)/lib64
 
-INC       = -I$(CUDADIR)/include
+INC       = -I$(CUDADIR)/include -I$(MKLROOT)/include

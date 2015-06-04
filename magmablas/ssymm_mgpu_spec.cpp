@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:19 2013
+       @generated s Tue Aug 13 16:45:24 2013
        @author Azzam Haidar
 */
 #include "common_magma.h"
@@ -16,16 +16,18 @@
 extern "C"
 void magmablas_ssymm_mgpu_spec(
     char side, char uplo, magma_int_t m, magma_int_t n,
-    float alpha, float *dA[], magma_int_t ldda,  magma_int_t offset,
-                           float *dB[], magma_int_t lddb,
-    float beta,  float *dC[], magma_int_t lddc,
-                           float *dwork[],    magma_int_t dworksiz,
-                           float *C,    magma_int_t ldc,
-                           float *work[], magma_int_t ldwork,
-                           magma_int_t ngpu, magma_int_t nb, 
-                           magma_queue_t streams[][20], magma_int_t nstream, 
-                           magma_event_t redevents[][MagmaMaxGPUs*MagmaMaxGPUs+10],magma_int_t nbevents, 
-                           magma_int_t gnode[MagmaMaxGPUs][MagmaMaxGPUs+2], magma_int_t nbcmplx )
+    float alpha,
+    float *dA[],    magma_int_t ldda,  magma_int_t offset,
+    float *dB[],    magma_int_t lddb,
+    float beta,
+    float *dC[],    magma_int_t lddc,
+    float *dwork[], magma_int_t dworksiz,
+    float *C,       magma_int_t ldc,
+    float *work[],  magma_int_t ldwork,
+    magma_int_t ngpu, magma_int_t nb, 
+    magma_queue_t streams[][20], magma_int_t nstream, 
+    magma_event_t redevents[][MagmaMaxGPUs*MagmaMaxGPUs+10],magma_int_t nbevents, 
+    magma_int_t gnode[MagmaMaxGPUs][MagmaMaxGPUs+2], magma_int_t nbcmplx )
 {
     #define dA(dev, i, j) (dA[dev] + (i) + (j)*ldda)
     #define dB(dev, i, j) (dB[dev] + (i) + (j)*lddb)
@@ -39,11 +41,6 @@ void magmablas_ssymm_mgpu_spec(
     assert( nstream >= ngpu );
     assert( nbevents >= ngpu*ngpu );
     
-    float c_one  = MAGMA_S_ONE;
-    float c_zero = MAGMA_S_ZERO;
-    magma_int_t ione = 1;
-    
-
     float *dwork1[MagmaMaxGPUs];
     float *dwork2[MagmaMaxGPUs];
 
@@ -91,10 +88,10 @@ void magmablas_ssymm_mgpu_spec(
     }
 
     magma_int_t nbcmplxactive =  0;
-    magma_int_t cmplxisactive[nbcmplx];
-    magma_int_t gpuisactive[ngpu];
-    memset (gpuisactive,0,ngpu*sizeof(magma_int_t));
-    memset (cmplxisactive,0,nbcmplx*sizeof(magma_int_t));
+    magma_int_t cmplxisactive[MagmaMaxGPUs];
+    magma_int_t gpuisactive[MagmaMaxGPUs];
+    memset(gpuisactive, 0, MagmaMaxGPUs*sizeof(magma_int_t));
+    memset(cmplxisactive, 0, MagmaMaxGPUs*sizeof(magma_int_t));
 
 
     //*******************************

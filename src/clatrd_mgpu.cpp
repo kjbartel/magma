@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Fri Jun 28 19:32:34 2013
+       @generated c Tue Aug 13 16:44:37 2013
 
 */
 #include "common_magma.h"
@@ -44,11 +44,11 @@ magma_clatrd_mgpu(magma_int_t num_gpus, char uplo,
                   magma_queue_t stream[][10],
                   float *times)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -173,7 +173,9 @@ magma_clatrd_mgpu(magma_int_t num_gpus, char uplo,
 
     float mv_time = 0.0;
     magma_int_t i;
+#ifndef MAGMABLAS_CHEMV_MGPU
     magma_int_t loffset = nb0*((offset/nb0)/num_gpus);
+#endif
 
     magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magmaFloatComplex c_one     = MAGMA_C_ONE;
@@ -181,7 +183,7 @@ magma_clatrd_mgpu(magma_int_t num_gpus, char uplo,
     magmaFloatComplex value     = MAGMA_C_ZERO;
     magma_int_t id, idw, i_one = 1;
 
-    magma_int_t kk;
+    //magma_int_t kk;
     magma_int_t ione = 1;
 
     magma_int_t i_n, i_1, iw;
@@ -256,10 +258,9 @@ magma_clatrd_mgpu(magma_int_t num_gpus, char uplo,
                 {
                     magma_int_t im1_1 = i_1 - 1;
                     magma_int_t im1   = i-1;
-                    magma_int_t im1_n = i_n + 1;
-                    magma_int_t im1w  = i - n + nb;
                     /* Update A(1:i,i) */
                     #if defined(PRECISION_z) || defined(PRECISION_c)
+                        magma_int_t im1_n = i_n + 1;
                         lapackf77_clacgv(&im1_n, W(im1, iw+1), &ldw);
                     #endif
                     blasf77_cgemv("No transpose", &im1_1, &i_n, &c_neg_one, A(0, i+1), &lda,
@@ -477,11 +478,7 @@ magmablas_chemv_mgpu( magma_int_t num_gpus, magma_int_t k, char uplo,
 #define dX(id, i)    (dx[(id)]+incx*(i))
 #define dY(id, i, j) (dy[(id)]+incy*(i)+n*(j))
 
-    char uplo_[2]  = {uplo, 0};
-    magmaFloatComplex c_one = MAGMA_C_ONE;
-    magma_int_t i, ii, j, kk, ib, ib0, id, i_0 = n, i_1, i_local, idw,
-                loffset0 = nb*(offset/(nb*num_gpus)),
-                loffset1 = offset%nb, loffset;
+    magma_int_t id;
 
 #ifdef MAGMABLAS_CHEMV_MGPU
     for( id=0; id<num_gpus; id++ ) {
@@ -535,6 +532,14 @@ magmablas_chemv_mgpu( magma_int_t num_gpus, magma_int_t k, char uplo,
         magmablasSetKernelStream(NULL);
     }
 #else
+    magmaFloatComplex c_one = MAGMA_C_ONE;
+    char uplo_[2]  = {uplo, 0};
+    magma_int_t i, ii, j, kk, ib, ib0, i_1, i_local, idw;
+    magma_int_t i_0=n;
+    magma_int_t loffset0 = nb*(offset/(nb*num_gpus));
+    magma_int_t loffset1 = offset%nb;
+    magma_int_t loffset;    
+    
     //magma_chemv(uplo, n, alpha, da, ldda, dx, incx, beta, dy, incy );
 
     idw = (offset/nb)%num_gpus;
@@ -676,7 +681,8 @@ magmablas_chemv_sync( magma_int_t num_gpus, magma_int_t k,
 {
 
     magmaFloatComplex c_one = MAGMA_C_ONE;
-    magma_int_t id, ione = 1, kk, kkk;
+    magma_int_t ione = 1;
+    magma_int_t id, kk;
 
     /* reduce on CPU */
     magma_setdevice(0);

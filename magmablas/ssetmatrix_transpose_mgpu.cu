@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:17 2013
+       @generated s Tue Aug 13 16:45:22 2013
        @author Ichitaro Yamazaki
 */
 #include "common_magma.h"
@@ -23,9 +23,9 @@
 extern "C" void 
 magmablas_ssetmatrix_transpose_mgpu(
                   magma_int_t ngpus, magma_queue_t stream[][2],
-                  const float  *ha,  magma_int_t lda, 
-                  float       **dat, magma_int_t ldda, 
-                  float       **db,  magma_int_t lddb,
+                  const float *ha,  magma_int_t lda, 
+                  float       *dat[], magma_int_t ldda, 
+                  float       *db[],  magma_int_t lddb,
                   magma_int_t m, magma_int_t n, magma_int_t nb)
 {
 #define   A(j)    (ha       + (j)*lda)

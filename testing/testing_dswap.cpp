@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:47 2013
+       @generated d Wed Aug 14 12:18:00 2013
        @author Mark Gates
 */
 // includes, system
@@ -397,7 +397,7 @@ int main( int argc, char** argv)
             row_perf6 = 0.5 * gbytes / time;
             
             printf("%5d  %3d  %6.2f%c/ %6.2f%c  %6.2f%c/ %6.2f%c  %6.2f%c/ %6.2f%c  %6.2f%c  %6.2f%c  %6.2f%c  %6.2f%c/ %6.2f%c  %6.2f / %6.2f  %6.2f  %10s\n",
-                   N, nb,
+                   (int) N, (int) nb,
                    row_perf0, ((check & 0x001) != 0 ? '*' : ' '),
                    col_perf0, ((check & 0x002) != 0 ? '*' : ' '),
                    row_perf1, ((check & 0x004) != 0 ? '*' : ' '),
@@ -412,7 +412,7 @@ int main( int argc, char** argv)
                    row_perf6,
                    col_perf6,
                    cpu_perf,
-                   (check == 0 ? "okay" : "* failures") );
+                   (check == 0 ? "ok" : "* failures") );
             
             TESTING_HOSTFREE( h_A1 );
             TESTING_HOSTFREE( h_A2 );

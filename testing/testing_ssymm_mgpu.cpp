@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:48 2013
+       @generated s Tue Aug 13 16:45:55 2013
        
        @author Mark Gates
 */
@@ -35,8 +35,8 @@ int main( int argc, char** argv)
     TESTING_INIT();
 
     float c_neg_one = MAGMA_S_NEG_ONE;
-    float c_one     = MAGMA_S_ONE;
-    float cbeta     = MAGMA_S_ONE;
+    float calpha    = MAGMA_S_MAKE( 3.456, 5.678 );
+    float cbeta     = MAGMA_S_MAKE( 1.234, 2.456 );
     
     real_Double_t    gflops, gpu_perf=0., cpu_perf=0., gpu_time=0., cpu_time=0.;
     real_Double_t    gpu_perf2=0., gpu_time2=0.;
@@ -125,14 +125,14 @@ int main( int argc, char** argv)
     magma_int_t gnode[MagmaMaxGPUs][MagmaMaxGPUs+2];
     magma_int_t nbcmplx=0;
     magma_buildconnection_mgpu(gnode, &nbcmplx,  ngpu);
-    printf(" Initializin communication pattern.... GPU-ncmplx %d\n\n" , nbcmplx);
+    printf(" Initializin communication pattern.... GPU-ncmplx %d\n\n" , (int) nbcmplx);
 
     for (int i=0;i<nbcmplx;++i)
     {
         int myngpu =gnode[i][MagmaMaxGPUs];
         printf("cmplx %d has %d gpu ", i, myngpu);
         for(int j=0;j<myngpu;++j)
-            printf("  %d", gnode[i][j]);
+            printf("  %d", (int) gnode[i][j]);
         printf("\n");
     }
 
@@ -228,7 +228,7 @@ int main( int argc, char** argv)
         /*
         magmablas_ssymm_1gpu(
             MagmaLeft, MagmaLower, msiz, n,
-            c_neg_one, dA, ldda, offst,
+            calpha,    dA, ldda, offst,
                        dX, ldda,
             cbeta,     dB, ldda, hR, lda,
             ngpu, nb, streams, nstream );
@@ -239,7 +239,7 @@ int main( int argc, char** argv)
             // TODO: not available?
             //magmablas_ssymm_mgpu(
             //    MagmaLeft, MagmaLower, msiz, n,
-            //    c_neg_one, dA, ldda, offst,
+            //    calpha,    dA, ldda, offst,
             //               dX, ldda,
             //    cbeta,     dB, ldda, dwork, ldda, hR, lda, hwork, lda,
             //    ngpu, nb, streams, nstream, redevents, nbevents );
@@ -247,7 +247,7 @@ int main( int argc, char** argv)
         else {
             magmablas_ssymm_mgpu_com(
                 MagmaLeft, MagmaLower, msiz, n,
-                c_neg_one, dA, ldda, offst,
+                calpha,    dA, ldda, offst,
                            dX, ldda,
                 cbeta,     dB, ldda, dwork, ldda, hR, lda, hwork, lda,
                 ngpu, nb, streams, nstream, redevents2, nbevents, gnode, nbcmplx);
@@ -259,7 +259,8 @@ int main( int argc, char** argv)
             
         
         char buf[80];
-        snprintf( buf, sizeof(buf), "ssymm-m%d-n%d-nb%d-stream%d-ngpu%d-run%d.svg", m, n, nb, nstream, ngpu, j );
+        snprintf( buf, sizeof(buf), "ssymm-m%d-n%d-nb%d-stream%d-ngpu%d-run%d.svg",
+                  (int) m, (int) n, (int) nb, (int) nstream, (int) ngpu, (int) j );
         //trace_finalize( buf, "trace.css" );
         
         /* ====================================================================
@@ -277,7 +278,7 @@ int main( int argc, char** argv)
             gpu_time2 = magma_wtime();
             magma_ssymm(
                 MagmaLeft, MagmaLower, msiz, n,
-                c_neg_one, dA2+offst*ldda+offst,   ldda,
+                calpha,    dA2+offst*ldda+offst,   ldda,
                            dX[0], ldda,
                 cbeta,     dwork[0], ldda );
             cudaDeviceSynchronize();
@@ -300,7 +301,7 @@ int main( int argc, char** argv)
             
             cpu_time = magma_wtime();
             blasf77_ssymm( "Left", "Lower", &msiz, &n,
-                            &c_neg_one, hA+offst*lda+offst, &lda,
+                            &calpha,    hA+offst*lda+offst, &lda,
                                         hX, &lda,
                             &cbeta,     hB, &lda );
             cpu_time = magma_wtime() - cpu_time;

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Stan Tomov
@@ -22,11 +22,11 @@ magma_zunmtr_gpu(char side, char uplo, char trans,
                  magmaDoubleComplex *wa,    magma_int_t ldwa,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -120,8 +120,6 @@ magma_zunmtr_gpu(char side, char uplo, char trans,
             = 0:  successful exit
             < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================    */
-
-    magmaDoubleComplex c_one = MAGMA_Z_ONE;
 
     char side_[2]  = {side, 0};
     char uplo_[2]  = {uplo, 0};

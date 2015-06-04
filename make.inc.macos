@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #
 #      Contributed by: Massimiliano Fatica (NVIDIA)
 #//////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,6 @@ RANLIB    = ranlib
 # use -m64 to compile with 64-bit long & pointers (lp64). int is still 32-bit.
 # currently, there are RUNTIME ERRORS with 64-bit on MacOS!
 # add -DNDEBUG to disable asserts and certain error checks.
-# CUDA 5 needs -DCUBLAS_GFORTRAN or appropriate setting to compile cuda/src/fortran.c bindings
 OPTS      = -Wall -m32 -O3 -DADD_
 F77OPTS   = -Wall -m32 -O3 -DADD_
 FOPTS     = -Wall -m32 -O3 -DADD_ -x f95-cpp-input

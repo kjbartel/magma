@@ -40,7 +40,7 @@ void magma_xerror( magma_err_t err, const char* func, const char* file, int line
 {
     if ( err != MAGMA_SUCCESS ) {
         fprintf( stderr, "MAGMA error: %s (%d) in %s at %s:%d\n",
-                 magma_strerror( err ), err, func, file, line );
+                 magma_strerror( err ), (int) err, func, file, line );
     }
 }
 

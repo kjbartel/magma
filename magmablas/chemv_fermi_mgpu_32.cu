@@ -1,17 +1,17 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:17 2013
+       @generated c Wed Aug 14 12:16:43 2013
 
 */
 #include "common_magma.h"
 #define PRECISION_c
 
-#if (GPUSHMEM >= 200)
+#if (GPUSHMEM >= 200) || defined(PRECISION_s) || defined(PRECISION_d) || defined(PRECISION_c)
 
 #define chemv_bs         32
 #define bank_shift       33
@@ -1072,7 +1072,7 @@ magmablas_chemv_mgpu_32_offset(
 
     if (lwork < workspace) {
         printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-               lwork, workspace);
+               (int) lwork, (int) workspace);
         exit(1);
     }
     if(nb != 32)
@@ -1163,7 +1163,7 @@ magmablas_chemv2_mgpu_32_offset(
 
     if (lwork < workspace) {
         printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-               lwork, workspace);
+               (int) lwork, (int) workspace);
         exit(1);
     }
     if(nb != 32)
@@ -1251,7 +1251,7 @@ magmablas_chemv2_mgpu_32(
 
     if (lwork < workspace) {
         printf("Not enough work space in magmablas_chemv: passed %d, required %d\n",
-               lwork, workspace);
+               (int) lwork, (int) workspace);
         exit(1);
     }
     if(nb != 32)
@@ -1283,4 +1283,4 @@ magmablas_chemv2_mgpu_32(
     return MAGMA_SUCCESS;
 }
 
-#endif /* (GPUSHMEM >= 200) */
+#endif

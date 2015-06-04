@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> c
 
@@ -1734,11 +1734,11 @@ magmablas_zhemv2_200(
     else
     {
         magma_int_t blocks    = n / zhemv_bs + (n % zhemv_bs != 0);
-        magma_int_t workspace = lda * (blocks + 1);
+        magma_int_t workspace = n * (blocks );
 
         if (lwork < workspace) {
             printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
-                   lwork, workspace);
+                   (int) lwork, (int) workspace);
             exit(1);
         }
         //printf("You are using zhemv_bs=%d\n", zhemv_bs);

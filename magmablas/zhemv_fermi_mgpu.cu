@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 
@@ -11,8 +11,7 @@
 #include "common_magma.h"
 #define PRECISION_z
 
-/*The version for tesla can be found in zhemv_tesla.cu */
-#if (GPUSHMEM >= 200)
+#if (GPUSHMEM >= 200) || defined(PRECISION_s) || defined(PRECISION_d) || defined(PRECISION_c)
 
 #define zhemv_bs         64
 #define thread_x         64
@@ -1012,7 +1011,7 @@ magmablas_zhemv_mgpu_offset(
 
         if (lwork < workspace) {
             printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
-                   lwork, workspace);
+                   (int) lwork, (int) workspace);
             exit(1);
         }
         if(nb != 64)
@@ -1099,7 +1098,7 @@ magmablas_zhemv2_mgpu_offset(
 
         if (lwork < workspace) {
             printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
-                   lwork, workspace);
+                   (int) lwork, (int) workspace);
             exit(1);
         }
         if(nb != 64)
@@ -1190,7 +1189,7 @@ magmablas_zhemv2_mgpu(
 
         if (lwork < workspace) {
             printf("Not enough work space in magmablas_zhemv: passed %d, required %d\n",
-                   lwork, workspace);
+                   (int) lwork, (int) workspace);
             exit(1);
         }
         if(nb != 64)
@@ -1212,4 +1211,4 @@ magmablas_zhemv2_mgpu(
     return MAGMA_SUCCESS;
 }
 
-#endif /* (GPUSHMEM >= 200) */
+#endif

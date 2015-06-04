@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Mark Gates
 
-       @generated d Fri Jun 28 19:32:21 2013
+       @generated d Tue Aug 13 16:44:23 2013
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_dormqr_gpu(char side, char trans,
                  double *dT,    magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

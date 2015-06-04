@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:43 2013
+       @generated s Wed Aug 14 12:17:58 2013
        @author Chongxiao Cao
 */
 // make sure that asserts are enabled
@@ -39,8 +39,8 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
 
-    real_Double_t   gflops, magma_perf, magma_time, cublas_perf, cublas_time, cpu_perf, cpu_time;
-    float          magma_error, cublas_error, Cnorm, work[1];
+    real_Double_t   gflops, magma_perf, magma_time, cublas_perf, cublas_time, cpu_perf=0, cpu_time=0;
+    float          magma_error, cublas_error, work[1];
     magma_int_t M, N, info;
     magma_int_t Ak;
     magma_int_t sizeA, sizeB;

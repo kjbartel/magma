@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Fri Jun 28 19:32:33 2013
+       @generated s Wed Aug 14 12:16:15 2013
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_sormtr(char side, char uplo, char trans,
              float *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -153,10 +153,9 @@ magma_sormtr(char side, char uplo, char trans,
         *info = -12;
     }
 
-    if (*info == 0)
-    {
-        nb = 32;
-        lwkopt = max(1,nw) * nb;
+    nb = 32;
+    lwkopt = max(1,nw) * nb;
+    if (*info == 0) {
         MAGMA_S_SET2REAL( work[0], lwkopt );
     }
 

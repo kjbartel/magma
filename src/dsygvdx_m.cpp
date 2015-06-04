@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
@@ -21,11 +21,11 @@ magma_dsygvdx_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char range, cha
                 magma_int_t *m, double *w, double *work, magma_int_t lwork,
                 magma_int_t *iwork, magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -278,6 +278,20 @@ magma_dsygvdx_m(magma_int_t nrgpu, magma_int_t itype, char jobz, char range, cha
     
     /*  Quick return if possible */
     if (n == 0) {
+        return *info;
+    }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_dsygvd(&itype, jobz_, uplo_,
+                         &n, a, &lda, b, &ldb,
+                         w, work, &lwork,
+                         iwork, &liwork, info);
+        *m = n;
         return *info;
     }
 

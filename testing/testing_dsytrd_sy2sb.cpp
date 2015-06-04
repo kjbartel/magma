@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -7,7 +7,7 @@
 
        @author Azzam Haidar
 
-       @generated d Fri Jun 28 19:34:03 2013
+       @generated d Wed Aug 14 12:18:09 2013
 
 */
 
@@ -25,6 +25,7 @@
 #include "magma_lapack.h"
 #include "magma_dbulge.h"
 #include "testings.h"
+#include "magma_threadsetting.h"
 
 #if defined(USEMKL)
 #include <mkl_service.h>
@@ -56,7 +57,7 @@ int main( int argc, char** argv)
 {
     TESTING_INIT_MGPU();
 
-    magma_timestr_t       start, end, tband;
+    magma_timestr_t       start, end;  //, tband;
     double           eps, flops, gpu_perf, gpu_time;
     double *h_A, *h_R, *h_work, *dT1;
     double *tau;
@@ -66,7 +67,8 @@ int main( int argc, char** argv)
     magma_int_t N = 0, n2, lda, lwork, ldt, lwork0;
     magma_int_t size[10] = {1024, 2048, 3072, 4032, 5184, 6016, 7040, 8064, 9088, 10112};
 
-    magma_int_t i, j, k, info, checkres, once = 0;
+    //magma_int_t j, k;
+    magma_int_t i, info, checkres, once = 0;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
     const char *uplo = MagmaLowerStr;
@@ -109,7 +111,8 @@ int main( int argc, char** argv)
                 uplo = MagmaLowerStr;
         }
         if ( N > 0 )
-            printf("  testing_dsytrd_sy2sb -L|U -N %d -NB %d   -wantz %d   -threads %d    check %d \n\n", N, NB, WANTZ, THREADS, checkres);
+            printf("  testing_dsytrd_sy2sb -L|U -N %d -NB %d   -wantz %d   -threads %d    check %d \n\n",
+                   (int) N, (int) NB, (int) WANTZ, (int) THREADS, (int) checkres);
         else
         {
             printf("\nUsage: \n");
@@ -122,9 +125,7 @@ int main( int argc, char** argv)
         printf("  testing_dsytrd_sy2sb -L|U -N %d\n\n", 1024);
         N = size[9];
     }
-        
-    printf ("HELLOOOOOOOO\n");
-
+    
     eps = lapackf77_dlamch( "E" );
     lda = N;
     ldt = N;
@@ -201,8 +202,8 @@ int main( int argc, char** argv)
         char *jobz = (char*)MagmaVecStr;
         char range = 'A';
         magma_int_t fraction_ev = 100;
-        magma_int_t il, iu, m1, m2;
-        double vl, vu;
+        magma_int_t il, iu, m1;
+        double vl=0., vu=0.;
 
         if (fraction_ev == 0){
             il = N / 10;
@@ -215,15 +216,16 @@ int main( int argc, char** argv)
         }
         double *hh_work;
         magma_int_t *iwork;
-        magma_int_t nb,lwork,liwork;
+        magma_int_t nb, /*lwork,*/ liwork;
+        magma_int_t threads = magma_get_numthreads();
 #if defined(PRECISION_z) || defined(PRECISION_c)
         double *rwork;
         magma_int_t lrwork;
-        lwork  = magma_dbulge_get_lq2(N) + 2*N + N*N;
+        lwork  = magma_dbulge_get_lq2(N, threads) + 2*N + N*N;
         lrwork = 1 + 5*N +2*N*N;
         TESTING_HOSTALLOC( rwork,          double, lrwork);
 #else
-        lwork  = magma_dbulge_get_lq2(N) + 1 + 6*N + 2*N*N;
+        lwork  = magma_dbulge_get_lq2(N, threads) + 1 + 6*N + 2*N*N;
 #endif
         liwork = 3 + 5*N;
         nb = magma_get_dsytrd_nb(N);
@@ -244,7 +246,7 @@ int main( int argc, char** argv)
                             &info);
 
         }else{
-            printf("calling dsyevdx_2stage_m %d GPU\n", ngpu);
+            printf("calling dsyevdx_2stage_m %d GPU\n", (int) ngpu);
             magma_dsyevdx_2stage_m(ngpu, jobz[0], range, uplo[0], N, 
                             h_R, lda, 
                             vl, vu, il, iu, 
@@ -352,7 +354,7 @@ int main( int argc, char** argv)
 
             /*
             for(i=0;i<10;i++)
-                printf(" voici lpk D[%d] %e\n", i, D2[i]);
+                printf(" voici lpk D[%d] %8.2e\n", i, D2[i]);
             */
 
             //double mydz=0.0, mydo=1.0;
@@ -402,7 +404,7 @@ int main( int argc, char** argv)
             printf(" ================================================================================================================\n\n\n");
             
             printf(" ****************************************************************************************************************\n");
-            printf(" * Hello here are the norm  Infinite (max)=%e  norm one (sum)=%e   norm2(sqrt)=%e *\n", nrmI, nrm1, nrm2);
+            printf(" * Hello here are the norm  Infinite (max)=%8.2e  norm one (sum)=%8.2e   norm2(sqrt)=%8.2e *\n", nrmI, nrm1, nrm2);
             printf(" ****************************************************************************************************************\n\n");
         }
 #endif

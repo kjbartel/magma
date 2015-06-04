@@ -37,7 +37,6 @@ magma_zlarfxsym_v2(magma_int_t n,
     magma_int_t ione = 1;
     magmaDoubleComplex dtmp;
     magmaDoubleComplex c_zero   =  MAGMA_Z_ZERO;
-    magmaDoubleComplex c_one    =  MAGMA_Z_ONE;
     magmaDoubleComplex c_neg_one=  MAGMA_Z_NEG_ONE;
     magmaDoubleComplex c_half   =  MAGMA_Z_HALF;
 

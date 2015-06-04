@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
        @author Ichitaro Yamazaki
@@ -23,9 +23,9 @@
 extern "C" void 
 magmablas_zgetmatrix_transpose_mgpu(
                   magma_int_t ngpus, magma_queue_t stream[][2],
-                  magmaDoubleComplex **dat, magma_int_t ldda,
+                  magmaDoubleComplex *dat[], magma_int_t ldda,
                   magmaDoubleComplex   *ha, magma_int_t lda,
-                  magmaDoubleComplex  **db, magma_int_t lddb,
+                  magmaDoubleComplex  *db[], magma_int_t lddb,
                   magma_int_t m, magma_int_t n, magma_int_t nb)
 {
 #define   A(j)     (ha  + (j)*lda)
@@ -39,7 +39,7 @@ magmablas_zgetmatrix_transpose_mgpu(
 
     if (lda < m || ngpus*ldda < n || lddb < m){
         printf( "Wrong arguments in magmablas_zgetmatrix_transpose_mgpu (%d<%d), (%d*%d<%d), or (%d<%d).\n",
-                lda, m, ngpus, ldda, n, lddb, m );
+                (int) lda, (int) m, (int) ngpus, (int) ldda, (int) n, (int) lddb, (int) m );
         return;
     }
     

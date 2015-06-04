@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Mark Gates
-       @generated s Fri Jun 28 19:33:58 2013
+       @generated s Tue Aug 13 16:46:05 2013
 */
 // includes, system
 #include <stdlib.h>
@@ -136,7 +136,7 @@ int main( int argc, char** argv )
                        (int) info, magma_strerror( info ));
             lwork = (magma_int_t) MAGMA_S_REAL( W[0] );
             if ( lwork < 0 || lwork > lwork_max )
-                printf("invalid lwork %d, lwork_max %d\n", lwork, lwork_max );
+                printf("invalid lwork %d, lwork_max %d\n", (int) lwork, (int) lwork_max );
             
             gpu_time = magma_sync_wtime( 0 );  // sync needed for L,N and R,T cases
             magma_sormqr_gpu( *side[iside], *trans[itran],

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 */
@@ -71,6 +71,8 @@ extern "C" {
 #define lapackf77_zhbtrd   FORTRAN_NAME( zhbtrd, ZHBTRD )
 #define lapackf77_zheev    FORTRAN_NAME( zheev,  ZHEEV  )
 #define lapackf77_zheevd   FORTRAN_NAME( zheevd, ZHEEVD )
+#define lapackf77_zheevr   FORTRAN_NAME( zheevr, ZHEEVR )
+#define lapackf77_zheevx   FORTRAN_NAME( zheevx, ZHEEVX )
 #define lapackf77_zhegs2   FORTRAN_NAME( zhegs2, ZHEGS2 )
 #define lapackf77_zhegst   FORTRAN_NAME( zhegst, ZHEGST )
 #define lapackf77_zhegvd   FORTRAN_NAME( zhegvd, ZHEGVD )
@@ -453,6 +455,26 @@ void   lapackf77_zheevd( const char *jobz, const char *uplo,
                          DWORKFORZ_AND_LD
                          magma_int_t *iwork, const magma_int_t *liwork,
                          magma_int_t *info );
+
+void   lapackf77_zheevr( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         magmaDoubleComplex *A, const magma_int_t *lda,
+                         double *vl, double *vu, 
+                         magma_int_t *il, magma_int_t *iu, double *abstol, 
+                         magma_int_t *m, double *w, magmaDoubleComplex *z__, 
+                         magma_int_t *ldz, magma_int_t *isuppz, 
+                         magmaDoubleComplex *work, magma_int_t *lwork, 
+                         double *rwork, magma_int_t *lrwork, 
+                         magma_int_t *iwork, magma_int_t *liwork, magma_int_t *info);
+
+void   lapackf77_zheevx( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         magmaDoubleComplex *A, const magma_int_t *lda,
+                         double *vl, double *vu,
+                         magma_int_t *il, magma_int_t *iu, double *abstol,
+                         magma_int_t *m, double *w, magmaDoubleComplex *z__,
+                         magma_int_t *ldz, magmaDoubleComplex *work, magma_int_t *lwork,
+                         double *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info);
 
 void   lapackf77_zhegs2( const magma_int_t *itype, const char *uplo,
                          const magma_int_t *n,

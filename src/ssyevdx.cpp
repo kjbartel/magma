@@ -1,16 +1,16 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Mark Gates
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated s Fri Jun 28 19:32:30 2013
+       @generated s Tue Aug 13 16:44:33 2013
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_ssyevdx(char jobz, char range, char uplo,
               magma_int_t *iwork, magma_int_t liwork,
               magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -257,6 +257,19 @@ magma_ssyevdx(char jobz, char range, char uplo,
         if (wantz) {
             a[0] = 1.;
         }
+        return *info;
+    }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_ssyevd(jobz_, uplo_,
+                         &n, a, &lda,
+                         w, work, &lwork,
+                         iwork, &liwork, info);
         return *info;
     }
 

@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Peng Du
 */
@@ -1819,11 +1819,11 @@ extern "C"
 void magmablas_strsm( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
                       float alpha, const float* A, magma_int_t lda, float* b, magma_int_t ldb)
 {
-        /*  -- MAGMA (version 1.4.0-beta2) --
+        /*  -- MAGMA (version 1.4.0) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                June 2013
+                August 2013
 
                 Purpose
                 =======

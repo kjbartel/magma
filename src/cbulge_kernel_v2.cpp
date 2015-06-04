@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated c Fri Jun 28 19:32:37 2013
+ *     @generated c Tue Aug 13 16:44:41 2013
  *
  */
 
@@ -37,7 +37,6 @@ magma_clarfxsym_v2(magma_int_t n,
     magma_int_t ione = 1;
     magmaFloatComplex dtmp;
     magmaFloatComplex c_zero   =  MAGMA_C_ZERO;
-    magmaFloatComplex c_one    =  MAGMA_C_ONE;
     magmaFloatComplex c_neg_one=  MAGMA_C_NEG_ONE;
     magmaFloatComplex c_half   =  MAGMA_C_HALF;
 

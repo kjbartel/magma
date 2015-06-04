@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions mixed zc -> ds
 
@@ -14,7 +14,7 @@
 #define blksize 64
 
 // TODO get rid of global variable!
-__device__ int flag = 0; 
+static __device__ int flag = 0; 
 
 __global__ void 
 magmaint_zlag2c(  int M, int N, 

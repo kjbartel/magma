@@ -141,6 +141,7 @@ typedef struct magma_opts
     magma_int_t svd_work;  // gesvd
     magma_int_t version;   // hemm_mgpu, hetrd
     double      fraction;  // hegvdx
+    double      tolerance;
     
     // boolean arguments
     int check;

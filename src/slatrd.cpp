@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated s Fri Jun 28 19:32:31 2013
+       @generated s Wed Aug 14 12:16:14 2013
 
 */
 #include "common_magma.h"
@@ -32,11 +32,11 @@ magma_slatrd(char uplo, magma_int_t n, magma_int_t nb,
              float *da, magma_int_t ldda,
              float *dw, magma_int_t lddw)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

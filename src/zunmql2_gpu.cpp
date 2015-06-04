@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
 
@@ -25,11 +25,11 @@ magma_zunmql2_gpu(const char side, const char trans,
                   magmaDoubleComplex *wa, magma_int_t ldwa,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -173,7 +173,7 @@ magma_zunmql2_gpu(const char side, const char trans,
     ldwork = nw;
         
     /* Use hybrid CPU-GPU code */
-    if (left && notran || ! left && ! notran) {
+    if ((left && notran) || (! left && ! notran)) {
         i1 = 1;
         i2 = k;
         i3 = nb;
@@ -182,6 +182,10 @@ magma_zunmql2_gpu(const char side, const char trans,
         i2 = 1;
         i3 = -nb;
     }
+    
+    // silence "uninitialized" warnings
+    mi = 0;
+    ni = 0;
     
     if (left) {
         ni = n;

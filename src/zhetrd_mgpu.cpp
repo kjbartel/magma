@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
@@ -27,11 +27,11 @@ magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
              magmaDoubleComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -151,8 +151,10 @@ magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
     magmaDoubleComplex c_one = MAGMA_Z_ONE;
     double  d_one = MAGMA_D_ONE;
     double mv_time = 0.0;
+#ifdef PROFILE_SY2RK
     double up_time = 0.0;
-    
+#endif
+
     magma_int_t kk, nx;
     magma_int_t i = 0, ii, iii, j, did, i_n;
     magma_int_t iinfo;
@@ -178,10 +180,10 @@ magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
         *info = 2;
     }
 
+    /* Determine the block size. */
+    ldwork = lddwork = n;
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        ldwork = lddwork = n;
-        lwkopt = n * nb;
         MAGMA_Z_SET2REAL( work[0], lwkopt );
     }
 
@@ -312,7 +314,6 @@ magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
       
         if( nx > 0 ) {
             if (1<=n-nx) { /* else A is already on CPU */
-                magma_int_t iii = i;
                 for (i=0; i < nx; i += nb) {
                     ib = min(nb, n-i);
                     ii  = nb*(i/(nb*num_gpus));
@@ -401,7 +402,7 @@ magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
 
         /* Use unblocked code to reduce the last or only block */
         if ( i < n ) {
-            magma_int_t iii = i;
+            iii = i;
             i_n = n-i;
             if( i > 0 ) {
                 for (; i < n; i += nb) {
@@ -511,9 +512,12 @@ magma_zhtodhe(magma_int_t num_gpus, char *uplo, magma_int_t n, magma_int_t nb,
 }
 
 extern "C" void
-magma_zher2k_mgpu(magma_int_t num_gpus, char uplo, char trans, magma_int_t nb, magma_int_t n, magma_int_t k,
-    magmaDoubleComplex alpha, magmaDoubleComplex **db, magma_int_t lddb, magma_int_t offset_b,
-    double beta,           magmaDoubleComplex **dc, magma_int_t lddc, magma_int_t offset,
+magma_zher2k_mgpu(
+    magma_int_t num_gpus, char uplo, char trans, magma_int_t nb, magma_int_t n, magma_int_t k,
+    magmaDoubleComplex alpha,
+    magmaDoubleComplex **db, magma_int_t lddb, magma_int_t offset_b,
+    double beta,
+    magmaDoubleComplex **dc, magma_int_t lddc, magma_int_t offset,
     magma_int_t num_streams, magma_queue_t stream[][10])
 {
 
@@ -522,7 +526,7 @@ magma_zher2k_mgpu(magma_int_t num_gpus, char uplo, char trans, magma_int_t nb, m
 #define dC(id, i, j)  (dc[(id)]+(j)*lddc + (i))
 
     char uplo_[2]  = {uplo, 0};
-    magma_int_t i, id, ib, ii, kk, n1, m1;
+    magma_int_t i, id, ib, ii, kk, n1;
     magmaDoubleComplex c_one = MAGMA_Z_ONE;
 
     /* diagonal update */
@@ -621,6 +625,19 @@ magma_zher2k_mgpu(magma_int_t num_gpus, char uplo, char trans, magma_int_t nb, m
         for( kk=0; kk<num_streams; kk++ ) magma_queue_sync(stream[id][kk]);
         magmablasSetKernelStream(NULL);
     }
+}
+
+#else /* GPUSHMEM >= 200 */
+
+extern "C" magma_int_t
+magma_zhetrd_mgpu(magma_int_t num_gpus, magma_int_t k, char uplo, magma_int_t n,
+                  magmaDoubleComplex *a, magma_int_t lda,
+                  double *d, double *e, magmaDoubleComplex *tau,
+                  magmaDoubleComplex *work, magma_int_t lwork,
+                  magma_int_t *info)
+{
+    printf("magma_zhetrd_mgpu is not supported on this GPU. Exit.\n");
+    exit(1);
 }
 
 #endif /* GPUSHMEM >= 200 */

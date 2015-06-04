@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:53 2013
+       @generated c Tue Aug 13 19:15:00 2013
        @author Mark Gates
 */
 // includes, system
@@ -39,10 +39,13 @@ int main( int argc, char** argv )
     magmaFloatComplex tmp;
     float error, rwork[1];
     magma_int_t *ipiv;
+    magma_int_t status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
     opts.lapack |= opts.check;  // check (-c) implies lapack (-l)
+    
+    float tol = opts.tolerance * lapackf77_slamch("E");
     
     printf("    N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R||_F / ||A||_F\n");
     printf("=================================================================\n");
@@ -114,8 +117,10 @@ int main( int argc, char** argv )
                 blasf77_caxpy( &n2, &c_neg_one, h_A, &ione, h_R, &ione );
                 error = lapackf77_clange( "f", &N, &N, h_R, &lda, rwork ) / error;
                 
-                printf( "%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
-                        (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                printf( "%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e%s\n",
+                        (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
+                        error, (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
             }
             else {
                 printf( "%5d     ---   (  ---  )   %7.2f (%7.2f)     ---\n",
@@ -135,5 +140,5 @@ int main( int argc, char** argv )
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

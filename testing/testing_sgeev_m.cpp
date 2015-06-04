@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:34:06 2013
+       @generated s Wed Aug 14 12:18:11 2013
 
 */
 
@@ -59,15 +59,19 @@ int main( int argc, char** argv)
 
     real_Double_t   gpu_time, cpu_time;
     float *h_A, *h_R, *VL, *VR, *h_work, *w1, *w2;
-    float c_neg_one = MAGMA_S_NEG_ONE;
-    float *w1i, *w2i, work[1];
-    float matnorm, tnrm, result[8];
+    float *w1i, *w2i;
+    float tnrm, result[8];
     magma_int_t N, n2, lda, nb, lwork, info;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    // need slightly looser bound (60*eps instead of 30*eps) for some tests
+    opts.tolerance = max( 60., opts.tolerance );
+    float tol = opts.tolerance * lapackf77_slamch("E");
     
     printf("    N   CPU Time (sec)   GPU Time (sec)   ||R||_F / ||A||_F\n");
     printf("===========================================================\n");
@@ -346,13 +350,20 @@ int main( int argc, char** argv)
                         if ( ! MAGMA_S_EQUAL( VL[j+jj*lda], LRE[j+jj*lda] ))
                             result[6] = 0;
                 
-                printf("Test 1: | A * VR - VR * W | / ( n |A| ) = %8.2e\n", result[0]);
-                printf("Test 2: | A'* VL - VL * W'| / ( n |A| ) = %8.2e\n", result[1]);
-                printf("Test 3: |  |VR(i)| - 1    |             = %8.2e\n", result[2]);
-                printf("Test 4: |  |VL(i)| - 1    |             = %8.2e\n", result[3]);
-                printf("Test 5:   W (full)  ==  W (partial)     = %s\n",   (result[4] == 1. ? "okay" : "fail"));
-                printf("Test 6:  VR (full)  == VR (partial)     = %s\n",   (result[5] == 1. ? "okay" : "fail"));
-                printf("Test 7:  VL (full)  == VL (partial)     = %s\n\n", (result[6] == 1. ? "okay" : "fail"));
+                printf("Test 1: | A * VR - VR * W | / ( n |A| ) = %8.2e%s\n", result[0], (result[0] < tol ? "" : "  failed"));
+                printf("Test 2: | A'* VL - VL * W'| / ( n |A| ) = %8.2e%s\n", result[1], (result[1] < tol ? "" : "  failed"));
+                printf("Test 3: |  |VR(i)| - 1    |             = %8.2e%s\n", result[2], (result[2] < tol ? "" : "  failed"));
+                printf("Test 4: |  |VL(i)| - 1    |             = %8.2e%s\n", result[3], (result[3] < tol ? "" : "  failed"));
+                printf("Test 5:   W (full)  ==  W (partial)     = %s\n",   (result[4] == 1. ? "ok" : "failed"));
+                printf("Test 6:  VR (full)  == VR (partial)     = %s\n",   (result[5] == 1. ? "ok" : "failed"));
+                printf("Test 7:  VL (full)  == VL (partial)     = %s\n\n", (result[6] == 1. ? "ok" : "failed"));
+                status |= ! (result[0] < tol);
+                status |= ! (result[1] < tol);
+                status |= ! (result[2] < tol);
+                status |= ! (result[3] < tol);
+                status |= (result[4] != 1.);
+                status |= (result[5] != 1.);
+                status |= (result[6] != 1.);
                 
                 TESTING_HOSTFREE( LRE );
             }
@@ -373,5 +384,5 @@ int main( int argc, char** argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

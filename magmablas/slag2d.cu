@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated ds Fri Jun 28 19:33:07 2013
+       @generated ds Wed Aug 14 12:16:38 2013
 
 */
 #include "common_magma.h"

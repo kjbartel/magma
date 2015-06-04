@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:31:28 2013
+       @generated d Tue Aug 13 16:43:27 2013
 */
 
 #ifndef MAGMABLAS_D_H
@@ -135,16 +135,16 @@ magma_int_t magma_dhtodhe(
 magma_int_t magma_dhtodpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-    double  *h_A,  magma_int_t lda,
-    double **d_lA, magma_int_t ldda,
+    double  *h_A,   magma_int_t lda,
+    double *d_lA[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 // in src/dpotrf3_mgpu.cpp
 magma_int_t magma_ddtohpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magma_int_t NB,
-    double  *a,    magma_int_t lda,
-    double **work, magma_int_t ldda,
+    double  *a,     magma_int_t lda,
+    double *work[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 magma_int_t magmablas_dsymv_mgpu_offset(
@@ -615,8 +615,7 @@ void magmablas_dtrsm_work(
     double alpha,
     magmaDouble_const_ptr dA, magma_int_t ldda,
     magmaDouble_ptr       db, magma_int_t lddb,
-    magmaDouble_ptr d_dinvA,
-    magmaDouble_ptr dx );
+    int flag, magmaDouble_ptr d_dinvA, magmaDouble_ptr dx );
 #endif
 
   /*

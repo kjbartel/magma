@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:56 2013
+       @generated d Tue Aug 13 16:46:04 2013
 
 */
 
@@ -45,7 +45,10 @@ int main( int argc, char** argv)
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
-    
+ 
+    magma_int_t status = 0;
+    double tol = opts.tolerance * lapackf77_dlamch("E");
+
     nrhs = opts.nrhs;
     
     printf("                                                            ||b-Ax|| / (N||A||)\n");
@@ -56,7 +59,7 @@ int main( int argc, char** argv)
             M = opts.msize[i];
             N = opts.nsize[i];
             if ( M < N ) {
-                printf( "skipping M=%d, N=%d because M < N is not yet supported.\n", M, N );
+                printf( "skipping M=%d, N=%d because M < N is not yet supported.\n", (int) M, (int) N );
                 continue;
             }
             min_mn = min(M, N);
@@ -159,9 +162,11 @@ int main( int argc, char** argv)
             cpu_error = lapackf77_dlange("f", &M, &nrhs, h_B, &ldb, work) / (min_mn*matnorm);
             gpu_error = lapackf77_dlange("f", &M, &nrhs, h_R, &ldb, work) / (min_mn*matnorm);
             
-            printf("%5d %5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e   %8.2e\n",
+            printf("%5d %5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e   %8.2e",
                    (int) M, (int) N, (int) nrhs,
                    cpu_perf, cpu_time, gpu_perf, gpu_time, cpu_error, gpu_error );
+            printf("%s\n", (gpu_error < tol ? "" : "  failed"));
+            status |= ! (gpu_error < tol);
             
             TESTING_FREE( tau  );
             TESTING_FREE( h_A  );
@@ -179,5 +184,5 @@ int main( int argc, char** argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

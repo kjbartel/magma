@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:44 2013
+       @generated s Tue Aug 13 16:45:50 2013
        @author Mark Gates
 */
 #include <stdlib.h>
@@ -64,7 +64,7 @@ int main( int argc, char** argv )
         n = opts.nsize[i];
         k = opts.ksize[i];
         printf("=========================================================================\n");
-        printf( "M %d, N %d, K %d\n", m, n, k );
+        printf( "M %d, N %d, K %d\n", (int) m, (int) n, (int) k );
         
         // allocate matrices
         // over-allocate so they can be any combination of {m,n,k} x {m,n,k}.

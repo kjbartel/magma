@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated s Fri Jun 28 19:32:39 2013
+       @generated s Tue Aug 13 16:44:43 2013
 
 */
 #include "common_magma.h"
@@ -29,11 +29,11 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
                      magma_int_t *iwork, magma_int_t liwork,
                      magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -182,6 +182,10 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
 
     float* dwork;
 
+    /* determine the number of threads */
+    magma_int_t threads = magma_get_numthreads();
+    magma_setlapack_numthreads(threads);
+
     wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
 
@@ -216,14 +220,13 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
         }
     }
 
-    magma_int_t nb = magma_get_sbulge_nb(n);
-    magma_int_t Vblksiz = magma_sbulge_get_Vblksiz(n, nb);
+    magma_int_t nb = magma_get_sbulge_nb(n, threads);
+    magma_int_t Vblksiz = magma_sbulge_get_Vblksiz(n, nb, threads);
 
     magma_int_t ldt = Vblksiz;
     magma_int_t ldv = nb + Vblksiz;
     magma_int_t blkcnt = magma_bulge_get_blkcnt(n, nb, Vblksiz);
-
-    magma_int_t lq2 = blkcnt * Vblksiz * (ldt + ldv + 1);
+    magma_int_t lq2 = magma_sbulge_get_lq2(n, threads);
 
     if (wantz) {
         lwmin = lq2 + 1 + 6 * n + 2 * n * n;
@@ -249,7 +252,6 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
     else if (lquery) {
         return *info;
     }
-
     /* Quick return if possible */
     if (n == 0) {
         return *info;
@@ -263,13 +265,25 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
         return *info;
     }
 
-    /* determine the number of threads */
-    magma_int_t threads = magma_get_numthreads();
-    magma_setlapack_numthreads(threads);
-
 #ifdef ENABLE_TIMER
     printf("using %d threads\n", threads);
 #endif
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    magma_int_t ntiles = n/nb;
+    if( ( ntiles < 2 ) || ( n <= 128 ) ){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int ) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_ssyevd(jobz_, uplo_, &n, 
+                        a, &lda, w, 
+                        work, &lwork, 
+                        iwork, &liwork, 
+                        info);
+        *m = n; 
+        return *info;
+    }
 
     /* Get machine constants. */
     safmin = lapackf77_slamch("Safe minimum");
@@ -321,19 +335,13 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
     st1 = get_current_time();
-
-    printf("    time ssytrd_sy2sb = %6.2f\n" , GetTimerValue(start,st1)/1000.);
+    printf("  time ssytrd_sy2sb = %6.2f\n" , GetTimerValue(start,st1)/1000.);
 #endif
 
-    magma_int_t lda2 = nb+1+(nb-1);
-    if(lda2>n){
-        printf("error matrix too small N=%d NB=%d\n",n,nb);
-        return -14;
-    }
-
     /* copy the input matrix into WORK(INDWRK) with band storage */
+    /* PAY ATTENTION THAT work[indwrk] should be able to be of size lda2*n which it should be checked in any future modification of lwork.*/
+    magma_int_t lda2 = 2*nb; //nb+1+(nb-1);
     float* A2 = &work[indwrk];
-
     memset(A2 , 0, n*lda2*sizeof(float));
 
     for (magma_int_t j = 0; j < n-nb; j++)
@@ -350,15 +358,14 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
     st2 = get_current_time();
-
-    printf("    time ssytrd_convert = %6.2f\n" , GetTimerValue(st1,st2)/1000.);
+    printf("  time ssytrd_convert = %6.2f\n" , GetTimerValue(st1,st2)/1000.);
 #endif
 
     magma_ssytrd_sb2st(threads, uplo, n, nb, Vblksiz, A2, lda2, w, &work[inde], &work[indV2], ldv, &work[indTAU2], wantz, &work[indT2], ldt);
 
 #ifdef ENABLE_TIMER
     end = get_current_time();
-    printf("    time ssytrd_sy2st = %6.2f\n" , GetTimerValue(st2,end)/1000.);
+    printf("  time ssytrd_sy2st = %6.2f\n" , GetTimerValue(st2,end)/1000.);
     printf("  time ssytrd = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
 
@@ -367,9 +374,17 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
      tridiagonal matrix, then call ZUNMTR to multiply it to the Householder
      transformations represented as Householder vectors in A. */
     if (! wantz) {
-        lapackf77_ssterf(&n, w, &work[inde], info);
+#ifdef ENABLE_TIMER
+        start = get_current_time();
+#endif
 
+        lapackf77_ssterf(&n, w, &work[inde], info);
         magma_smove_eig(range, n, w, &il, &iu, vl, vu, m);
+
+#ifdef ENABLE_TIMER
+        end = get_current_time();
+        printf("  time sstedc = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
     } else {
 
 #ifdef ENABLE_TIMER
@@ -415,7 +430,7 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
 #ifdef ENABLE_TIMER
         st1 = get_current_time();
 
-        printf("    time sbulge_back = %6.2f\n" , GetTimerValue(start,st1)/1000.);
+        printf("  time sbulge_back = %6.2f\n" , GetTimerValue(start,st1)/1000.);
 #endif
 
         magma_ssetmatrix( n, n, a, lda, da, ldda );
@@ -430,7 +445,7 @@ magma_ssyevdx_2stage(char jobz, char range, char uplo,
 
 #ifdef ENABLE_TIMER
         end = get_current_time();
-        printf("    time sormqr + copy = %6.2f\n", GetTimerValue(st1,end)/1000.);
+        printf("  time sormqr + copy = %6.2f\n", GetTimerValue(st1,end)/1000.);
 
         printf("  time eigenvectors backtransf. = %6.2f\n" , GetTimerValue(start,end)/1000.);
 #endif

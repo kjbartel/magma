@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated s Fri Jun 28 19:32:37 2013
+ *     @generated s Wed Aug 14 12:16:16 2013
  *
  */
 
@@ -45,10 +45,10 @@ void magma_slarfxsym(magma_int_t N, float *A, magma_int_t LDA, float *V, float *
 
 extern "C" void 
 magma_slarfxsym(magma_int_t N, float *A, magma_int_t LDA, float *V, float *TAU) {
-  magma_int_t j, IONE=1; 
+  magma_int_t IONE=1; 
   float dtmp;
   float Z_ZERO =  MAGMA_S_ZERO;
-  float Z_ONE  =  MAGMA_S_ONE;
+  //float Z_ONE  =  MAGMA_S_ONE;
   float Z_MONE =  MAGMA_S_NEG_ONE;
   float Z_HALF =  MAGMA_S_HALF;
   //float WORK[N];
@@ -61,7 +61,7 @@ magma_slarfxsym(magma_int_t N, float *A, magma_int_t LDA, float *V, float *TAU) 
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
    dtmp = Z_ZERO;
-   for (j = 0; j < N ; j++)
+   for (magma_int_t j = 0; j < N ; j++)
       dtmp = dtmp + MAGMA_S_CNJG(WORK[j]) * V[j];
    //cblas_sdot_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
@@ -88,10 +88,11 @@ magma_slarfxsym(magma_int_t N, float *A, magma_int_t LDA, float *V, float *TAU) 
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_strdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  float conjtmp;
+  //float conjtmp;
   float Z_ONE  =  MAGMA_S_ONE;
   float *WORK  = (float *) malloc( N * sizeof(float) );
 
@@ -125,7 +126,8 @@ extern "C" void magma_strdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, floa
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_strdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, len, lem, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    i, j;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
   float conjtmp;
   float Z_ONE  =  MAGMA_S_ONE;
@@ -171,10 +173,11 @@ extern "C" void magma_strdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, floa
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_strdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, float *A, magma_int_t LDA, float *V, float *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  //magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  float conjtmp;
+  //float conjtmp;
   float *WORK  = (float *) malloc( N * sizeof(float) );
 
 

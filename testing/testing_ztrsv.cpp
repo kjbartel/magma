@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> c d s
        @author Chongxiao Cao
@@ -38,7 +38,7 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
 
-    real_Double_t   gflops, cublas_perf, cublas_time, cpu_perf, cpu_time;
+    real_Double_t   gflops, cublas_perf, cublas_time, cpu_perf=0, cpu_time=0;
     double          cublas_error, normA, normx, normr, work[1];
     magma_int_t N, info;
     magma_int_t sizeA;

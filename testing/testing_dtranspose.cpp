@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:47 2013
+       @generated d Tue Aug 13 16:45:54 2013
        @author Mark Gates
 
 */
@@ -31,10 +31,10 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
 
-    real_Double_t    gbytes, gpu_perf, gpu_time, gpu_perf2, gpu_time2, cpu_perf, cpu_time;
+    real_Double_t    gbytes, gpu_perf, gpu_time, gpu_perf2=0, gpu_time2=0, cpu_perf, cpu_time;
     double           error, error2, work[1];
     double  c_neg_one = MAGMA_D_NEG_ONE;
-    double *h_A, *h_B, *h_R, tmp;
+    double *h_A, *h_B, *h_R;
     double *d_A, *d_B;
     magma_int_t M, N, size, lda, ldda, ldb, lddb;
     magma_int_t ione     = 1;
@@ -133,14 +133,14 @@ int main( int argc, char** argv)
     
                 printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)  %4s    %7.2f (%7.2f)  %4s\n",
                        (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
-                       (error  == 0. ? "okay" : "fail"),
+                       (error  == 0. ? "ok" : "failed"),
                        gpu_perf2, gpu_time2,
-                       (error2 == 0. ? "okay" : "fail") );
+                       (error2 == 0. ? "ok" : "failed") );
             }
             else {
                 printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)  %4s      ---   (  ---  )\n",
                        (int) M, (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
-                       (error  == 0. ? "okay" : "fail") );
+                       (error  == 0. ? "ok" : "failed") );
             }
             
             TESTING_FREE( h_A );

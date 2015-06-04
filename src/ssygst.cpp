@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated s Fri Jun 28 19:32:43 2013
+       @generated s Wed Aug 14 12:16:19 2013
 */
 
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_ssygst(magma_int_t itype, char uplo, magma_int_t n,
              float *a, magma_int_t lda,
              float *b, magma_int_t ldb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

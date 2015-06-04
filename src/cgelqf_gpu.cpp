@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:15 2013
+       @generated c Tue Aug 13 19:13:56 2013
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_cgelqf_gpu( magma_int_t m, magma_int_t n,
                   magmaFloatComplex *dA,    magma_int_t lda,   magmaFloatComplex *tau,
                   magmaFloatComplex *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

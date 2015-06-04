@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Mark Gates
        @author Azzam Haidar
-       @generated d Fri Jun 28 19:32:20 2013
+       @generated d Tue Aug 13 16:44:21 2013
 */
 #include "common_magma.h"
 
@@ -20,9 +20,9 @@ magma_dlarfb_gpu_gemm( char side, char trans, char direct, char storev,
                   double *dwork,       magma_int_t ldwork,
                   double *dworkvt,     magma_int_t ldworkvt)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Univ. of California Berkeley
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -135,7 +135,14 @@ magma_dlarfb_gpu_gemm( char side, char trans, char direct, char storev,
     if (m <= 0 || n <= 0) {
         return MAGMA_SUCCESS;
     }
-
+    //internal variable
+    magma_int_t ldwvt = m > n ?  k : m;
+    magma_int_t ldw;
+    if ( side  == 'l' || side  == 'L' ) {
+        ldw = k;
+    }else{
+        ldw = m; 
+    }
     // opposite of trans
     char transt;
     if (trans == 'N' || trans == 'n')
@@ -166,38 +173,38 @@ magma_dlarfb_gpu_gemm( char side, char trans, char direct, char storev,
         // Comments assume H C.
         // When forming H' C, T gets transposed via transt for m>=n or by trans for m<n.
         
-        // W = C' V
+        // W = V' C
         magma_dgemm( MagmaTrans, notransV,
-                     n, k, m,
-                     c_one,  dC,    ldc,
-                             dV,    ldv,
-                     c_zero, dwork, ldwork);
+                     k, n, m,
+                     c_one,  dV,    ldv,
+                             dC,    ldc,
+                     c_zero, dwork, ldw);
 
-        if(m<n){
+        if(m<=n){
             // W2 = V T
             magma_dgemm( notransV, trans,
                          m, k, k,
                          c_one,  dV, ldv,
                                  dT, ldt,
-                         c_zero, dworkvt, ldworkvt);
-            // C = C - W2 W' = C - V T V' C = (I - V T V') C = H C
-            magma_dgemm( MagmaNoTrans, MagmaTrans,
+                         c_zero, dworkvt, ldwvt);
+            // C = C - W2 W = C - V T V' C = (I - V T V') C = H C
+            magma_dgemm( MagmaNoTrans, MagmaNoTrans,
                          m, n, k,
-                         c_neg_one, dworkvt,  ldworkvt,
-                                    dwork,    ldwork,
+                         c_neg_one, dworkvt,  ldwvt,
+                                    dwork,    ldw,
                          c_one,     dC,       ldc);
         }else{
-            // W2 = W T' = C' V T'
-            magma_dgemm( MagmaNoTrans, transt,
-                         n, k, k,
-                         c_one,  dwork, ldwork,
-                                 dT, ldt,
-                         c_zero, dworkvt, ldworkvt);
-            // C = C - V W2' = C - V T V' C = (I - V T V') C = H C
-            magma_dgemm( notransV, MagmaTrans,
+            // W2 = T W  = T  V' C
+            magma_dgemm( trans, MagmaNoTrans,
+                         k, n, k,
+                         c_one,  dT, ldt,
+                                 dwork, ldw,
+                         c_zero, dworkvt, ldwvt);
+            // C = C - V W2 = C - V T V' C = (I - V T V') C = H C
+            magma_dgemm( notransV, MagmaNoTrans,
                          m, n, k,
                          c_neg_one, dV,  ldv,
-                                    dworkvt,    ldworkvt,
+                                    dworkvt,  ldwvt,
                          c_one,     dC,       ldc);
         }
     }
@@ -211,18 +218,18 @@ magma_dlarfb_gpu_gemm( char side, char trans, char direct, char storev,
                      m, k, n,
                      c_one,  dC,    ldc,
                              dV,    ldv,
-                     c_zero, dwork, ldwork);
+                     c_zero, dwork, ldw);
         if(m<=n){
             // W2 = W T = C V T
             magma_dgemm( MagmaNoTrans, trans,
                          m, k, k,
-                         c_one,  dwork, ldwork,
+                         c_one,  dwork, ldw,
                                  dT, ldt,
-                         c_zero, dworkvt, ldworkvt);
+                         c_zero, dworkvt, ldwvt);
             // C = C - W2 V' = C - C V T V' = C (I - V T V') = C H
             magma_dgemm( MagmaNoTrans, transV,
                          m, n, k,
-                         c_neg_one, dwork, ldwork,
+                         c_neg_one, dworkvt, ldwvt,
                                     dV,    ldv,
                          c_one,     dC,    ldc);
         }else{
@@ -231,12 +238,12 @@ magma_dlarfb_gpu_gemm( char side, char trans, char direct, char storev,
                          k, n, k,
                          c_one,  dT, ldt,
                                  dV, ldv,
-                         c_zero, dworkvt, ldworkvt);
+                         c_zero, dworkvt, ldwvt);
             // C = C - W W2 = C - C V T V' = C (I - V T V') = C H
             magma_dgemm( MagmaNoTrans, MagmaNoTrans,
                          m, n, k,
-                         c_neg_one, dwork,   ldwork,
-                                    dworkvt, ldworkvt,
+                         c_neg_one, dwork,   ldw,
+                                    dworkvt, ldwvt,
                          c_one,     dC,      ldc);
 
         }

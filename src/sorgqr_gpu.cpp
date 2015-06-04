@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:20 2013
+       @generated s Tue Aug 13 16:44:22 2013
 
        @author Stan Tomov
        @author Mark Gates
@@ -21,11 +21,11 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
                  float *dT, magma_int_t nb,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -110,10 +110,12 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     }
 
     // first kk columns are handled by blocked method.
+    // ki is start of 2nd-to-last block
     if ((nb > 1) && (nb < k)) {
         ki = (k - nb - 1) / nb * nb;
         kk = min( k, ki+nb );
     } else {
+        ki = 0;
         kk = 0;
     }
 
@@ -150,7 +152,7 @@ magma_sorgqr_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
         m_kk = m - kk;
         n_kk = n - kk;
         k_kk = k - kk;
-        magma_sgetmatrix( m_kk, n_kk,
+        magma_sgetmatrix( m_kk, k_kk,
                           dA(kk, kk), ldda, panel, m_kk );
         
         lapackf77_sorgqr( &m_kk, &n_kk, &k_kk,

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:56 2013
+       @generated s Tue Aug 13 16:46:03 2013
 
 */
 
@@ -87,7 +87,7 @@ int main( int argc, char** argv)
             checkres = true;
         }
         else if ( strcmp("-v", argv[i]) == 0 ) {
-            sscanf( argv[++i], "%d", &version );
+            version = atoi( argv[++i] );
         }
         else {
             printf( "invalid argument: %s\n", argv[i] );

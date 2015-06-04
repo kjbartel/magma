@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:51 2013
+       @generated d Wed Aug 14 12:18:03 2013
 */
 // includes, system
 #include <stdlib.h>
@@ -21,8 +21,6 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-#define PRECISION_d
-
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dpotrf_mgpu
 */
@@ -30,21 +28,24 @@ int main( int argc, char** argv )
 {
     TESTING_INIT();
 
-    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     double           error, work[1];
     double c_neg_one = MAGMA_D_NEG_ONE;
     double *h_A, *h_R;
     double *d_lA[ MagmaMaxGPUs ];
-    magma_int_t M, N, n2, lda, ldda, max_size, ngpu;
+    magma_int_t N, n2, lda, ldda, max_size, ngpu;
     magma_int_t info, nb;
     magma_int_t ione     = 1;
     magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t  status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
     opts.lapack |= opts.check;  // check (-c) implies lapack (-l)
     
-    printf("ngpu %d, uplo %c\n", opts.ngpu, opts.uplo );
+    double tol = opts.tolerance * lapackf77_dlamch("E");
+    
+    printf("ngpu %d, uplo %c\n", (int) opts.ngpu, opts.uplo );
     printf("    N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R||_F / ||A||_F\n");
     printf("=================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ) {
@@ -126,8 +127,10 @@ int main( int argc, char** argv )
                 blasf77_daxpy( &n2, &c_neg_one, h_A, &ione, h_R, &ione );
                 error = lapackf77_dlange("f", &N, &N, h_R, &lda, work ) / error;
                 
-                printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e\n",
-                       (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                printf("%5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2e%s\n",
+                       (int) N, cpu_perf, cpu_time, gpu_perf, gpu_time,
+                       error, (error < tol ? "" : "  failed") );
+                status |= ! (error < tol);
             }
             else {
                 printf("%5d     ---   (  ---  )   %7.2f (%7.2f)     ---\n",
@@ -147,5 +150,5 @@ int main( int argc, char** argv )
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

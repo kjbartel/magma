@@ -1,24 +1,17 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
        
-       @generated s Fri Jun 28 19:32:30 2013
+       @generated s Tue Aug 13 16:44:33 2013
 */
 #include "common_magma.h"
 
 #define Q(ix, iy) (q + (ix) + ldq * (iy))
-
-extern "C" {
-    magma_int_t get_slaex0_smlsize()
-    {
-        return 25;
-    }
-}
 
 extern "C" magma_int_t
 magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
@@ -26,11 +19,11 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
              char range, float vl, float vu,
              magma_int_t il, magma_int_t iu, magma_int_t* info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -114,7 +107,7 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
 
     magma_int_t ione = 1;
     char range_;
-    magma_int_t curlvl, curprb, i, indxq;
+    magma_int_t curlvl, i, indxq;
     magma_int_t j, k, matsiz, msd2, smlsiz;
     magma_int_t submat, subpbs, tlvls;
 
@@ -136,7 +129,7 @@ magma_slaex0(magma_int_t n, float* d, float* e, float* q, magma_int_t ldq,
     if(n == 0)
         return MAGMA_SUCCESS;
 
-    smlsiz = get_slaex0_smlsize();
+    smlsiz = magma_get_smlsize_divideconquer();
 
     // Determine the size and placement of the submatrices, and save in
     // the leading elements of IWORK.

@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
  
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated c Fri Jun 28 19:32:28 2013
+       @generated c Tue Aug 13 16:44:31 2013
  
 */
 #include "common_magma.h"
@@ -24,11 +24,11 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
                  float *rwork, magma_int_t lrwork, magma_int_t *iwork,
                  magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
    
     Purpose
     =======
@@ -283,11 +283,11 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
         *info = -4;
     } else if (ldda < max(1,n)) {
         *info = -6;
-    } else if (lddz < 1 || wantz && lddz < n) {
+    } else if (lddz < 1 || (wantz && lddz < n)) {
         *info = -15;
     } else if (ldwa < max(1,n)) {
         *info = -18;
-    } else if (ldwz < 1 || wantz && ldwz < n) {
+    } else if (ldwz < 1 || (wantz && ldwz < n)) {
         *info = -20;
     } else {
         if (valeig) {
@@ -328,30 +328,27 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
         return *info;
     }
     
-    /* Quick return if possible */
     *m = 0;
-    if (n == 0) {
+
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128) {
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        magmaFloatComplex *a = (magmaFloatComplex *) malloc( n * n * sizeof(magmaFloatComplex) );
+        magma_cgetmatrix(n, n, da, ldda, a, n);
+        lapackf77_cheevr(jobz_, range_, uplo_, 
+                         &n, a, &n, &vl, &vu, &il, &iu, &abstol, m,
+                         w, wz, &ldwz, isuppz, work, &lwork,
+                         rwork, &lrwork, iwork, &liwork, info);
+        magma_csetmatrix( n,  n,  a,    n, da, ldda);
+        magma_csetmatrix( n, *m, wz, ldwz, dz, lddz);
+        free(a);
         return *info;
     }
-    
-    if (n == 1) {
-        magmaFloatComplex tmp;
-        magma_cgetvector( 1, da, 1, &tmp, 1 );
-        w[0] = MAGMA_C_REAL(tmp);
-        if (alleig || indeig) {
-            *m = 1;
-        } else if (valeig) {
-            if (vl < w[0] && vu >= w[0]) {
-                *m = 1;
-            }
-        }
-        if (wantz) {
-            tmp = MAGMA_C_ONE;
-            magma_csetvector( 1, &tmp, 1, da, 1 );
-        }
-        return *info;
-    }
-    
+
     if (MAGMA_SUCCESS != magma_smalloc( &dwork, n )) {
         fprintf (stderr, "!!!! device memory allocation error (magma_cheevr_gpu)\n");
         *info = MAGMA_ERR_DEVICE_ALLOC;
@@ -375,6 +372,7 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
     /* Scale matrix to allowable range, if necessary. */
     anrm = magmablas_clanhe('M', uplo, n, da, ldda, dwork);
     iscale = 0;
+    sigma  = 1;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;
@@ -433,7 +431,7 @@ magma_cheevr_gpu(char jobz, char range, char uplo, magma_int_t n,
     if (! wantz) {
         blasf77_scopy(&n, &rwork[indrd], &ione, &w[1], &ione);
         i__1 = n - 1;
-        if ((alleig || indeig && il == 1 && iu == n)){
+        if (alleig || (indeig && il == 1 && iu == n)) {
             lapackf77_ssterf(&n, &w[1], &rwork[indre], info);
             *m = n;
         } else {

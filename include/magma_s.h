@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:31:28 2013
+       @generated s Tue Aug 13 16:43:27 2013
 */
 
 #ifndef MAGMA_S_H
@@ -35,9 +35,11 @@ magma_int_t magma_get_sgebrd_nb( magma_int_t m );
 magma_int_t magma_get_ssygst_nb( magma_int_t m );
 magma_int_t magma_get_sgesvd_nb( magma_int_t m );
 magma_int_t magma_get_ssygst_nb_m( magma_int_t m );
-magma_int_t magma_get_sbulge_nb( magma_int_t m );
+magma_int_t magma_get_sbulge_nb( magma_int_t m, magma_int_t nbthreads );
 magma_int_t magma_get_sbulge_nb_mgpu( magma_int_t m );
-
+magma_int_t magma_sbulge_get_Vblksiz( magma_int_t m, magma_int_t nb, magma_int_t nbthreads );
+magma_int_t magma_get_sbulge_gcperf();
+magma_int_t magma_get_smlsize_divideconquer();
 /* ////////////////////////////////////////////////////////////////////////////
    -- MAGMA function definitions / Data on CPU
 */
@@ -128,6 +130,9 @@ magma_int_t magma_sorgqr( magma_int_t m, magma_int_t n, magma_int_t k,
                           float *a, magma_int_t lda,
                           float *tau, float *dT,
                           magma_int_t nb, magma_int_t *info );
+magma_int_t magma_sorgqr2(magma_int_t m, magma_int_t n, magma_int_t k,
+                          float *a, magma_int_t lda,
+                          float *tau, magma_int_t *info );
 magma_int_t magma_sormql( char side, char trans,
                           magma_int_t m, magma_int_t n, magma_int_t k,
                           float *a, magma_int_t lda,
@@ -599,7 +604,7 @@ magma_int_t magma_sgeqr2x4_gpu(
     magma_int_t *m, magma_int_t *n, float *dA,
     magma_int_t *ldda, float *dtau,
     float *dT, float *ddA,
-    float *dwork, magma_int_t *info, cudaStream_t stream);
+    float *dwork, magma_int_t *info, magma_queue_t stream);
 
 magma_int_t magma_sgeqrf_gpu( magma_int_t m, magma_int_t n,
                               float *dA,  magma_int_t ldda,
@@ -655,10 +660,15 @@ magma_int_t magma_sgetrf_gpu( magma_int_t m, magma_int_t n,
 magma_int_t magma_sgetrf_mgpu(magma_int_t num_gpus, magma_int_t m, magma_int_t n,
                               float **d_lA, magma_int_t ldda,
                               magma_int_t *ipiv, magma_int_t *info);
+magma_int_t magma_sgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, float *a, magma_int_t lda,
+                           magma_int_t *ipiv, magma_int_t *info);
+magma_int_t magma_sgetrf_piv(magma_int_t m, magma_int_t n, magma_int_t NB,
+                             float *a, magma_int_t lda, magma_int_t *ipiv,
+                             magma_int_t *info);
 magma_int_t magma_sgetrf2_mgpu(magma_int_t num_gpus,
                                magma_int_t m, magma_int_t n, magma_int_t nb, magma_int_t offset,
-                               float **d_lAT, magma_int_t lddat, magma_int_t *ipiv,
-                               float **d_lAP, float *a, magma_int_t lda,
+                               float *d_lAT[], magma_int_t lddat, magma_int_t *ipiv,
+                               float *d_lAP[], float *a, magma_int_t lda,
                                magma_queue_t streaml[][2], magma_int_t *info);
 magma_int_t
       magma_sgetrf_nopiv_gpu( magma_int_t m, magma_int_t n,
@@ -737,8 +747,8 @@ magma_int_t magma_spotrf_mgpu(magma_int_t ngpu, char uplo, magma_int_t n,
                               float **d_lA, magma_int_t ldda, magma_int_t *info);
 magma_int_t magma_spotrf3_mgpu(magma_int_t num_gpus, char uplo, magma_int_t m, magma_int_t n,
                                magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-                               float **d_lA,  magma_int_t ldda,
-                               float **d_lP,  magma_int_t lddp,
+                               float *d_lA[],  magma_int_t ldda,
+                               float *d_lP[],  magma_int_t lddp,
                                float *a,      magma_int_t lda,   magma_int_t h,
                                magma_queue_t stream[][3], magma_event_t event[][5],
                                magma_int_t *info );

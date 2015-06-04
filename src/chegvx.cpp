@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
     
        @author Raffaele Solca
     
-       @generated c Fri Jun 28 19:32:43 2013
+       @generated c Wed Aug 14 12:16:19 2013
 
 */
 #include "common_magma.h"
@@ -20,11 +20,11 @@ magma_chegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
              magmaFloatComplex *work, magma_int_t lwork, float *rwork,
              magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -236,7 +236,7 @@ magma_chegvx(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
         *info = -7;
     } else if (ldb < max(1,n)) {
         *info = -9;
-    } else if (ldz < 1 || wantz && ldz < n) {
+    } else if (ldz < 1 || (wantz && ldz < n)) {
         *info = -18;
     } else {
         if (valeig) {

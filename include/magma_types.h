@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 */
 
 #ifndef MAGMA_TYPES_H
@@ -31,7 +31,9 @@ typedef double real_Double_t;
 // define types specific to implementation (CUDA, OpenCL, MIC)
 // define macros to deal with complex numbers
 #if HAVE_CUBLAS
+    #ifndef CUBLAS_V2_H_
     #include <cublas.h>
+    #endif
     
     typedef cudaStream_t   magma_queue_t;
     typedef cudaEvent_t    magma_event_t;
@@ -247,6 +249,9 @@ typedef double real_Double_t;
 #define MAGMA_VERSION_MINOR 4
 #define MAGMA_VERSION_MICRO 0
 
+// stage is "svn", "beta#", "rc#" (release candidate), or blank ("") for final release
+#define MAGMA_VERSION_STAGE ""
+
 #define MagmaMaxGPUs 8
 
 
@@ -340,14 +345,31 @@ typedef double real_Double_t;
 #define MagmaRowwise       'R'  /* 402 */  /* larfb */
 
 #define Magma_CSR          411
-#define Magma_ELLPACK      412  
+#define Magma_ELLPACK      412
+#define Magma_ELLPACKT     413
+#define Magma_DENSE        414  
+#define Magma_BCSR         415
 
 #define Magma_CPU          421
 #define Magma_DEV          422
 
+#define Magma_CG           431
+#define Magma_GMRES        432
+#define Magma_BICGSTAB     433
+#define Magma_JACOBI       434
+#define Magma_GS           435
+
+#define Magma_DCOMPLEX     451
+#define Magma_FCOMPLEX     452
+#define Magma_DOUBLE       453
+#define Magma_FLOAT        454
+
+
 // remember to update min/max when adding constants!
 #define MagmaMinConst      101
-#define MagmaMaxConst      422
+#define MagmaMaxConst      435
+
+
 
 // these could be enums, but that isn't portable in C++,
 // e.g., if -fshort-enums is used
@@ -367,6 +389,9 @@ typedef char magma_storev_t;
 // properties of the magma_sparse_matrix
 typedef int magma_storage_t;
 typedef int magma_location_t;
+// properties of the magma_precond_parameters
+typedef int magma_precond_type;
+typedef int magma_precision;
 
 // ----------------------------------------
 // string constants for calling Fortran BLAS and LAPACK

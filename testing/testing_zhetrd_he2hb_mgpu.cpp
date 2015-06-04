@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -332,7 +332,7 @@ int main( int argc, char** argv)
            printf(" ================================================================================================================\n\n\n");
            
            printf(" ****************************************************************************************************************\n");
-           printf(" * Hello here are the norm  Infinite (max)=%e  norm one (sum)=%e   norm2(sqrt)=%e *\n",nrmI, nrm1, nrm2);
+           printf(" * Hello here are the norm  Infinite (max)=%8.2e  norm one (sum)=%8.2e   norm2(sqrt)=%8.2e *\n", nrmI, nrm1, nrm2);
            printf(" ****************************************************************************************************************\n\n");
 
         }

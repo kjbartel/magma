@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:34:00 2013
+       @generated s Wed Aug 14 12:18:07 2013
 
        @author Stan Tomov
        @author Mathieu Faverge
@@ -26,6 +26,7 @@
 #include "magma.h"
 #include "magma_lapack.h"
 #include "testings.h"
+
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing sorgqr
@@ -48,6 +49,11 @@ int main( int argc, char** argv )
     parse_opts( argc, argv, &opts );
     opts.lapack |= opts.check;  // check (-c) implies lapack (-l)
     
+    printf("Running version %d; available are (specified through --version num):\n",
+           (int) opts.version);
+    printf("1 - uses precomputed slarft matrices (default)\n");
+    printf("2 - recomputes the slarft matrices on the fly\n\n");
+
     printf("    m     n     k   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||R|| / ||A||\n");
     printf("=========================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ){
@@ -56,7 +62,7 @@ int main( int argc, char** argv )
             n = opts.nsize[i];
             k = opts.ksize[i];
             if ( m < n || n < k ) {
-                printf( "skipping m %d, n %d, k %d because m < n or n < k\n", m, n, k );
+                printf( "skipping m %d, n %d, k %d because m < n or n < k\n", (int) m, (int) n, (int) k );
                 continue;
             }
             
@@ -68,9 +74,9 @@ int main( int argc, char** argv )
             lwork  = (m + 2*n+nb)*nb;
             gflops = FLOPS_SORGQR( m, n, k ) / 1e9;
             
-            TESTING_HOSTALLOC( hA,     float, lda*n  );
+            TESTING_MALLOC(    hA,     float, lda*n  );
             TESTING_HOSTALLOC( h_work, float, lwork  );
-            TESTING_MALLOC(    hR,     float, lda*n  );
+            TESTING_HOSTALLOC( hR,     float, lda*n  );
             TESTING_MALLOC(    tau,    float, min_mn );
             TESTING_DEVALLOC(  dA,     float, ldda*n );
             TESTING_DEVALLOC(  dT,     float, ( 2*min_mn + ((n + 31)/32)*32 )*nb );
@@ -90,7 +96,10 @@ int main( int argc, char** argv )
             magma_sgetmatrix( m, n, dA, ldda, hR, lda );
             
             gpu_time = magma_wtime();
-            magma_sorgqr( m, n, k, hR, lda, tau, dT, nb, &info );
+            if (opts.version == 1)
+                magma_sorgqr( m, n, k, hR, lda, tau, dT, nb, &info );
+            else
+                magma_sorgqr2(m, n, k, hR, lda, tau, &info );
             gpu_time = magma_wtime() - gpu_time;
             gpu_perf = gflops / gpu_time;
             if (info != 0)
@@ -121,16 +130,18 @@ int main( int argc, char** argv )
                 error = lapackf77_slange("f", &m, &n, hR, &lda, work) / error;
                 
                 printf("%5d %5d %5d   %7.1f (%7.2f)   %7.1f (%7.2f)   %8.2e\n",
-                       m, n, k, cpu_perf, cpu_time, gpu_perf, gpu_time, error );
+                       (int) m, (int) n, (int) k,
+                       cpu_perf, cpu_time, gpu_perf, gpu_time, error );
             }
             else {
                 printf("%5d %5d %5d     ---   (  ---  )   %7.1f (%7.2f)     ---  \n",
-                       m, n, k, gpu_perf, gpu_time );
+                       (int) m, (int) n, (int) k,
+                       gpu_perf, gpu_time );
             }
             
-            TESTING_HOSTFREE( hA     );
+            TESTING_FREE(     hA     );
             TESTING_HOSTFREE( h_work );
-            TESTING_FREE(     hR     );
+            TESTING_HOSTFREE( hR     );
             TESTING_FREE(     tau    );
             TESTING_DEVFREE(  dA     );
             TESTING_DEVFREE(  dT     );

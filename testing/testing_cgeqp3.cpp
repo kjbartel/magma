@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:34:01 2013
+       @generated c Tue Aug 13 16:46:08 2013
 
 */
 
@@ -32,7 +32,7 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
     
-    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     magmaFloatComplex *h_A, *h_R, *tau, *h_work;
     magma_int_t *jpvt;
     magma_int_t M, N, n2, lda, lwork, j, info, min_mn, nb;

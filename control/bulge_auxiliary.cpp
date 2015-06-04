@@ -18,65 +18,38 @@
 
 
 extern "C" {
-
     /////////////////////////////////////////
-    // Parameters for 2-stage eigensolvers //
-    /////////////////////////////////////////
-    /////////////////////////////////////////
-
-    magma_int_t magma_sbulge_get_Vblksiz(magma_int_t n, magma_int_t nb)
+    magma_int_t magma_sbulge_get_lq2(magma_int_t n, magma_int_t threads)
     {
-        return min(nb,64);
-    }
-
-    magma_int_t magma_dbulge_get_Vblksiz(magma_int_t n, magma_int_t nb)
-    {
-        return min(nb,64);
-    }
-
-    magma_int_t magma_cbulge_get_Vblksiz(magma_int_t n, magma_int_t nb)
-    {
-        return min(nb,48);
-    }
-
-    magma_int_t magma_zbulge_get_Vblksiz(magma_int_t n, magma_int_t nb)
-    {
-        return min(nb,48);
-    }
-
-    /////////////////////////////////////////
-
-    magma_int_t magma_sbulge_get_lq2(magma_int_t n)
-    {
-        magma_int_t nb = magma_get_sbulge_nb(n);
-        magma_int_t Vblksiz = magma_zbulge_get_Vblksiz(n, nb);
+        magma_int_t nb = magma_get_sbulge_nb(n, threads);
+        magma_int_t Vblksiz = magma_sbulge_get_Vblksiz(n, nb, threads);
         magma_int_t ldv = nb + Vblksiz;
         magma_int_t ldt = Vblksiz;
         return magma_bulge_get_blkcnt(n, nb, Vblksiz) * Vblksiz * (ldt + ldv + 1);
     }
 
-    magma_int_t magma_dbulge_get_lq2(magma_int_t n)
+    magma_int_t magma_dbulge_get_lq2(magma_int_t n, magma_int_t threads)
     {
-        magma_int_t nb = magma_get_dbulge_nb(n);
-        magma_int_t Vblksiz = magma_dbulge_get_Vblksiz(n, nb);
+        magma_int_t nb = magma_get_dbulge_nb(n, threads);
+        magma_int_t Vblksiz = magma_dbulge_get_Vblksiz(n, nb, threads);
         magma_int_t ldv = nb + Vblksiz;
         magma_int_t ldt = Vblksiz;
         return magma_bulge_get_blkcnt(n, nb, Vblksiz) * Vblksiz * (ldt + ldv + 1);
     }
 
-    magma_int_t magma_cbulge_get_lq2(magma_int_t n)
+    magma_int_t magma_cbulge_get_lq2(magma_int_t n, magma_int_t threads)
     {
-        magma_int_t nb = magma_get_cbulge_nb(n);
-        magma_int_t Vblksiz = magma_dbulge_get_Vblksiz(n, nb);
+        magma_int_t nb = magma_get_cbulge_nb(n, threads);
+        magma_int_t Vblksiz = magma_cbulge_get_Vblksiz(n, nb, threads);
         magma_int_t ldv = nb + Vblksiz;
         magma_int_t ldt = Vblksiz;
         return magma_bulge_get_blkcnt(n, nb, Vblksiz) * Vblksiz * (ldt + ldv + 1);
     }
 
-    magma_int_t magma_zbulge_get_lq2(magma_int_t n)
+    magma_int_t magma_zbulge_get_lq2(magma_int_t n, magma_int_t threads)
     {
-        magma_int_t nb = magma_get_zbulge_nb(n);
-        magma_int_t Vblksiz = magma_dbulge_get_Vblksiz(n, nb);
+        magma_int_t nb = magma_get_zbulge_nb(n, threads);
+        magma_int_t Vblksiz = magma_zbulge_get_Vblksiz(n, nb, threads);
         magma_int_t ldv = nb + Vblksiz;
         magma_int_t ldt = Vblksiz;
         return magma_bulge_get_blkcnt(n, nb, Vblksiz) * Vblksiz * (ldt + ldv + 1);
@@ -107,7 +80,7 @@ extern "C" {
 
     void magma_bulge_findpos113(magma_int_t n, magma_int_t nb, magma_int_t Vblksiz, magma_int_t sweep, magma_int_t st, magma_int_t *myblkid)
     {
-        magma_int_t prevGblkid, nbprevGblk, mastersweep;
+        magma_int_t prevGblkid, mastersweep;
         magma_int_t locblknb   = 0;
         magma_int_t prevblkcnt = 0;
         magma_int_t myblknb    = 0;

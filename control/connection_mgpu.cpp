@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
        @author Azzam Haidar
@@ -38,7 +38,7 @@ magma_int_t magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][Magma
         magma_setdevice( d );
         cudaGetDeviceProperties( &prop, d );
         if ( ! prop.unifiedAddressing ) {
-            printf( "device %d doesn't support unified addressing\n", d );
+            printf( "device %d doesn't support unified addressing\n", (int) d );
             return -1;
         }
         // add this device to the list if not added yet.
@@ -58,7 +58,7 @@ magma_int_t magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][Magma
             magma_setdevice( d2 );
             cudaGetDeviceProperties( &prop, d2 );
             if ( ! prop.unifiedAddressing ) {
-                printf( "device %d doesn't support unified addressing\n", d2 );
+                printf( "device %d doesn't support unified addressing\n", (int) d2 );
                 return -1;
             }
 
@@ -73,7 +73,7 @@ magma_int_t magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][Magma
                 err   = cudaDeviceEnablePeerAccess( d2, 0 );
                 //printf("enabling devide %d ==> %d  error %d\n",d,d2,err);
                 if ( err != cudaSuccess && err != cudaErrorPeerAccessAlreadyEnabled ) {
-                    printf( "device %d cudaDeviceEnablePeerAccess error %d\n", d2, err );
+                    printf( "device %d cudaDeviceEnablePeerAccess error %d\n", (int) d2, (int) err );
                     return -2;
                 }
 
@@ -90,7 +90,7 @@ magma_int_t magma_buildconnection_mgpu(  magma_int_t gnode[MagmaMaxGPUs+2][Magma
                         deviceid[d2]=-1;
                     }
                 }else{
-                    printf( "device %d cudaDeviceEnablePeerAccess error %d\n", d, err );
+                    printf( "device %d cudaDeviceEnablePeerAccess error %d\n", (int) d, (int) err );
                     return -2;
                 }
             }

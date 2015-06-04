@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:39 2013
+       @generated c Tue Aug 13 16:44:42 2013
 
 */
 #include "common_magma.h"
@@ -16,11 +16,11 @@ magma_int_t magma_cungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
                  magmaFloatComplex *tau, magmaFloatComplex *dT,
                  magma_int_t nb, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -79,10 +79,10 @@ magma_int_t magma_cungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
     #define t_ref(a_1)      (dT+(a_1)*nb)
 
     magma_int_t  i__1, i__2, i__3;
-    magma_int_t lwork;
-    magma_int_t i, ib, ki, kk, iinfo;
-    magma_int_t lddwork = min(m, n);
-    magmaFloatComplex *work, *panel;
+    //magma_int_t lwork;
+    magma_int_t i, ib, ki, kk;  //, iinfo;
+    //magma_int_t lddwork = min(m, n);
+    //magmaFloatComplex *work, *panel;
     magmaFloatComplex *dwork;
     //magma_queue_t stream[2];
     magma_int_t ldt=nb; // need to be an input parameter
@@ -112,7 +112,8 @@ magma_int_t magma_cungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
 
     if ( (nb > 1) && (nb < k) ) {
         /*  Use blocked code after the last block.
-            The first kk columns are handled by the block method. */
+            The first kk columns are handled by the block method.
+            ki is start of 2nd-to-last block. */
         ki = (k - nb - 1) / nb * nb;
         kk = min(k, ki + nb);
 
@@ -122,6 +123,7 @@ magma_int_t magma_cungqr_2stage_gpu(magma_int_t m, magma_int_t n, magma_int_t k,
         magmablas_claset_identity(m-kk, n-kk, da_ref(kk,kk), ldda);
     }
     else {
+        ki = 0;
         kk = 0;
     }
     

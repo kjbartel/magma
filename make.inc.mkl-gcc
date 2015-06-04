@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 # GPU_TARGET specifies for which GPU you want to compile MAGMA:
@@ -22,21 +22,21 @@ ARCH      = ar
 ARCHFLAGS = cr
 RANLIB    = ranlib
 
-OPTS      = -O3 -DADD_ -fopenmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY
-F77OPTS   = -O3 -DADD_
-FOPTS     = -O3 -DADD_ -x f95-cpp-input
+OPTS      = -O3 -DADD_ -Wall -fno-strict-aliasing -fopenmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY
+F77OPTS   = -O3 -DADD_ -Wall
+FOPTS     = -O3 -DADD_ -Wall -x f95-cpp-input
 NVOPTS    = -O3 -DADD_ -Xcompiler -fno-strict-aliasing
 LDOPTS    = -fopenmp
 
 # see MKL Link Advisor at http://software.intel.com/sites/products/mkl/
 # gcc with MKL 10.3, sequential version
-#LIB       = -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lcublas -lcudart -lstdc++ -lm
+#LIB       = -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lcublas -lcudart -lstdc++ -lm -lgfortran
 
 # gcc with MKL 10.3, GNU threads
-#LIB       = -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm
+#LIB       = -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm -lgfortran
 
 # gcc with MKL 10.3, Intel threads
-LIB       = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm -liomp5
+LIB       = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lcublas -lcudart -lstdc++ -lm -liomp5 -lgfortran
 
 # define library directories here or in your environment
 # for MKL run, e.g.: source /opt/intel/composerxe/mkl/bin/mklvars.sh intel64
@@ -45,8 +45,8 @@ LIB       = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lcublas -l
 
 # check for directories and give user hint how to set them
 ifeq ($(MKLROOT),)
-    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.sh|')
-    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.csh|')
+    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.sh|')
+    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.csh|')
     ifeq ($(vars_sh),)
         vars_sh  := /opt/intel/composerxe/mkl/bin/mklvars.sh
         vars_csh := /opt/intel/composerxe/mkl/bin/mklvars.csh
@@ -65,4 +65,4 @@ endif
 LIBDIR    = -L$(MKLROOT)/lib/intel64 \
             -L$(CUDADIR)/lib64
 
-INC       = -I$(CUDADIR)/include
+INC       = -I$(CUDADIR)/include -I$(MKLROOT)/include

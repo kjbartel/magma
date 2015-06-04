@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:31:28 2013
+       @generated s Tue Aug 13 16:43:27 2013
 */
 
 #ifndef MAGMABLAS_S_H
@@ -135,16 +135,16 @@ magma_int_t magma_shtodhe(
 magma_int_t magma_shtodpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-    float  *h_A,  magma_int_t lda,
-    float **d_lA, magma_int_t ldda,
+    float  *h_A,   magma_int_t lda,
+    float *d_lA[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 // in src/spotrf3_mgpu.cpp
 magma_int_t magma_sdtohpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magma_int_t NB,
-    float  *a,    magma_int_t lda,
-    float **work, magma_int_t ldda,
+    float  *a,     magma_int_t lda,
+    float *work[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 magma_int_t magmablas_ssymv_mgpu_offset(
@@ -615,8 +615,7 @@ void magmablas_strsm_work(
     float alpha,
     magmaFloat_const_ptr dA, magma_int_t ldda,
     magmaFloat_ptr       db, magma_int_t lddb,
-    magmaFloat_ptr d_dinvA,
-    magmaFloat_ptr dx );
+    int flag, magmaFloat_ptr d_dinvA, magmaFloat_ptr dx );
 #endif
 
   /*

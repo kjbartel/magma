@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Mark Gates
-       @generated s Fri Jun 28 19:31:32 2013
+       @generated s Tue Aug 13 16:43:31 2013
 
 */
 #include "common_magma.h"

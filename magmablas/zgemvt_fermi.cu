@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 */
 #include "common_magma.h"
 
@@ -57,11 +57,11 @@ zgemvtn_kernel2_fermi(int n, int m, int n1, magmaDoubleComplex alpha,  magmaDoub
 extern "C" void
 magmablas_zgemvtn_fermi(int n, int m, magmaDoubleComplex alpha, magmaDoubleComplex *A, int lda, magmaDoubleComplex *x, int incx, magmaDoubleComplex *y)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

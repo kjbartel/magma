@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:23 2013
+       @generated s Tue Aug 13 16:44:24 2013
 
 */
 #include "common_magma.h"
@@ -22,11 +22,11 @@ magma_slaqps_gpu(magma_int_t m, magma_int_t n, magma_int_t offset,
              float *auxv,
              float *F,  magma_int_t ldf)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -103,13 +103,17 @@ magma_slaqps_gpu(magma_int_t m, magma_int_t n, magma_int_t offset,
     magma_int_t ione = 1;
     
     magma_int_t i__1, i__2;
-    float d__1;
+    //float d__1;
     float z__1;
     
-    magma_int_t j, k, rk;
-    float *Aks, Akk, tauk;
+    //magma_int_t j;
+    magma_int_t k, rk;
+    //float Akk;
+    float *Aks;
+    float tauk;
     magma_int_t pvt;
-    float temp, temp2, tol3z;
+    //float temp, temp2;
+    float tol3z;
     magma_int_t itemp;
 
     float lsticc, *lsticcs;

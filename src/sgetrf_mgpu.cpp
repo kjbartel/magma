@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:11 2013
+       @generated s Wed Aug 14 12:16:04 2013
 
 */
 #include <math.h>
@@ -18,11 +18,11 @@ magma_sgetrf_mgpu(magma_int_t num_gpus,
                  float **d_lA, magma_int_t ldda,
                  magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -73,13 +73,9 @@ magma_sgetrf_mgpu(magma_int_t num_gpus,
 
 #define inAT(id,i,j) (d_lAT[(id)] + (i)*nb*lddat + (j)*nb)
 
-    float c_one     = MAGMA_S_ONE;
-    float c_neg_one = MAGMA_S_NEG_ONE;
-
-    magma_int_t iinfo, nb, n_local[MagmaMaxGPUs];
+    magma_int_t nb, n_local[MagmaMaxGPUs];
     magma_int_t maxm, mindim;
-    magma_int_t i, j, d, rows, cols, s, lddat, lddwork;
-    magma_int_t id, i_local, i_local2, nb0, nb1;
+    magma_int_t i, j, d, lddat, lddwork;
     float *d_lAT[MagmaMaxGPUs];
     float *d_panel[MagmaMaxGPUs], *work;
     magma_queue_t streaml[MagmaMaxGPUs][2];
@@ -143,7 +139,7 @@ magma_sgetrf_mgpu(magma_int_t num_gpus,
                n_local[i] += n%nb;
             
             /* workspaces */
-            if (MAGMA_SUCCESS != magma_smalloc( &d_panel[i], 3*nb*maxm )) {
+            if (MAGMA_SUCCESS != magma_smalloc( &d_panel[i], (3+num_gpus)*nb*maxm )) {
                 for( j=0; j<=i; j++ ) {
                     magma_setdevice(j);
                 }

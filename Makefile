@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = .
@@ -51,7 +51,7 @@ clean:
 	( cd testing/lin    && $(MAKE) clean )
 	( cd magmablas      && $(MAKE) clean ) 
 #	( cd quark          && $(MAKE) clean )
-	-rm -f $(LIBMAGMA)
+	-rm -f $(LIBMAGMA) $(LIBMAGMA_SO)
 
 cleanall:
 	( cd control        && $(MAKE) cleanall )
@@ -79,6 +79,7 @@ install: lib dir
 #       MAGMA
 	cp $(MAGMA_DIR)/include/*.h  $(prefix)/include
 	cp $(LIBMAGMA)               $(prefix)/lib
+	-cp $(LIBMAGMA_SO)           $(prefix)/lib
 #       QUARK
 #	cp $(QUARKDIR)/include/quark.h             $(prefix)/include
 #	cp $(QUARKDIR)/include/quark_unpack_args.h $(prefix)/include
@@ -86,9 +87,11 @@ install: lib dir
 #	cp $(QUARKDIR)/include/icl_list.h          $(prefix)/include
 #	cp $(QUARKDIR)/lib/libquark.a              $(prefix)/lib
 #       pkgconfig
-	cat $(MAGMA_DIR)/lib/pkgconfig/magma.pc | \
-	    sed -e s:\__PREFIX:"$(prefix)":     | \
-	    sed -e s:\__LIBEXT:"$(LIBEXT)":       \
+	cat $(MAGMA_DIR)/lib/pkgconfig/magma.pc.in | \
+	    sed -e s:@INSTALL_PREFIX@:"$(prefix)": | \
+	    sed -e s:@INCLUDES@:"$(INC)":     | \
+	    sed -e s:@LIBEXT@:"$(LIBEXT)":               | \
+	    sed -e s:@MAGMA_REQUIRED@::              \
 	    > $(prefix)/lib/pkgconfig/magma.pc
 
 # ========================================

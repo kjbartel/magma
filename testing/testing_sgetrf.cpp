@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:55 2013
+       @generated s Wed Aug 14 12:18:05 2013
        @author Mark Gates
 */
 // includes, system
@@ -154,16 +154,19 @@ int main( int argc, char** argv)
 {
     TESTING_INIT();
 
-    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t   gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     float          error;
     float *h_A;
     magma_int_t     *ipiv;
     magma_int_t     M, N, n2, lda, ldda, info, min_mn;
+    magma_int_t     status = 0;
     
     magma_opts opts;
     parse_opts( argc, argv, &opts );
     
-    printf("ngpu %d\n", opts.ngpu );
+    float tol = opts.tolerance * lapackf77_slamch("E");
+
+    printf("ngpu %d\n", (int) opts.ngpu );
     if ( opts.check == 2 ) {
         printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   |Ax-b|/(N*|A|*|x|)\n");
     }
@@ -225,11 +228,13 @@ int main( int argc, char** argv)
             }
             if ( opts.check == 2 ) {
                 error = get_residual( M, N, h_A, lda, ipiv );
-                printf("   %8.2e\n", error );
+                printf("   %8.2e%s\n", error, (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
             }
             else if ( opts.check ) {
                 error = get_LU_error( M, N, h_A, lda, ipiv );
-                printf("   %8.2e\n", error );
+                printf("   %8.2e%s\n", error, (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
             }
             else {
                 printf("     ---   \n");
@@ -244,5 +249,5 @@ int main( int argc, char** argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

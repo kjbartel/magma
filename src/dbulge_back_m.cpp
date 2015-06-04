@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Azzam Haidar
        @author Stan Tomov
        @author Raffaele Solca
        
-       @generated d Fri Jun 28 19:32:40 2013
+       @generated d Tue Aug 13 16:44:44 2013
 
  */
 #include "common_magma.h"
@@ -17,7 +17,7 @@
 #include "magma_dbulge.h"
 #include <cblas.h>
 
-#ifdef SETAFFINITY
+#ifdef MAGMA_SETAFFINITY
 #include "affinity.h"
 #endif
 
@@ -126,21 +126,26 @@ magma_dbulge_back_m(magma_int_t nrgpu, magma_int_t threads, char uplo,
     double f= 1.;
     magma_int_t n_gpu = ne;
 
-#if defined(PRECISION_s) || defined(PRECISION_d)
-    double gpu_cpu_perf = 32; //gpu over cpu performance
-#else
-    double gpu_cpu_perf = 32;  // gpu over cpu performance
-#endif
+//#if defined(PRECISION_s) || defined(PRECISION_d)
+//    double gpu_cpu_perf = 32; //gpu over cpu performance
+//#else
+//    double gpu_cpu_perf = 32;  // gpu over cpu performance
+//#endif
 
     double perf_temp= .85;
     double perf_temp2= perf_temp;
     for (magma_int_t itmp=1; itmp<nrgpu; ++itmp)
         perf_temp2*=perf_temp;
-
+    magma_int_t gpu_cpu_perf = magma_get_dbulge_gcperf();
     if(threads>1){
-        f = 1. / (1. + (double)(threads-1)/ (gpu_cpu_perf*(1.-perf_temp2)/(1.-perf_temp)));
+        f = 1. / (1. + (double)(threads-1)/ ((double)gpu_cpu_perf*(1.-perf_temp2)/(1.-perf_temp)));
         n_gpu = (magma_int_t)(f*ne);
     }
+
+
+
+
+
 
     /****************************************************
      *  apply V2 from left to the eigenvectors Z. dZ = (I-V2*T2*V2')*Z
@@ -236,11 +241,17 @@ static void *magma_dapplyQ_m_parallel_section(void *arg)
 
     magma_int_t info;
 
+    #ifdef ENABLE_TIMER
     real_Double_t timeQcpu=0.0, timeQgpu=0.0;
+    #endif
 
     magma_int_t n_cpu = ne - n_gpu;
 
-#ifdef SETAFFINITY
+    // with MKL and when using omp_set_num_threads instead of mkl_set_num_threads
+    // it need that all threads setting it to 1.
+    magma_setlapack_numthreads(1);
+
+#ifdef MAGMA_SETAFFINITY
     //#define PRINTAFFINITY
 #ifdef PRINTAFFINITY
     affinity_set print_set;
@@ -309,7 +320,7 @@ static void *magma_dapplyQ_m_parallel_section(void *arg)
 
     } // END if my_core_id
 
-#ifdef SETAFFINITY
+#ifdef MAGMA_SETAFFINITY
     // unbind threads
     if (check == 0){
         check2 = original_set.set_affinity();
@@ -424,7 +435,7 @@ static void magma_dtile_bulge_applyQ(magma_int_t core_id, char side, magma_int_t
                         lapackf77_dlarfb( "L", "N", "F", "C", &vlen, &ib_loc, &vnb, V(vpos), &ldv, T(tpos), &ldt, E(fst,i*nb_loc), &lde, work, &ib_loc);
                     }
                     if(INFO!=0)
-                        printf("ERROR DORMQR INFO %d \n",INFO);
+                        printf("ERROR DORMQR INFO %d \n", (int) INFO);
                 }
             }
         }else if (side=='R'){

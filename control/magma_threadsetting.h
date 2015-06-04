@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Azzam Haidar
 */
 
-#ifndef _MAGMA_THREADSETTING_H_
-#define _MAGMA_THREADSETTING_H_
+#ifndef MAGMA_THREADSETTING_H
+#define MAGMA_THREADSETTING_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ magma_int_t magma_get_numthreads();
 }
 #endif
 
-#endif
+#endif  // MAGMA_THREADSETTING_H

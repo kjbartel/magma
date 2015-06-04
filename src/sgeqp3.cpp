@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
   
-       @generated s Fri Jun 28 19:32:27 2013
+       @generated s Wed Aug 14 12:16:13 2013
 
 */
 
@@ -24,11 +24,11 @@ magma_sgeqp3( magma_int_t m, magma_int_t n,
 #endif
               magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -121,12 +121,12 @@ magma_sgeqp3( magma_int_t m, magma_int_t n,
         *info = -4;
     }
     
+    nb = magma_get_sgeqp3_nb(min(m, n));
     if (*info == 0) {
         minmn = min(m,n);
         if (minmn == 0) {
             lwkopt = 1;
         } else {
-            nb = magma_get_sgeqp3_nb(min(m, n));
             lwkopt = (n + 1)*nb;
 #if defined(PRECISION_d) || defined(PRECISION_s)
             lwkopt += 2*n;

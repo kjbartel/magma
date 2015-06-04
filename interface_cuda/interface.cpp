@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
  
        @author Mark Gates
 */
@@ -40,16 +40,15 @@ struct magma_device* g_magma_devices = NULL;
 extern "C"
 magma_err_t magma_init()
 {
-    if ( g_magma_devices != NULL ) {
-        free( g_magma_devices );
-    }
-    cudaGetDeviceCount( &g_magma_devices_cnt );
-    g_magma_devices = (struct magma_device*) malloc( g_magma_devices_cnt * sizeof(struct magma_device) );
-    for( int i = 0; i < g_magma_devices_cnt; ++i ) {
-        cudaDeviceProp prop;
-        cudaGetDeviceProperties( &prop, i );
-        g_magma_devices[i].memory = prop.totalGlobalMem;
-        g_magma_devices[i].cuda_arch  = prop.major*100 + prop.minor*10;
+    if ( g_magma_devices == NULL ) {
+        cudaGetDeviceCount( &g_magma_devices_cnt );
+        g_magma_devices = (struct magma_device*) malloc( g_magma_devices_cnt * sizeof(struct magma_device) );
+        for( int i = 0; i < g_magma_devices_cnt; ++i ) {
+            cudaDeviceProp prop;
+            cudaGetDeviceProperties( &prop, i );
+            g_magma_devices[i].memory = prop.totalGlobalMem;
+            g_magma_devices[i].cuda_arch  = prop.major*100 + prop.minor*10;
+        }
     }
     return MAGMA_SUCCESS;
 }
@@ -60,6 +59,7 @@ extern "C"
 magma_err_t magma_finalize()
 {
     free( g_magma_devices );
+    g_magma_devices = NULL;
     return MAGMA_SUCCESS;
 }
 
@@ -70,7 +70,8 @@ void magma_print_devices()
 {
     int major, minor, micro;
     magma_version( &major, &minor, &micro );
-    printf( "MAGMA %d.%d.%d\n", major, minor, micro );
+    printf( "MAGMA %d.%d.%d %s, capability %.1f\n",
+            major, minor, micro, MAGMA_VERSION_STAGE, GPUSHMEM/100. );
     
     int ndevices;
     cudaGetDeviceCount( &ndevices );
@@ -84,6 +85,9 @@ void magma_print_devices()
                 prop.totalGlobalMem / (1024.*1024.),
                 prop.major,
                 prop.minor );
+        if ( prop.major*100 + prop.minor*10 < GPUSHMEM ) {
+            printf( "Warning: MAGMA compiled for higher capability; some routines will not run correctly!\n" );
+        }
     }
 }
 

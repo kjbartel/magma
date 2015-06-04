@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
        @author Mark Gates
@@ -21,11 +21,11 @@ magma_zlahr2_m(
     magmaDoubleComplex *Y, magma_int_t ldy,
     struct zgehrd_data* data )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -155,7 +155,7 @@ magma_zlahr2_m(
     magmaDoubleComplex scale;
 
     magma_int_t i;
-    magmaDoubleComplex ei;
+    magmaDoubleComplex ei = MAGMA_Z_ZERO;
 
     magma_int_t info_data = 0;
     magma_int_t *info = &info_data;

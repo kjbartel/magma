@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -144,14 +144,18 @@ ALLOBJ := $(ALLOBJ:.cpp=.o)
 
 .PHONY: all clean cleanall
 
-all: $(LIBMAGMA) 
+all: $(LIBMAGMA) stamp
 
-$(LIBMAGMA): $(ALLHDR) $(ALLOBJ)
+$(LIBMAGMA): $(ALLHDR) $(ALLOBJ) stamp
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
 
+# this forces LIBMAGMA to be archived
+stamp: $(ALLHDR) $(ALLOBJ)
+	touch $@
+
 clean:
-	rm -f *.cu_o *.o *~ *.linkinfo
+	rm -f *.cu_o *.o *~ *.linkinfo stamp
 
 cleanall: clean
 	rm -f $(LIBMAGMA)

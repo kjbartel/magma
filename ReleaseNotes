@@ -19,12 +19,14 @@ Included are routines for the following algorithms:
 Most routines have all four precisions:
 single (s), double (d), single-complex (c), double-complex (z).
 
- 1.4.0 -
+ 1.4.0 - final:  Aug  14, 2013
        - beta 2: June 28, 2013
        - beta 1: June 19, 2013
     * Use magma_init() and magma_finalize() to initialize and cleanup MAGMA.
     * Merge libmagmablas into libmagma to eliminate circular dependencies.
       Link with just -lmagma now.
+    * User can now #include <cublas_v2.h> before #include <magma.h>.
+      See testing_z_cublas_v2.cpp for an example.
     * Can compile as shared library; see make.inc.mkl-shared and 'make shared'.
     * Fix required workspace size in gels_gpu, gels3_gpu, geqrs_gpu, geqrs3_gpu.
     * Fix required workspace size in [zcsd]geqrf.

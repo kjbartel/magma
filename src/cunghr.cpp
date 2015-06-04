@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:48 2013
+       @generated c Tue Aug 13 16:44:52 2013
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_cunghr(magma_int_t n, magma_int_t ilo, magma_int_t ihi,
              magmaFloatComplex *dT, magma_int_t nb,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

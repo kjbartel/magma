@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Azzam Haidar
        @author Stan Tomov
 
-       @generated d Fri Jun 28 19:32:38 2013
+       @generated d Tue Aug 13 16:44:41 2013
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_dsytrd_sy2sb( char uplo, magma_int_t n, magma_int_t nb,
                     double *dT,
                     magma_int_t threads, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -175,9 +175,9 @@ magma_dsytrd_sy2sb( char uplo, magma_int_t n, magma_int_t nb,
         *info = -9;
     }
 
+    /* Determine the block size. */
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        lwkopt = n * nb;
         MAGMA_D_SET2REAL( work[0], lwkopt );
     }
 

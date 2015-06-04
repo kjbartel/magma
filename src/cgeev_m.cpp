@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:48 2013
+       @generated c Tue Aug 13 16:44:52 2013
        @author Stan Tomov
        @author Mark Gates
 */
@@ -33,11 +33,11 @@ magma_cgeev_m(
     magmaFloatComplex *work, magma_int_t lwork,
     float *rwork, magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -141,6 +141,7 @@ magma_cgeev_m(
     char jobvl_[2] = {jobvl, 0};
     char jobvr_[2] = {jobvr, 0};
 
+    irwork = 0;
     *info = 0;
     lquery = lwork == -1;
     wantvl = lapackf77_lsame( jobvl_, "V" );
@@ -160,8 +161,8 @@ magma_cgeev_m(
     }
 
     /* Compute workspace */
+    nb = magma_get_cgehrd_nb( n );
     if (*info == 0) {
-        nb = magma_get_cgehrd_nb( n );
         minwrk = (1+nb)*n;
         work[0] = MAGMA_C_MAKE( (float) minwrk, 0. );
 

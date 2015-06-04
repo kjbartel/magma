@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
        @author Raffaele Solca
-       @generated s Fri Jun 28 19:32:35 2013
+       @generated s Tue Aug 13 16:44:38 2013
 */
 
 #ifdef _OPENMP
@@ -23,8 +23,8 @@
 #define dQ(id, ii) (dwork[id] + n2*n2_loc + 2  * (n2*nb) +(ii)* (n2_loc*nb))
 
 extern "C"{
-    int magma_get_slaex3_m_k()  { return  512; }
-    int magma_get_slaex3_m_nb() { return 1024; }
+    magma_int_t magma_get_slaex3_m_k()  { return  512; }
+    magma_int_t magma_get_slaex3_m_nb() { return 1024; }
     
     // defined in slaex3.cpp
     void magma_svrange(magma_int_t k, float *d, magma_int_t *il, magma_int_t *iu, float vl, float vu);

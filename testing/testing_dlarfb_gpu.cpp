@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Mark Gates
-       @generated d Fri Jun 28 19:33:57 2013
+       @generated d Tue Aug 13 16:46:04 2013
 */
 // includes, system
 #include <stdlib.h>
@@ -55,7 +55,7 @@ int main( int argc, char** argv )
         N = opts.nsize[i];
         K = opts.ksize[i];
         if ( M < K || N < K || K <= 0 ) {
-            printf( "skipping M %d, N %d, K %d; requires M >= K, N >= K, K >= 0.\n", M, N, K );
+            printf( "skipping M %d, N %d, K %d; requires M >= K, N >= K, K >= 0.\n", (int) M, (int) N, (int) K );
             continue;
         }
         for( int istor = 0; istor < 2; ++istor ) {

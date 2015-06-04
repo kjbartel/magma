@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal d -> d
        
@@ -38,13 +38,13 @@ void diag_dtrtri (magma_int_t M, char uplo, char diag, const double *A, double *
 extern "C"
 void magmablas_dtrsm_work( char side, char uplo, char tran, char diag, magma_int_t M, magma_int_t N, 
                            double alpha, const double* A, magma_int_t lda, double* b, magma_int_t ldb,
-                           double *d_dinvA, double *d_x )
+                           int flag, double *d_dinvA, double *d_x )
 {
-        /*  -- MAGMA (version 1.4.0-beta2) --
+        /*  -- MAGMA (version 1.4.0) --
                 Univ. of Tennessee, Knoxville
                 Univ. of California, Berkeley
                 Univ. of Colorado, Denver
-                June 2013
+                August 2013
 
                 Purpose
                 =======
@@ -176,9 +176,9 @@ void magmablas_dtrsm_work( char side, char uplo, char tran, char diag, magma_int
         if (side == 'l' || side == 'L')
         {
                 /* invert the diagonals */
-                //cudaMemset(d_x,     0, N*M*sizeof(double));
-                //cudaMemset(d_dinvA, 0, NB*((M/NB)+(M%NB!=0))*NB*sizeof(double));
-                diag_dtrtri (M, uplo, diag, A, d_dinvA, lda);
+                if (flag == 1) {
+                    diag_dtrtri (M, uplo, diag, A, d_dinvA, lda);
+                }
 
                 if (tran == 'N' || tran == 'n')
                 /* the non-transpose case */
@@ -305,9 +305,9 @@ void magmablas_dtrsm_work( char side, char uplo, char tran, char diag, magma_int
         {        // side=R
 
                 /* invert the diagonals */
-                //cudaMemset(d_x, 0, N*M*sizeof(double));
-                //cudaMemset (d_dinvA, 0, NB*((N/NB)+(N%NB!=0))*NB*sizeof(double));
-                diag_dtrtri (N, uplo, diag, A, d_dinvA, lda);
+                if (flag == 1) {
+                    diag_dtrtri (N, uplo, diag, A, d_dinvA, lda);
+                }
 
                 if (tran == 'N' || tran == 'n')
                 /* the non-transpose case */
@@ -315,6 +315,7 @@ void magmablas_dtrsm_work( char side, char uplo, char tran, char diag, magma_int
                         if (uplo == 'L' || uplo == 'l')
                         {
                         /* the lower case */
+
                                 /* handle the first block seperately with alpha */
                                 int NN = (N%NB==0)?NB:(N%NB);
                                 i=N-NN;
@@ -374,10 +375,10 @@ void magmablas_dtrsm_work( char side, char uplo, char tran, char diag, magma_int
                         if (uplo == 'L' || uplo == 'l')
                         {
                         /* the lower case */
+
                                 /* handle the first block seperately with alpha */
                                 int NN = min(NB, N); 
                                 cublasDgemm ('N', 'T', M, NN, NN, alpha, b, ldb, d_dinvA, NB, 0, d_x, M);  
-
                                 if (NB>=N)
                                 {
                                         b_copy();

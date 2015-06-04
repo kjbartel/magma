@@ -1,12 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:11 2013
+       @generated s Wed Aug 14 12:16:40 2013
        
+       @author Stan Tomov
        @author Mathieu Faverge
        @author Ichitaro Yamazaki
        @author Mark Gates
@@ -15,6 +16,9 @@
 
 // MAX_PIVOTS is maximum number of pivots to apply in each kernel launch
 // NTHREADS is number of threads in a block
+// 64 and 256 are better on Kepler; 
+//#define MAX_PIVOTS 64
+//#define NTHREADS   256
 #define MAX_PIVOTS 32
 #define NTHREADS   64
 

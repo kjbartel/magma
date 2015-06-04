@@ -15,9 +15,9 @@
 typedef size_t devptr_t;
 
 #ifdef PGI_FORTRAN
-#define DEVPTR(__ptr) ((magmaDoubleComplex*)(__ptr))
+#define DEVPTR(ptr_) ((magmaDoubleComplex*)(ptr_))
 #else
-#define DEVPTR(__ptr) ((magmaDoubleComplex*)(uintptr_t)(*(__ptr)))
+#define DEVPTR(ptr_) ((magmaDoubleComplex*)(uintptr_t)(*(ptr_)))
 #endif
 
 #ifndef MAGMA_FORTRAN_NAME
@@ -47,11 +47,11 @@ extern "C" {
 #endif
 
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> s d c
 */
@@ -1392,7 +1392,7 @@ void magmaf_zhetrd2_gpu(
     magmaDoubleComplex *tau,
     magmaDoubleComplex *wa, magma_int_t *ldwa,
     magmaDoubleComplex *work, magma_int_t *lwork,
-    devptr_t *dwork, magma_int_t *ldwork,
+    magmaDoubleComplex *dwork, magma_int_t *ldwork,
     magma_int_t *info )
 {
     magma_zhetrd2_gpu(
@@ -1403,7 +1403,7 @@ void magmaf_zhetrd2_gpu(
         tau,
         wa, *ldwa,
         work, *lwork,
-        DEVPTR(dwork), *ldwork,
+        dwork, *ldwork,
         info );
 }
 

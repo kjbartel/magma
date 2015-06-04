@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:31:29 2013
+       @generated s Tue Aug 13 16:43:28 2013
 */
 
 #ifndef MAGMA_SLAPACK_H
@@ -71,6 +71,8 @@ extern "C" {
 #define lapackf77_ssbtrd   FORTRAN_NAME( ssbtrd, SSBTRD )
 #define lapackf77_ssyev    FORTRAN_NAME( ssyev,  SSYEV  )
 #define lapackf77_ssyevd   FORTRAN_NAME( ssyevd, SSYEVD )
+#define lapackf77_ssyevr   FORTRAN_NAME( ssyevr, SSYEVR )
+#define lapackf77_ssyevx   FORTRAN_NAME( ssyevx, SSYEVX )
 #define lapackf77_ssygs2   FORTRAN_NAME( ssygs2, SSYGS2 )
 #define lapackf77_ssygst   FORTRAN_NAME( ssygst, SSYGST )
 #define lapackf77_ssygvd   FORTRAN_NAME( ssygvd, SSYGVD )
@@ -453,6 +455,26 @@ void   lapackf77_ssyevd( const char *jobz, const char *uplo,
                          DWORKFORZ_AND_LD
                          magma_int_t *iwork, const magma_int_t *liwork,
                          magma_int_t *info );
+
+void   lapackf77_ssyevr( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         float *A, const magma_int_t *lda,
+                         float *vl, float *vu, 
+                         magma_int_t *il, magma_int_t *iu, float *abstol, 
+                         magma_int_t *m, float *w, float *z__, 
+                         magma_int_t *ldz, magma_int_t *isuppz, 
+                         float *work, magma_int_t *lwork, 
+                         float *rwork, magma_int_t *lrwork, 
+                         magma_int_t *iwork, magma_int_t *liwork, magma_int_t *info);
+
+void   lapackf77_ssyevx( const char *jobz, const char *range, const char *uplo,
+                         const magma_int_t *n,
+                         float *A, const magma_int_t *lda,
+                         float *vl, float *vu,
+                         magma_int_t *il, magma_int_t *iu, float *abstol,
+                         magma_int_t *m, float *w, float *z__,
+                         magma_int_t *ldz, float *work, magma_int_t *lwork,
+                         float *rwork, magma_int_t *iwork, magma_int_t *ifail, magma_int_t *info);
 
 void   lapackf77_ssygs2( const magma_int_t *itype, const char *uplo,
                          const magma_int_t *n,

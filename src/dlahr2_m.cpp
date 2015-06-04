@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:32:49 2013
+       @generated d Tue Aug 13 19:14:11 2013
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_dlahr2_m(
     double *Y, magma_int_t ldy,
     struct dgehrd_data* data )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -155,7 +155,7 @@ magma_dlahr2_m(
     double scale;
 
     magma_int_t i;
-    double ei;
+    double ei = MAGMA_D_ZERO;
 
     magma_int_t info_data = 0;
     magma_int_t *info = &info_data;

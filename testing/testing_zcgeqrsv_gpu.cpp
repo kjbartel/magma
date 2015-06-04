@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions mixed zc -> ds
 
@@ -64,7 +64,7 @@ int main( int argc, char** argv)
             M = opts.msize[i];
             N = opts.nsize[i];
             if ( M < N ) {
-                printf( "skipping M=%d, N=%d because M < N is not yet supported.\n", M, N );
+                printf( "skipping M=%d, N=%d because M < N is not yet supported.\n", (int) M, (int) N );
                 continue;
             }
             min_mn = min(M, N);

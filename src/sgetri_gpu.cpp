@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:10 2013
+       @generated s Wed Aug 14 12:16:04 2013
 
 */
 #include "common_magma.h"
@@ -17,11 +17,11 @@ magma_sgetri_gpu( magma_int_t n, float *dA, magma_int_t ldda,
                   magma_int_t *ipiv, float *dwork, magma_int_t lwork,
                   magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

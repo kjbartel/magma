@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal d -> s
        @author Stan Tomov
@@ -31,11 +31,11 @@ magma_dgeev(
     double *work, magma_int_t lwork,
     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -159,8 +159,8 @@ magma_dgeev(
     }
 
     /* Compute workspace */
+    nb = magma_get_dgehrd_nb( n );
     if (*info == 0) {
-        nb = magma_get_dgehrd_nb( n );
         minwrk = (2+nb)*n;
         work[0] = MAGMA_D_MAKE( (double) minwrk, 0. );
         

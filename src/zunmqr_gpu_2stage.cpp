@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Azzam Haidar
        @author Stan Tomov
@@ -22,11 +22,11 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
                          magmaDoubleComplex *dT,    magma_int_t nb,
                          magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -96,8 +96,6 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
     < 0:  if INFO = -i, the i-th argument had an illegal value
     =====================================================================   */
 
-    magmaDoubleComplex c_one = MAGMA_Z_ONE;
-
     char side_[2] = {side, 0};
     char trans_[2] = {trans, 0};
 
@@ -105,7 +103,7 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
 
     magma_int_t i1, i2, i3, ib, ic, jc, mi, ni, nq, nw, ret;
     int left, notran;
-    magma_int_t lwkopt;
+    //magma_int_t lwkopt;
 
     *info = 0;
     left   = lapackf77_lsame(side_, "L");
@@ -160,6 +158,10 @@ magma_zunmqr_gpu_2stages(const char side, const char trans,
         i3 = -nb;
     }
 
+    // silence "uninitialized" warnings
+    mi = 0;
+    ni = 0;
+    
     if (left) {
         ni = n;
         jc = 0;

@@ -1,19 +1,20 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Azzam Haidar
 
-       @generated c Fri Jun 28 19:32:40 2013
+       @generated c Wed Aug 14 12:16:18 2013
 
 */
 #include "common_magma.h"
 #include "magma_bulge.h"
 #include "magma_cbulge.h"
+#define PRECISION_c
 
 extern "C" magma_int_t
 magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_int_t n,
@@ -26,11 +27,11 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
                      magma_int_t *iwork, magma_int_t liwork, 
                      magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -229,6 +230,10 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
     magma_queue_t stream;
     magma_queue_create( &stream );
 
+    /* determine the number of threads */
+    magma_int_t threads = magma_get_numthreads();
+    magma_setlapack_numthreads(threads);
+
     wantz = lapackf77_lsame(jobz_, MagmaVecStr);
     lower = lapackf77_lsame(uplo_, MagmaLowerStr);
     alleig = lapackf77_lsame(range_, "A");
@@ -265,8 +270,8 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
         }
     }
 
-    magma_int_t nb = magma_get_cbulge_nb(n);
-    magma_int_t lq2 = magma_cbulge_get_lq2(n);
+    magma_int_t nb = magma_get_cbulge_nb(n, threads);
+    magma_int_t lq2 = magma_cbulge_get_lq2(n, threads);
 
     if (wantz) {
         lwmin = lq2 + 2 * n + n * n;
@@ -302,11 +307,23 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
         return *info;
     }
 
-
-    /* determine the number of threads */
-    magma_int_t threads = magma_get_numthreads();
-    magma_setlapack_numthreads(threads);
-
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_chegvd(&itype, jobz_, uplo_,
+                         &n, a, &lda, b, &ldb,
+                         w, work, &lwork,
+#if defined(PRECISION_z) || defined(PRECISION_c)
+                         rwork, &lrwork, 
+#endif  
+                         iwork, &liwork, info);
+        *m = n;
+        return *info;
+    }
 
     if (MAGMA_SUCCESS != magma_cmalloc( &da, n*ldda ) ||
         MAGMA_SUCCESS != magma_cmalloc( &db, n*lddb )) {
@@ -315,6 +332,10 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
     }
     /*     Form a Cholesky factorization of B. */
     magma_csetmatrix( n, n, b, ldb, db, lddb );
+
+    magma_csetmatrix_async( n, n,
+                           a,  lda,
+                           da, ldda, stream );
 
 #ifdef ENABLE_TIMER
     magma_timestr_t start, end;
@@ -331,11 +352,11 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
     end = get_current_time();
     printf("time cpotrf_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
 #endif
+
+    magma_queue_sync( stream );
     magma_cgetmatrix_async( n, n,
                            db, lddb,
                            b,  ldb, stream );
-
-    magma_csetmatrix( n, n, a, lda, da, ldda );
 
 #ifdef ENABLE_TIMER
     start = get_current_time();
@@ -343,17 +364,17 @@ magma_chegvdx_2stage(magma_int_t itype, char jobz, char range, char uplo, magma_
 
     /*     Transform problem to standard eigenvalue problem and solve. */
     magma_chegst_gpu(itype, uplo, n, da, ldda, db, lddb, info);
+#ifdef ENABLE_TIMER
+    end = get_current_time();
+    printf("time chegst_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
+#endif
 
     magma_cgetmatrix( n, n, da, ldda, a, lda );
-
     magma_queue_sync( stream );
-
     magma_free( da );
     magma_free( db );
 
 #ifdef ENABLE_TIMER
-    end = get_current_time();
-    printf("time chegst_gpu = %6.2f\n", GetTimerValue(start,end)/1000.);
     start = get_current_time();
 #endif
 

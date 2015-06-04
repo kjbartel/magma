@@ -1,12 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:33:15 2013
+       @generated s Tue Aug 13 16:45:20 2013
 
+       @author Stan Tomov
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -31,8 +32,8 @@
 
 __global__ void stranspose_inplace_odd( int n, float *matrix, int lda )
 {
-    __shared__ float sA[ NB ][ NB ];
-    __shared__ float sB[ NB ][ NB ];
+    __shared__ float sA[ NB ][ NB+1 ];
+    __shared__ float sB[ NB ][ NB+1 ];
 
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -93,8 +94,8 @@ __global__ void stranspose_inplace_odd( int n, float *matrix, int lda )
 
 __global__ void stranspose_inplace_even( int n, float *matrix, int lda )
 {
-    __shared__ float sA[ NB ][ NB ];
-    __shared__ float sB[ NB ][ NB ];
+    __shared__ float sA[ NB ][ NB+1 ];
+    __shared__ float sB[ NB ][ NB+1 ];
 
     int i = threadIdx.x;
     int j = threadIdx.y;

@@ -1,16 +1,16 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
        @author Mark Gates
        @author Azzam Haidar
 
-       @generated s Fri Jun 28 19:32:28 2013
+       @generated s Wed Aug 14 12:16:13 2013
 
 */
 #include "common_magma.h"
@@ -25,11 +25,11 @@ magma_ssyevd_gpu(char jobz, char uplo,
                  magma_int_t *iwork, magma_int_t liwork,
                  magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -206,19 +206,22 @@ magma_ssyevd_gpu(char jobz, char uplo,
         return *info;
     }
 
-    /* Quick return if possible */
-    if (n == 0) {
-        return *info;
-    }
-
-    if (n == 1) {
-        float tmp;
-        magma_sgetvector( 1, da, 1, &tmp, 1 );
-        w[0] = tmp;
-        if (wantz) {
-            tmp = 1.;
-            magma_ssetvector( 1, &tmp, 1, da, 1 );
-        }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128) {
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        char jobz_[2] = {jobz, 0}, uplo_[2] = {uplo, 0};
+        float *a = (float *) malloc( n * n * sizeof(float) );
+        magma_sgetmatrix(n, n, da, ldda, a, n);
+        lapackf77_ssyevd(jobz_, uplo_,
+                         &n, a, &n,
+                         w, work, &lwork,
+                         iwork, &liwork, info);
+        magma_ssetmatrix( n, n, a, n, da, ldda);
+        free(a);
         return *info;
     }
 
@@ -249,6 +252,7 @@ magma_ssyevd_gpu(char jobz, char uplo,
     /* Scale matrix to allowable range, if necessary. */
     anrm = magmablas_slansy('M', uplo, n, da, ldda, dwork);
     iscale = 0;
+    sigma  = 1;
     if (anrm > 0. && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;

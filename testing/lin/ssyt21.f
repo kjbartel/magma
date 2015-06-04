@@ -162,6 +162,7 @@
 *     ..
 *     .. Executable Statements ..
 *
+      WNORM = ZERO
       RESULT( 1 ) = ZERO
       IF( ITYPE.EQ.1 )
      $   RESULT( 2 ) = ZERO

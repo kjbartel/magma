@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:32:23 2013
+       @generated d Tue Aug 13 16:44:25 2013
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
              double *a,    magma_int_t lda, double *tau,
              double *work, magma_int_t lwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -104,6 +104,10 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
     *info = 0;
     lquery = (lwork == -1);
 
+    // silence "uninitialized" warnings
+    old_ib = nb;
+    old_i  = 0;
+    
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
@@ -161,7 +165,7 @@ magma_dgeqlf(magma_int_t m, magma_int_t n,
         for (i = k - kk + ki; i >= k -kk; i -= nb) {
             ib = min(k-i,nb);
 
-            if (i< k - kk + ki){
+            if (i < k - kk + ki) {
                 /* 1. Copy asynchronously the current panel to the CPU.
                    2. Copy asynchronously the submatrix below the panel
                    to the CPU)                                        */

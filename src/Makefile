@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 MAGMA_DIR = ..
@@ -106,6 +106,7 @@ ZSRC += \
 	zgeqrf.cpp		\
 	zgeqrf_ooc.cpp		\
 	zungqr.cpp		\
+	zungqr2.cpp             \
 	zunmql.cpp		\
 	zunmqr.cpp		\
 	zunmqr_m.cpp		\
@@ -248,12 +249,16 @@ ALLOBJ := $(ALLSRC:.cpp=.o)
 
 all: $(LIBMAGMA)
 
-$(LIBMAGMA): $(ALLOBJ)
+$(LIBMAGMA): $(ALLOBJ) stamp
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ)
 	$(RANLIB) $@
 
+# this forces LIBMAGMA to be archived
+stamp: $(ALLHDR) $(ALLOBJ)
+	touch $@
+
 clean:
-	rm -f *.o *~ *.linkinfo
+	rm -f *.o *~ *.linkinfo stamp
 
 cleanall: clean
 	rm -f $(LIBMAGMA)

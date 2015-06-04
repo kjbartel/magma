@@ -1,9 +1,9 @@
-#ifndef _COMMONBLAS_H_
-#define _COMMONBLAS_H_
+#ifndef MAGMA_COMMONBLAS_H
+#define MAGMA_COMMONBLAS_H
 
 #define ZSIZE_1SHARED 16
 #define CSIZE_1SHARED 32
 #define DSIZE_1SHARED 32
 #define SSIZE_1SHARED 32
 
-#endif /* _COMMONBLAS_H_ */
+#endif /* MAGMA_COMMONBLAS_H */

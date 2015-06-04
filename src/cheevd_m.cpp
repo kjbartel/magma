@@ -1,18 +1,19 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Stan Tomov
        @author Azzam Haidar
 
-       @generated c Fri Jun 28 19:32:34 2013
+       @generated c Wed Aug 14 12:16:15 2013
 
 */
 #include "common_magma.h"
+#define PRECISION_c
 
 extern "C" magma_int_t
 magma_cheevd_m(magma_int_t nrgpu, char jobz, char uplo,
@@ -24,11 +25,11 @@ magma_cheevd_m(magma_int_t nrgpu, char jobz, char uplo,
                magma_int_t *iwork, magma_int_t liwork,
                magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -232,6 +233,23 @@ magma_cheevd_m(magma_int_t nrgpu, char jobz, char uplo,
         if (wantz) {
             a[0] = MAGMA_C_ONE;
         }
+        return *info;
+    }
+
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128){
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_cheevd(jobz_, uplo_,
+                         &n, a, &lda,
+                         w, work, &lwork,
+#if defined(PRECISION_z) || defined(PRECISION_c)
+                         rwork, &lrwork, 
+#endif  
+                         iwork, &liwork, info);
         return *info;
     }
 

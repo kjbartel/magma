@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated d Fri Jun 28 19:33:48 2013
+       @generated d Wed Aug 14 12:18:01 2013
 */
 
 #include <stdlib.h>
@@ -100,10 +100,10 @@ int main(int argc, char **argv)
     int max_num_gpus;
     magma_int_t num_gpus = 1, nb;
     magma_int_t blocks, workspace;
-    magma_int_t offset;
-    
-//    offset = 257;
+    magma_int_t offset = 0;
 
+    M = 0;
+    N = 0;
     if (argc != 1){
         for(i = 1; i<argc; i++){
             if (strcmp("-N", argv[i])==0)
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
             N = M;
         }
         if (M>0 && N>0)
-        {    printf("  testing_dsymv_mgpu -M %d -N %d -NGPU %d\n\n", M, N, num_gpus);
+        {    printf("  testing_dsymv_mgpu -M %d -N %d -NGPU %d\n\n", (int) M, (int) N, (int) num_gpus);
             printf("  in %c side \n", uplo);
         }
         else
@@ -139,15 +139,13 @@ int main(int argc, char **argv)
     else {
 #if defined(PRECISION_z)
         M = N = 8000;
-      
 #else
         M = N = 12480;
-
 #endif 
         num_gpus = 2;
         offset = 0;
         printf("\nUsage: \n");
-        printf("  testing_dsymv_mgpu -M %d -N %d -NGPU %d\n\n", M, N, num_gpus);
+        printf("  testing_dsymv_mgpu -M %d -N %d -NGPU %d\n\n", (int) M, (int) N, (int) num_gpus);
     }
          
 
@@ -157,7 +155,7 @@ int main(int argc, char **argv)
       printf("More GPUs requested than available. Have to change it.\n");
       num_gpus = max_num_gpus;
     }
-    printf("Number of GPUs to be used = %d\n", num_gpus);
+    printf("Number of GPUs to be used = %d\n", (int) num_gpus);
     for(int i=0; i< num_gpus; i++)
     {
         magma_queue_create(&stream[i][0]);
@@ -170,7 +168,7 @@ int main(int argc, char **argv)
     nb = 32;
     //nb = 64;
 
-    printf("block size = %d\n", nb);
+    printf("block size = %d\n", (int) nb);
    
     TESTING_MALLOC( A, double, matsize );
     TESTING_MALLOC( X, double, vecsize );
@@ -199,7 +197,7 @@ int main(int argc, char **argv)
       TESTING_DEVALLOC( dX[i], double, vecsize );
       TESTING_DEVALLOC( dY[i], double, vecsize );
       
-      printf("device %2d n_local = %4d\n", i, n_local[i]); 
+      printf("device %2d n_local = %4d\n", (int) i, (int) n_local[i]); 
 
     }
     magma_setdevice(0);
@@ -257,8 +255,8 @@ int main(int argc, char **argv)
         lda = LDA; 
         flops = FLOPS( (double)m ) / 1e6;
 
-        printf(      "N %5d ", m );
-        fprintf( fp, "%5d, ", m );
+        printf(      "N %5d ", (int) m );
+        fprintf( fp, "%5d, ", (int) m );
 
         vecsize = m * incx;
         lapackf77_dlarnv( &ione, ISEED, &vecsize, X );

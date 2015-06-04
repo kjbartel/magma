@@ -1,11 +1,11 @@
 !
-!   -- MAGMA (version 1.4.0-beta2) --
+!   -- MAGMA (version 1.4.0) --
 !      Univ. of Tennessee, Knoxville
 !      Univ. of California, Berkeley
 !      Univ. of Colorado, Denver
-!      June 2013
+!      August 2013
 !
-!  @generated s Fri Jun 28 19:34:08 2013
+!  @generated s Tue Aug 13 16:46:16 2013
 !
       program testing_sgetrf_gpu_f
 
@@ -25,7 +25,7 @@
       integer,    allocatable       :: ipiv(:)
 
       real                    :: zone, mzone
-      integer                       :: i, n, info, stat, lda
+      integer                       :: i, n, info, stat, lda, ldda
       integer                       :: size_of_elt, nrhs
       real(kind=8)                  :: flops, t, tstart, tend
 

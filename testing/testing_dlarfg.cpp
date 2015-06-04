@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal d -> s
        @author Mark Gates
@@ -94,7 +94,7 @@ int main( int argc, char** argv)
             blasf77_daxpy( &size, &c_neg_one, h_x1, &ione, h_x2, &ione);
             error = lapackf77_dlange( "F", &N, &nb, h_x2, &N, work );
             printf("%5d %5d   %7.2f (%7.2f)   %7.2f (%7.2f)   %8.2g\n",
-                   (int) N, nb, cpu_perf, 1000.*cpu_time, gpu_perf, 1000.*gpu_time, error );
+                   (int) N, (int) nb, cpu_perf, 1000.*cpu_time, gpu_perf, 1000.*gpu_time, error );
             
             TESTING_FREE( h_x   );
             TESTING_FREE( h_x1  );

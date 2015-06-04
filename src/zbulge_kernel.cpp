@@ -45,10 +45,10 @@ void magma_zlarfxsym(magma_int_t N, magmaDoubleComplex *A, magma_int_t LDA, magm
 
 extern "C" void 
 magma_zlarfxsym(magma_int_t N, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU) {
-  magma_int_t j, IONE=1; 
+  magma_int_t IONE=1; 
   magmaDoubleComplex dtmp;
   magmaDoubleComplex Z_ZERO =  MAGMA_Z_ZERO;
-  magmaDoubleComplex Z_ONE  =  MAGMA_Z_ONE;
+  //magmaDoubleComplex Z_ONE  =  MAGMA_Z_ONE;
   magmaDoubleComplex Z_MONE =  MAGMA_Z_NEG_ONE;
   magmaDoubleComplex Z_HALF =  MAGMA_Z_HALF;
   //magmaDoubleComplex WORK[N];
@@ -61,7 +61,7 @@ magma_zlarfxsym(magma_int_t N, magmaDoubleComplex *A, magma_int_t LDA, magmaDoub
   /* je calcul dtmp= X'*V */
 #if defined(PRECISION_z) || defined(PRECISION_c)
    dtmp = Z_ZERO;
-   for (j = 0; j < N ; j++)
+   for (magma_int_t j = 0; j < N ; j++)
       dtmp = dtmp + MAGMA_Z_CNJG(WORK[j]) * V[j];
    //cblas_zdotc_sub(N, WORK, IONE, V, IONE, &dtmp);
 #else
@@ -88,10 +88,11 @@ magma_zlarfxsym(magma_int_t N, magmaDoubleComplex *A, magma_int_t LDA, magmaDoub
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  magmaDoubleComplex conjtmp;
+  //magmaDoubleComplex conjtmp;
   magmaDoubleComplex Z_ONE  =  MAGMA_Z_ONE;
   magmaDoubleComplex *WORK  = (magmaDoubleComplex *) malloc( N * sizeof(magmaDoubleComplex) );
 
@@ -125,7 +126,8 @@ extern "C" void magma_ztrdtype1cbHLsym_withQ(magma_int_t N, magma_int_t NB, magm
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_ztrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
   magma_int_t    J1, J2, len, lem, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    i, j;
+  magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
   magmaDoubleComplex conjtmp;
   magmaDoubleComplex Z_ONE  =  MAGMA_Z_ONE;
@@ -171,10 +173,11 @@ extern "C" void magma_ztrdtype2cbHLsym_withQ(magma_int_t N, magma_int_t NB, magm
 #define V(m)     &(V[(m)])
 #define TAU(m)   &(TAU[(m)])
 extern "C" void magma_ztrdtype3cbHLsym_withQ(magma_int_t N, magma_int_t NB, magmaDoubleComplex *A, magma_int_t LDA, magmaDoubleComplex *V, magmaDoubleComplex *TAU, magma_int_t st, magma_int_t ed, magma_int_t sweep, magma_int_t Vblksiz) {
-  magma_int_t    J1, J2, J3, len, LDX;
-  magma_int_t    i, j, IONE=1;
+  //magma_int_t    J1, J2, J3, i, j;
+  magma_int_t    len, LDX;
+  //magma_int_t    IONE=1;
   magma_int_t    blkid, vpos, taupos, tpos; 
-  magmaDoubleComplex conjtmp;
+  //magmaDoubleComplex conjtmp;
   magmaDoubleComplex *WORK  = (magmaDoubleComplex *) malloc( N * sizeof(magmaDoubleComplex) );
 
 

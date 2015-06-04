@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated s Fri Jun 28 19:32:48 2013
+       @generated s Wed Aug 14 12:16:22 2013
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_slahr2_m(
     float *Y, magma_int_t ldy,
     struct sgehrd_data* data )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -155,7 +155,7 @@ magma_slahr2_m(
     float scale;
 
     magma_int_t i;
-    float ei;
+    float ei = MAGMA_S_ZERO;
 
     magma_int_t info_data = 0;
     magma_int_t *info = &info_data;

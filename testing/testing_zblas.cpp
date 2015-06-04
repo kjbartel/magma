@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @precisions normal z -> c d s
        @author Mark Gates
@@ -64,7 +64,7 @@ int main( int argc, char** argv )
         n = opts.nsize[i];
         k = opts.ksize[i];
         printf("=========================================================================\n");
-        printf( "M %d, N %d, K %d\n", m, n, k );
+        printf( "M %d, N %d, K %d\n", (int) m, (int) n, (int) k );
         
         // allocate matrices
         // over-allocate so they can be any combination of {m,n,k} x {m,n,k}.

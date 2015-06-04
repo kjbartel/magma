@@ -1,12 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:15 2013
+       @generated c Tue Aug 13 16:45:20 2013
 
+       @author Stan Tomov
        @author Mark Gates
 */
 #include "common_magma.h"
@@ -31,8 +32,8 @@
 
 __global__ void ctranspose_inplace_odd( int n, magmaFloatComplex *matrix, int lda )
 {
-    __shared__ magmaFloatComplex sA[ NB ][ NB ];
-    __shared__ magmaFloatComplex sB[ NB ][ NB ];
+    __shared__ magmaFloatComplex sA[ NB ][ NB+1 ];
+    __shared__ magmaFloatComplex sB[ NB ][ NB+1 ];
 
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -93,8 +94,8 @@ __global__ void ctranspose_inplace_odd( int n, magmaFloatComplex *matrix, int ld
 
 __global__ void ctranspose_inplace_even( int n, magmaFloatComplex *matrix, int lda )
 {
-    __shared__ magmaFloatComplex sA[ NB ][ NB ];
-    __shared__ magmaFloatComplex sB[ NB ][ NB ];
+    __shared__ magmaFloatComplex sA[ NB ][ NB+1 ];
+    __shared__ magmaFloatComplex sB[ NB ][ NB+1 ];
 
     int i = threadIdx.x;
     int j = threadIdx.y;

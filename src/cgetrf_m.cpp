@@ -1,27 +1,26 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:13 2013
+       @generated c Tue Aug 13 16:44:14 2013
 
 */
 
 #include "common_magma.h"
 #include "../testing/flops.h"
 
-
 extern "C" magma_int_t
 magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatComplex *a, magma_int_t lda,
                magma_int_t *ipiv, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -84,12 +83,12 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
     float flops, time_rmajor = 0, time_rmajor2 = 0, time_rmajor3 = 0, time_mem = 0;
     magma_timestr_t start, start1, start2, end1, end, start0 = get_current_time();
 #endif
-    magmaFloatComplex    *dAT[MagmaMaxGPUs], *dA[MagmaMaxGPUs], *dPT[MagmaMaxGPUs];
     magmaFloatComplex    c_one     = MAGMA_C_ONE;
     magmaFloatComplex    c_neg_one = MAGMA_C_NEG_ONE;
+    magmaFloatComplex    *dAT[MagmaMaxGPUs], *dA[MagmaMaxGPUs], *dPT[MagmaMaxGPUs];
     magma_int_t        iinfo = 0, nb, nbi, maxm, n_local[MagmaMaxGPUs], ldn_local;
     magma_int_t        N, M, NB, NBk, I, d, num_gpus;
-    magma_int_t        i, ii, jj, h, offset, ib, rows, s;
+    magma_int_t        ii, jj, h, offset, ib, rows, s;
     
     magma_queue_t stream[MagmaMaxGPUs][2];
     magma_event_t  event[MagmaMaxGPUs][2];
@@ -122,7 +121,7 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
     freeMem /= sizeof(magmaFloatComplex);
     
     /* number of columns in the big panel */
-    h = 1+(2+num_gpus);
+    h = 1+(2+num_gpus0);
     NB = (magma_int_t)(0.8*freeMem/maxm-h*nb);
     char * ngr_nb_char = getenv("MAGMA_NGR_NB");
     if( ngr_nb_char != NULL ) NB = max( nb, min( NB, atoi(ngr_nb_char) ) );
@@ -130,6 +129,8 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
 
     if( num_gpus0 > ceil((float)NB/nb) ) {
         num_gpus = (int)ceil((float)NB/nb);
+        h = 1+(2+num_gpus);
+        NB = (magma_int_t)(0.8*freeMem/maxm-h*nb);
     } else {
         num_gpus = num_gpus0;
     }
@@ -147,9 +148,8 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
     }
 
     #ifdef CHECK_CGETRF_OOC
-    if( NB != n ) printf( "      * running in out-core mode (n=%d, NB=%d, nb=%d).\n",n,NB,nb );
-    else          printf( "      * running in in-core mode  (n=%d, NB=%d, nb=%d).\n",n,NB,nb );
-    fflush(stdout);
+    if( NB != n ) printf( "      * running in out-core mode (n=%d, NB=%d, nb=%d, freeMem=%.2e).\n",n,NB,nb,(float)freeMem );
+    else          printf( "      * running in in-core mode  (n=%d, NB=%d, nb=%d, freeMem=%.2e).\n",n,NB,nb,(float)freeMem );
     #endif
 
     if ( (nb <= 1) || (nb >= min(m,n)) ) {
@@ -169,7 +169,7 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
 
     for( d=0; d<num_gpus; d++ ) {
         magma_setdevice(d);
-        if (MAGMA_SUCCESS != magma_cmalloc( &dA[d], (h*nb + ldn_local)*maxm )) {
+        if (MAGMA_SUCCESS != magma_cmalloc( &dA[d], (ldn_local+h*nb)*maxm )) {
             *info = MAGMA_ERR_DEVICE_ALLOC;
             return *info;
         }
@@ -305,7 +305,7 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
         if( M > I ) {
             //magma_cgetrf1_mgpu(num_gpus, M-I, N, nb, I, dAT, ldn_local, ipiv+I, dA, &a[I*lda], lda,
             //                   (magma_queue_t **)stream, &iinfo);
-            magma_cgetrf2_mgpu(num_gpus, M-I, N, nb, I, dAT, ldn_local, ipiv+I, dA, &a[I*lda], lda,
+            magma_cgetrf2_mgpu(num_gpus, M-I, N, nb, I, dAT, ldn_local, ipiv+I, dA, A(0,I), lda,
                                stream, &iinfo);
             if( iinfo < 0 ) {
                 *info = iinfo;
@@ -363,20 +363,17 @@ magma_cgetrf_m(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatCo
     magma_setdevice(0);
     
     }
-    
+    if( *info >= 0 ) magma_cgetrf_piv(m, n, NB, a, lda, ipiv, info);
     return *info;
 } /* magma_cgetrf_m */
 
 
 extern "C" magma_int_t
-magma_cgetrf_piv(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloatComplex *a, magma_int_t lda,
-                 magma_int_t *ipiv, magma_int_t *info)
+magma_cgetrf_piv(magma_int_t m, magma_int_t n, magma_int_t NB, 
+                 magmaFloatComplex *a, magma_int_t lda, magma_int_t *ipiv, magma_int_t *info)
 {
-    magma_int_t nb, h = 2, num_gpus;
-    magma_int_t NB, I, k1, k2, incx, minmn, maxm;
-
+    magma_int_t I, k1, k2, incx, minmn;
     *info = 0;
-
     if (m < 0)
         *info = -1;
     else if (n < 0)
@@ -392,37 +389,6 @@ magma_cgetrf_piv(magma_int_t num_gpus0, magma_int_t m, magma_int_t n, magmaFloat
         return *info;
 
     /* initialize nb */
-    nb = magma_get_cgetrf_nb(m);
-    maxm = ((m  + 31)/32)*32;
-
-    /* figure out NB */
-    size_t freeMem, totalMem;
-    cudaMemGetInfo( &freeMem, &totalMem );
-    freeMem /= sizeof(magmaFloatComplex);
-
-    /* number of columns in the big panel */
-    NB = (magma_int_t)(0.8*freeMem/maxm-h*nb);
-    char * ngr_nb_char = getenv("MAGMA_NGR_NB");
-    if( ngr_nb_char != NULL ) NB = max( nb, min( NB, atoi(ngr_nb_char) ) );
-    //NB = 5*max(nb,32);
-
-    if( num_gpus0 > ceil((float)NB/nb) ) {
-        num_gpus = (int)ceil((float)NB/nb);
-    } else {
-        num_gpus = num_gpus0;
-    }
-    if( num_gpus*NB >= n ) {
-        #ifdef CHECK_CGETRF_OOC
-        printf( "      * still fit in GPU memory.\n" );
-        #endif
-        NB = n;
-    } else {
-        #ifdef CHECK_CGETRF_OOC
-        printf( "      * don't fit in GPU memory.\n" );
-        #endif
-        NB = num_gpus*NB;
-        NB = max(nb,(NB / nb) * nb); /* making sure it's devisable by nb (x64) */
-    }
     minmn = min(m,n);
 
     for( I=0; I<minmn-NB; I+=NB ) {

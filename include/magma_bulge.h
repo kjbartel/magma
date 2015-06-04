@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 */
 
-#ifndef _MAGMA_BULGE_H_
-#define _MAGMA_BULGE_H_
+#ifndef MAGMA_BULGE_H
+#define MAGMA_BULGE_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -40,4 +40,4 @@ extern "C"{
 }
 #endif
 
-#endif
+#endif  // MAGMA_BULGE_H

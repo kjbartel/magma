@@ -1,11 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:33:54 2013
+       @generated c Tue Aug 13 16:46:01 2013
+       @author Mark Gates
 */
 // includes, system
 #include <stdlib.h>
@@ -21,29 +22,108 @@
 #include "magma_lapack.h"
 #include "testings.h"
 
-#define PRECISION_c
 
-float get_LU_error(magma_int_t M, magma_int_t N, 
-                    magmaFloatComplex *A,  magma_int_t lda, 
-                    magmaFloatComplex *LU, magma_int_t *IPIV)
+// Initialize matrix to random.
+// Having this in separate function ensures the same ISEED is always used,
+// so we can re-generate the identical matrix.
+void init_matrix( int m, int n, magmaFloatComplex *h_A, magma_int_t lda )
+{
+    magma_int_t ione = 1;
+    magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t n2 = lda*n;
+    lapackf77_clarnv( &ione, ISEED, &n2, h_A );
+}
+
+
+// On input, A and ipiv is LU factorization of A. On output, A is overwritten.
+// Requires m == n.
+// Uses init_matrix() to re-generate original A as needed.
+// Generates random RHS b and solves Ax=b.
+// Returns residual, |Ax - b| / (n |A| |x|).
+float get_residual(
+    magma_int_t m, magma_int_t n,
+    magmaFloatComplex *A, magma_int_t lda,
+    magma_int_t *ipiv )
+{
+    if ( m != n ) {
+        printf( "\nERROR: residual check defined only for square matrices\n" );
+        return -1;
+    }
+    
+    const magmaFloatComplex c_one     = MAGMA_C_ONE;
+    const magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
+    const magma_int_t ione = 1;
+    
+    // this seed should be DIFFERENT than used in init_matrix
+    // (else x is column of A, so residual can be exactly zero)
+    magma_int_t ISEED[4] = {0,0,0,2};
+    magma_int_t info = 0;
+    magmaFloatComplex *x, *b;
+    
+    // initialize RHS
+    TESTING_MALLOC( x, magmaFloatComplex, n );
+    TESTING_MALLOC( b, magmaFloatComplex, n );
+    lapackf77_clarnv( &ione, ISEED, &n, b );
+    blasf77_ccopy( &n, b, &ione, x, &ione );
+    
+    // solve Ax = b
+    lapackf77_cgetrs( "Notrans", &n, &ione, A, &lda, ipiv, x, &n, &info );
+    if (info != 0)
+        printf("lapackf77_cgetrs returned error %d: %s.\n",
+               (int) info, magma_strerror( info ));
+    
+    // reset to original A
+    init_matrix( m, n, A, lda );
+    
+    // compute r = Ax - b, saved in b
+    blasf77_cgemv( "Notrans", &m, &n, &c_one, A, &lda, x, &ione, &c_neg_one, b, &ione );
+    
+    // compute residual |Ax - b| / (n*|A|*|x|)
+    float norm_x, norm_A, norm_r, work[1];
+    norm_A = lapackf77_clange( "F", &m, &n, A, &lda, work );
+    norm_r = lapackf77_clange( "F", &n, &ione, b, &n, work );
+    norm_x = lapackf77_clange( "F", &n, &ione, x, &n, work );
+    
+    //printf( "r=\n" ); magma_cprint( 1, n, b, 1 );
+    
+    TESTING_FREE( x );
+    TESTING_FREE( b );
+    
+    //printf( "r=%.2e, A=%.2e, x=%.2e, n=%d\n", norm_r, norm_A, norm_x, n );
+    return norm_r / (n * norm_A * norm_x);
+}
+
+
+// On input, LU and ipiv is LU factorization of A. On output, LU is overwritten.
+// Works for any m, n.
+// Uses init_matrix() to re-generate original A as needed.
+// Returns error in factorization, |PA - LU| / (n |A|)
+// This allocates 3 more matrices to store A, L, and U.
+float get_LU_error(magma_int_t M, magma_int_t N,
+                    magmaFloatComplex *LU, magma_int_t lda,
+                    magma_int_t *ipiv)
 {
     magma_int_t min_mn = min(M,N);
     magma_int_t ione   = 1;
     magma_int_t i, j;
     magmaFloatComplex alpha = MAGMA_C_ONE;
     magmaFloatComplex beta  = MAGMA_C_ZERO;
-    magmaFloatComplex *L, *U;
+    magmaFloatComplex *A, *L, *U;
     float work[1], matnorm, residual;
-                       
-    TESTING_MALLOC( L, magmaFloatComplex, M*min_mn);
-    TESTING_MALLOC( U, magmaFloatComplex, min_mn*N);
+    
+    TESTING_MALLOC( A, magmaFloatComplex, lda*N    );
+    TESTING_MALLOC( L, magmaFloatComplex, M*min_mn );
+    TESTING_MALLOC( U, magmaFloatComplex, min_mn*N );
     memset( L, 0, M*min_mn*sizeof(magmaFloatComplex) );
     memset( U, 0, min_mn*N*sizeof(magmaFloatComplex) );
 
-    lapackf77_claswp( &N, A, &lda, &ione, &min_mn, IPIV, &ione);
+    // set to original A
+    init_matrix( M, N, A, lda );
+    lapackf77_claswp( &N, A, &lda, &ione, &min_mn, ipiv, &ione);
+    
+    // copy LU to L and U, and set diagonal to 1
     lapackf77_clacpy( MagmaLowerStr, &M, &min_mn, LU, &lda, L, &M      );
     lapackf77_clacpy( MagmaUpperStr, &min_mn, &N, LU, &lda, U, &min_mn );
-
     for(j=0; j<min_mn; j++)
         L[j+j*M] = MAGMA_C_MAKE( 1., 0. );
     
@@ -59,11 +139,13 @@ float get_LU_error(magma_int_t M, magma_int_t N,
     }
     residual = lapackf77_clange("f", &M, &N, LU, &lda, work);
 
+    TESTING_FREE(A);
     TESTING_FREE(L);
     TESTING_FREE(U);
 
     return residual / (matnorm * N);
 }
+
 
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing cgetrf_mgpu
@@ -72,21 +154,27 @@ int main( int argc, char** argv )
 {
     TESTING_INIT();
 
-    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf, cpu_time;
+    real_Double_t    gflops, gpu_perf, gpu_time, cpu_perf=0, cpu_time=0;
     float           error;
-    magmaFloatComplex *h_A, *h_R;
+    magmaFloatComplex *h_A;
     magmaFloatComplex *d_lA[ MagmaMaxGPUs ];
     magma_int_t *ipiv;
     magma_int_t M, N, n2, lda, ldda, n_local, ngpu;
     magma_int_t info, min_mn, nb, ldn_local;
-    magma_int_t ione     = 1;
-    magma_int_t ISEED[4] = {0,0,0,1};
+    magma_int_t status = 0;
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    
+    float tol = opts.tolerance * lapackf77_slamch("E");
 
-    printf("ngpu %d\n", opts.ngpu );
-    printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   ||PA-LU||/(||A||*N)\n");
+    printf("ngpu %d\n", (int) opts.ngpu );
+    if ( opts.check == 2 ) {
+        printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   |Ax-b|/(N*|A|*|x|)\n");
+    }
+    else {
+        printf("    M     N   CPU GFlop/s (sec)   GPU GFlop/s (sec)   |PA-LU|/(N*|A|)\n");
+    }
     printf("=========================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ) {
         for( int iter = 0; iter < opts.niter; ++iter ) {
@@ -108,7 +196,6 @@ int main( int argc, char** argv )
             // Allocate host memory for the matrix
             TESTING_MALLOC(    ipiv, magma_int_t,        min_mn );
             TESTING_MALLOC(    h_A,  magmaFloatComplex, n2     );
-            TESTING_HOSTALLOC( h_R,  magmaFloatComplex, n2     );
             
             // Allocate device memory
             for( int dev=0; dev < ngpu; dev++){
@@ -121,15 +208,13 @@ int main( int argc, char** argv )
                 magma_setdevice( dev );
                 TESTING_DEVALLOC( d_lA[dev], magmaFloatComplex, ldda*ldn_local );
             }
-        
-            /* Initialize the matrix */
-            lapackf77_clarnv( &ione, ISEED, &n2, h_A );
-            lapackf77_clacpy( MagmaUpperLowerStr, &M, &N, h_A, &lda, h_R, &lda );
     
             /* =====================================================================
                Performs operation using LAPACK
                =================================================================== */
             if ( opts.lapack ) {
+                init_matrix( M, N, h_A, lda );
+                
                 cpu_time = magma_wtime();
                 lapackf77_cgetrf( &M, &N, h_A, &lda, ipiv, &info );
                 cpu_time = magma_wtime() - cpu_time;
@@ -137,14 +222,13 @@ int main( int argc, char** argv )
                 if (info != 0)
                     printf("lapackf77_cgetrf returned error %d: %s.\n",
                            (int) info, magma_strerror( info ));
-                // restore A for error check
-                lapackf77_clacpy( MagmaUpperLowerStr, &M, &N, h_R, &lda, h_A, &lda );
             }
             
             /* ====================================================================
                Performs operation using MAGMA
                =================================================================== */
-            magma_csetmatrix_1D_col_bcyclic( M, N, h_R, lda, d_lA, ldda, ngpu, nb );
+            init_matrix( M, N, h_A, lda );
+            magma_csetmatrix_1D_col_bcyclic( M, N, h_A, lda, d_lA, ldda, ngpu, nb );
     
             gpu_time = magma_wtime();
             magma_cgetrf_mgpu( ngpu, M, N, d_lA, ldda, ipiv, &info );
@@ -154,7 +238,7 @@ int main( int argc, char** argv )
                 printf("magma_cgetrf_mgpu returned error %d: %s.\n",
                        (int) info, magma_strerror( info ));
                        
-            magma_cgetmatrix_1D_col_bcyclic( M, N, d_lA, ldda, h_R, lda, ngpu, nb );
+            magma_cgetmatrix_1D_col_bcyclic( M, N, d_lA, ldda, h_A, lda, ngpu, nb );
     
             /* =====================================================================
                Check the factorization
@@ -167,9 +251,15 @@ int main( int argc, char** argv )
                 printf("%5d %5d    ---   (  ---  )   %7.2f (%7.2f)",
                        (int) M, (int) N, gpu_perf, gpu_time );
             }
-            if ( opts.check ) {
-                error = get_LU_error( M, N, h_A, lda, h_R, ipiv );
-                printf( "   %8.2e\n", error );
+            if ( opts.check == 2 ) {
+                error = get_residual( M, N, h_A, lda, ipiv );
+                printf("   %8.2e%s\n", error, (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
+            }
+            else if ( opts.check ) {
+                error = get_LU_error( M, N, h_A, lda, ipiv );
+                printf("   %8.2e%s\n", error, (error < tol ? "" : "  failed"));
+                status |= ! (error < tol);
             }
             else {
                 printf( "     ---\n" );
@@ -177,7 +267,6 @@ int main( int argc, char** argv )
             
             TESTING_FREE( ipiv );
             TESTING_FREE( h_A );
-            TESTING_HOSTFREE( h_R );
             for( int dev=0; dev < ngpu; dev++ ) {
                 magma_setdevice( dev );
                 TESTING_DEVFREE( d_lA[dev] );
@@ -189,5 +278,5 @@ int main( int argc, char** argv )
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:05 2013
+       @generated c Tue Aug 13 16:44:06 2013
 
 */
 #include "common_magma.h"
@@ -15,11 +15,11 @@ extern "C" magma_int_t
 magma_cpotrf_mgpu(magma_int_t num_gpus, char uplo, magma_int_t n,
                   magmaFloatComplex **d_lA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -68,13 +68,9 @@ magma_cpotrf_mgpu(magma_int_t num_gpus, char uplo, magma_int_t n,
     =====================================================================   */
 
 
-    magma_int_t     j, jb, nb, nb0, nb2, d, id, j_local, j_local2, lddp, h;
+    magma_int_t     j, nb, d, lddp, h;
     char            uplo_[2] = {uplo, 0};
-    magmaFloatComplex c_one     = MAGMA_C_ONE;
-    magmaFloatComplex c_neg_one = MAGMA_C_NEG_ONE;
     magmaFloatComplex *work;
-    float          d_one     =  1.0;
-    float          d_neg_one = -1.0;
     int upper = lapackf77_lsame(uplo_, "U");
     magmaFloatComplex *dwork[MagmaMaxGPUs];
     magma_queue_t    stream[MagmaMaxGPUs][3];
@@ -111,7 +107,7 @@ magma_cpotrf_mgpu(magma_int_t num_gpus, char uplo, magma_int_t n,
         magma_free_pinned( work );
     }
     else {
-        lddp = 32*((n+31)/32);
+        lddp = nb*((n+nb-1)/nb);
         for( d=0; d<num_gpus; d++ ) {
             magma_setdevice(d);
             if (MAGMA_SUCCESS != magma_cmalloc( &dwork[d], num_gpus*nb*lddp )) {

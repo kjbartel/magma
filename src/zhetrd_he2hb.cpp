@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Azzam Haidar
        @author Stan Tomov
@@ -23,11 +23,11 @@ magma_zhetrd_he2hb( char uplo, magma_int_t n, magma_int_t nb,
                     magmaDoubleComplex *dT,
                     magma_int_t threads, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -175,9 +175,9 @@ magma_zhetrd_he2hb( char uplo, magma_int_t n, magma_int_t nb,
         *info = -9;
     }
 
+    /* Determine the block size. */
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        lwkopt = n * nb;
         MAGMA_Z_SET2REAL( work[0], lwkopt );
     }
 

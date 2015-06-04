@@ -1,9 +1,9 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
@@ -22,11 +22,11 @@ magma_zunmtr(char side, char uplo, char trans,
              magmaDoubleComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -153,10 +153,9 @@ magma_zunmtr(char side, char uplo, char trans,
         *info = -12;
     }
 
-    if (*info == 0)
-    {
-        nb = 32;
-        lwkopt = max(1,nw) * nb;
+    nb = 32;
+    lwkopt = max(1,nw) * nb;
+    if (*info == 0) {
         MAGMA_Z_SET2REAL( work[0], lwkopt );
     }
 

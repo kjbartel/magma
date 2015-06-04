@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
 
-       @generated c Fri Jun 28 19:32:26 2013
+       @generated c Tue Aug 13 16:44:28 2013
 
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_cunmql(const char side, const char trans,
              magmaFloatComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -125,7 +125,7 @@ magma_cunmql(const char side, const char trans,
     magma_int_t i__;
     magmaFloatComplex t[2*4160]        /* was [65][64] */;
     magma_int_t i1, i2, i3, ib, nb, mi, ni, nq, nw;
-    magma_int_t iinfo, ldwork, lwkopt;
+    magma_int_t iinfo, ldwork, lwkopt=0;
     int lquery, left, notran;
 
     a_offset = 1 + lda;
@@ -202,7 +202,7 @@ magma_cunmql(const char side, const char trans,
     }
     else {
         /* Use hybrid CPU-GPU code */
-        if (left && notran || ! left && ! notran) {
+        if ((left && notran) || (! left && ! notran)) {
             i1 = 1;
             i2 = k;
             i3 = nb;
@@ -212,6 +212,10 @@ magma_cunmql(const char side, const char trans,
             i3 = -nb;
         }
 
+        // silence "uninitialized" warnings
+        mi = 0;
+        ni = 0;
+        
         if (left) {
             ni = n;
         } else {

@@ -1,15 +1,15 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
        @author Stan Tomov
        @author Azzam Haidar
 
-       @generated d Fri Jun 28 19:34:02 2013
+       @generated d Wed Aug 14 12:18:08 2013
 
 */
 
@@ -29,9 +29,6 @@
 
 #define PRECISION_d
 
-// DSYTRD2 uses much faster DSYMV (from MAGMA BLAS) but requires extra space
-// #define USE_DSYTRD2
-
 /* ////////////////////////////////////////////////////////////////////////////
    -- Testing dsytrd_gpu
 */
@@ -41,20 +38,16 @@ int main( int argc, char** argv)
 
     real_Double_t    gflops, gpu_perf, cpu_perf, gpu_time, cpu_time;
     double           eps;
-    double *h_A, *h_R, *d_R, *h_Q, *h_work, *work;
+    double *h_A, *h_R, *d_R, *h_Q, *h_work, *work, *dwork;
     double *tau;
     double          *diag, *offdiag;
     double           result[2] = {0., 0.};
-    magma_int_t N, n2, lda, lwork, info, nb;
+    magma_int_t N, n2, lda, lwork, info, nb, ldwork;
     magma_int_t ione     = 1;
     magma_int_t itwo     = 2;
     magma_int_t ithree   = 3;
     magma_int_t ISEED[4] = {0,0,0,1};
-    
-    #ifdef USE_DSYTRD2
-    magma_int_t ldwork;
-    double *dwork;
-    #endif
+    magma_int_t status = 0;
     
     #if defined(PRECISION_z) || defined(PRECISION_c)
     double *rwork;
@@ -64,7 +57,14 @@ int main( int argc, char** argv)
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+
+    double tol = opts.tolerance * lapackf77_dlamch("E");
     
+    printf("Running version %d; available are (specified through --version num):\n", 
+           (int) opts.version);
+    printf("1 - uses DSYMV from CUBLAS (default)\n");
+    printf("2 - uses DSYMV from MAGMA BLAS that requires extra space\n\n");
+
     printf("  N     CPU GFlop/s (sec)   GPU GFlop/s (sec)   |A-QHQ'|/N|A|   |I-QQ'|/N\n");
     printf("===========================================================================\n");
     for( int i = 0; i < opts.ntest; ++i ) {
@@ -75,13 +75,11 @@ int main( int argc, char** argv)
             nb     = magma_get_dsytrd_nb(N);
             lwork  = N*nb;  /* We suppose the magma nb is bigger than lapack nb */
             gflops = FLOPS_DSYTRD( N ) / 1e9;
+            ldwork = (N*N+64-1)/64 + 2*N*nb;
             
             TESTING_MALLOC(    h_A,     double, lda*N );
             TESTING_DEVALLOC(  d_R,     double, lda*N );
-            #ifdef USE_DSYTRD2
-            ldwork = lda*N; // was: lda*N/16+32;
-            TESTING_DEVALLOC(  dwork,   double, ldwork );
-            #endif
+            TESTING_DEVALLOC(dwork,     double, ldwork);
             TESTING_HOSTALLOC( h_R,     double, lda*N );
             TESTING_HOSTALLOC( h_work,  double, lwork );
             TESTING_MALLOC(    tau,     double, N     );
@@ -107,13 +105,12 @@ int main( int argc, char** argv)
                Performs operation using MAGMA
                =================================================================== */
             gpu_time = magma_wtime();
-            #ifdef USE_DSYTRD2
-            magma_dsytrd2_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
-                               tau, h_R, lda, h_work, lwork, dwork, ldwork, &info );
-            #else
-            magma_dsytrd_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
-                              tau, h_R, lda, h_work, lwork, &info );
-            #endif
+            if (opts.version == 1)
+                magma_dsytrd_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
+                                  tau, h_R, lda, h_work, lwork, &info );
+            else
+                magma_dsytrd2_gpu( opts.uplo, N, d_R, lda, diag, offdiag,
+                                   tau, h_R, lda, h_work, lwork, dwork, ldwork, &info );
             gpu_time = magma_wtime() - gpu_time;
             gpu_perf = gflops / gpu_time;
             if (info != 0)
@@ -176,7 +173,10 @@ int main( int argc, char** argv)
                        (int) N, gpu_perf, gpu_time );
             }
             if ( opts.check ) {
-                printf("   %8.2e        %8.2e\n", result[0]*eps, result[1]*eps );
+                printf("   %8.2e        %8.2e%s", result[0]*eps, result[1]*eps,
+                        ( ( (result[0]*eps < tol) && (result[1]*eps < tol) ) ? "" : "  failed")  );
+                status |= ! (result[0]*eps < tol);
+                status |= ! (result[1]*eps < tol);
             } else {
                 printf("     ---             ---\n" );
             }
@@ -188,9 +188,7 @@ int main( int argc, char** argv)
             TESTING_HOSTFREE( h_R );
             TESTING_HOSTFREE( h_work );
             TESTING_DEVFREE ( d_R );
-            #ifdef USE_DSYTRD2
             TESTING_DEVFREE ( dwork );
-            #endif
             
             if ( opts.check ) {
                 TESTING_FREE( h_Q );
@@ -203,5 +201,5 @@ int main( int argc, char** argv)
     }
 
     TESTING_FINALIZE();
-    return 0;
+    return status;
 }

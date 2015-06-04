@@ -1,14 +1,14 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Stan Tomov
        @author Raffaele Solca
 
-       @generated c Fri Jun 28 19:32:31 2013
+       @generated c Tue Aug 13 16:44:34 2013
 
 */
 #include "common_magma.h"
@@ -23,11 +23,11 @@ magma_chetrd(char uplo, magma_int_t n,
              magmaFloatComplex *work, magma_int_t lwork,
              magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -165,10 +165,10 @@ magma_chetrd(char uplo, magma_int_t n,
         *info = -9;
     }
 
+    /* Determine the block size. */
+    ldwork = lddwork = n;
+    lwkopt = n * nb;
     if (*info == 0) {
-        /* Determine the block size. */
-        ldwork = lddwork = n;
-        lwkopt = n * nb;
         MAGMA_C_SET2REAL( work[0], lwkopt );
     }
 

@@ -7,7 +7,7 @@
  *     @author Azzam Haidar
  *     @author Stan Tomov
  *
- *     @generated s Fri Jun 28 19:32:36 2013
+ *     @generated s Tue Aug 13 16:44:39 2013
  *
  */
 
@@ -38,7 +38,7 @@ extern "C" void magma_sbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE
     magma_int_t bg, nbGblk,rownbm, k, m, n;
     magma_int_t st,ed,fst,vlen,vnb,colj,len;
     magma_int_t blkid, vpos,taupos,tpos;
-    float *WORK;
+    //float *WORK;
     magma_int_t LWORK;
     magma_int_t  cur_blksiz,avai_blksiz, ncolinvolvd;
     magma_int_t  nbgr, colst, coled, versionL,versionR;
@@ -98,9 +98,9 @@ extern "C" void magma_sbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE
            (int) N, (int) NB, (int) Vblksiz, (int) SIDE, (int) versionL, (int) versionR, (int) WANTZ);
 
 
+#if defined(USESTREAM)
     magma_int_t N2=N/2;
     magma_int_t N1=N-N2;   
-#if defined(USESTREAM)
     printf("using stream\n");
     magma_queue_t stream[2];
     magma_queue_create( &stream[0] );
@@ -136,7 +136,7 @@ extern "C" void magma_sbulge_applyQ(magma_int_t WANTZ, char SIDE, magma_int_t NE
                }        
                colst     = (bg-1)*Vblksiz;
                findVTpos(N,NB,Vblksiz,colst,fst, &vpos, &taupos, &tpos, &blkid);
-               printf("voici bg %d m %d  vlen %d  vnb %d fcolj %d vpos %d taupos %d \n",bg,m,vlen, vnb,colst+1,vpos+1,taupos+1);
+               printf("voici bg %d m %d  vlen %d  vnb %d fcolj %d vpos %d taupos %d \n", (int) bg, (int) m, (int) vlen, (int) vnb, (int) colst+1, (int) vpos+1, (int) taupos+1);
                if((vlen>0)&&(vnb>0)){
                    if(WANTZ==1){
                       len =  N-colst;    

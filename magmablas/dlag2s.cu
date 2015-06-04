@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated ds Fri Jun 28 19:33:07 2013
+       @generated ds Tue Aug 13 16:45:12 2013
 
 */
 #include "common_magma.h"
@@ -14,7 +14,7 @@
 #define blksize 64
 
 // TODO get rid of global variable!
-__device__ int flag = 0; 
+static __device__ int flag = 0; 
 
 __global__ void 
 magmaint_dlag2s(  int M, int N, 

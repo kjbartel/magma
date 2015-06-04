@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated ds Fri Jun 28 19:32:09 2013
+       @generated ds Tue Aug 13 16:44:10 2013
 
 */
 #include "common_magma.h"
@@ -19,11 +19,11 @@ magma_dsgetrs_gpu(char trans, magma_int_t n, magma_int_t nrhs,
                   float  *dSX,
                   magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======

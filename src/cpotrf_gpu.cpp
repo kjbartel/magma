@@ -1,12 +1,12 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:03 2013
-
+       @author Stan Tomov
+       @generated c Tue Aug 13 16:44:04 2013
 */
 #include "common_magma.h"
 
@@ -24,11 +24,11 @@ extern "C" magma_int_t
 magma_cpotrf_gpu(char uplo, magma_int_t n,
                  magmaFloatComplex *dA, magma_int_t ldda, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -41,6 +41,8 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
     where U is an upper triangular matrix and L is lower triangular.
 
     This is the block version of the algorithm, calling Level 3 BLAS.
+    If the current stream is NULL, this version replaces it with user defined
+    stream to overlap computation with communication.
 
     Arguments
     =========
@@ -106,15 +108,24 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
         return *info;
     }
 
-    magma_queue_t stream[2];
+    /* Define user stream if current stream is NULL */
+    cudaStream_t stream[2], current_stream;
+    magmablasGetKernelStream(&current_stream);
+
     magma_queue_create( &stream[0] );
-    magma_queue_create( &stream[1] );
+    if (current_stream == NULL) {
+      magma_queue_create( &stream[1] );
+      magmablasSetKernelStream(stream[1]);
+    }
+    else
+      stream[1] = current_stream;
 
     if ((nb <= 1) || (nb >= n)) {
         /*  Use unblocked code. */
-        magma_cgetmatrix( n, n, dA, ldda, work, n );
+        magma_cgetmatrix_async( n, n, dA, ldda, work, n, stream[1] );
+        magma_queue_sync( stream[1] );
         lapackf77_cpotrf(uplo_, &n, work, &n, info);
-        magma_csetmatrix( n, n, work, n, dA, ldda );
+        magma_csetmatrix_async( n, n, work, n, dA, ldda, stream[1] );
     }
     else {
 
@@ -132,9 +143,10 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
                             d_neg_one, dA(0, j), ldda,
                             d_one,     dA(j, j), ldda);
 
+                magma_queue_sync( stream[1] );
                 magma_cgetmatrix_async( jb, jb,
                                         dA(j, j), ldda,
-                                        work,     jb, stream[1] );
+                                        work,     jb, stream[0] );
                 
                 if ( (j+jb) < n) {
                     /* Compute the current block row. */
@@ -145,12 +157,11 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
                                 c_one,     dA(j, j+jb), ldda);
                 }
                 
-                magma_queue_sync( stream[1] );
-
+                magma_queue_sync( stream[0] );
                 lapackf77_cpotrf(MagmaUpperStr, &jb, work, &jb, info);
                 magma_csetmatrix_async( jb, jb,
                                         work,     jb,
-                                        dA(j, j), ldda, stream[0] );
+                                        dA(j, j), ldda, stream[1] );
                 if (*info != 0) {
                     *info = *info + j;
                     break;
@@ -177,9 +188,10 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
                             d_neg_one, dA(j, 0), ldda,
                             d_one,     dA(j, j), ldda);
                 
+                magma_queue_sync( stream[1] );
                 magma_cgetmatrix_async( jb, jb,
                                         dA(j, j), ldda,
-                                        work,     jb, stream[1] );
+                                        work,     jb, stream[0] );
                 
                 if ( (j+jb) < n) {
                     magma_cgemm( MagmaNoTrans, MagmaConjTrans,
@@ -189,11 +201,11 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
                                  c_one,     dA(j+jb, j), ldda);
                 }
 
-                magma_queue_sync( stream[1] );
+                magma_queue_sync( stream[0] );
                 lapackf77_cpotrf(MagmaLowerStr, &jb, work, &jb, info);
                 magma_csetmatrix_async( jb, jb,
                                         work,     jb,
-                                        dA(j, j), ldda, stream[0] );
+                                        dA(j, j), ldda, stream[1] );
                 if (*info != 0) {
                     *info = *info + j;
                     break;
@@ -209,9 +221,13 @@ magma_cpotrf_gpu(char uplo, magma_int_t n,
         }
     }
 
-    magma_queue_destroy( stream[0] );
-    magma_queue_destroy( stream[1] );
     magma_free_pinned( work );
+
+    magma_queue_destroy( stream[0] );
+    if (current_stream == NULL) {
+      magma_queue_destroy( stream[1] );
+      magmablasSetKernelStream(NULL);
+    }
 
     return *info;
 } /* magma_cpotrf_gpu */

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:31:28 2013
+       @generated c Tue Aug 13 16:43:28 2013
 */
 
 #ifndef MAGMABLAS_C_H
@@ -135,16 +135,16 @@ magma_int_t magma_chtodhe(
 magma_int_t magma_chtodpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb,
-    magmaFloatComplex  *h_A,  magma_int_t lda,
-    magmaFloatComplex **d_lA, magma_int_t ldda,
+    magmaFloatComplex  *h_A,   magma_int_t lda,
+    magmaFloatComplex *d_lA[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 // in src/cpotrf3_mgpu.cpp
 magma_int_t magma_cdtohpo(
     magma_int_t num_gpus, char *uplo, magma_int_t m, magma_int_t n,
     magma_int_t off_i, magma_int_t off_j, magma_int_t nb, magma_int_t NB,
-    magmaFloatComplex  *a,    magma_int_t lda,
-    magmaFloatComplex **work, magma_int_t ldda,
+    magmaFloatComplex  *a,     magma_int_t lda,
+    magmaFloatComplex *work[], magma_int_t ldda,
     magma_queue_t stream[][3], magma_int_t *info );
 
 magma_int_t magmablas_chemv_mgpu_offset(
@@ -615,8 +615,7 @@ void magmablas_ctrsm_work(
     magmaFloatComplex alpha,
     magmaFloatComplex_const_ptr dA, magma_int_t ldda,
     magmaFloatComplex_ptr       db, magma_int_t lddb,
-    magmaFloatComplex_ptr d_dinvA,
-    magmaFloatComplex_ptr dx );
+    int flag, magmaFloatComplex_ptr d_dinvA, magmaFloatComplex_ptr dx );
 #endif
 
   /*

@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
-       @generated c Fri Jun 28 19:32:27 2013
+       @generated c Wed Aug 14 12:16:13 2013
 
        @author Mark Gates
 */
@@ -22,11 +22,11 @@ magma_cungqr_m(
     magmaFloatComplex *T, magma_int_t nb,
     magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -164,10 +164,12 @@ magma_cungqr_m(
     trace_init( 1, ngpu, 1, stream );
     
     // first kk columns are handled by blocked method.
+    // ki is start of 2nd-to-last block
     if ((nb > 1) && (nb < k)) {
         ki = (k - nb - 1) / nb * nb;
         kk = min(k, ki + nb);
     } else {
+        ki = 0;
         kk = 0;
     }
 

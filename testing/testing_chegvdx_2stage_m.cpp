@@ -1,5 +1,5 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
@@ -8,7 +8,7 @@
     @author Raffaele Solca
     @author Azzam Haidar
 
-    @generated c Fri Jun 28 19:34:05 2013
+    @generated c Wed Aug 14 12:18:11 2013
 
 */
 
@@ -25,6 +25,7 @@
 #include "magma_lapack.h"
 #include "testings.h"
 #include "magma_cbulge.h"
+#include "magma_threadsetting.h"
 
 #define PRECISION_c
 
@@ -57,6 +58,7 @@ int main( int argc, char** argv)
 
     magma_opts opts;
     parse_opts( argc, argv, &opts );
+    float tol = opts.tolerance * lapackf77_slamch("E");
 
     char jobz = opts.jobz;
     int checkres = opts.check;
@@ -75,25 +77,27 @@ int main( int argc, char** argv)
         jobz = MagmaVec;
     }
 
-    printf("using: nrgpu = %d, itype = %d, jobz = %c,range = %c, uplo = %c, checkres = %d, fraction = %6.4f\n", opts.ngpu, itype, jobz, range, uplo, checkres, f);
+    printf("using: nrgpu = %d, itype = %d, jobz = %c, range = %c, uplo = %c, checkres = %d, fraction = %6.4f\n",
+           (int) opts.ngpu, (int) itype, jobz, range, uplo, (int) checkres, f);
     
     printf("  N     M   nr GPU     MGPU Time(s) \n");
     printf("====================================\n");
+    magma_int_t threads = magma_get_numthreads();
     for( int i = 0; i < opts.ntest; ++i ) {
         for( int iter = 0; iter < opts.niter; ++iter ) {
             N = opts.nsize[i];
             n2     = N*N;
 #if defined(PRECISION_z) || defined(PRECISION_c)
-            lwork  = magma_cbulge_get_lq2(N) + 2*N + N*N;
+            lwork  = magma_cbulge_get_lq2(N, threads) + 2*N + N*N;
             lrwork = 1 + 5*N +2*N*N;
 #else
-            lwork  = magma_cbulge_get_lq2(N) + 1 + 6*N + 2*N*N;
+            lwork  = magma_cbulge_get_lq2(N, threads) + 1 + 6*N + 2*N*N;
 #endif
             liwork = 3 + 5*N;
 
 
             //magma_int_t NB = 96;//magma_bulge_get_nb(N);
-            //magma_int_t sizvblg = magma_cbulge_get_lq2(N);        
+            //magma_int_t sizvblg = magma_cbulge_get_lq2(N, threads);        
             //magma_int_t siz = max(sizvblg,n2)+2*(N*NB+N)+24*N; 
             /* Allocate host memory for the matrix */
             TESTING_HOSTALLOC(   h_A, magmaFloatComplex, n2);
@@ -133,7 +137,7 @@ int main( int argc, char** argv)
 
             if (range == 'I'){
                 il = 1;
-                iu = f*N;
+                iu = (int) (f*N);
             }
 
             if(opts.warmup){
@@ -213,15 +217,15 @@ int main( int argc, char** argv)
             // Print execution time
             // ===================================================================
             printf("%5d %5d %2d    %6.2f\n",
-                   (int) N, (int) m1, opts.ngpu, mgpu_time);
+                   (int) N, (int) m1, (int) opts.ngpu, mgpu_time);
             if ( checkres ){
                 printf("Testing the eigenvalues and eigenvectors for correctness:\n");
                 if(itype==1)
-                    printf("(1)    | A Z - B Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | A Z - B Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
                 else if(itype==2)
-                    printf("(1)    | A B Z - Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | A B Z - Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
                 else if(itype==3)
-                    printf("(1)    | B A Z - Z D | / (|A| |Z| N) = %e\n", result);
+                    printf("(1)    | B A Z - Z D | / (|A| |Z| N) = %8.2e%s\n", result, (result < tol ? "" : "  failed") );
             }
 
             TESTING_HOSTFREE(       h_A);

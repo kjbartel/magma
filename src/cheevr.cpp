@@ -1,13 +1,13 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
        @author Raffaele Solca
 
-       @generated c Fri Jun 28 19:32:30 2013
+       @generated c Tue Aug 13 16:44:33 2013
 
 */
 #include "common_magma.h"
@@ -21,11 +21,11 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
              float *rwork, magma_int_t lrwork, magma_int_t *iwork,
              magma_int_t liwork, magma_int_t *info)
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -272,7 +272,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
         *info = -4;
     } else if (lda < max(1,n)) {
         *info = -6;
-    } else if (ldz < 1 || wantz && ldz < n) {
+    } else if (ldz < 1 || (wantz && ldz < n)) {
         *info = -15;
     } else {
         if (valeig) {
@@ -313,24 +313,18 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
         return *info;
     }
     
-    /* Quick return if possible */
     *m = 0;
-    if (n == 0) {
-        return *info;
-    }
-    
-    if (n == 1) {
-        w[0] = MAGMA_C_REAL(a[0]);
-        if (alleig || indeig) {
-            *m = 1;
-        } else if (valeig) {
-            if (vl < w[0] && vu >= w[0]) {
-                *m = 1;
-            }
-        }
-        if (wantz) {
-            z[0]=MAGMA_C_ONE;
-        }
+    /* Check if matrix is very small then just call LAPACK on CPU, no need for GPU */
+    if (n <= 128) {
+        #ifdef ENABLE_DEBUG
+        printf("--------------------------------------------------------------\n");
+        printf("  warning matrix too small N=%d NB=%d, calling lapack on CPU  \n", (int) n, (int) nb);
+        printf("--------------------------------------------------------------\n");
+        #endif
+        lapackf77_cheevr(jobz_, range_, uplo_,
+                         &n, a, &lda, &vl, &vu, &il, &iu, &abstol, m,
+                         w, z, &ldz, isuppz, work, &lwork,
+                         rwork, &lrwork, iwork, &liwork, info);
         return *info;
     }
     
@@ -403,7 +397,7 @@ magma_cheevr(char jobz, char range, char uplo, magma_int_t n,
     if (! wantz) {
         blasf77_scopy(&n, &rwork[indrd], &ione, &w[1], &ione);
         i__1 = n - 1;
-        if ((alleig || indeig && il == 1 && iu == n)){
+        if (alleig || (indeig && il == 1 && iu == n)) {
             lapackf77_ssterf(&n, &w[1], &rwork[indre], info);
             *m = n;
         } else {

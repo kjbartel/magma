@@ -1,11 +1,11 @@
 /*
-    -- MAGMA (version 1.4.0-beta2) --
+    -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
        
-       @generated d Fri Jun 28 19:33:20 2013
+       @generated d Tue Aug 13 16:45:26 2013
 */
 
 #include <stdio.h>
@@ -35,11 +35,11 @@ magma_dpotf2_gpu(
     double *A, magma_int_t lda,
     magma_int_t *info )
 {
-/*  -- MAGMA (version 1.4.0-beta2) --
+/*  -- MAGMA (version 1.4.0) --
        Univ. of Tennessee, Knoxville
        Univ. of California, Berkeley
        Univ. of Colorado, Denver
-       June 2013
+       August 2013
 
     Purpose
     =======
@@ -213,7 +213,7 @@ void dpotf2_ddot(magma_int_t n, double *x, magma_int_t incx)
 
 */
     if (n > ddot_max_bs) {
-        printf("n = %d > %d is not supported in dpotf2_ddot\n", n, ddot_max_bs);
+        printf("n = %d > %d is not supported in dpotf2_ddot\n", (int) n, (int) ddot_max_bs);
         exit(1);
     }
     int threadSize;

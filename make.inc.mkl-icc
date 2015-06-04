@@ -1,9 +1,9 @@
 #//////////////////////////////////////////////////////////////////////////////
-#   -- MAGMA (version 1.4.0-beta2) --
+#   -- MAGMA (version 1.4.0) --
 #      Univ. of Tennessee, Knoxville
 #      Univ. of California, Berkeley
 #      Univ. of Colorado, Denver
-#      June 2013
+#      August 2013
 #//////////////////////////////////////////////////////////////////////////////
 
 # GPU_TARGET specifies for which GPU you want to compile MAGMA:
@@ -22,9 +22,9 @@ ARCH      = ar
 ARCHFLAGS = cr
 RANLIB    = ranlib
 
-OPTS      = -O3 -DADD_ -openmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY
-F77OPTS   = -O3 -DADD_
-FOPTS     = -O3 -DADD_
+OPTS      = -O3 -DADD_ -Wall -openmp -DMAGMA_WITH_MKL -DMAGMA_SETAFFINITY
+F77OPTS   = -O3 -DADD_ -warn all
+FOPTS     = -O3 -DADD_ -warn all
 NVOPTS    = -O3 -DADD_ -Xcompiler -fno-strict-aliasing
 LDOPTS    = -openmp
 
@@ -42,8 +42,8 @@ LIB       = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lcublas -l
 
 # check for directories and give user hint how to set them
 ifeq ($(MKLROOT),)
-    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.sh|')
-    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin/\w+/icc|/mkl/bin/mklvars.csh|')
+    vars_sh  := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.sh|')
+    vars_csh := $(shell which icc 2>/dev/null | perl -pe 's|/bin.*/icc|/mkl/bin/mklvars.csh|')
     ifeq ($(vars_sh),)
         vars_sh  := /opt/intel/composerxe/mkl/bin/mklvars.sh
         vars_csh := /opt/intel/composerxe/mkl/bin/mklvars.csh
@@ -62,4 +62,4 @@ endif
 LIBDIR    = -L$(MKLROOT)/lib/intel64 \
             -L$(CUDADIR)/lib64
 
-INC       = -I$(CUDADIR)/include
+INC       = -I$(CUDADIR)/include -I$(MKLROOT)/include
